@@ -1602,89 +1602,94 @@
   ],
   "instagramTopics": [
     {
-      "id": "topic-101",
+      "id": "topic-1789634045278-0",
       "accountId": "ig-bajajfinance",
-      "title": "The Prepayment Hack: Why 5% Extra Saves ₹1.2 Lakh",
-      "hook": "If you are paying your EMI like everyone else, you are gifting your bank an extra 2 years of interest.",
+      "title": "The 1 Extra EMI Math: How to Shave 6 Years Off a 20-Year Home Loan",
+      "hook": "Pay just one extra EMI per year, and watch 6.2 years of compound interest vanish from your loan balance.",
       "format": "Reel",
       "contentPillar": "Educational Financial Literacy",
-      "viralPotentialScore": 94,
-      "auditRationale": "Directly addresses the identified gap in loan math education while following Skill v4 hook rules.",
-      "status": "approved",
-      "createdAt": "2026-09-09T10:00:00.000Z",
-      "generationId": "gen-seed-101",
+      "viralPotentialScore": 95,
+      "auditRationale": "Resolves low audience retention by introducing high-contrast pattern interruption (side-by-side ledger visual) in the first 2 seconds, while grounding credit literacy in verifiable amortization arithmetic with stated assumptions (₹30L loan at 8.5% p.a.).",
+      "status": "pending",
+      "createdAt": "2026-09-17T08:34:05.278Z",
+      "generationId": "gen-1789634000318-vc7fu",
       "angleOptions": [
-        "Math comparison: Standard vs 5% extra prepayment",
-        "What loan officers do with their own mortgages",
-        "The 1-month salary bonus trick"
+        "Amortization Ledger Tear-Down: Showing month-by-month principal reduction.",
+        "Cost of Inaction: How an annual ₹25,000 increment saves over ₹8,00,000 in total interest paid.",
+        "The Prepayment Timing Framework: Why prepaying in Year 1-5 yields 3x the savings of Year 15."
       ]
     },
     {
-      "id": "topic-102",
+      "id": "topic-1789634045278-1",
       "accountId": "ig-bajajfinance",
-      "title": "4 Innocent Mistakes That Drop Your CIBIL Score by 60 Points",
-      "hook": "Closing that old credit card? You might have just destroyed your credit age.",
+      "title": "Unpacking No-Cost EMI: The Actual Mathematics & Invoice Breakdown",
+      "hook": "Is a No-Cost EMI actually 0% interest? We break down the merchant discount, GST on interest, and the exact arithmetic on your bill.",
       "format": "Carousel",
-      "contentPillar": "Educational Financial Literacy",
-      "viralPotentialScore": 91,
-      "auditRationale": "High save-intent topic fulfilling carousel shortfall highlighted by Manus audit.",
-      "status": "approved",
-      "createdAt": "2026-09-09T10:00:00.000Z",
-      "generationId": "gen-seed-101",
+      "contentPillar": "Product Transparency & How-Tos",
+      "viralPotentialScore": 92,
+      "auditRationale": "Directly implements the transparency pillar by eliminating opaque financial terms. Each slide uses a swipe-trigger loop detailing merchant subvention, processing fees, and 18% GST calculation on interest elements to maximize saves.",
+      "status": "pending",
+      "createdAt": "2026-09-17T08:34:05.278Z",
+      "generationId": "gen-1789634000318-vc7fu",
       "angleOptions": [
-        "Slide-by-slide credit score myth busters",
-        "Credit utilization ratio explained with pizza slices",
-        "How to recover 50 points in 90 days"
+        "The Cash Discount vs. EMI Comparison: Mathematical audit of when to pay upfront vs. convert.",
+        "Invoice Dissection: Annotating an actual ₹60,000 smartphone bill showing the bank interest subsidy.",
+        "Credit Card vs. Bajaj Finserv EMI Network Card: Comparing upfront processing fee structures."
       ]
     },
     {
-      "id": "topic-103",
+      "id": "topic-1789634045278-2",
       "accountId": "ig-bajajfinance",
-      "title": "Scam Alert: The Fake \"Pre-Approved Loan\" WhatsApp Text",
-      "hook": "If you receive this exact SMS today, DO NOT click. Here is how scammers spoof official bank headers.",
+      "title": "4 Red Flags of Fake Loan Sanction Letters (And Why We Never Ask for Upfront Fees)",
+      "hook": "If a loan approval letter asks you to pay a ₹2,500 'processing deposit' to unlock your funds, rip it up immediately.",
       "format": "Reel",
       "contentPillar": "Fraud Awareness & Consumer Safety",
       "viralPotentialScore": 96,
-      "auditRationale": "Consumer safety alert with highest share potential identified in competitor benchmarking.",
+      "auditRationale": "Reinforces the 'Customer-first protector' identity. Uses visual physical disruption (tearing a counterfeit sanction letter) within 1.8 seconds to alert consumers, ending with a direct keyword trigger for a verification checklist.",
       "status": "pending",
-      "createdAt": "2026-09-11T09:30:00.000Z",
-      "generationId": "gen-seed-102",
+      "createdAt": "2026-09-17T08:34:05.278Z",
+      "generationId": "gen-1789634000318-vc7fu",
       "angleOptions": [
-        "Side-by-side screenshot analysis of genuine vs scam message",
-        "3 questions real banks will never ask on WhatsApp",
-        "Immediate 3 steps to take if you clicked"
+        "Spotting the Counterfeit: Dissecting fake watermarks, unauthorized UPI QR codes, and suspicious Gmail domains.",
+        "The 'Processing Fee' Scam Explained: Demonstrating how genuine NBFCs deduct fees from disbursement rather than asking for UPI transfers.",
+        "Instant Verification Protocol: How to verify any sanction letter inside the official Bajaj Finserv app in 30 seconds."
       ]
     },
     {
-      "id": "topic-104",
+      "id": "topic-1789634045278-3",
       "accountId": "ig-bajajfinance",
-      "title": "5 Habits of Financially Free People",
-      "hook": "Want to retire early? Here are five things wealthy people do every single morning.",
-      "format": "Reel",
-      "contentPillar": "Lifestyle & Real Customer Wins",
-      "viralPotentialScore": 68,
-      "auditRationale": "Proposed lifestyle topic.",
-      "status": "rejected",
-      "rejectionReason": {
-        "category": "Too Generic",
-        "feedback": "Avoid generic lifestyle quotes. We are a premier financial institution, not an aesthetic quote page. Must contain hard financial math.",
-        "date": "2026-09-10T14:15:00.000Z"
-      },
-      "createdAt": "2026-09-10T09:00:00.000Z",
-      "generationId": "gen-seed-103"
+      "title": "31 Days Late: The Mathematical Impact of 1 Missed EMI on Your CIBIL Score",
+      "hook": "Missed an ₹1,800 EMI by 31 days? Here is the exact timeline of how a 780 score drops to 715, and the 90-day recovery protocol.",
+      "format": "Carousel",
+      "contentPillar": "Educational Financial Literacy",
+      "viralPotentialScore": 89,
+      "auditRationale": "Fixes engagement drops on carousel content by introducing tactical diagnostic tables, sequential DPD (Days Past Due) mechanics, and a clear step-by-step resolution path that encourages high bookmarks.",
+      "status": "pending",
+      "createdAt": "2026-09-17T08:34:05.278Z",
+      "generationId": "gen-1789634000318-vc7fu",
+      "angleOptions": [
+        "DPD Timeline Breakdown: 1-30 days grace window vs. 31-60 days formal credit bureau reporting.",
+        "Score Rebound Model: The exact mathematical actions required to regain 40+ points over two billing cycles.",
+        "The Autodebit Checklist: Setting up e-NACH mandate safeguards to prevent accidental reporting drops."
+      ]
     },
     {
-      "id": "topic-105",
+      "id": "topic-1789634045278-4",
       "accountId": "ig-bajajfinance",
-      "title": "Personal Loan vs Gold Loan: The 30-Second Decider",
-      "hook": "Need funds fast? Picking the wrong loan type could cost you 8% more in interest every single year.",
-      "format": "Carousel",
-      "contentPillar": "Product Transparency & How-Tos",
-      "viralPotentialScore": 88,
-      "auditRationale": "Addresses decision paralysis identified in customer inquiries.",
+      "title": "Prepay Personal Loan vs. Invest in Mutual Funds: The Post-Tax ROI Decision Tree",
+      "hook": "Prepaying an 11% personal loan mathematically beats a 12% equity fund return on a post-tax, risk-adjusted basis. Let's run the formula.",
+      "format": "Reel",
+      "contentPillar": "Educational Financial Literacy",
+      "viralPotentialScore": 93,
+      "auditRationale": "Tackles audit-identified audience fatigue with generic investment tips. Delivers rigorous net-return comparison (accounting for 12.5% LTCG tax vs. guaranteed, risk-free interest debt elimination) backed by clear legal assumptions.",
       "status": "pending",
-      "createdAt": "2026-09-11T09:30:00.000Z",
-      "generationId": "gen-seed-102"
+      "createdAt": "2026-09-17T08:34:05.278Z",
+      "generationId": "gen-1789634000318-vc7fu",
+      "angleOptions": [
+        "The Risk-Free Yield Formula: Why eliminating 11.5% fixed debt out-competes volatile asset classes.",
+        "The 50/50 Compromise Matrix: Splitting festival bonuses between debt amortization and SIPs.",
+        "Debt-Snowball Amortization: Prepaying highest-cost consumer debt first to unlock monthly cash flow."
+      ]
     }
   ],
   "instagramPipeline": [
@@ -2254,10 +2259,10 @@
       "monthlyBudgetUsd": 100,
       "warningThresholdPct": 80,
       "hardStopPct": 100,
-      "currentSpendUsd": 18.422250000000002,
+      "currentSpendUsd": 18.429000000000002,
       "currentMonth": "September 2026",
-      "requestCountThisMonth": 125,
-      "estimatedTokensThisMonth": 144300
+      "requestCountThisMonth": 128,
+      "estimatedTokensThisMonth": 148800
     },
     "learningSettings": {
       "enabled": true,
@@ -2621,6 +2626,276 @@
     }
   ],
   "instagramGenerations": [
+    {
+      "id": "gen-1789634000318-vc7fu",
+      "task": "topic_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "topic-prompt-v8",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (topic_generation) - Skill v4",
+      "inputContext": {
+        "account": "bajajfinance",
+        "skillVersion": "v4"
+      },
+      "output": [
+        {
+          "title": "The 1 Extra EMI Math: How to Shave 6 Years Off a 20-Year Home Loan",
+          "hook": "Pay just one extra EMI per year, and watch 6.2 years of compound interest vanish from your loan balance.",
+          "format": "Reel",
+          "contentPillar": "Educational Financial Literacy",
+          "viralPotentialScore": 95,
+          "auditRationale": "Resolves low audience retention by introducing high-contrast pattern interruption (side-by-side ledger visual) in the first 2 seconds, while grounding credit literacy in verifiable amortization arithmetic with stated assumptions (₹30L loan at 8.5% p.a.).",
+          "angleOptions": [
+            "Amortization Ledger Tear-Down: Showing month-by-month principal reduction.",
+            "Cost of Inaction: How an annual ₹25,000 increment saves over ₹8,00,000 in total interest paid.",
+            "The Prepayment Timing Framework: Why prepaying in Year 1-5 yields 3x the savings of Year 15."
+          ]
+        },
+        {
+          "title": "Unpacking No-Cost EMI: The Actual Mathematics & Invoice Breakdown",
+          "hook": "Is a No-Cost EMI actually 0% interest? We break down the merchant discount, GST on interest, and the exact arithmetic on your bill.",
+          "format": "Carousel",
+          "contentPillar": "Product Transparency & How-Tos",
+          "viralPotentialScore": 92,
+          "auditRationale": "Directly implements the transparency pillar by eliminating opaque financial terms. Each slide uses a swipe-trigger loop detailing merchant subvention, processing fees, and 18% GST calculation on interest elements to maximize saves.",
+          "angleOptions": [
+            "The Cash Discount vs. EMI Comparison: Mathematical audit of when to pay upfront vs. convert.",
+            "Invoice Dissection: Annotating an actual ₹60,000 smartphone bill showing the bank interest subsidy.",
+            "Credit Card vs. Bajaj Finserv EMI Network Card: Comparing upfront processing fee structures."
+          ]
+        },
+        {
+          "title": "4 Red Flags of Fake Loan Sanction Letters (And Why We Never Ask for Upfront Fees)",
+          "hook": "If a loan approval letter asks you to pay a ₹2,500 'processing deposit' to unlock your funds, rip it up immediately.",
+          "format": "Reel",
+          "contentPillar": "Fraud Awareness & Consumer Safety",
+          "viralPotentialScore": 96,
+          "auditRationale": "Reinforces the 'Customer-first protector' identity. Uses visual physical disruption (tearing a counterfeit sanction letter) within 1.8 seconds to alert consumers, ending with a direct keyword trigger for a verification checklist.",
+          "angleOptions": [
+            "Spotting the Counterfeit: Dissecting fake watermarks, unauthorized UPI QR codes, and suspicious Gmail domains.",
+            "The 'Processing Fee' Scam Explained: Demonstrating how genuine NBFCs deduct fees from disbursement rather than asking for UPI transfers.",
+            "Instant Verification Protocol: How to verify any sanction letter inside the official Bajaj Finserv app in 30 seconds."
+          ]
+        },
+        {
+          "title": "31 Days Late: The Mathematical Impact of 1 Missed EMI on Your CIBIL Score",
+          "hook": "Missed an ₹1,800 EMI by 31 days? Here is the exact timeline of how a 780 score drops to 715, and the 90-day recovery protocol.",
+          "format": "Carousel",
+          "contentPillar": "Educational Financial Literacy",
+          "viralPotentialScore": 89,
+          "auditRationale": "Fixes engagement drops on carousel content by introducing tactical diagnostic tables, sequential DPD (Days Past Due) mechanics, and a clear step-by-step resolution path that encourages high bookmarks.",
+          "angleOptions": [
+            "DPD Timeline Breakdown: 1-30 days grace window vs. 31-60 days formal credit bureau reporting.",
+            "Score Rebound Model: The exact mathematical actions required to regain 40+ points over two billing cycles.",
+            "The Autodebit Checklist: Setting up e-NACH mandate safeguards to prevent accidental reporting drops."
+          ]
+        },
+        {
+          "title": "Prepay Personal Loan vs. Invest in Mutual Funds: The Post-Tax ROI Decision Tree",
+          "hook": "Prepaying an 11% personal loan mathematically beats a 12% equity fund return on a post-tax, risk-adjusted basis. Let's run the formula.",
+          "format": "Reel",
+          "contentPillar": "Educational Financial Literacy",
+          "viralPotentialScore": 93,
+          "auditRationale": "Tackles audit-identified audience fatigue with generic investment tips. Delivers rigorous net-return comparison (accounting for 12.5% LTCG tax vs. guaranteed, risk-free interest debt elimination) backed by clear legal assumptions.",
+          "angleOptions": [
+            "The Risk-Free Yield Formula: Why eliminating 11.5% fixed debt out-competes volatile asset classes.",
+            "The 50/50 Compromise Matrix: Splitting festival bonuses between debt amortization and SIPs.",
+            "Debt-Snowball Amortization: Prepaying highest-cost consumer debt first to unlock monthly cash flow."
+          ]
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 44959,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-09-17T08:34:05.277Z"
+    },
+    {
+      "id": "gen-1789633972003-nrsw5",
+      "task": "topic_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "topic-prompt-v8",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (topic_generation) - Skill v4",
+      "inputContext": {
+        "account": "bajajfinance",
+        "skillVersion": "v4"
+      },
+      "output": [
+        {
+          "title": "The Math Behind EMI Amortization",
+          "hook": "Stop guessing your loan balance—here is the exact math of how your EMI is split.",
+          "format": "Reel",
+          "contentPillar": "Educational Financial Literacy",
+          "viralPotentialScore": 94,
+          "auditRationale": "Addresses the need for mathematical rigor by showing the amortization schedule visual, ensuring transparency in line with v4 skills.",
+          "angleOptions": [
+            "Visual breakdown of principal vs interest",
+            "Why early prepayments reduce total interest",
+            "The impact of tenure on total cost"
+          ]
+        },
+        {
+          "title": "Spot the Scam: Digital Lending Red Flags",
+          "hook": "If the loan app asks for this, delete it immediately.",
+          "format": "Carousel",
+          "contentPillar": "Fraud Awareness & Consumer Safety",
+          "viralPotentialScore": 98,
+          "auditRationale": "High-utility content addressing consumer safety gaps; uses swipe triggers for retention on slides 2-8.",
+          "angleOptions": [
+            "Common phishing indicators",
+            "Verifying official Bajaj Finance communication",
+            "Safe practices for digital documentation"
+          ]
+        },
+        {
+          "title": "The Rule of 72 for Passive Wealth",
+          "hook": "How fast will your savings double? Use this 5-second mental math trick.",
+          "format": "Reel",
+          "contentPillar": "Educational Financial Literacy",
+          "viralPotentialScore": 89,
+          "auditRationale": "Provides verifiable arithmetic to simplify complex compounding, reinforcing the brand's position as a financial educator.",
+          "angleOptions": [
+            "Calculating doubling time based on interest",
+            "Comparing savings vs. inflation",
+            "Practical application of compounding"
+          ]
+        },
+        {
+          "title": "EMI Card Usage: The Tactical Guide",
+          "hook": "Are you using your EMI card correctly? 4 steps to maximize your buying power.",
+          "format": "Carousel",
+          "contentPillar": "Product Transparency & How-Tos",
+          "viralPotentialScore": 85,
+          "auditRationale": "Directly tackles the product education gap by providing actionable, low-friction usage steps for the core product.",
+          "angleOptions": [
+            "Managing multiple active loans",
+            "Setting up autopay correctly",
+            "Avoiding late payment charges"
+          ]
+        },
+        {
+          "title": "Credit Score Factors Breakdown",
+          "hook": "Your credit score isn't just about paying on time. Here is the hidden weight of your report.",
+          "format": "Carousel",
+          "contentPillar": "Educational Financial Literacy",
+          "viralPotentialScore": 92,
+          "auditRationale": "Uses a quantitative approach to explain credit scoring, providing users with the 'why' behind financial eligibility.",
+          "angleOptions": [
+            "The 30% credit utilization rule",
+            "How credit age impacts your score",
+            "The danger of frequent loan inquiries"
+          ]
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 11412,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-09-17T08:33:03.416Z"
+    },
+    {
+      "id": "gen-1789633452796-p95ju",
+      "task": "topic_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "topic-prompt-v8",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (topic_generation) - Skill v4",
+      "inputContext": {
+        "account": "bajajfinance",
+        "skillVersion": "v4"
+      },
+      "output": [
+        {
+          "title": "The Math Behind Your EMI Amortization",
+          "hook": "Stop guessing your interest payout. Here is the exact math behind your monthly EMI.",
+          "format": "Reel",
+          "contentPillar": "Educational Financial Literacy",
+          "viralPotentialScore": 92,
+          "auditRationale": "Addresses the need for mathematical rigor; breaks down the amortization formula to improve transparency and trust.",
+          "angleOptions": [
+            "Visualizing interest vs principal split",
+            "How EMI tenure affects total cost",
+            "Why early prepayments lower total interest"
+          ]
+        },
+        {
+          "title": "Spotting Digital Loan Fraud in 3 Steps",
+          "hook": "Does that loan message look suspicious? Check these 3 red flags before you click.",
+          "format": "Carousel",
+          "contentPillar": "Fraud Awareness & Consumer Safety",
+          "viralPotentialScore": 95,
+          "auditRationale": "Directly mitigates consumer safety gaps by providing a tactical checklist to identify phishing, adhering to the 'Save this for later' CTA rule.",
+          "angleOptions": [
+            "Identifying fake Bajaj Finance domains",
+            "Common social engineering tactics in NBFCs",
+            "How to verify official communication"
+          ]
+        },
+        {
+          "title": "EMI Card vs Personal Loan: A Quantitative Comparison",
+          "hook": "Need cash or a new gadget? The math favors different tools for each. Here is why.",
+          "format": "Carousel",
+          "contentPillar": "Product Transparency & How-Tos",
+          "viralPotentialScore": 88,
+          "auditRationale": "Uses comparative arithmetic to help users choose the right credit product, reducing friction in the customer journey.",
+          "angleOptions": [
+            "Total cost of ownership comparison",
+            "Liquidity impact assessment",
+            "Repayment flexibility analysis"
+          ]
+        },
+        {
+          "title": "The Power of Compounding in Your Emergency Fund",
+          "hook": "Your savings account is losing value to inflation. Here is the math on how to fix it.",
+          "format": "Reel",
+          "contentPillar": "Educational Financial Literacy",
+          "viralPotentialScore": 85,
+          "auditRationale": "Moves away from generic motivation by grounding the content in inflation-adjusted mathematical projections.",
+          "angleOptions": [
+            "Compounding intervals explained",
+            "Inflation vs Savings yield calculation",
+            "Building a 6-month safety net formula"
+          ]
+        },
+        {
+          "title": "How to Read Your Loan Statement Like a Pro",
+          "hook": "Tired of confusing loan statements? Here is the 5-minute guide to deciphering your charges.",
+          "format": "Carousel",
+          "contentPillar": "Product Transparency & How-Tos",
+          "viralPotentialScore": 94,
+          "auditRationale": "Promotes radical transparency by educating customers on statement components, directly addressing user confusion found in the audit.",
+          "angleOptions": [
+            "Identifying processing fees",
+            "Tracking EMI payment status",
+            "Understanding late fee calculations"
+          ]
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 103111,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-09-17T08:25:55.907Z"
+    },
     {
       "id": "gen-1789628097232-q0r2g",
       "task": "instagram_audit",

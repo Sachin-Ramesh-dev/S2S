@@ -703,6 +703,7 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
             onSendToTopics={(opportunityTitle) => handleGenerateTopics(opportunityTitle)}
             onNavigateToTopics={() => setActiveTab('topics')}
             isRunningAudit={isRunningAudit}
+            isGeneratingTopics={isGeneratingTopics}
           />
         )}
 

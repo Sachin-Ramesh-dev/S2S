@@ -37,6 +37,7 @@ interface InstagramAuditViewProps {
   onSendToTopics: (opportunityTitle: string) => void;
   onNavigateToTopics?: () => void;
   isRunningAudit: boolean;
+  isGeneratingTopics?: boolean;
 }
 
 export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
@@ -46,7 +47,8 @@ export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
   onRunAudit,
   onSendToTopics,
   onNavigateToTopics,
-  isRunningAudit
+  isRunningAudit,
+  isGeneratingTopics = false
 }) => {
   const [handleInput, setHandleInput] = useState(`@${account.username}`);
   const [selectedAuditId, setSelectedAuditId] = useState<string>(audits[0]?.id || '');
@@ -55,6 +57,29 @@ export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [syncedRules, setSyncedRules] = useState<Record<string, boolean>>({});
   const [syncToast, setSyncToast] = useState<string | null>(null);
+
+  // Progressive loading steps for Gemini topic generation
+  const [topicStepIndex, setTopicStepIndex] = useState(0);
+  const [topicProgressPct, setTopicProgressPct] = useState(25);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isGeneratingTopics) {
+      setTopicStepIndex(0);
+      setTopicProgressPct(25);
+      interval = setInterval(() => {
+        setTopicStepIndex((prev) => {
+          const next = prev < 2 ? prev + 1 : prev;
+          setTopicProgressPct(next === 1 ? 65 : 92);
+          return next;
+        });
+      }, 1500);
+    } else {
+      setTopicStepIndex(0);
+      setTopicProgressPct(25);
+    }
+    return () => clearInterval(interval);
+  }, [isGeneratingTopics]);
 
   // Sync handleInput if account changes
   useEffect(() => {
@@ -100,12 +125,11 @@ export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
   };
 
   const handleGenerateTopicsFromAudit = () => {
+    if (isGeneratingTopics) return;
     const opps = currentAudit?.topic_opportunities || currentAudit?.opportunities || [];
-    if (opps.length > 0) {
-      onSendToTopics(opps[0]);
-    } else if (onNavigateToTopics) {
-      onNavigateToTopics();
-    }
+    const fallbackAngle = currentAudit?.content_gaps?.[0] || 'Focus on practical financial mathematics, EMI amortization, and low-friction CTAs';
+    const angleToUse = opps.length > 0 ? opps[0] : fallbackAngle;
+    onSendToTopics(angleToUse);
   };
 
   // Download Markdown Report File
@@ -724,6 +748,57 @@ ${(audit.recommendations || []).map(r => `- [Priority: ${r.priority || 'High'}] 
             </div>
           </div>
 
+          {/* Active Generation Live Tracker Banner */}
+          {isGeneratingTopics && (
+            <div className="bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-amber-50 border-2 border-orange-400 rounded-2xl p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-300">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="relative flex items-center justify-center">
+                    <span className="w-4 h-4 rounded-full bg-orange-500 animate-ping absolute opacity-75"></span>
+                    <span className="w-3 h-3 rounded-full bg-orange-600 relative"></span>
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-orange-900 uppercase tracking-wider block">
+                      Gemini Content Planner In Progress
+                    </span>
+                    <span className="text-xs text-orange-700">
+                      Transforming audit gaps into structured viral topics with active guardrails
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 bg-orange-100 text-orange-800 px-3 py-1.5 rounded-lg text-xs font-semibold">
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-orange-600" />
+                  <span>Generating {topicProgressPct}%</span>
+                </div>
+              </div>
+
+              {/* Step Progress Bar */}
+              <div className="space-y-2">
+                <div className="w-full bg-orange-200/50 rounded-full h-2.5 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 h-2.5 transition-all duration-700 ease-out rounded-full shadow-xs"
+                    style={{ width: `${topicProgressPct}%` }}
+                  ></div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-xs">
+                  <div className={`p-2.5 rounded-xl border transition-all flex items-center gap-2 ${topicStepIndex >= 0 ? 'bg-white border-orange-300 text-orange-950 shadow-xs font-semibold' : 'bg-gray-50 border-gray-200 text-gray-400'}`}>
+                    <span className="w-5 h-5 rounded-full bg-orange-100 text-orange-700 text-[11px] font-bold flex items-center justify-center shrink-0">1</span>
+                    <span>Extracting Audit Gaps & Math Deficits</span>
+                  </div>
+                  <div className={`p-2.5 rounded-xl border transition-all flex items-center gap-2 ${topicStepIndex >= 1 ? 'bg-white border-orange-300 text-orange-950 shadow-xs font-semibold' : 'bg-gray-50 border-gray-200 text-gray-400'}`}>
+                    <span className="w-5 h-5 rounded-full bg-orange-100 text-orange-700 text-[11px] font-bold flex items-center justify-center shrink-0">2</span>
+                    <span>Enforcing 8 Active Skill Rules</span>
+                  </div>
+                  <div className={`p-2.5 rounded-xl border transition-all flex items-center gap-2 ${topicStepIndex >= 2 ? 'bg-white border-orange-300 text-orange-950 shadow-xs font-semibold' : 'bg-gray-50 border-gray-200 text-gray-400'}`}>
+                    <span className="w-5 h-5 rounded-full bg-orange-100 text-orange-700 text-[11px] font-bold flex items-center justify-center shrink-0">3</span>
+                    <span>Crafting Viral Hooks & Formats</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Section F: The Next Obvious Step */}
           <div className="bg-gradient-to-r from-orange-600 to-amber-600 rounded-2xl p-6 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -742,11 +817,21 @@ ${(audit.recommendations || []).map(r => `- [Priority: ${r.priority || 'High'}] 
             <button
               id="btn-generate-topics-from-audit"
               type="button"
+              disabled={isGeneratingTopics}
               onClick={handleGenerateTopicsFromAudit}
-              className="px-6 py-3 bg-white hover:bg-orange-50 text-orange-700 font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all shrink-0 cursor-pointer"
+              className="px-6 py-3 bg-white hover:bg-orange-50 text-orange-700 font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all shrink-0 cursor-pointer disabled:opacity-85 disabled:cursor-not-allowed"
             >
-              <span>Generate Content Topics from this Audit</span>
-              <ArrowRight className="w-4 h-4" />
+              {isGeneratingTopics ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin text-orange-600" />
+                  <span>Synthesizing Topics ({topicProgressPct}%)...</span>
+                </>
+              ) : (
+                <>
+                  <span>Generate Content Topics from this Audit</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
             </button>
           </div>
         </div>

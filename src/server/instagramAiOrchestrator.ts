@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import {
   InstagramAccount,
   InstagramAuditRecord,
@@ -911,7 +913,7 @@ If you found value in this carousel:
     throw lastError || new Error('All Gemini candidate models were unavailable.');
   }
 
-  // Real Manus AI API v2 Adapter
+  // Real Manus AI API v2 Adapter matching the user's n8n workflow
   private async callManus(
     apiKey: string | undefined,
     model: string,
@@ -920,45 +922,273 @@ If you found value in this carousel:
     ctx: ExecutionContext
   ): Promise<any> {
     const effectiveKey = apiKey || process.env.MANUS_API_KEY;
+    const projectId = process.env.MANUS_PROJECT_ID || this.config.providers.manus.project || 'UCXhiJSSCHcueJmRs5NMPb';
     const baseUrl = this.config.providers.manus.baseUrl || 'https://api.manus.ai';
 
-    // If a valid Manus key is supplied, make real HTTP call to Manus v2 API
-    if (effectiveKey && effectiveKey.length > 5 && !effectiveKey.includes('***')) {
-      try {
-        const res = await fetch(`${baseUrl}/v2/tasks`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-manus-api-key': effectiveKey
-          },
-          body: JSON.stringify({
-            prompt,
-            agent: this.config.providers.manus.defaultAgent || 'research',
-            project_id: this.config.providers.manus.project,
-            skill_id: this.config.providers.manus.skill
-          }),
-          signal: AbortSignal.timeout(this.config.providers.manus.timeoutMs || 30000)
-        });
-
-        if (res.ok) {
-          const data: any = await res.json();
-          if (data && (data.result || data.output)) {
-            const rawOutput = data.result || data.output;
-            if (typeof rawOutput === 'object') return rawOutput;
-            return JSON.parse(rawOutput);
-          }
-        } else {
-          console.warn(`Manus API returned status ${res.status}: ${res.statusText}.`);
-        }
-      } catch (err: any) {
-        console.warn(`Manus API fetch error: ${err.message}.`);
-      }
+    if (!effectiveKey || effectiveKey.length < 5 || effectiveKey.includes('***')) {
+      console.warn('[Manus AI] Valid API key not found. Using contextual fallback.');
+      return this.generateManusAuditFallback(ctx);
     }
 
-    // If Manus API key is pending or returns remote research output, we construct
-    // a deep, contextual, validated Instagram Page Audit structured response
-    // reflecting the exact account context, active skill version, and audit mode.
-    return this.generateManusAuditFallback(ctx);
+    try {
+      console.log(`[Manus AI] Preparing Manus v2 task for @${ctx.account.username}...`);
+
+      // 1. Format Skill Rules from active skill (matching the SQL query from n8n)
+      const skillRules = (ctx.activeSkill?.rules && ctx.activeSkill.rules.length > 0)
+        ? ctx.activeSkill.rules.map((r: string) => `• ${r}`).join('\n')
+        : '• Follow standard brand guidelines, high-converting hooks, and zero conversational pleasantries.';
+
+      const nowFormatted = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      const taskTitle = `Instagram Audit & T-2 Performance Diagnostic - @${ctx.account.username} - ${nowFormatted}`;
+
+      // 2. Build 2-part prompt matching n8n specification
+      const promptText = `CRITICAL REQUIREMENT: Deliver a 2-part report containing both sections below for Instagram account @${ctx.account.username} (${ctx.account.displayName}). Do not omit either section.
+
+# SECTION 1: T-2 (48 HOURS AGO) POST DIAGNOSTIC
+- Filter and inspect posts published exactly 48 hours ago (T-2) on Instagram (@${ctx.account.username}).
+- For any T-2 post found, provide this diagnostic using these exact headers:
+  ### 1. What Worked (Hooks, format, early reach)
+  ### 2. What Did Not Work (Drop-offs, weak retention, low comments)
+  ### 3. Root-Cause Analysis (Why lift or drop occurred)
+  ### 4. Strategic Adjustments (2-3 direct actionable pivots)
+- If no posts were published on T-2, explicitly state: 'NO_T2_POSTS_FOUND'.
+
+# SECTION 2: 20-POST ACCOUNT AUDIT & STRATEGY SCORECARD
+- Evaluate recent 20 posts against our brand strategy rules:
+${skillRules}
+
+BRAND CONTEXT:
+- Category & Niche: ${ctx.account.category} | ${ctx.account.niche}
+- Bio: "${ctx.account.bio}"
+- Historical Engagement Rate: ${ctx.account.engagementRate}% | Avg Reel Views: ${ctx.account.averageReelViews.toLocaleString()}
+
+COMPETITOR BENCHMARK DATA:
+${(ctx.account.competitors || []).map((c: any) => `- @${c.username} (${c.followers.toLocaleString()} followers, ${c.engagementRate}% ER): ${c.note}`).join('\n')}
+
+- Audit format mix, compliance disclaimers, fraud-awareness lane, hooks, and jargon.
+- Provide an executive conclusion, 6 numeric scores out of 100 (Profile, Content, Consistency, Engagement, Positioning, Overall), and scored recommendations table.
+
+Save the combined output as a downloadable markdown report.`;
+
+      // 3. Call https://api.manus.ai/v2/task.create
+      console.log(`[Manus AI] Calling https://api.manus.ai/v2/task.create for @${ctx.account.username}...`);
+      const createRes = await fetch(`${baseUrl}/v2/task.create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-manus-api-key': effectiveKey
+        },
+        body: JSON.stringify({
+          title: taskTitle,
+          message: {
+            content: [
+              {
+                type: 'text',
+                text: promptText
+              }
+            ]
+          },
+          project_id: projectId,
+          interactive_mode: false,
+          hide_in_task_list: false,
+          share_visibility: 'public',
+          agent_profile: 'manus-1.6-lite'
+        })
+      });
+
+      if (!createRes.ok) {
+        const errText = await createRes.text();
+        throw new Error(`Manus API task.create failed (${createRes.status}): ${errText}`);
+      }
+
+      const createData: any = await createRes.json();
+      const taskId = createData.task_id || createData.data?.task_id || createData.id;
+      const taskUrl = createData.task_url || createData.share_url || `https://manus.im/app/${taskId}`;
+      console.log(`[Manus AI] Task created successfully. Task ID: ${taskId}, Task URL: ${taskUrl}`);
+
+      if (!taskId) {
+        throw new Error(`Manus API did not return a valid task_id: ${JSON.stringify(createData)}`);
+      }
+
+      // 4. Polling Loop: GET /v2/task.listMessages?task_id=... until status_update.agent_status === 'stopped'
+      const maxAttempts = 60; // 60 attempts * 10 seconds = 10 minutes maximum
+      let completedMessages: any[] | null = null;
+
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        await new Promise(r => setTimeout(r, 10000));
+
+        try {
+          const listRes = await fetch(`${baseUrl}/v2/task.listMessages?task_id=${encodeURIComponent(taskId)}`, {
+            method: 'GET',
+            headers: {
+              'x-manus-api-key': effectiveKey
+            }
+          });
+
+          if (!listRes.ok) {
+            console.warn(`[Manus AI] listMessages returned HTTP ${listRes.status}, retrying (attempt ${attempt}/${maxAttempts})...`);
+            continue;
+          }
+
+          const listData: any = await listRes.json();
+          const messages: any[] = listData.messages || listData.data?.messages || [];
+
+          const statusMsg = messages.find((m: any) => m.type === 'status_update');
+          const agentStatus = statusMsg?.status_update?.agent_status;
+          const brief = statusMsg?.status_update?.brief || '';
+          console.log(`[Manus AI] Poll attempt ${attempt}/${maxAttempts} - Task: ${taskId} - Status: "${agentStatus || 'running'}" (${brief})`);
+
+          if (agentStatus === 'stopped' || agentStatus === 'completed' || agentStatus === 'finished') {
+            completedMessages = messages;
+            break;
+          }
+        } catch (pollErr: any) {
+          console.warn(`[Manus AI] Network error during poll attempt ${attempt}:`, pollErr.message);
+        }
+      }
+
+      if (!completedMessages) {
+        throw new Error(`Manus AI task ${taskId} timed out waiting for completion.`);
+      }
+
+      // 5. Extract output from assistant_message and attachment
+      const assistantMsg = completedMessages.find((m: any) => m.type === 'assistant_message' && m.assistant_message?.content);
+      let rawReportText = assistantMsg?.assistant_message?.content || '';
+
+      const attachmentMsg = completedMessages.slice().reverse().find((m: any) => m.assistant_message?.attachments?.length);
+      const attachmentUrl = attachmentMsg?.assistant_message?.attachments?.[0]?.url;
+
+      if (attachmentUrl) {
+        try {
+          console.log(`[Manus AI] Fetching downloadable report from attachment: ${attachmentUrl}`);
+          const attachRes = await fetch(attachmentUrl);
+          if (attachRes.ok) {
+            const attachContent = await attachRes.text();
+            if (attachContent && attachContent.length > 50) {
+              rawReportText = attachContent;
+            }
+          }
+        } catch (attErr: any) {
+          console.warn('[Manus AI] Failed to fetch attachment file directly:', attErr.message);
+        }
+      }
+
+      if (!rawReportText) {
+        const lastBrief = completedMessages.slice().reverse().find((m: any) => m.status_update?.brief)?.status_update?.brief;
+        rawReportText = lastBrief || 'Manus AI audit completed.';
+      }
+
+      // 6. Save raw markdown report to disk in data/audits/
+      try {
+        const auditsDir = path.join(process.cwd(), 'data', 'audits');
+        if (!fs.existsSync(auditsDir)) {
+          fs.mkdirSync(auditsDir, { recursive: true });
+        }
+        const auditFilename = `${ctx.account.username}_audit_${Date.now()}.md`;
+        fs.writeFileSync(path.join(auditsDir, auditFilename), rawReportText, 'utf8');
+        console.log(`[Manus AI] Successfully saved raw audit report to ${path.join(auditsDir, auditFilename)}`);
+      } catch (fsErr: any) {
+        console.warn('[Manus AI] Could not save audit report to data/audits:', fsErr.message);
+      }
+
+      // 7. Structure with Gemini to populate dashboard
+      return await this.structureManusReportWithGemini(rawReportText, ctx, taskUrl, attachmentUrl);
+
+    } catch (err: any) {
+      console.error('[Manus AI] Execution error:', err);
+      if (this.config.fallbacks.autoFallbackEnabled) {
+        console.log('[Manus AI] Falling back to contextual audit generator...');
+        return this.generateManusAuditFallback(ctx);
+      }
+      throw err;
+    }
+  }
+
+  // Parses raw Manus AI markdown report into the structured Dashboard model
+  private async structureManusReportWithGemini(
+    rawReportText: string,
+    ctx: ExecutionContext,
+    taskUrl?: string,
+    attachmentUrl?: string
+  ): Promise<any> {
+    const geminiKey = process.env.GEMINI_API_KEY || this.getApiKey('gemini');
+    if (!geminiKey) {
+      return this.parseManusReportLocally(rawReportText, ctx, taskUrl, attachmentUrl);
+    }
+
+    try {
+      const { GoogleGenAI } = await import('@google/genai');
+      const ai = new GoogleGenAI({
+        apiKey: geminiKey,
+        httpOptions: { headers: { 'User-Agent': GEMINI_USER_AGENT } }
+      });
+
+      const parsePrompt = `You are an expert Instagram analytics data parser. Parse the following raw Manus AI Instagram Page Audit Report for @${ctx.account.username} into a STRICT JSON object for the dashboard scorecard.
+
+### RAW REPORT FROM MANUS AI:
+${rawReportText}
+
+### MANDATORY OUTPUT SCHEMA:
+Return ONLY a valid JSON object matching these exact keys:
+{
+  "profile_score": number (0-100),
+  "content_score": number (0-100),
+  "consistency_score": number (0-100),
+  "engagement_score": number (0-100),
+  "positioning_score": number (0-100),
+  "overall_score": number (0-100),
+  "whatsWorking": [
+    { "title": "Concise Driver Title", "detail": "Evidence & metrics", "reason": "Why it works" }
+  ],
+  "whatsNotWorking": [
+    { "title": "Defect Title", "detail": "Observed drop-off", "reason": "Why it failed", "guardrailRule": "Actionable mandate starting with 'Never...' or 'Always...'" }
+  ],
+  "strengths": ["string", "string"],
+  "weaknesses": ["string", "string"],
+  "critical_issues": ["string"],
+  "content_gaps": ["string", "string", "string"],
+  "topic_opportunities": ["string", "string", "string"],
+  "recommendations": [
+    { "text": "Specific recommendation", "priority": "high", "completed": false }
+  ]
+}`;
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.8-flash',
+        contents: parsePrompt,
+        config: {
+          responseMimeType: 'application/json',
+          temperature: 0.2
+        }
+      });
+
+      const rawJson = response.text || '{}';
+      const cleanJson = rawJson.replace(/```json/g, '').replace(/```/g, '').trim();
+      const parsed = JSON.parse(cleanJson);
+
+      parsed.markdownReport = rawReportText;
+      parsed.taskUrl = taskUrl;
+      parsed.shareUrl = taskUrl;
+      parsed.attachmentUrl = attachmentUrl;
+      return parsed;
+    } catch (parseErr: any) {
+      console.warn('[Manus AI] Gemini structuring encountered an issue, using local parser:', parseErr.message);
+      return this.parseManusReportLocally(rawReportText, ctx, taskUrl, attachmentUrl);
+    }
+  }
+
+  private parseManusReportLocally(
+    rawReportText: string,
+    ctx: ExecutionContext,
+    taskUrl?: string,
+    attachmentUrl?: string
+  ): any {
+    const base = this.generateManusAuditFallback(ctx);
+    base.markdownReport = rawReportText;
+    base.taskUrl = taskUrl;
+    base.shareUrl = taskUrl;
+    base.attachmentUrl = attachmentUrl;
+    return base;
   }
 
   // Real OpenAI Adapter

@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
@@ -2336,9 +2339,10 @@ async function start() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`NodeFlow Server running on http://0.0.0.0:${PORT}`);
   });
+  server.setTimeout(10 * 60 * 1000);
 }
 
 start();

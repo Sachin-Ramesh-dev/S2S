@@ -95,6 +95,9 @@ export interface InstagramAuditRecord {
   whatsNotWorking?: Array<{ title: string; detail: string; reason: string; guardrailRule: string; addedToSkills?: boolean }>;
   markdownReport?: string;
   rawResponse?: string;
+  taskUrl?: string;
+  shareUrl?: string;
+  attachmentUrl?: string;
 }
 
 export interface TeamMember {

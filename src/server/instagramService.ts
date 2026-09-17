@@ -1567,7 +1567,10 @@ export class InstagramService {
       recommendations: result.recommendations || [],
       content_pillar_analysis: result.content_pillar_analysis || [],
       competitor_observations: result.competitor_observations || [],
-      changes_since_previous_audit: result.changes_since_previous_audit || []
+      changes_since_previous_audit: result.changes_since_previous_audit || [],
+      taskUrl: result.taskUrl,
+      shareUrl: result.shareUrl,
+      attachmentUrl: result.attachmentUrl
     };
 
     // Self-Learning Engine: Automatically ingest learned guardrails into activeSkill

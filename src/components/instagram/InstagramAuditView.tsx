@@ -239,6 +239,20 @@ ${(audit.recommendations || []).map(r => `- [Priority: ${r.priority || 'High'}] 
                   <Download className="w-3.5 h-3.5 text-emerald-700" />
                   <span>Download .MD</span>
                 </button>
+
+                {(currentAudit.taskUrl || currentAudit.shareUrl) && (
+                  <a
+                    id="btn-live-manus-session"
+                    href={currentAudit.taskUrl || currentAudit.shareUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-2 bg-purple-50 hover:bg-purple-100 text-purple-800 font-semibold text-xs rounded-lg border border-purple-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+                    title="Open live Manus AI browser session"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5 text-purple-700" />
+                    <span>Live Manus Session</span>
+                  </a>
+                )}
               </div>
             )}
 
@@ -750,6 +764,18 @@ ${(audit.recommendations || []).map(r => `- [Priority: ${r.priority || 'High'}] 
                 </h3>
               </div>
               <div className="flex items-center gap-2">
+                {(currentAudit.taskUrl || currentAudit.shareUrl) && (
+                  <a
+                    href={currentAudit.taskUrl || currentAudit.shareUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    title="Open live Manus session in browser"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Live Session</span>
+                  </a>
+                )}
                 <button
                   type="button"
                   onClick={handleDownloadMarkdown}

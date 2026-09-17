@@ -1797,23 +1797,22 @@
         "#FinSmart"
       ],
       "callToAction": "Save this video right now for your next loan review!",
-      "status": "completed",
+      "status": "ready",
       "assignedWriterId": "team-2",
       "assignedWriterName": "Priya Sharma",
       "assignedWriterEmail": "priya.s@contentlab.io",
-      "score": 86,
+      "score": 91,
       "scoreBreakdown": {
         "hook": 18,
-        "clarity": 18,
-        "engagement": 17,
-        "flow": 17,
-        "cta": 8,
-        "instagramFit": 8
+        "clarity": 19,
+        "engagement": 18,
+        "flow": 18,
+        "cta": 9,
+        "instagramFit": 9
       },
       "scoreSuggestions": [
-        "Visual demonstration in scene 2 is clear and high-converting.",
-        "Strong CTA alignment with on-screen text.",
-        "Consider testing a 3-second teaser cut for Stories reposting."
+        "Script pacing is strong. Verify on-screen text contrast during production.",
+        "Ensure visual cut occurs every 2.5–3 seconds for optimal watch time."
       ],
       "source": "AI + Manual",
       "topicTitle": "The Prepayment Hack: Why 5% Extra Saves ₹1.2 Lakh",
@@ -1852,7 +1851,7 @@
       "generationId": "gen-script-001",
       "skillVersion": "v4",
       "createdAt": "2026-09-09T12:00:00.000Z",
-      "updatedAt": "2026-09-09T14:25:00.000Z"
+      "updatedAt": "2026-09-17T14:11:25.291Z"
     },
     {
       "id": "script-202",
@@ -2018,7 +2017,7 @@
         "#SaveTaxes"
       ],
       "callToAction": "Bookmark this carousel 📑 for your March ITR filing!",
-      "status": "draft",
+      "status": "completed",
       "assignedWriterId": "team-2",
       "assignedWriterName": "Priya Sharma",
       "assignedWriterEmail": "priya.s@contentlab.io",
@@ -2027,7 +2026,8 @@
       "generationId": "gen-script-004",
       "skillVersion": "v4",
       "createdAt": "2026-09-12T09:00:00.000Z",
-      "updatedAt": "2026-09-12T09:00:00.000Z"
+      "updatedAt": "2026-09-17T11:38:08.226Z",
+      "userEdits": []
     },
     {
       "id": "script-205",
@@ -2059,7 +2059,8 @@
       "generationId": "gen-script-005",
       "skillVersion": "v4",
       "createdAt": "2026-09-12T16:00:00.000Z",
-      "updatedAt": "2026-09-12T16:00:00.000Z"
+      "updatedAt": "2026-09-17T11:37:52.997Z",
+      "userEdits": []
     },
     {
       "id": "script-206",
@@ -3109,5 +3110,14 @@
     "fromEmail": "creator-studio@agency.io",
     "agencyEmail": "production@mediaagency.com",
     "isConfigured": false
+  },
+  "teamsConfig": {
+    "webhookUrl": "",
+    "enabled": true,
+    "autoSendTopics": false,
+    "autoSendScripts": true,
+    "lastTestedAt": null,
+    "lastTestStatus": null,
+    "lastTestMessage": ""
   }
 }

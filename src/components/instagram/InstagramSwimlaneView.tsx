@@ -28,6 +28,7 @@ import {
   ArrowDown
 } from 'lucide-react';
 import { ScriptItem, TeamMember } from '../../types/instagram';
+import { useTheme } from '../../context/ThemeContext';
 
 export type SwimlaneStage = 'needs_writing' | 'draft' | 'in_review' | 'ready_to_record' | 'completed';
 
@@ -45,7 +46,7 @@ export const SWIMLANE_STAGES: SwimlaneStageConfig[] = [
     key: 'needs_writing',
     label: 'Needs Writing',
     sublabel: 'Backlog / Topic ready',
-    badgeColor: 'bg-slate-100 text-slate-700 border-slate-200',
+    badgeColor: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
     borderAccent: 'border-slate-300',
     headerBg: 'bg-slate-50'
   },
@@ -53,7 +54,7 @@ export const SWIMLANE_STAGES: SwimlaneStageConfig[] = [
     key: 'draft',
     label: 'Drafting',
     sublabel: 'Writer developing hook & scenes',
-    badgeColor: 'bg-blue-100 text-blue-800 border-blue-200',
+    badgeColor: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800/60',
     borderAccent: 'border-blue-400',
     headerBg: 'bg-blue-50/60'
   },
@@ -61,7 +62,7 @@ export const SWIMLANE_STAGES: SwimlaneStageConfig[] = [
     key: 'in_review',
     label: 'In Review',
     sublabel: 'Editorial & AI scoring polish',
-    badgeColor: 'bg-amber-100 text-amber-900 border-amber-200',
+    badgeColor: 'bg-amber-100 text-amber-900 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/60',
     borderAccent: 'border-amber-400',
     headerBg: 'bg-amber-50/60'
   },
@@ -69,7 +70,7 @@ export const SWIMLANE_STAGES: SwimlaneStageConfig[] = [
     key: 'ready_to_record',
     label: 'Ready to Record',
     sublabel: 'Approved script ready for creator',
-    badgeColor: 'bg-purple-100 text-purple-900 border-purple-200',
+    badgeColor: 'bg-purple-100 text-purple-900 border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800/60',
     borderAccent: 'border-purple-400',
     headerBg: 'bg-purple-50/60'
   },
@@ -77,7 +78,7 @@ export const SWIMLANE_STAGES: SwimlaneStageConfig[] = [
     key: 'completed',
     label: 'Sent / Completed',
     sublabel: 'Dispatched to agency or scheduled',
-    badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/60',
     borderAccent: 'border-emerald-400',
     headerBg: 'bg-emerald-50/60'
   }
@@ -100,6 +101,9 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
   onAddTeamMember,
   onCreateScript
 }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
   // Filtering & Search
   const [searchQuery, setSearchQuery] = useState('');
   const [formatFilter, setFormatFilter] = useState<'all' | 'Reel' | 'Carousel'>('all');
@@ -352,12 +356,16 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Header Banner & Policy Guardrail */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xs">
+      <div className={`border rounded-2xl p-6 shadow-xs transition-colors ${
+        isDark ? 'bg-[#181820] border-gray-800 text-white' : 'bg-white border-gray-200 text-gray-900'
+      }`}>
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-1.5">
-              <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wide bg-orange-50 text-orange-700 border border-orange-200 flex items-center gap-1.5">
-                <Kanban className="w-3.5 h-3.5 text-orange-600" />
+              <span className={`px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wide border flex items-center gap-1.5 ${
+                isDark ? 'bg-orange-950/60 text-orange-300 border-orange-800/60' : 'bg-orange-50 text-orange-700 border-orange-200'
+              }`}>
+                <Kanban className="w-3.5 h-3.5 text-orange-500" />
                 Script Writer Swimlanes
               </span>
 
@@ -365,54 +373,68 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
               <button
                 type="button"
                 onClick={() => setIsPolicyInfoOpen(!isPolicyInfoOpen)}
-                className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5 hover:bg-emerald-100 transition-colors cursor-pointer"
+                className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold border flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  isDark
+                    ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800/60 hover:bg-emerald-900/60'
+                    : 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                }`}
                 title="View role assignment policy"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
                 <span>Role Policy: Only Script Writers</span>
               </button>
 
               {/* Drag & Drop Pill */}
-              <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-orange-50 text-orange-800 border border-orange-200 flex items-center gap-1.5">
-                <GripVertical className="w-3.5 h-3.5 text-orange-600" />
+              <span className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold border flex items-center gap-1.5 ${
+                isDark ? 'bg-gray-800 text-gray-300 border-gray-700' : 'bg-orange-50 text-orange-800 border-orange-200'
+              }`}>
+                <GripVertical className="w-3.5 h-3.5 text-orange-500" />
                 <span>Drag & Drop Enabled</span>
               </span>
             </div>
 
-            <h1 className="text-xl font-bold text-gray-900 tracking-tight">
+            <h1 className={`text-xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
               Script Production Swimlane Board
             </h1>
-            <p className="text-xs text-gray-500 mt-1 max-w-2xl leading-relaxed">
+            <p className={`text-xs mt-1 max-w-2xl leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
               Horizontal swimlanes organized by assigned Script Writer, tracking content from initial brief through drafting, review, and recording readiness.
             </p>
           </div>
 
           {/* Quick Metrics Cards */}
           <div className="flex items-center gap-2.5 flex-wrap">
-            <div className="px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-center min-w-[90px]">
-              <span className="block text-base font-bold text-gray-900">{totalInFlight}</span>
-              <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Total Scripts</span>
+            <div className={`px-3.5 py-2 border rounded-xl text-center min-w-[90px] ${
+              isDark ? 'bg-[#141419] border-gray-800' : 'bg-gray-50 border-gray-200'
+            }`}>
+              <span className={`block text-base font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{totalInFlight}</span>
+              <span className={`text-[10px] font-medium uppercase tracking-wider ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Total Scripts</span>
             </div>
 
-            <div className="px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-center min-w-[90px]">
-              <span className="block text-base font-bold text-purple-700">{scriptWriters.length}</span>
-              <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Script Writers</span>
+            <div className={`px-3.5 py-2 border rounded-xl text-center min-w-[90px] ${
+              isDark ? 'bg-[#141419] border-gray-800' : 'bg-gray-50 border-gray-200'
+            }`}>
+              <span className="block text-base font-bold text-purple-400">{scriptWriters.length}</span>
+              <span className={`text-[10px] font-medium uppercase tracking-wider ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Script Writers</span>
             </div>
 
             <div
               className={`px-3.5 py-2 border rounded-xl text-center min-w-[90px] ${
-                unassignedCount > 0 ? 'bg-amber-50 border-amber-300 text-amber-900' : 'bg-gray-50 border-gray-200'
+                unassignedCount > 0
+                  ? isDark ? 'bg-amber-950/40 border-amber-800/80 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-900'
+                  : isDark ? 'bg-[#141419] border-gray-800 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
               }`}
             >
-              <span className={`block text-base font-bold ${unassignedCount > 0 ? 'text-amber-700' : 'text-gray-900'}`}>
+              <span className={`block text-base font-bold ${unassignedCount > 0 ? (isDark ? 'text-amber-400' : 'text-amber-700') : (isDark ? 'text-white' : 'text-gray-900')}`}>
                 {unassignedCount}
               </span>
-              <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Unassigned</span>
+              <span className={`text-[10px] font-medium uppercase tracking-wider ${unassignedCount > 0 ? (isDark ? 'text-amber-300' : 'text-amber-800') : (isDark ? 'text-gray-400' : 'text-gray-500')}`}>Unassigned</span>
             </div>
 
-            <div className="px-3.5 py-2 bg-emerald-50 border border-emerald-200 rounded-xl text-center min-w-[90px]">
-              <span className="block text-base font-bold text-emerald-700">{readyOrDoneCount}</span>
-              <span className="text-[10px] font-medium text-emerald-800 uppercase tracking-wider">Ready / Done</span>
+            <div className={`px-3.5 py-2 border rounded-xl text-center min-w-[90px] ${
+              isDark ? 'bg-emerald-950/40 border-emerald-800/60' : 'bg-emerald-50 border-emerald-200'
+            }`}>
+              <span className={`block text-base font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{readyOrDoneCount}</span>
+              <span className={`text-[10px] font-medium uppercase tracking-wider ${isDark ? 'text-emerald-300' : 'text-emerald-800'}`}>Ready / Done</span>
             </div>
 
             {/* Action Buttons */}
@@ -429,10 +451,12 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
               <button
                 type="button"
                 onClick={() => setIsAddWriterModalOpen(true)}
-                className="px-3 py-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 text-xs font-semibold rounded-xl shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                className={`px-3 py-2 border text-xs font-semibold rounded-xl shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  isDark ? 'bg-gray-800 hover:bg-gray-700 text-gray-200 border-gray-700' : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300'
+                }`}
                 title="Add a team member with the Script Writer role"
               >
-                <Users className="w-3.5 h-3.5 text-gray-500" />
+                <Users className={`w-3.5 h-3.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
                 <span>+ Add Writer</span>
               </button>
             </div>
@@ -441,15 +465,17 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
 
         {/* Policy Explanation Banner (Toggled or visible) */}
         {isPolicyInfoOpen && (
-          <div className="mt-4 p-3.5 bg-amber-50/80 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-start gap-2.5 animate-in fade-in duration-150">
-            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <div className={`mt-4 p-3.5 rounded-xl text-xs flex items-start gap-2.5 border animate-in fade-in duration-150 ${
+            isDark ? 'bg-amber-950/40 border-amber-800/60 text-amber-200' : 'bg-amber-50/80 border-amber-200 text-amber-900'
+          }`}>
+            <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
             <div className="space-y-1">
               <p className="font-semibold">Assignment Policy Rules Enforced:</p>
-              <p className="text-amber-800 leading-relaxed">
+              <p className={`leading-relaxed ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>
                 1. Only team members with the explicit <strong>&apos;Script Writer&apos;</strong> role can be assigned to scripts.
                 Account Managers, Content Creators, and general members cannot be assigned to writing lanes.
               </p>
-              <p className="text-amber-800 leading-relaxed">
+              <p className={`leading-relaxed ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>
                 2. Only <strong>scripts</strong> have assigned writers; ideas, topics, and calendar assets inherit or delegate through the script lifecycle.
               </p>
             </div>
@@ -474,7 +500,9 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
         )}
 
         {/* Filter Controls Bar */}
-        <div className="mt-5 pt-4 border-t border-gray-100 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+        <div className={`mt-5 pt-4 border-t flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 ${
+          isDark ? 'border-gray-800' : 'border-gray-100'
+        }`}>
           <div className="flex items-center gap-2.5 flex-1 max-w-md">
             <div className="relative flex-1">
               <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -483,7 +511,9 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search scripts by title, hook, or writer..."
-                className="w-full pl-9 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-500 focus:bg-white"
+                className={`w-full pl-9 pr-3 py-1.5 border rounded-lg text-xs placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors ${
+                  isDark ? 'bg-[#121217] border-gray-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900 focus:bg-white'
+                }`}
               />
             </div>
           </div>
@@ -491,11 +521,13 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
           <div className="flex items-center gap-2.5 flex-wrap">
             {/* Filter by Writer */}
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-medium text-gray-500">Writer:</span>
+              <span className={`text-[11px] font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Writer:</span>
               <select
                 value={writerFilter}
                 onChange={(e) => setWriterFilter(e.target.value)}
-                className="px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs text-gray-800 font-medium focus:outline-none focus:border-orange-500 cursor-pointer"
+                className={`px-2.5 py-1.5 border rounded-lg text-xs font-medium focus:outline-none focus:border-orange-500 cursor-pointer ${
+                  isDark ? 'bg-[#121217] border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-800'
+                }`}
               >
                 <option value="all">All Script Writers ({scriptWriters.length})</option>
                 {scriptWriters.map((w) => (
@@ -509,13 +541,17 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
 
             {/* Filter by Format */}
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-medium text-gray-500">Format:</span>
-              <div className="flex items-center bg-gray-100 p-0.5 rounded-lg border border-gray-200">
+              <span className={`text-[11px] font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Format:</span>
+              <div className={`flex items-center p-0.5 rounded-lg border ${
+                isDark ? 'bg-[#121217] border-gray-700' : 'bg-gray-100 border-gray-200'
+              }`}>
                 <button
                   type="button"
                   onClick={() => setFormatFilter('all')}
                   className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
-                    formatFilter === 'all' ? 'bg-white text-gray-900 shadow-2xs' : 'text-gray-600 hover:text-gray-900'
+                    formatFilter === 'all'
+                      ? isDark ? 'bg-gray-800 text-white shadow-2xs font-semibold' : 'bg-white text-gray-900 shadow-2xs'
+                      : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   All
@@ -524,7 +560,9 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
                   type="button"
                   onClick={() => setFormatFilter('Reel')}
                   className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer flex items-center gap-1 ${
-                    formatFilter === 'Reel' ? 'bg-white text-orange-700 shadow-2xs font-semibold' : 'text-gray-600 hover:text-gray-900'
+                    formatFilter === 'Reel'
+                      ? isDark ? 'bg-orange-950/60 text-orange-300 shadow-2xs font-semibold' : 'bg-white text-orange-700 shadow-2xs font-semibold'
+                      : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   <Video className="w-3 h-3" />
@@ -534,7 +572,9 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
                   type="button"
                   onClick={() => setFormatFilter('Carousel')}
                   className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer flex items-center gap-1 ${
-                    formatFilter === 'Carousel' ? 'bg-white text-blue-700 shadow-2xs font-semibold' : 'text-gray-600 hover:text-gray-900'
+                    formatFilter === 'Carousel'
+                      ? isDark ? 'bg-blue-950/60 text-blue-300 shadow-2xs font-semibold' : 'bg-white text-blue-700 shadow-2xs font-semibold'
+                      : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   <Copy className="w-3 h-3" />
@@ -547,78 +587,98 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
       </div>
 
       {/* Main Swimlane Matrix */}
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-xs overflow-x-auto">
+      <div className={`border rounded-2xl shadow-xs overflow-x-auto ${
+        isDark ? 'bg-[#141419] border-gray-800' : 'bg-white border-gray-200'
+      }`}>
         <div className="min-w-[1100px]">
           {/* Header Row: Stage Columns */}
-          <div className="grid grid-cols-12 border-b border-gray-200 bg-gray-50/80 sticky top-0 z-10">
+          <div className={`grid grid-cols-12 border-b sticky top-0 z-10 ${
+            isDark ? 'border-gray-800 bg-[#181820]' : 'border-gray-200 bg-gray-50/80'
+          }`}>
             {/* Lane Identifier Column Header */}
-            <div className="col-span-3 p-3.5 border-r border-gray-200 flex items-center justify-between">
+            <div className={`col-span-3 p-3.5 border-r flex items-center justify-between ${
+              isDark ? 'border-gray-800' : 'border-gray-200'
+            }`}>
               <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-orange-600" />
-                <span className="text-xs font-bold text-gray-900 uppercase tracking-wider">
+                <Users className="w-4 h-4 text-orange-500" />
+                <span className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   Script Writer Swimlane
                 </span>
               </div>
-              <span className="text-[10px] font-semibold text-gray-500 bg-gray-200/80 px-2 py-0.5 rounded-full">
+              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                isDark ? 'text-gray-400 bg-gray-800' : 'text-gray-500 bg-gray-200/80'
+              }`}>
                 {scriptWriters.length} Writers
               </span>
             </div>
 
             {/* 5 Workflow Stage Column Headers */}
             <div className="col-span-9 grid grid-cols-5">
-              {SWIMLANE_STAGES.map((stage, idx) => (
+              {SWIMLANE_STAGES.map((stage) => (
                 <div
                   key={stage.key}
-                  className={`p-3 border-r border-gray-200 last:border-r-0 ${stage.headerBg}`}
+                  className={`p-3 border-r last:border-r-0 ${
+                    isDark ? 'border-gray-800 bg-[#181820]' : `border-gray-200 ${stage.headerBg}`
+                  }`}
                 >
                   <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-xs font-bold text-gray-900 tracking-tight">
+                    <span className={`text-xs font-bold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
                       {stage.label}
                     </span>
                     <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold border ${stage.badgeColor}`}>
                       {filteredScripts.filter((s) => mapScriptToSwimlaneStage(s.status) === stage.key).length}
                     </span>
                   </div>
-                  <p className="text-[10px] text-gray-500 truncate">{stage.sublabel}</p>
+                  <p className={`text-[10px] truncate ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{stage.sublabel}</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Swimlanes Body: 1 Swimlane Row per Script Writer */}
-          <div className="divide-y divide-gray-200">
-            {/* 1. Unassigned Scripts Swimlane (if any exist, or shown as top priority queue) */}
+          <div className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-200'}`}>
+            {/* 1. Unassigned Scripts Swimlane */}
             {unassignedCount > 0 && (writerFilter === 'all' || writerFilter === 'unassigned') && (
-              <div className="grid grid-cols-12 bg-amber-50/20 hover:bg-amber-50/30 transition-colors">
+              <div className={`grid grid-cols-12 transition-colors ${
+                isDark ? 'bg-amber-950/20 hover:bg-amber-950/30' : 'bg-amber-50/20 hover:bg-amber-50/30'
+              }`}>
                 {/* Lane Header: Unassigned */}
-                <div className="col-span-3 p-4 border-r border-gray-200 flex flex-col justify-between bg-amber-50/40">
+                <div className={`col-span-3 p-4 border-r flex flex-col justify-between ${
+                  isDark ? 'border-gray-800 bg-amber-950/30' : 'border-gray-200 bg-amber-50/40'
+                }`}>
                   <div>
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 font-bold text-xs shadow-2xs">
+                      <div className={`w-8 h-8 rounded-xl border flex items-center justify-center font-bold text-xs shadow-2xs ${
+                        isDark ? 'bg-amber-950/80 border-amber-800 text-amber-300' : 'bg-amber-100 border-amber-300 text-amber-800'
+                      }`}>
                         ⚠️
                       </div>
                       <div>
-                        <h3 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+                        <h3 className={`text-xs font-bold flex items-center gap-1.5 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                           <span>Unassigned Scripts</span>
                         </h3>
-                        <span className="inline-block px-1.5 py-0.2 rounded text-[10px] font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                        <span className={`inline-block px-1.5 py-0.2 rounded text-[10px] font-semibold border ${
+                          isDark ? 'bg-amber-950/80 text-amber-300 border-amber-800/80' : 'bg-amber-100 text-amber-800 border-amber-200'
+                        }`}>
                           Awaiting Script Writer
                         </span>
                       </div>
                     </div>
-                    <p className="text-[11px] text-gray-500 mt-2 leading-relaxed">
+                    <p className={`text-[11px] mt-2 leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                       Scripts needing writer assignment. Click on any card below to assign a designated Script Writer.
                     </p>
                   </div>
 
-                  <div className="mt-3 pt-2 border-t border-amber-200/60 flex items-center justify-between text-[11px] text-amber-900 font-medium">
+                  <div className={`mt-3 pt-2 border-t flex items-center justify-between text-[11px] font-medium ${
+                    isDark ? 'border-amber-900/60 text-amber-300' : 'border-amber-200/60 text-amber-900'
+                  }`}>
                     <span>{filteredScripts.filter((s) => !s.assignedWriterId).length} unassigned scripts</span>
-                    <span className="text-[10px] text-amber-700">Assign below ↓</span>
+                    <span className={`text-[10px] ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>Assign below ↓</span>
                   </div>
                 </div>
 
                 {/* 5 Columns for Unassigned Lane */}
-                <div className="col-span-9 grid grid-cols-5 divide-x divide-gray-200">
+                <div className={`col-span-9 grid grid-cols-5 divide-x ${isDark ? 'divide-gray-800' : 'divide-gray-200'}`}>
                   {SWIMLANE_STAGES.map((stage) => {
                     const laneScripts = filteredScripts.filter(
                       (s) => !s.assignedWriterId && mapScriptToSwimlaneStage(s.status) === stage.key
@@ -649,18 +709,22 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
                           }
                         }}
                         className={`p-2.5 min-h-[160px] flex flex-col gap-2 transition-all ${
-                          isCellOver ? 'bg-orange-100/60 ring-2 ring-inset ring-orange-400' : ''
+                          isCellOver ? (isDark ? 'bg-orange-950/40 ring-2 ring-inset ring-orange-500' : 'bg-orange-100/60 ring-2 ring-inset ring-orange-400') : ''
                         }`}
                       >
                         {isCellOver && draggedScriptId && (
-                          <div className="p-2 border-2 border-dashed border-orange-500 bg-orange-50 rounded-xl text-center text-[10px] font-bold text-orange-900 flex items-center justify-center gap-1 animate-pulse">
-                            <ArrowDown className="w-3 h-3 text-orange-600" />
+                          <div className={`p-2 border-2 border-dashed rounded-xl text-center text-[10px] font-bold flex items-center justify-center gap-1 animate-pulse ${
+                            isDark ? 'border-orange-500 bg-orange-950/60 text-orange-200' : 'border-orange-500 bg-orange-50 text-orange-900'
+                          }`}>
+                            <ArrowDown className="w-3 h-3 text-orange-500" />
                             <span>Drop in {stage.label}</span>
                           </div>
                         )}
                         {laneScripts.length === 0 && !isCellOver ? (
-                          <div className="flex-1 flex items-center justify-center p-3 text-center text-[11px] text-gray-400 border border-dashed border-gray-200 rounded-xl">
-                            <span className="text-[10px] text-gray-400">Empty</span>
+                          <div className={`flex-1 flex items-center justify-center p-3 text-center text-[11px] border border-dashed rounded-xl ${
+                            isDark ? 'border-gray-800 text-gray-600' : 'border-gray-200 text-gray-400'
+                          }`}>
+                            <span className="text-[10px]">Empty</span>
                           </div>
                         ) : (
                           laneScripts.map((script) => (
@@ -670,6 +734,7 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
                               stageKey={stage.key}
                               scriptWriters={scriptWriters}
                               nonScriptWriters={nonScriptWriters}
+                              isDark={isDark}
                               isDragging={draggedScriptId === script.id}
                               onDragStart={() => setDraggedScriptId(script.id)}
                               onDragEnd={() => {
@@ -698,15 +763,15 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
             {/* 2. Registered Script Writers' Swimlanes */}
             {scriptWriters.length === 0 ? (
               <div className="p-12 text-center">
-                <Users className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-                <p className="text-sm font-bold text-gray-800">No Script Writers Configured</p>
-                <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
+                <Users className={`w-10 h-10 mx-auto mb-2 ${isDark ? 'text-gray-600' : 'text-gray-300'}`} />
+                <p className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>No Script Writers Configured</p>
+                <p className={`text-xs mt-1 max-w-sm mx-auto ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                   To use the script writer swimlane view, add at least one team member with the &apos;Script Writer&apos; role.
                 </p>
                 <button
                   type="button"
                   onClick={() => setIsAddWriterModalOpen(true)}
-                  className="mt-4 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-semibold inline-flex items-center gap-1.5"
+                  className="mt-4 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Add First Script Writer
@@ -720,9 +785,13 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
                   const inProgressCount = writerScripts.filter((s) => s.status === 'draft' || s.status === 'in_review').length;
 
                   return (
-                    <div key={writer.id} className="grid grid-cols-12 hover:bg-gray-50/40 transition-colors">
+                    <div key={writer.id} className={`grid grid-cols-12 transition-colors ${
+                      isDark ? 'hover:bg-gray-800/30' : 'hover:bg-gray-50/40'
+                    }`}>
                       {/* Lane Header: Writer Profile & Workload */}
-                      <div className="col-span-3 p-4 border-r border-gray-200 flex flex-col justify-between bg-slate-50/40">
+                      <div className={`col-span-3 p-4 border-r flex flex-col justify-between ${
+                        isDark ? 'border-gray-800 bg-[#16161d]' : 'border-gray-200 bg-slate-50/40'
+                      }`}>
                         <div>
                           <div className="flex items-start gap-2.5">
                             {/* Avatar */}
@@ -736,41 +805,51 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
                             </div>
 
                             <div className="min-w-0 flex-1">
-                              <h3 className="text-xs font-bold text-gray-900 truncate flex items-center gap-1.5">
+                              <h3 className={`text-xs font-bold truncate flex items-center gap-1.5 ${
+                                isDark ? 'text-white' : 'text-gray-900'
+                              }`}>
                                 <span className="truncate">{writer.name}</span>
                               </h3>
                               <div className="flex items-center gap-1.5 mt-0.5">
-                                <span className="inline-flex items-center gap-1 px-2 py-0.2 rounded-full text-[10px] font-semibold bg-orange-100 text-orange-900 border border-orange-200">
-                                  <Edit3 className="w-2.5 h-2.5 text-orange-700" />
+                                <span className={`inline-flex items-center gap-1 px-2 py-0.2 rounded-full text-[10px] font-semibold border ${
+                                  isDark ? 'bg-orange-950/60 text-orange-300 border-orange-800/60' : 'bg-orange-100 text-orange-900 border-orange-200'
+                                }`}>
+                                  <Edit3 className="w-2.5 h-2.5 text-orange-500" />
                                   Script Writer
                                 </span>
                               </div>
-                              <p className="text-[10px] text-gray-400 mt-1 truncate">{writer.email}</p>
+                              <p className={`text-[10px] mt-1 truncate ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{writer.email}</p>
                             </div>
                           </div>
 
                           {/* Workload Stats */}
                           <div className="mt-3.5 grid grid-cols-2 gap-1.5 text-center">
-                            <div className="p-1.5 bg-white border border-gray-200 rounded-lg">
-                              <span className="block text-xs font-bold text-gray-900">{writerScripts.length}</span>
-                              <span className="text-[9px] text-gray-500 font-medium uppercase">Assigned</span>
+                            <div className={`p-1.5 border rounded-lg ${
+                              isDark ? 'bg-[#141419] border-gray-800' : 'bg-white border-gray-200'
+                            }`}>
+                              <span className={`block text-xs font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{writerScripts.length}</span>
+                              <span className={`text-[9px] font-medium uppercase ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>Assigned</span>
                             </div>
-                            <div className="p-1.5 bg-white border border-gray-200 rounded-lg">
-                              <span className="block text-xs font-bold text-orange-600">{inProgressCount}</span>
-                              <span className="text-[9px] text-gray-500 font-medium uppercase">In Progress</span>
+                            <div className={`p-1.5 border rounded-lg ${
+                              isDark ? 'bg-[#141419] border-gray-800' : 'bg-white border-gray-200'
+                            }`}>
+                              <span className="block text-xs font-bold text-orange-500">{inProgressCount}</span>
+                              <span className={`text-[9px] font-medium uppercase ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>In Progress</span>
                             </div>
                           </div>
                         </div>
 
                         {/* Lane Quick Action */}
-                        <div className="mt-3 pt-2 border-t border-gray-200 flex items-center justify-between">
+                        <div className={`mt-3 pt-2 border-t flex items-center justify-between ${
+                          isDark ? 'border-gray-800' : 'border-gray-200'
+                        }`}>
                           <button
                             type="button"
                             onClick={() => {
                               setNewScriptWriterId(writer.id);
                               setIsNewScriptModalOpen(true);
                             }}
-                            className="text-[11px] font-semibold text-orange-600 hover:text-orange-800 flex items-center gap-1 cursor-pointer transition-colors"
+                            className="text-[11px] font-semibold text-orange-500 hover:text-orange-400 flex items-center gap-1 cursor-pointer transition-colors"
                           >
                             <Plus className="w-3 h-3" />
                             <span>Assign New Script</span>
@@ -779,7 +858,7 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
                       </div>
 
                       {/* 5 Workflow Stage Columns for this Writer */}
-                      <div className="col-span-9 grid grid-cols-5 divide-x divide-gray-200">
+                      <div className={`col-span-9 grid grid-cols-5 divide-x ${isDark ? 'divide-gray-800' : 'divide-gray-200'}`}>
                         {SWIMLANE_STAGES.map((stage) => {
                           const laneScripts = writerScripts.filter(
                             (s) => mapScriptToSwimlaneStage(s.status) === stage.key
@@ -810,18 +889,22 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
                                 }
                               }}
                               className={`p-2.5 min-h-[170px] flex flex-col gap-2 transition-all ${
-                                isCellOver ? 'bg-orange-100/60 ring-2 ring-inset ring-orange-400' : ''
+                                isCellOver ? (isDark ? 'bg-orange-950/40 ring-2 ring-inset ring-orange-500' : 'bg-orange-100/60 ring-2 ring-inset ring-orange-400') : ''
                               }`}
                             >
                               {isCellOver && draggedScriptId && (
-                                <div className="p-2 border-2 border-dashed border-orange-500 bg-orange-50 rounded-xl text-center text-[10px] font-bold text-orange-900 flex items-center justify-center gap-1 animate-pulse">
-                                  <ArrowDown className="w-3 h-3 text-orange-600" />
+                                <div className={`p-2 border-2 border-dashed rounded-xl text-center text-[10px] font-bold flex items-center justify-center gap-1 animate-pulse ${
+                                  isDark ? 'border-orange-500 bg-orange-950/60 text-orange-200' : 'border-orange-500 bg-orange-50 text-orange-900'
+                                }`}>
+                                  <ArrowDown className="w-3 h-3 text-orange-500" />
                                   <span>Drop to assign {writer.name.split(' ')[0]} ({stage.label})</span>
                                 </div>
                               )}
                               {laneScripts.length === 0 && !isCellOver ? (
-                                <div className="flex-1 flex items-center justify-center p-3 text-center text-[11px] text-gray-400 border border-dashed border-gray-200 rounded-xl">
-                                  <span className="text-[10px] text-gray-400">No scripts</span>
+                                <div className={`flex-1 flex items-center justify-center p-3 text-center text-[11px] border border-dashed rounded-xl ${
+                                  isDark ? 'border-gray-800 text-gray-600' : 'border-gray-200 text-gray-400'
+                                }`}>
+                                  <span className="text-[10px]">No scripts</span>
                                 </div>
                               ) : (
                                 laneScripts.map((script) => (
@@ -831,6 +914,7 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
                                     stageKey={stage.key}
                                     scriptWriters={scriptWriters}
                                     nonScriptWriters={nonScriptWriters}
+                                    isDark={isDark}
                                     isDragging={draggedScriptId === script.id}
                                     onDragStart={() => setDraggedScriptId(script.id)}
                                     onDragEnd={() => {
@@ -863,17 +947,19 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
 
       {/* MODAL 1: Quick Create New Script & Assign to Writer */}
       {isNewScriptModalOpen && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className={`rounded-2xl max-w-lg w-full p-6 shadow-2xl border animate-in fade-in zoom-in-95 duration-150 ${
+            isDark ? 'bg-[#181820] border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'
+          }`}>
+            <div className={`flex items-center justify-between pb-3 border-b ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
               <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-orange-600" />
-                <h3 className="text-base font-bold text-gray-900">Create & Assign New Script</h3>
+                <FileText className="w-5 h-5 text-orange-500" />
+                <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Create & Assign New Script</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsNewScriptModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 text-sm font-bold p-1"
+                className={`p-1 text-sm font-bold cursor-pointer ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
               >
                 ✕
               </button>
@@ -881,68 +967,78 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
 
             <form onSubmit={handleCreateNewScript} className="mt-4 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Script Title</label>
+                <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Script Title</label>
                 <input
                   type="text"
                   value={newScriptTitle}
                   onChange={(e) => setNewScriptTitle(e.target.value)}
                   placeholder="e.g. The 50/30/20 Rule Hack: Double Your Investment Rate"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs text-gray-900 focus:outline-none focus:border-orange-500"
+                  className={`w-full px-3 py-2 border rounded-xl text-xs focus:outline-none focus:border-orange-500 ${
+                    isDark ? 'bg-[#121217] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">Content Format</label>
+                  <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Content Format</label>
                   <select
                     value={newScriptFormat}
                     onChange={(e) => setNewScriptFormat(e.target.value as 'Reel' | 'Carousel')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs text-gray-900 focus:outline-none focus:border-orange-500 cursor-pointer"
+                    className={`w-full px-3 py-2 border rounded-xl text-xs focus:outline-none focus:border-orange-500 cursor-pointer ${
+                      isDark ? 'bg-[#121217] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+                    }`}
                   >
-                    <option value="Reel">🎬 Reel (9:16 Video Script)</option>
-                    <option value="Carousel">📑 Carousel (Multi-Slide Script)</option>
+                    <option value="Reel" className={isDark ? 'bg-[#181820]' : ''}>🎬 Reel (9:16 Video Script)</option>
+                    <option value="Carousel" className={isDark ? 'bg-[#181820]' : ''}>📑 Carousel (Multi-Slide Script)</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">
-                    Assign Script Writer <span className="text-orange-600 font-semibold">*Strict Role</span>
+                  <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Assign Script Writer <span className="text-orange-500 font-semibold">*Strict Role</span>
                   </label>
                   <select
                     value={newScriptWriterId}
                     onChange={(e) => setNewScriptWriterId(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs text-gray-900 focus:outline-none focus:border-orange-500 cursor-pointer"
+                    className={`w-full px-3 py-2 border rounded-xl text-xs focus:outline-none focus:border-orange-500 cursor-pointer ${
+                      isDark ? 'bg-[#121217] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+                    }`}
                   >
-                    <option value="unassigned">⚠️ Leave Unassigned</option>
+                    <option value="unassigned" className={isDark ? 'bg-[#181820]' : ''}>⚠️ Leave Unassigned</option>
                     {scriptWriters.map((w) => (
-                      <option key={w.id} value={w.id}>
+                      <option key={w.id} value={w.id} className={isDark ? 'bg-[#181820]' : ''}>
                         ✍️ {w.name} (Script Writer)
                       </option>
                     ))}
                   </select>
-                  <p className="text-[10px] text-gray-400 mt-1">
+                  <p className={`text-[10px] mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
                     Only team members with &apos;Script Writer&apos; role are selectable.
                   </p>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Opening Hook (Optional)</label>
+                <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Opening Hook (Optional)</label>
                 <textarea
                   rows={2}
                   value={newScriptHook}
                   onChange={(e) => setNewScriptHook(e.target.value)}
                   placeholder="3-second hook that stops users from scrolling..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs text-gray-900 focus:outline-none focus:border-orange-500"
+                  className={`w-full px-3 py-2 border rounded-xl text-xs focus:outline-none focus:border-orange-500 ${
+                    isDark ? 'bg-[#121217] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                 />
               </div>
 
-              <div className="pt-3 border-t border-gray-100 flex items-center justify-end gap-2">
+              <div className={`pt-3 border-t flex items-center justify-end gap-2 ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
                 <button
                   type="button"
                   onClick={() => setIsNewScriptModalOpen(false)}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-xl cursor-pointer"
+                  className={`px-4 py-2 text-xs font-semibold rounded-xl cursor-pointer ${
+                    isDark ? 'bg-gray-800 hover:bg-gray-700 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
                 >
                   Cancel
                 </button>
@@ -961,17 +1057,19 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
 
       {/* MODAL 2: Add New Script Writer to Team */}
       {isAddWriterModalOpen && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className={`rounded-2xl max-w-md w-full p-6 shadow-2xl border animate-in fade-in zoom-in-95 duration-150 ${
+            isDark ? 'bg-[#181820] border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'
+          }`}>
+            <div className={`flex items-center justify-between pb-3 border-b ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
               <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-orange-600" />
-                <h3 className="text-base font-bold text-gray-900">Add Script Writer</h3>
+                <Users className="w-5 h-5 text-orange-500" />
+                <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Add Script Writer</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsAddWriterModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 text-sm font-bold p-1"
+                className={`p-1 text-sm font-bold cursor-pointer ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
               >
                 ✕
               </button>
@@ -979,44 +1077,52 @@ export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
 
             <form onSubmit={handleAddWriterSubmit} className="mt-4 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Full Name</label>
+                <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Full Name</label>
                 <input
                   type="text"
                   value={newWriterName}
                   onChange={(e) => setNewWriterName(e.target.value)}
                   placeholder="e.g. Neha Kapoor"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs text-gray-900 focus:outline-none focus:border-orange-500"
+                  className={`w-full px-3 py-2 border rounded-xl text-xs focus:outline-none focus:border-orange-500 ${
+                    isDark ? 'bg-[#121217] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Email Address</label>
+                <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Email Address</label>
                 <input
                   type="email"
                   value={newWriterEmail}
                   onChange={(e) => setNewWriterEmail(e.target.value)}
                   placeholder="e.g. neha.k@contentlab.io"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs text-gray-900 focus:outline-none focus:border-orange-500"
+                  className={`w-full px-3 py-2 border rounded-xl text-xs focus:outline-none focus:border-orange-500 ${
+                    isDark ? 'bg-[#121217] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                   required
                 />
               </div>
 
-              <div className="p-3 bg-orange-50/70 border border-orange-200 rounded-xl text-xs text-orange-900">
+              <div className={`p-3 rounded-xl border text-xs ${
+                isDark ? 'bg-orange-950/40 border-orange-800/60 text-orange-200' : 'bg-orange-50/70 border-orange-200 text-orange-900'
+              }`}>
                 <div className="flex items-center gap-1.5 font-bold">
-                  <ShieldCheck className="w-4 h-4 text-orange-600" />
+                  <ShieldCheck className="w-4 h-4 text-orange-500" />
                   <span>Fixed Role: Script Writer</span>
                 </div>
-                <p className="text-[11px] text-orange-800 mt-1 leading-relaxed">
+                <p className={`text-[11px] mt-1 leading-relaxed ${isDark ? 'text-orange-300' : 'text-orange-800'}`}>
                   This member will be assigned the <strong>Script Writer</strong> role and will automatically get their own dedicated swimlane on this board.
                 </p>
               </div>
 
-              <div className="pt-3 border-t border-gray-100 flex items-center justify-end gap-2">
+              <div className={`pt-3 border-t flex items-center justify-end gap-2 ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
                 <button
                   type="button"
                   onClick={() => setIsAddWriterModalOpen(false)}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-xl cursor-pointer"
+                  className={`px-4 py-2 text-xs font-semibold rounded-xl cursor-pointer ${
+                    isDark ? 'bg-gray-800 hover:bg-gray-700 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
                 >
                   Cancel
                 </button>
@@ -1042,6 +1148,7 @@ interface SwimlaneCardProps {
   stageKey: SwimlaneStage;
   scriptWriters: TeamMember[];
   nonScriptWriters: TeamMember[];
+  isDark: boolean;
   isDragging?: boolean;
   onDragStart?: () => void;
   onDragEnd?: () => void;
@@ -1057,6 +1164,7 @@ const SwimlaneCard: React.FC<SwimlaneCardProps> = ({
   stageKey,
   scriptWriters,
   nonScriptWriters,
+  isDark,
   isDragging = false,
   onDragStart,
   onDragEnd,
@@ -1084,10 +1192,12 @@ const SwimlaneCard: React.FC<SwimlaneCardProps> = ({
       onDragEnd={() => {
         onDragEnd?.();
       }}
-      className={`relative bg-white border rounded-xl p-3 shadow-xs hover:shadow-md transition-all flex flex-col justify-between gap-2.5 group cursor-grab active:cursor-grabbing select-none ${
+      className={`relative border rounded-xl p-3 shadow-xs hover:shadow-md transition-all flex flex-col justify-between gap-2.5 group cursor-grab active:cursor-grabbing select-none ${
+        isDark ? 'bg-[#181820] text-white' : 'bg-white text-gray-900'
+      } ${
         isDragging
           ? 'opacity-40 border-orange-500 ring-2 ring-orange-500 scale-[0.98]'
-          : 'border-gray-200 hover:border-orange-300'
+          : isDark ? 'border-gray-800 hover:border-orange-500/60' : 'border-gray-200 hover:border-orange-300'
       }`}
     >
       {/* Top Row: Format badge + Viral Score */}
@@ -1095,14 +1205,16 @@ const SwimlaneCard: React.FC<SwimlaneCardProps> = ({
         <div className="flex items-center justify-between gap-1.5 mb-1.5">
           <div className="flex items-center gap-1.5">
             <span
-              className="text-gray-400 group-hover:text-orange-500 transition-colors"
+              className={`transition-colors ${isDark ? 'text-gray-500 group-hover:text-orange-400' : 'text-gray-400 group-hover:text-orange-500'}`}
               title="Drag to move stage or assign writer"
             >
               <GripVertical className="w-3.5 h-3.5" />
             </span>
             <span
-              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold ${
-                isReel ? 'bg-orange-50 text-orange-700 border border-orange-200' : 'bg-blue-50 text-blue-700 border border-blue-200'
+              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${
+                isReel
+                  ? isDark ? 'bg-orange-950/60 text-orange-300 border-orange-800/60' : 'bg-orange-50 text-orange-700 border-orange-200'
+                  : isDark ? 'bg-blue-950/60 text-blue-300 border-blue-800/60' : 'bg-blue-50 text-blue-700 border-blue-200'
               }`}
             >
               {isReel ? <Video className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
@@ -1111,7 +1223,9 @@ const SwimlaneCard: React.FC<SwimlaneCardProps> = ({
           </div>
 
           {script.score !== undefined && (
-            <span className="px-1.5 py-0.2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-[10px] font-bold">
+            <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold border ${
+              isDark ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800/60' : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+            }`}>
               ★ {script.score}
             </span>
           )}
@@ -1120,7 +1234,9 @@ const SwimlaneCard: React.FC<SwimlaneCardProps> = ({
         {/* Script Title */}
         <h4
           onClick={onOpenEditor}
-          className="text-xs font-bold text-gray-900 leading-snug line-clamp-2 hover:text-orange-600 transition-colors cursor-pointer"
+          className={`text-xs font-bold leading-snug line-clamp-2 transition-colors cursor-pointer ${
+            isDark ? 'text-white hover:text-orange-400' : 'text-gray-900 hover:text-orange-600'
+          }`}
           title={script.title}
         >
           {script.title}
@@ -1128,14 +1244,14 @@ const SwimlaneCard: React.FC<SwimlaneCardProps> = ({
 
         {/* Hook Excerpt */}
         {script.hook && (
-          <p className="text-[11px] text-gray-500 mt-1 line-clamp-2 italic leading-tight">
+          <p className={`text-[11px] mt-1 line-clamp-2 italic leading-tight ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
             &ldquo;{script.hook}&rdquo;
           </p>
         )}
       </div>
 
       {/* Bottom Controls: Assignee Dropdown + Stage Arrows */}
-      <div className="pt-2 border-t border-gray-100 flex items-center justify-between gap-1">
+      <div className={`pt-2 border-t flex items-center justify-between gap-1 ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
         {/* Assigned Writer Picker Button */}
         <div className="relative">
           <button
@@ -1146,12 +1262,16 @@ const SwimlaneCard: React.FC<SwimlaneCardProps> = ({
             }}
             className={`px-2 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1.5 border transition-colors cursor-pointer ${
               script.assignedWriterName
-                ? 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-200'
-                : 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-300 animate-pulse'
+                ? isDark
+                  ? 'bg-gray-800 hover:bg-gray-700 text-gray-200 border-gray-700'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-200'
+                : isDark
+                  ? 'bg-amber-950/60 hover:bg-amber-900/80 text-amber-200 border-amber-800 animate-pulse'
+                  : 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-300 animate-pulse'
             }`}
             title="Assign script writer"
           >
-            <Edit3 className="w-2.5 h-2.5 text-orange-600" />
+            <Edit3 className="w-2.5 h-2.5 text-orange-500" />
             <span className="max-w-[85px] truncate">
               {script.assignedWriterName ? script.assignedWriterName.split(' ')[0] : 'Assign Writer'}
             </span>
@@ -1163,14 +1283,16 @@ const SwimlaneCard: React.FC<SwimlaneCardProps> = ({
             <>
               <div className="fixed inset-0 z-30" onClick={onToggleAssignee} />
               <div
-                className="absolute left-0 bottom-full mb-1 w-56 bg-white text-gray-900 rounded-xl shadow-2xl border border-gray-200 py-2 z-40 animate-in fade-in zoom-in-95 duration-100"
+                className={`absolute left-0 bottom-full mb-1 w-56 rounded-xl shadow-2xl border py-2 z-40 animate-in fade-in zoom-in-95 duration-100 ${
+                  isDark ? 'bg-[#181820] border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'
+                }`}
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="px-3 py-1.5 border-b border-gray-100">
-                  <span className="block text-[11px] font-bold text-gray-900">
+                <div className={`px-3 py-1.5 border-b ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
+                  <span className={`block text-[11px] font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     Assign Script Writer
                   </span>
-                  <span className="block text-[9px] text-emerald-700 font-medium mt-0.5">
+                  <span className="block text-[9px] text-emerald-500 font-medium mt-0.5">
                     ✓ Only &apos;Script Writer&apos; role allowed
                   </span>
                 </div>
@@ -1180,9 +1302,11 @@ const SwimlaneCard: React.FC<SwimlaneCardProps> = ({
                   <button
                     type="button"
                     onClick={() => onAssignWriter('unassigned')}
-                    className="w-full px-3 py-1.5 text-left text-xs font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 flex items-center gap-2 cursor-pointer transition-colors"
+                    className={`w-full px-3 py-1.5 text-left text-xs font-medium flex items-center gap-2 cursor-pointer transition-colors ${
+                      isDark ? 'text-gray-400 hover:bg-gray-800 hover:text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`}
                   >
-                    <span className="w-2 h-2 rounded-full bg-gray-300"></span>
+                    <span className="w-2 h-2 rounded-full bg-gray-500"></span>
                     <span>None (Unassigned)</span>
                   </button>
 
@@ -1196,37 +1320,41 @@ const SwimlaneCard: React.FC<SwimlaneCardProps> = ({
                         onClick={() => onAssignWriter(writer.id)}
                         className={`w-full px-3 py-1.5 text-left text-xs font-semibold flex items-center justify-between cursor-pointer transition-colors ${
                           isSelected
-                            ? 'bg-orange-50 text-orange-950 font-bold'
-                            : 'text-gray-800 hover:bg-orange-50/70 hover:text-orange-900'
+                            ? isDark ? 'bg-orange-950/60 text-orange-200 font-bold' : 'bg-orange-50 text-orange-950 font-bold'
+                            : isDark ? 'text-gray-200 hover:bg-gray-800 hover:text-white' : 'text-gray-800 hover:bg-orange-50/70 hover:text-orange-900'
                         }`}
                       >
                         <div className="flex items-center gap-2 truncate">
-                          <span className="w-5 h-5 rounded-full bg-orange-100 text-orange-800 text-[10px] font-bold flex items-center justify-center shrink-0">
+                          <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center shrink-0 ${
+                            isDark ? 'bg-orange-950 text-orange-300' : 'bg-orange-100 text-orange-800'
+                          }`}>
                             {writer.name[0]}
                           </span>
                           <span className="truncate">{writer.name}</span>
                         </div>
-                        {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-orange-600 shrink-0" />}
+                        {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-orange-500 shrink-0" />}
                       </button>
                     );
                   })}
 
-                  {/* Ineligible Other Roles (Disabled section showing enforcement) */}
+                  {/* Ineligible Other Roles */}
                   {nonScriptWriters.length > 0 && (
                     <>
-                      <div className="px-3 pt-2 pb-1 border-t border-gray-100 mt-1">
-                        <span className="block text-[9px] font-bold uppercase tracking-wider text-gray-400">
+                      <div className={`px-3 pt-2 pb-1 border-t mt-1 ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
+                        <span className="block text-[9px] font-bold uppercase tracking-wider text-gray-500">
                           Other Roles (Ineligible for Script Assignment)
                         </span>
                       </div>
                       {nonScriptWriters.map((member) => (
                         <div
                           key={member.id}
-                          className="px-3 py-1 text-xs text-gray-400 flex items-center justify-between opacity-60 cursor-not-allowed"
+                          className="px-3 py-1 text-xs text-gray-500 flex items-center justify-between opacity-60 cursor-not-allowed"
                           title={`Cannot assign: ${member.name} has role '${member.role}', not 'Script Writer'`}
                         >
                           <span className="truncate">{member.name}</span>
-                          <span className="text-[9px] px-1.5 py-0.2 bg-gray-100 rounded text-gray-500">
+                          <span className={`text-[9px] px-1.5 py-0.2 rounded ${
+                            isDark ? 'bg-gray-800 text-gray-400' : 'bg-gray-100 text-gray-500'
+                          }`}>
                             {member.role}
                           </span>
                         </div>
@@ -1245,7 +1373,9 @@ const SwimlaneCard: React.FC<SwimlaneCardProps> = ({
             type="button"
             disabled={!canGoPrev}
             onClick={() => onAdvanceStage('prev')}
-            className="p-1 bg-gray-50 hover:bg-gray-100 disabled:opacity-30 text-gray-600 rounded-md border border-gray-200 transition-colors cursor-pointer"
+            className={`p-1 disabled:opacity-30 rounded-md border transition-colors cursor-pointer ${
+              isDark ? 'bg-gray-800 hover:bg-gray-700 text-gray-300 border-gray-700' : 'bg-gray-50 hover:bg-gray-100 text-gray-600 border-gray-200'
+            }`}
             title="Move to previous stage"
           >
             <ChevronLeft className="w-3 h-3" />
@@ -1254,7 +1384,11 @@ const SwimlaneCard: React.FC<SwimlaneCardProps> = ({
           <button
             type="button"
             onClick={onOpenEditor}
-            className="px-1.5 py-0.8 bg-gray-50 hover:bg-orange-50 text-gray-600 hover:text-orange-700 rounded-md border border-gray-200 text-[10px] font-semibold transition-colors cursor-pointer"
+            className={`px-1.5 py-0.8 rounded-md border text-[10px] font-semibold transition-colors cursor-pointer ${
+              isDark
+                ? 'bg-gray-800 hover:bg-orange-950/60 text-gray-300 hover:text-orange-300 border-gray-700'
+                : 'bg-gray-50 hover:bg-orange-50 text-gray-600 hover:text-orange-700 border-gray-200'
+            }`}
             title="Open script details"
           >
             Edit
@@ -1264,7 +1398,9 @@ const SwimlaneCard: React.FC<SwimlaneCardProps> = ({
             type="button"
             disabled={!canGoNext}
             onClick={() => onAdvanceStage('next')}
-            className="p-1 bg-gray-50 hover:bg-gray-100 disabled:opacity-30 text-gray-600 rounded-md border border-gray-200 transition-colors cursor-pointer"
+            className={`p-1 disabled:opacity-30 rounded-md border transition-colors cursor-pointer ${
+              isDark ? 'bg-gray-800 hover:bg-gray-700 text-gray-300 border-gray-700' : 'bg-gray-50 hover:bg-gray-100 text-gray-600 border-gray-200'
+            }`}
             title="Move to next stage"
           >
             <ChevronRight className="w-3 h-3" />

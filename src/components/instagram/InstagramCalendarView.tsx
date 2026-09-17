@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { CalendarPost, InstagramAccount, ScriptItem } from '../../types/instagram';
 import { instagramApi } from '../../services/instagramApi';
+import { useTheme } from '../../context/ThemeContext';
 
 interface InstagramCalendarViewProps {
   account: InstagramAccount;
@@ -36,6 +37,9 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
   onNavigateToScripts,
   onPostUpdated
 }: any) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
   const [viewMode, setViewMode] = useState<'list' | 'week' | 'month'>('list');
   const [statusFilter, setStatusFilter] = useState<'all' | 'scheduled' | 'draft' | 'published'>('all');
   const [formatFilter, setFormatFilter] = useState<'all' | 'Reel' | 'Carousel' | 'Image'>('all');
@@ -118,20 +122,24 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Banner */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className={`border rounded-xl p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors ${
+        isDark ? 'bg-[#181820] border-gray-800 text-white' : 'bg-white border-gray-200 text-gray-900'
+      }`}>
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-orange-50 text-orange-700 border border-orange-200 flex items-center gap-1.5">
-              <CalendarIcon className="w-3.5 h-3.5 text-orange-600" /> Editorial Publishing Calendar
+            <span className={`px-2.5 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider border flex items-center gap-1.5 ${
+              isDark ? 'bg-orange-950/60 text-orange-300 border-orange-800/60' : 'bg-orange-50 text-orange-700 border-orange-200'
+            }`}>
+              <CalendarIcon className="w-3.5 h-3.5 text-orange-500" /> Editorial Publishing Calendar
             </span>
-            <span className="text-xs text-gray-500 font-medium">
-              Account: <strong className="text-gray-900">@{account.username}</strong>
+            <span className={`text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+              Account: <strong className={isDark ? 'text-white' : 'text-gray-900'}>@{account.username}</strong>
             </span>
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mt-1.5 tracking-tight">
+          <h1 className={`text-xl font-bold mt-1.5 tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
             Content Scheduling & Distribution
           </h1>
-          <p className="text-xs text-gray-500 mt-0.5">
+          <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
             Plan publishing dates, optimize for algorithm drop-off windows, and track status.
           </p>
         </div>
@@ -140,7 +148,7 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
           id="btn-add-calendar-post"
           type="button"
           onClick={() => setIsAddPostOpen(true)}
-          className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors shrink-0"
+          className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Add Post / Schedule Script</span>
@@ -148,20 +156,24 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
       </div>
 
       {/* Controls & Filters (Section 28 & 29) */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className={`border rounded-xl p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors ${
+        isDark ? 'bg-[#181820] border-gray-800 text-white' : 'bg-white border-gray-200 text-gray-900'
+      }`}>
         {/* Filters */}
         <div className="flex items-center gap-2.5 flex-wrap text-xs">
           {/* Status Filter */}
-          <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-lg border border-gray-200">
+          <div className={`flex items-center gap-1 p-1 rounded-lg border ${
+            isDark ? 'bg-[#121217] border-gray-700' : 'bg-gray-50 border-gray-200'
+          }`}>
             {(['all', 'scheduled', 'draft', 'published'] as const).map((st) => (
               <button
                 key={st}
                 type="button"
                 onClick={() => setStatusFilter(st)}
-                className={`px-3 py-1 rounded-md capitalize font-semibold transition-all ${
+                className={`px-3 py-1 rounded-md capitalize font-semibold transition-all cursor-pointer ${
                   statusFilter === st
-                    ? 'bg-white text-gray-900 shadow-xs border border-gray-200'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? isDark ? 'bg-gray-800 text-white shadow-xs border border-gray-700' : 'bg-white text-gray-900 shadow-xs border border-gray-200'
+                    : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
                 {st}
@@ -173,24 +185,28 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
           <select
             value={formatFilter}
             onChange={(e) => setFormatFilter(e.target.value as any)}
-            className="bg-gray-50 border border-gray-300 text-xs text-gray-800 rounded-lg px-2.5 py-1.5 font-medium focus:outline-none"
+            className={`border text-xs rounded-lg px-2.5 py-1.5 font-medium focus:outline-none cursor-pointer ${
+              isDark ? 'bg-[#121217] border-gray-700 text-white' : 'bg-gray-50 border-gray-300 text-gray-800'
+            }`}
           >
-            <option value="all">All Formats</option>
-            <option value="Reel">Reels</option>
-            <option value="Carousel">Carousels</option>
-            <option value="Image">Images</option>
+            <option value="all" className={isDark ? 'bg-[#181820]' : ''}>All Formats</option>
+            <option value="Reel" className={isDark ? 'bg-[#181820]' : ''}>Reels</option>
+            <option value="Carousel" className={isDark ? 'bg-[#181820]' : ''}>Carousels</option>
+            <option value="Image" className={isDark ? 'bg-[#181820]' : ''}>Images</option>
           </select>
         </div>
 
         {/* View Mode Switcher: List vs Week vs Month */}
-        <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1 text-xs font-semibold">
+        <div className={`inline-flex rounded-lg border p-1 text-xs font-semibold ${
+          isDark ? 'border-gray-700 bg-[#121217]' : 'border-gray-200 bg-gray-50'
+        }`}>
           <button
             type="button"
             onClick={() => setViewMode('list')}
-            className={`px-3 py-1 rounded-md flex items-center gap-1 transition-all ${
+            className={`px-3 py-1 rounded-md flex items-center gap-1 transition-all cursor-pointer ${
               viewMode === 'list'
-                ? 'bg-white text-gray-900 shadow-xs border border-gray-200'
-                : 'text-gray-600 hover:text-gray-900'
+                ? isDark ? 'bg-gray-800 text-white shadow-xs border border-gray-700' : 'bg-white text-gray-900 shadow-xs border border-gray-200'
+                : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
             }`}
           >
             <List className="w-3.5 h-3.5" />
@@ -199,10 +215,10 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
           <button
             type="button"
             onClick={() => setViewMode('week')}
-            className={`px-3 py-1 rounded-md flex items-center gap-1 transition-all ${
+            className={`px-3 py-1 rounded-md flex items-center gap-1 transition-all cursor-pointer ${
               viewMode === 'week'
-                ? 'bg-white text-gray-900 shadow-xs border border-gray-200'
-                : 'text-gray-600 hover:text-gray-900'
+                ? isDark ? 'bg-gray-800 text-white shadow-xs border border-gray-700' : 'bg-white text-gray-900 shadow-xs border border-gray-200'
+                : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
             }`}
           >
             <Clock className="w-3.5 h-3.5" />
@@ -211,10 +227,10 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
           <button
             type="button"
             onClick={() => setViewMode('month')}
-            className={`px-3 py-1 rounded-md flex items-center gap-1 transition-all ${
+            className={`px-3 py-1 rounded-md flex items-center gap-1 transition-all cursor-pointer ${
               viewMode === 'month'
-                ? 'bg-white text-gray-900 shadow-xs border border-gray-200'
-                : 'text-gray-600 hover:text-gray-900'
+                ? isDark ? 'bg-gray-800 text-white shadow-xs border border-gray-700' : 'bg-white text-gray-900 shadow-xs border border-gray-200'
+                : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
             }`}
           >
             <CalendarDays className="w-3.5 h-3.5" />
@@ -225,11 +241,13 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
 
       {/* Calendar List View (Section 30) */}
       {filteredPosts.length === 0 ? (
-        <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center shadow-sm space-y-4">
-          <CalendarIcon className="w-12 h-12 text-gray-300 mx-auto" />
+        <div className={`border rounded-2xl p-12 text-center shadow-sm space-y-4 ${
+          isDark ? 'bg-[#181820] border-gray-800 text-white' : 'bg-white border-gray-200 text-gray-900'
+        }`}>
+          <CalendarIcon className={`w-12 h-12 mx-auto ${isDark ? 'text-gray-600' : 'text-gray-300'}`} />
           <div>
-            <h3 className="text-base font-bold text-gray-900">Your Content Calendar Is Empty</h3>
-            <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
+            <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Your Content Calendar Is Empty</h3>
+            <p className={`text-xs mt-1 max-w-sm mx-auto ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
               You haven't scheduled any posts yet. Schedule ready scripts or add posts to maintain weekly consistency.
             </p>
           </div>
@@ -238,7 +256,7 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
             <button
               type="button"
               onClick={() => setIsAddPostOpen(true)}
-              className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs rounded-lg shadow-sm transition-colors"
+              className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs rounded-lg shadow-sm transition-colors cursor-pointer"
             >
               Add Post
             </button>
@@ -246,7 +264,9 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
               <button
                 type="button"
                 onClick={onNavigateToScripts}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold text-xs rounded-lg transition-colors"
+                className={`px-4 py-2 font-semibold text-xs rounded-lg transition-colors cursor-pointer ${
+                  isDark ? 'bg-gray-800 hover:bg-gray-700 text-gray-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+                }`}
               >
                 Schedule Script from Studio
               </button>
@@ -258,15 +278,19 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
           {filteredPosts.map((post) => (
             <div
               key={post.id}
-              className="p-5 rounded-xl bg-white border border-gray-200 hover:border-orange-300 shadow-sm transition-all flex flex-col justify-between text-xs space-y-4 group"
+              className={`p-5 rounded-xl border shadow-sm transition-all flex flex-col justify-between text-xs space-y-4 group ${
+                isDark
+                  ? 'bg-[#181820] border-gray-800 hover:border-orange-500/60 text-white'
+                  : 'bg-white border-gray-200 hover:border-orange-300 text-gray-900'
+              }`}
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span
                     className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border flex items-center gap-1 ${
                       post.format === 'Reel'
-                        ? 'bg-purple-50 text-purple-700 border-purple-200'
-                        : 'bg-blue-50 text-blue-700 border-blue-200'
+                        ? isDark ? 'bg-purple-950/60 text-purple-300 border-purple-800/60' : 'bg-purple-50 text-purple-700 border-purple-200'
+                        : isDark ? 'bg-blue-950/60 text-blue-300 border-blue-800/60' : 'bg-blue-50 text-blue-700 border-blue-200'
                     }`}
                   >
                     {post.format === 'Reel' ? <Video className="w-3 h-3" /> : <Layers className="w-3 h-3" />}
@@ -276,21 +300,23 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize border ${
                       post.status === 'published'
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        ? isDark ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800/60' : 'bg-emerald-50 text-emerald-700 border-emerald-200'
                         : post.status === 'scheduled'
-                        ? 'bg-orange-50 text-orange-700 border-orange-200'
-                        : 'bg-gray-100 text-gray-700 border-gray-200'
+                        ? isDark ? 'bg-orange-950/60 text-orange-300 border-orange-800/60' : 'bg-orange-50 text-orange-700 border-orange-200'
+                        : isDark ? 'bg-gray-800 text-gray-300 border-gray-700' : 'bg-gray-100 text-gray-700 border-gray-200'
                     }`}
                   >
                     {post.status}
                   </span>
                 </div>
 
-                <h3 className="font-bold text-gray-900 text-sm leading-snug">{post.title}</h3>
+                <h3 className={`font-bold text-sm leading-snug ${isDark ? 'text-white' : 'text-gray-900'}`}>{post.title}</h3>
 
-                <div className="p-2.5 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-1.5 text-gray-600">
-                    <Clock className="w-3.5 h-3.5 text-orange-600" />
+                <div className={`p-2.5 rounded-lg border flex items-center justify-between text-xs ${
+                  isDark ? 'bg-[#141419] border-gray-800 text-gray-300' : 'bg-gray-50 border-gray-100 text-gray-600'
+                }`}>
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-orange-500" />
                     <span>
                       {post.scheduledDate} at {post.scheduledTime || '18:00'}
                     </span>
@@ -300,7 +326,7 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
                     type="button"
                     onClick={() => handleOpenReschedule(post)}
                     title="Reschedule post"
-                    className="text-[11px] font-semibold text-orange-600 hover:text-orange-700 hover:underline flex items-center gap-0.5"
+                    className="text-[11px] font-semibold text-orange-500 hover:text-orange-400 hover:underline flex items-center gap-0.5 cursor-pointer"
                   >
                     <Edit2 className="w-3 h-3" /> Reschedule
                   </button>
@@ -308,25 +334,31 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
               </div>
 
               {/* Bottom Actions (Section 31) */}
-              <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+              <div className={`pt-3 border-t flex items-center justify-between ${
+                isDark ? 'border-gray-800' : 'border-gray-100'
+              }`}>
                 {post.scriptId ? (
                   <button
                     type="button"
                     onClick={() => onOpenScript(post.scriptId)}
-                    className="text-xs text-orange-600 hover:text-orange-700 font-semibold flex items-center gap-1"
+                    className="text-xs text-orange-500 hover:text-orange-400 font-semibold flex items-center gap-1 cursor-pointer"
                   >
                     <span>View Script</span>
                     <ArrowRight className="w-3 h-3" />
                   </button>
                 ) : (
-                  <span className="text-[10px] text-gray-400">Manual Entry</span>
+                  <span className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Manual Entry</span>
                 )}
 
                 {post.status === 'scheduled' && (
                   <button
                     type="button"
                     onClick={() => handleMarkPublished(post)}
-                    className="px-2.5 py-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-md transition-colors flex items-center gap-1"
+                    className={`px-2.5 py-1 text-[11px] font-semibold rounded-md transition-colors flex items-center gap-1 border cursor-pointer ${
+                      isDark
+                        ? 'bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 border-emerald-800/60'
+                        : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
+                    }`}
                   >
                     <Check className="w-3 h-3" /> Mark Published
                   </button>
@@ -340,39 +372,45 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
       {/* Reschedule Modal (Section 31) */}
       {editingPost && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-sm p-6 shadow-2xl text-xs text-gray-900">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <h3 className="text-sm font-bold text-gray-900">Reschedule Post</h3>
+          <div className={`border rounded-2xl w-full max-w-sm p-6 shadow-2xl text-xs ${
+            isDark ? 'bg-[#181820] border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'
+          }`}>
+            <div className={`flex items-center justify-between pb-3 border-b ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
+              <h3 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Reschedule Post</h3>
               <button
                 type="button"
                 onClick={() => setEditingPost(null)}
-                className="text-gray-400 hover:text-gray-600"
+                className={`cursor-pointer ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleSaveReschedule} className="mt-4 space-y-4">
-              <p className="text-xs font-semibold text-gray-800">{editingPost.title}</p>
+              <p className={`text-xs font-semibold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{editingPost.title}</p>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Scheduled Date</label>
+                <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Scheduled Date</label>
                 <input
                   type="date"
                   value={editDate}
                   onChange={(e) => setEditDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-gray-300 text-xs focus:outline-none focus:border-orange-500"
+                  className={`w-full px-3 py-2 rounded-lg border text-xs focus:outline-none focus:border-orange-500 ${
+                    isDark ? 'bg-[#121217] border-gray-700 text-white' : 'border-gray-300 text-gray-900'
+                  }`}
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Scheduled Time</label>
+                <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Scheduled Time</label>
                 <input
                   type="time"
                   value={editTime}
                   onChange={(e) => setEditTime(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-gray-300 text-xs focus:outline-none focus:border-orange-500"
+                  className={`w-full px-3 py-2 rounded-lg border text-xs focus:outline-none focus:border-orange-500 ${
+                    isDark ? 'bg-[#121217] border-gray-700 text-white' : 'border-gray-300 text-gray-900'
+                  }`}
                   required
                 />
               </div>
@@ -381,14 +419,16 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setEditingPost(null)}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold"
+                  className={`px-4 py-2 rounded-lg font-semibold cursor-pointer ${
+                    isDark ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSavingSchedule}
-                  className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-bold"
+                  className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-bold cursor-pointer"
                 >
                   {isSavingSchedule ? 'Saving...' : 'Save Time'}
                 </button>
@@ -401,13 +441,15 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
       {/* Add Post Modal */}
       {isAddPostOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md p-6 shadow-2xl text-xs text-gray-900">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <h3 className="text-sm font-bold text-gray-900">Add Post to Calendar</h3>
+          <div className={`border rounded-2xl w-full max-w-md p-6 shadow-2xl text-xs ${
+            isDark ? 'bg-[#181820] border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'
+          }`}>
+            <div className={`flex items-center justify-between pb-3 border-b ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
+              <h3 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Add Post to Calendar</h3>
               <button
                 type="button"
                 onClick={() => setIsAddPostOpen(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className={`cursor-pointer ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -415,20 +457,22 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
 
             <form onSubmit={handleCreatePost} className="mt-4 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Post Title *</label>
+                <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Post Title *</label>
                 <input
                   type="text"
                   placeholder="e.g. 5 Simple Ways to Pay Off Credit Cards Faster"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-gray-300 text-xs focus:outline-none focus:border-orange-500"
+                  className={`w-full px-3 py-2 rounded-lg border text-xs focus:outline-none focus:border-orange-500 ${
+                    isDark ? 'bg-[#121217] border-gray-700 text-white' : 'border-gray-300 text-gray-900'
+                  }`}
                   required
                 />
               </div>
 
               {scripts.length > 0 && (
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                     Link Existing Script (Optional)
                   </label>
                   <select
@@ -441,11 +485,13 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
                         setNewFormat(s.format as any);
                       }
                     }}
-                    className="w-full px-3 py-2 rounded-lg border border-gray-300 text-xs focus:outline-none focus:border-orange-500"
+                    className={`w-full px-3 py-2 rounded-lg border text-xs focus:outline-none focus:border-orange-500 ${
+                      isDark ? 'bg-[#121217] border-gray-700 text-white' : 'border-gray-300 text-gray-900'
+                    }`}
                   >
-                    <option value="">-- No linked script --</option>
+                    <option value="" className={isDark ? 'bg-[#181820]' : ''}>-- No linked script --</option>
                     {scripts.map((s) => (
-                      <option key={s.id} value={s.id}>
+                      <option key={s.id} value={s.id} className={isDark ? 'bg-[#181820]' : ''}>
                         {s.title} ({s.format})
                       </option>
                     ))}
@@ -455,51 +501,59 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Format</label>
+                  <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Format</label>
                   <select
                     value={newFormat}
                     onChange={(e) => setNewFormat(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-lg border border-gray-300 text-xs focus:outline-none focus:border-orange-500"
+                    className={`w-full px-3 py-2 rounded-lg border text-xs focus:outline-none focus:border-orange-500 ${
+                      isDark ? 'bg-[#121217] border-gray-700 text-white' : 'border-gray-300 text-gray-900'
+                    }`}
                   >
-                    <option value="Reel">Reel</option>
-                    <option value="Carousel">Carousel</option>
+                    <option value="Reel" className={isDark ? 'bg-[#181820]' : ''}>Reel</option>
+                    <option value="Carousel" className={isDark ? 'bg-[#181820]' : ''}>Carousel</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Date</label>
+                  <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Date</label>
                   <input
                     type="date"
                     value={newDate}
                     onChange={(e) => setNewDate(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-gray-300 text-xs focus:outline-none focus:border-orange-500"
+                    className={`w-full px-3 py-2 rounded-lg border text-xs focus:outline-none focus:border-orange-500 ${
+                      isDark ? 'bg-[#121217] border-gray-700 text-white' : 'border-gray-300 text-gray-900'
+                    }`}
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Time</label>
+                <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Time</label>
                 <input
                   type="time"
                   value={newTime}
                   onChange={(e) => setNewTime(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-gray-300 text-xs focus:outline-none focus:border-orange-500"
+                  className={`w-full px-3 py-2 rounded-lg border text-xs focus:outline-none focus:border-orange-500 ${
+                    isDark ? 'bg-[#121217] border-gray-700 text-white' : 'border-gray-300 text-gray-900'
+                  }`}
                   required
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
+              <div className={`flex justify-end gap-2 pt-2 border-t ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
                 <button
                   type="button"
                   onClick={() => setIsAddPostOpen(false)}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold"
+                  className={`px-4 py-2 rounded-lg font-semibold cursor-pointer ${
+                    isDark ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-bold"
+                  className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-bold cursor-pointer"
                 >
                   Schedule Post
                 </button>

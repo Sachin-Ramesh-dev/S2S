@@ -20,9 +20,17 @@ import {
   TopicVersionRecord,
   TopicMoveBackRecord,
   TeamMember,
-  SmtpConfig
+  SmtpConfig,
+  TeamsIntegrationConfig
 } from '../types/instagram';
 import { InstagramAiOrchestrator } from './instagramAiOrchestrator';
+
+export const DEFAULT_TEAMS_CONFIG: TeamsIntegrationConfig = {
+  webhookUrl: '',
+  enabled: false,
+  autoSendTopics: false,
+  autoSendScripts: false
+};
 
 export const DEFAULT_TEAM_MEMBERS: TeamMember[] = [
   {
@@ -1309,6 +1317,7 @@ export class InstagramService {
   private mcpConnections: McpConnection[] = [...DEFAULT_MCP_CONNECTIONS];
   private teamMembers: TeamMember[] = [...DEFAULT_TEAM_MEMBERS];
   private smtpConfig: SmtpConfig = { ...DEFAULT_SMTP_CONFIG };
+  private teamsConfig: TeamsIntegrationConfig = { ...DEFAULT_TEAMS_CONFIG };
   private generations: GenerationRecord[] = [];
   private orchestrator: InstagramAiOrchestrator;
   private vaultSecretResolver: (provider: string) => string | undefined;
@@ -1360,6 +1369,9 @@ export class InstagramService {
     if (db.smtpConfig) {
       this.smtpConfig = { ...DEFAULT_SMTP_CONFIG, ...db.smtpConfig };
     }
+    if (db.teamsConfig) {
+      this.teamsConfig = { ...DEFAULT_TEAMS_CONFIG, ...db.teamsConfig };
+    }
   }
 
   // Serialize to DB object
@@ -1377,6 +1389,7 @@ export class InstagramService {
     db.instagramGenerations = this.generations;
     db.teamMembers = this.teamMembers;
     db.smtpConfig = this.smtpConfig;
+    db.teamsConfig = this.teamsConfig;
   }
 
   public getAccounts(): InstagramAccount[] {
@@ -1638,6 +1651,14 @@ export class InstagramService {
     }));
 
     this.topics.unshift(...newTopics);
+
+    // Auto-dispatch to Teams if enabled
+    if (this.teamsConfig.enabled && this.teamsConfig.autoSendTopics && newTopics.length > 0) {
+      this.dispatchTopicsToTeams(newTopics.map(t => t.id)).catch(err => {
+        console.error('[Teams Auto-Dispatch Topics Error]:', err.message);
+      });
+    }
+
     return newTopics;
   }
 
@@ -2029,12 +2050,25 @@ export class InstagramService {
       }
     }
 
-    this.scripts[idx] = {
+    const updatedScript = {
       ...original,
       ...updates,
       userEdits,
       updatedAt: new Date().toISOString()
     };
+    this.scripts[idx] = updatedScript;
+
+    // Auto-dispatch to Teams if enabled and status updated to ready/approved/ready_to_record
+    if (
+      this.teamsConfig.enabled &&
+      this.teamsConfig.autoSendScripts &&
+      (updates.status === 'ready_to_record' || updates.status === 'approved') &&
+      original.status !== updates.status
+    ) {
+      this.dispatchScriptToTeams(scriptId).catch(err => {
+        console.error('[Teams Auto-Dispatch Script Error]:', err.message);
+      });
+    }
 
     return this.scripts[idx];
   }
@@ -2875,6 +2909,524 @@ export class InstagramService {
       this.smtpConfig.isConfigured = true;
     }
     return this.smtpConfig;
+  }
+
+  // Microsoft Teams & Power Automate Webhook Integration
+  public getTeamsConfig(): TeamsIntegrationConfig {
+    return this.teamsConfig;
+  }
+
+  public updateTeamsConfig(updates: Partial<TeamsIntegrationConfig>): TeamsIntegrationConfig {
+    Object.assign(this.teamsConfig, updates);
+    return this.teamsConfig;
+  }
+
+  public buildTopicAdaptiveCard(topics: TopicIdea[], account: InstagramAccount): any {
+    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    const topTopics = topics.slice(0, 5);
+
+    const topicContainers = topTopics.map((t, idx) => ({
+      type: 'Container',
+      separator: true,
+      spacing: 'Medium',
+      items: [
+        {
+          type: 'ColumnSet',
+          columns: [
+            {
+              type: 'Column',
+              width: 'stretch',
+              items: [
+                {
+                  type: 'TextBlock',
+                  text: `${idx + 1}. **${t.title}**`,
+                  wrap: true,
+                  weight: 'Bolder',
+                  size: 'Medium'
+                }
+              ]
+            },
+            {
+              type: 'Column',
+              width: 'auto',
+              items: [
+                {
+                  type: 'TextBlock',
+                  text: `🔥 Score: ${t.viralPotentialScore}/100`,
+                  weight: 'Bolder',
+                  color: t.viralPotentialScore >= 90 ? 'Good' : 'Attention'
+                }
+              ]
+            }
+          ]
+        },
+        {
+          type: 'FactSet',
+          spacing: 'Small',
+          facts: [
+            { title: 'Format', value: t.format },
+            { title: 'Pillar', value: t.contentPillar }
+          ]
+        },
+        {
+          type: 'TextBlock',
+          text: `🎯 **Hook:** _"${t.hook}"_`,
+          wrap: true,
+          spacing: 'Small',
+          color: 'Accent'
+        }
+      ]
+    }));
+
+    return {
+      type: 'AdaptiveCard',
+      $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
+      version: '1.4',
+      body: [
+        {
+          type: 'Container',
+          style: 'emphasis',
+          bleed: true,
+          items: [
+            {
+              type: 'ColumnSet',
+              columns: [
+                {
+                  type: 'Column',
+                  width: 'auto',
+                  items: [
+                    {
+                      type: 'Image',
+                      url: 'https://img.icons8.com/fluency/96/instagram-new.png',
+                      size: 'Small'
+                    }
+                  ]
+                },
+                {
+                  type: 'Column',
+                  width: 'stretch',
+                  items: [
+                    {
+                      type: 'TextBlock',
+                      text: '📸 S2S Content Intelligence • New Topic Batch',
+                      weight: 'Bolder',
+                      size: 'Medium',
+                      color: 'Accent'
+                    },
+                    {
+                      type: 'TextBlock',
+                      text: `@${account.username} (${account.displayName}) • ${topics.length} Ideas Generated`,
+                      isSubtle: true,
+                      spacing: 'None'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        ...topicContainers,
+        ...(topics.length > 5
+          ? [
+              {
+                type: 'TextBlock',
+                text: `➕ And ${topics.length - 5} more ideas waiting in S2S Studio.`,
+                isSubtle: true,
+                spacing: 'Medium'
+              }
+            ]
+          : [])
+      ],
+      actions: [
+        {
+          type: 'Action.OpenUrl',
+          title: '🔍 Open S2S Topic Studio',
+          url: `${appUrl}`
+        }
+      ]
+    };
+  }
+
+  public buildScriptAdaptiveCard(script: ScriptItem, account: InstagramAccount): any {
+    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    
+    let scriptPreview = '';
+    if (script.scenes && script.scenes.length > 0) {
+      scriptPreview = script.scenes
+        .slice(0, 3)
+        .map(s => `• **[${s.timeframe}]** ${s.visualCue}: _"${s.spokenAudio || s.onScreenText}"_`)
+        .join('\n\n');
+    } else if (script.fullTextScript) {
+      scriptPreview = script.fullTextScript.slice(0, 300) + (script.fullTextScript.length > 300 ? '...' : '');
+    } else if (script.slides && script.slides.length > 0) {
+      scriptPreview = script.slides
+        .slice(0, 3)
+        .map(sl => `• **Slide ${sl.slideNumber} (${sl.slideType})**: ${sl.headline}`)
+        .join('\n\n');
+    }
+
+    return {
+      type: 'AdaptiveCard',
+      $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
+      version: '1.4',
+      body: [
+        {
+          type: 'Container',
+          style: 'emphasis',
+          bleed: true,
+          items: [
+            {
+              type: 'ColumnSet',
+              columns: [
+                {
+                  type: 'Column',
+                  width: 'auto',
+                  items: [
+                    {
+                      type: 'Image',
+                      url: 'https://img.icons8.com/fluency/96/film-reel.png',
+                      size: 'Small'
+                    }
+                  ]
+                },
+                {
+                  type: 'Column',
+                  width: 'stretch',
+                  items: [
+                    {
+                      type: 'TextBlock',
+                      text: `🎬 Ready for Production: ${script.title}`,
+                      weight: 'Bolder',
+                      size: 'Medium'
+                    },
+                    {
+                      type: 'TextBlock',
+                      text: `@${account.username} • Format: ${script.format} • Status: ${script.status.toUpperCase()}`,
+                      isSubtle: true,
+                      spacing: 'None'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          type: 'Container',
+          spacing: 'Medium',
+          items: [
+            {
+              type: 'FactSet',
+              facts: [
+                { title: 'Format', value: script.format },
+                { title: 'Pillar', value: script.contentPillar || 'General' },
+                { title: 'Writer', value: script.assignedWriterName || 'Unassigned' },
+                { title: 'Est. Duration', value: `${script.estimatedDurationSeconds || 30}s` },
+                { title: 'Score', value: script.score ? `${script.score}/100` : 'Evaluated' }
+              ]
+            },
+            {
+              type: 'TextBlock',
+              text: '🎯 **Hook:**',
+              weight: 'Bolder',
+              spacing: 'Medium'
+            },
+            {
+              type: 'TextBlock',
+              text: `"${script.hook}"`,
+              wrap: true,
+              color: 'Accent'
+            },
+            ...(scriptPreview
+              ? [
+                  {
+                    type: 'TextBlock',
+                    text: '📋 **Script Breakdown / Preview:**',
+                    weight: 'Bolder',
+                    spacing: 'Medium'
+                  },
+                  {
+                    type: 'TextBlock',
+                    text: scriptPreview,
+                    wrap: true
+                  }
+                ]
+              : []),
+            {
+              type: 'TextBlock',
+              text: '📢 **Call to Action:**',
+              weight: 'Bolder',
+              spacing: 'Small'
+            },
+            {
+              type: 'TextBlock',
+              text: script.callToAction || 'Follow for more updates!',
+              wrap: true
+            }
+          ]
+        }
+      ],
+      actions: [
+        {
+          type: 'Action.OpenUrl',
+          title: '🔍 Open in Script Studio',
+          url: `${appUrl}`
+        },
+        {
+          type: 'Action.ShowCard',
+          title: '📝 Review & Notes',
+          card: {
+            type: 'AdaptiveCard',
+            body: [
+              {
+                type: 'TextBlock',
+                text: 'Review Notes or Feedback',
+                weight: 'Bolder'
+              },
+              {
+                type: 'Input.Text',
+                id: 'reviewNotes',
+                placeholder: 'Add creative notes, talent comments, or revision requests...',
+                isMultiline: true
+              }
+            ],
+            actions: [
+              {
+                type: 'Action.Submit',
+                title: 'Save Feedback',
+                data: {
+                  scriptId: script.id,
+                  type: 'scriptFeedback'
+                }
+              }
+            ]
+          }
+        }
+      ]
+    };
+  }
+
+  public buildTestAdaptiveCard(account: InstagramAccount): any {
+    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    return {
+      type: 'AdaptiveCard',
+      $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
+      version: '1.4',
+      body: [
+        {
+          type: 'Container',
+          style: 'good',
+          bleed: true,
+          items: [
+            {
+              type: 'ColumnSet',
+              columns: [
+                {
+                  type: 'Column',
+                  width: 'auto',
+                  items: [
+                    {
+                      type: 'Image',
+                      url: 'https://img.icons8.com/fluency/96/microsoft-teams-2019.png',
+                      size: 'Small'
+                    }
+                  ]
+                },
+                {
+                  type: 'Column',
+                  width: 'stretch',
+                  items: [
+                    {
+                      type: 'TextBlock',
+                      text: '🚀 S2S Teams Webhook Connected Successfully!',
+                      weight: 'Bolder',
+                      size: 'Medium'
+                    },
+                    {
+                      type: 'TextBlock',
+                      text: 'Power Automate HTTP flow is operational and receiving S2S notifications.',
+                      isSubtle: true,
+                      spacing: 'None'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          type: 'FactSet',
+          spacing: 'Medium',
+          facts: [
+            { title: 'Instagram Account', value: `@${account.username} (${account.displayName})` },
+            { title: 'Environment', value: 'S2S Studio Production' },
+            { title: 'Timestamp', value: new Date().toLocaleString() }
+          ]
+        }
+      ],
+      actions: [
+        {
+          type: 'Action.OpenUrl',
+          title: '🔍 Open S2S Studio',
+          url: `${appUrl}`
+        }
+      ]
+    };
+  }
+
+  public async sendTeamsPayload(payload: any): Promise<{ success: boolean; message: string }> {
+    if (!this.teamsConfig.webhookUrl || !this.teamsConfig.webhookUrl.trim()) {
+      throw new Error('Teams Webhook URL is not configured.');
+    }
+
+    const res = await fetch(this.teamsConfig.webhookUrl.trim(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text().catch(() => res.statusText);
+      throw new Error(`Teams Webhook responded with status ${res.status}: ${errorText}`);
+    }
+
+    this.teamsConfig.lastDispatchedAt = new Date().toISOString();
+    return { success: true, message: 'Dispatched successfully to Microsoft Teams.' };
+  }
+
+  public async testTeamsWebhook(): Promise<{ success: boolean; message: string }> {
+    const account = this.accounts[0] || {
+      id: 'ig-default',
+      username: 'default_brand',
+      displayName: 'Default Brand'
+    };
+
+    if (!this.teamsConfig.webhookUrl || !this.teamsConfig.webhookUrl.trim()) {
+      const msg = 'Teams Webhook URL is empty. Please enter your Power Automate HTTP POST URL.';
+      this.teamsConfig.lastTestedAt = new Date().toISOString();
+      this.teamsConfig.lastTestStatus = 'failed';
+      this.teamsConfig.lastTestMessage = msg;
+      return { success: false, message: msg };
+    }
+
+    const testCard = this.buildTestAdaptiveCard(account as InstagramAccount);
+    const payload = {
+      type: 'test',
+      timestamp: new Date().toISOString(),
+      account: {
+        id: account.id,
+        username: account.username,
+        displayName: account.displayName
+      },
+      message: 'This is a test notification from S2S Studio via Power Automate.',
+      adaptiveCard: testCard
+    };
+
+    try {
+      await this.sendTeamsPayload(payload);
+      this.teamsConfig.lastTestedAt = new Date().toISOString();
+      this.teamsConfig.lastTestStatus = 'success';
+      this.teamsConfig.lastTestMessage = 'Test card received and verified by Teams Webhook.';
+      return { success: true, message: this.teamsConfig.lastTestMessage };
+    } catch (err: any) {
+      this.teamsConfig.lastTestedAt = new Date().toISOString();
+      this.teamsConfig.lastTestStatus = 'failed';
+      this.teamsConfig.lastTestMessage = err.message || 'Failed to dispatch test card to Teams.';
+      return { success: false, message: this.teamsConfig.lastTestMessage };
+    }
+  }
+
+  public async dispatchTopicsToTeams(topicIds?: string[]): Promise<{ success: boolean; count: number; message: string }> {
+    const account = this.accounts[0] || {
+      id: 'ig-default',
+      username: 'default_brand',
+      displayName: 'Default Brand'
+    };
+
+    let topicsToDispatch: TopicIdea[] = [];
+    if (topicIds && topicIds.length > 0) {
+      topicsToDispatch = this.topics.filter(t => topicIds.includes(t.id));
+    } else {
+      topicsToDispatch = this.topics.slice(0, 5);
+    }
+
+    if (topicsToDispatch.length === 0) {
+      throw new Error('No topics available to dispatch to Teams.');
+    }
+
+    const adaptiveCard = this.buildTopicAdaptiveCard(topicsToDispatch, account as InstagramAccount);
+    const payload = {
+      type: 'topics',
+      timestamp: new Date().toISOString(),
+      account: {
+        id: account.id,
+        username: account.username,
+        displayName: account.displayName
+      },
+      count: topicsToDispatch.length,
+      topics: topicsToDispatch.map(t => ({
+        id: t.id,
+        title: t.title,
+        hook: t.hook,
+        format: t.format,
+        contentPillar: t.contentPillar,
+        viralPotentialScore: t.viralPotentialScore,
+        status: t.status
+      })),
+      adaptiveCard
+    };
+
+    await this.sendTeamsPayload(payload);
+    return {
+      success: true,
+      count: topicsToDispatch.length,
+      message: `Successfully dispatched ${topicsToDispatch.length} topic idea(s) to Microsoft Teams!`
+    };
+  }
+
+  public async dispatchScriptToTeams(scriptId: string): Promise<{ success: boolean; scriptId: string; message: string }> {
+    const script = this.scripts.find(s => s.id === scriptId);
+    if (!script) throw new Error(`Script with ID "${scriptId}" not found.`);
+
+    const account = this.accounts.find(a => a.id === script.accountId) || this.accounts[0] || {
+      id: 'ig-default',
+      username: 'default_brand',
+      displayName: 'Default Brand'
+    };
+
+    const adaptiveCard = this.buildScriptAdaptiveCard(script, account as InstagramAccount);
+    const payload = {
+      type: 'script',
+      timestamp: new Date().toISOString(),
+      account: {
+        id: account.id,
+        username: account.username,
+        displayName: account.displayName
+      },
+      script: {
+        id: script.id,
+        title: script.title,
+        format: script.format,
+        hook: script.hook,
+        contentPillar: script.contentPillar,
+        status: script.status,
+        assignedWriterName: script.assignedWriterName,
+        callToAction: script.callToAction,
+        estimatedDurationSeconds: script.estimatedDurationSeconds,
+        scenesCount: script.scenes?.length || 0,
+        slidesCount: script.slides?.length || 0
+      },
+      adaptiveCard
+    };
+
+    await this.sendTeamsPayload(payload);
+    return {
+      success: true,
+      scriptId: script.id,
+      message: `Script "${script.title}" successfully dispatched to Microsoft Teams!`
+    };
   }
 
   // Add Instagram Account

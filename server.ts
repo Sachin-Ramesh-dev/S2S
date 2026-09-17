@@ -2042,6 +2042,63 @@ app.post('/api/instagram/smtp/test', (req, res) => {
   });
 });
 
+// Microsoft Teams & Power Automate Webhook Integration
+app.get('/api/instagram/integrations/teams', (req, res) => {
+  try {
+    const config = instagramService.getTeamsConfig();
+    res.json({ success: true, config });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/instagram/integrations/teams', (req, res) => {
+  try {
+    const updated = instagramService.updateTeamsConfig(req.body);
+    persistInstagramState();
+    res.json({ success: true, config: updated });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/instagram/integrations/teams/test', async (req, res) => {
+  try {
+    if (req.body && req.body.webhookUrl !== undefined) {
+      instagramService.updateTeamsConfig({ webhookUrl: req.body.webhookUrl });
+      persistInstagramState();
+    }
+    const result = await instagramService.testTeamsWebhook();
+    persistInstagramState();
+    res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.post('/api/instagram/integrations/teams/send-topics', async (req, res) => {
+  try {
+    const { topicIds } = req.body;
+    const result = await instagramService.dispatchTopicsToTeams(topicIds);
+    persistInstagramState();
+    res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.post('/api/instagram/integrations/teams/send-script', async (req, res) => {
+  try {
+    const { scriptId } = req.body;
+    if (!scriptId) return res.status(400).json({ success: false, message: 'scriptId is required' });
+    const result = await instagramService.dispatchScriptToTeams(scriptId);
+    persistInstagramState();
+    res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // Audit Guardrail Injection
 app.post('/api/instagram/audits/guardrail', (req, res) => {
   try {

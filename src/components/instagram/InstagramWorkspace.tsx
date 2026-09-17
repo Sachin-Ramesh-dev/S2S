@@ -13,7 +13,8 @@ import {
   Check,
   Building2,
   X,
-  Kanban
+  Kanban,
+  Share2
 } from 'lucide-react';
 import {
   InstagramAccount,
@@ -35,6 +36,7 @@ import { InstagramTopicsView } from './InstagramTopicsView';
 import { InstagramScriptsView } from './InstagramScriptsView';
 import { InstagramSwimlaneView } from './InstagramSwimlaneView';
 import { InstagramCalendarView } from './InstagramCalendarView';
+import { InstagramIntegrationsView } from './InstagramIntegrationsView';
 import { InstagramConnectModal } from './InstagramConnectModal';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeToggle } from '../ThemeToggle';
@@ -45,7 +47,8 @@ export type InstagramSubTab =
   | 'topics'
   | 'scripts'
   | 'swimlane'
-  | 'calendar';
+  | 'calendar'
+  | 'integrations';
 
 interface InstagramWorkspaceProps {
   onOpenSettings?: () => void;
@@ -367,7 +370,8 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
       icon: Kanban,
       badge: scripts.filter((s) => !s.assignedWriterId).length > 0 ? scripts.filter((s) => !s.assignedWriterId).length : undefined
     },
-    { key: 'calendar', label: 'Content Calendar', icon: Calendar, badge: calendar.filter((c) => c.status === 'scheduled').length }
+    { key: 'calendar', label: 'Content Calendar', icon: Calendar, badge: calendar.filter((c) => c.status === 'scheduled').length },
+    { key: 'integrations', label: 'Integrations', icon: Share2 }
   ];
 
   if (loading) {
@@ -772,6 +776,13 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
             }}
             onNavigateToScripts={() => setActiveTab('scripts')}
             onPostUpdated={loadAllData}
+          />
+        )}
+
+        {activeTab === 'integrations' && (
+          <InstagramIntegrationsView
+            account={selectedAccount}
+            onShowToast={(msg, type) => showToast(msg, type)}
           />
         )}
       </div>

@@ -565,4 +565,15 @@ export interface McpTestResult {
   timestamp: string;
 }
 
+export interface TeamsIntegrationConfig {
+  webhookUrl: string;
+  enabled: boolean;
+  autoSendTopics: boolean;
+  autoSendScripts: boolean;
+  lastTestedAt?: string;
+  lastTestStatus?: 'success' | 'failed';
+  lastTestMessage?: string;
+  lastDispatchedAt?: string;
+}
+
 

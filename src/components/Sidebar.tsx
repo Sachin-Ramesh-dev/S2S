@@ -212,14 +212,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
       </div>
 
-      {/* Bottom Section: Theme Mode Toggle & Global Settings */}
+      {/* Bottom Section: Keyboard Shortcuts & Global Settings */}
       <div
         className={`p-2 border-t space-y-1 text-xs ${
           isDark ? 'border-[#222226]/60 text-[#a1a1aa]' : 'border-slate-200 text-slate-600'
         }`}
       >
-        {/* Light / Dark Mode Toggle Button */}
-        <ThemeToggle variant="sidebar" isCollapsed={isCollapsed} />
 
         {/* Keyboard Shortcuts Cheatsheet */}
         {onOpenShortcuts && (

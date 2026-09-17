@@ -16,7 +16,8 @@ import {
   McpConnection,
   McpTestResult,
   TeamMember,
-  SmtpConfig
+  SmtpConfig,
+  TeamsIntegrationConfig
 } from '../types/instagram';
 
 const BASE_URL = '/api/instagram';
@@ -646,6 +647,45 @@ export const instagramApi = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ recipient })
+    });
+  },
+
+  // Teams & Power Automate Integration
+  async getTeamsConfig(): Promise<TeamsIntegrationConfig> {
+    const data = await safeFetchJson<{ config: TeamsIntegrationConfig }>(`${BASE_URL}/integrations/teams`);
+    return data.config;
+  },
+
+  async updateTeamsConfig(config: Partial<TeamsIntegrationConfig>): Promise<TeamsIntegrationConfig> {
+    const data = await safeFetchJson<{ config: TeamsIntegrationConfig }>(`${BASE_URL}/integrations/teams`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config)
+    });
+    return data.config;
+  },
+
+  async testTeamsWebhook(webhookUrl?: string): Promise<{ success: boolean; message: string }> {
+    return safeFetchJson<{ success: boolean; message: string }>(`${BASE_URL}/integrations/teams/test`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ webhookUrl })
+    });
+  },
+
+  async sendTopicsToTeams(topicIds?: string[]): Promise<{ success: boolean; count: number; message: string }> {
+    return safeFetchJson<{ success: boolean; count: number; message: string }>(`${BASE_URL}/integrations/teams/send-topics`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topicIds })
+    });
+  },
+
+  async sendScriptToTeams(scriptId: string): Promise<{ success: boolean; scriptId: string; message: string }> {
+    return safeFetchJson<{ success: boolean; scriptId: string; message: string }>(`${BASE_URL}/integrations/teams/send-script`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scriptId })
     });
   },
 

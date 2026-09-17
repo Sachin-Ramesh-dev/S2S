@@ -42,6 +42,7 @@ import { AiBuilderModal } from './components/AiBuilderModal';
 import { HomePage } from './components/HomePage';
 import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { InstagramWorkspace } from './components/instagram/InstagramWorkspace';
+import { UnifiedSettingsPage } from './components/UnifiedSettingsPage';
 import { McpConnectionsPage } from './components/McpConnectionsPage';
 import { GlobalSettingsModal } from './components/GlobalSettingsModal';
 import { useTheme } from './context/ThemeContext';
@@ -67,8 +68,11 @@ import {
 
 export default function App() {
   const { isDark } = useTheme();
-  // Navigation View: 'instagram' | 'workflows' | 'workflow' | 'mcp' | 'overview' | 'personal'
-  const [currentView, setCurrentView] = useState<'instagram' | 'workflows' | 'workflow' | 'mcp' | 'overview' | 'personal'>('instagram');
+  // Navigation View: 'instagram' | 'workflows' | 'workflow' | 'settings' | 'mcp' | 'overview' | 'personal'
+  const [currentView, setCurrentView] = useState<'instagram' | 'workflows' | 'workflow' | 'settings' | 'mcp' | 'overview' | 'personal'>('instagram');
+  const [previousView, setPreviousView] = useState<'instagram' | 'workflows'>('instagram');
+  const [settingsInitialTab, setSettingsInitialTab] = useState<'general' | 'ai' | 'integrations' | 'mcp' | 'notifications' | 'security'>('general');
+  const [settingsInitialSubTab, setSettingsInitialSubTab] = useState<string | undefined>(undefined);
   const [workflowSubView, setWorkflowSubView] = useState<'editor' | 'executions' | 'evaluations'>('editor');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isGlobalSettingsOpen, setIsGlobalSettingsOpen] = useState(false);
@@ -685,7 +689,12 @@ export default function App() {
           activeNav={currentView}
           onNavigate={(nav) => {
             if (nav === 'settings') {
-              setIsGlobalSettingsOpen(true);
+              if (currentView !== 'settings') {
+                setPreviousView(currentView === 'workflow' ? 'workflows' : (currentView as 'instagram' | 'workflows'));
+              }
+              setSettingsInitialTab('general');
+              setSettingsInitialSubTab(undefined);
+              setCurrentView('settings');
             } else {
               setCurrentView(nav);
             }
@@ -694,7 +703,14 @@ export default function App() {
             handleNewWorkflow();
             setCurrentView('workflow');
           }}
-          onOpenSettings={() => setIsGlobalSettingsOpen(true)}
+          onOpenSettings={() => {
+            if (currentView !== 'settings') {
+              setPreviousView(currentView === 'workflow' ? 'workflows' : (currentView as 'instagram' | 'workflows'));
+            }
+            setSettingsInitialTab('general');
+            setSettingsInitialSubTab(undefined);
+            setCurrentView('settings');
+          }}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           onQuickSearch={() => setIsPaletteOpen(true)}
@@ -703,14 +719,39 @@ export default function App() {
 
         {/* Right View Panel */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-          {currentView === 'instagram' ? (
+          {currentView === 'settings' ? (
+            /* Unified Full-Page Settings & Integrations Workspace */
+            <UnifiedSettingsPage
+              onBack={() => setCurrentView(previousView)}
+              previousViewName={previousView === 'instagram' ? 'Content & Audit' : 'Workflows'}
+              initialTab={settingsInitialTab}
+              initialSubTab={settingsInitialSubTab}
+              onOpenVault={() => setIsVaultOpen(true)}
+            />
+          ) : currentView === 'instagram' ? (
             /* Instagram Content Intelligence & Page Audit Workspace */
-            <InstagramWorkspace onOpenSettings={() => setIsGlobalSettingsOpen(true)} />
+            <InstagramWorkspace
+              onOpenSettings={() => {
+                setPreviousView('instagram');
+                setSettingsInitialTab('general');
+                setSettingsInitialSubTab(undefined);
+                setCurrentView('settings');
+              }}
+              onNavigateToSettings={(tab, subTab) => {
+                setPreviousView('instagram');
+                setSettingsInitialTab((tab as any) || 'integrations');
+                setSettingsInitialSubTab(subTab);
+                setCurrentView('settings');
+              }}
+            />
           ) : currentView === 'mcp' ? (
-            /* MCP Connections Hub */
-            <div className="flex-1 overflow-y-auto bg-[#0d0d10]">
-              <McpConnectionsPage />
-            </div>
+            /* Deprecated standalone MCP route - redirect smoothly to Unified Settings MCP tab */
+            <UnifiedSettingsPage
+              onBack={() => setCurrentView(previousView)}
+              previousViewName={previousView === 'instagram' ? 'Content & Audit' : 'Workflows'}
+              initialTab="mcp"
+              onOpenVault={() => setIsVaultOpen(true)}
+            />
           ) : currentView === 'workflows' || currentView === 'overview' || currentView === 'personal' ? (
             /* Workflows Home Dashboard (Overview, Personal, Templates) */
             <HomePage

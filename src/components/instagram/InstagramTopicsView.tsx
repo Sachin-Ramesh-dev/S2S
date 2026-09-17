@@ -48,6 +48,7 @@ interface InstagramTopicsViewProps {
   onTopicUpdated?: () => void;
   onMoveSelectedToScripts?: (selectedTopicIds: string[]) => Promise<void>;
   isGenerating: boolean;
+  onNavigateToSettings?: (tab?: string, subTab?: string) => void;
 }
 
 export const InstagramTopicsView: React.FC<InstagramTopicsViewProps> = ({
@@ -60,7 +61,8 @@ export const InstagramTopicsView: React.FC<InstagramTopicsViewProps> = ({
   onGenerateScript,
   onTopicUpdated,
   onMoveSelectedToScripts,
-  isGenerating
+  isGenerating,
+  onNavigateToSettings
 }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -266,9 +268,21 @@ export const InstagramTopicsView: React.FC<InstagramTopicsViewProps> = ({
       if (res.success) {
         alert(res.message || 'Topics dispatched successfully to Microsoft Teams!');
       } else {
+        if ((!res.message || res.message.toLowerCase().includes('not configured')) && onNavigateToSettings) {
+          if (confirm('Microsoft Teams Webhook is not configured. Would you like to configure it now in Settings?')) {
+            onNavigateToSettings('integrations', 'teams');
+            return;
+          }
+        }
         alert(`Failed to send to Teams: ${res.message}`);
       }
     } catch (err: any) {
+      if (err.message && err.message.toLowerCase().includes('not configured') && onNavigateToSettings) {
+        if (confirm('Microsoft Teams Webhook is not configured. Would you like to configure it now in Settings?')) {
+          onNavigateToSettings('integrations', 'teams');
+          return;
+        }
+      }
       alert(`Teams dispatch error: ${err.message}`);
     } finally {
       setIsSendingTeams(false);

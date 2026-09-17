@@ -36,7 +36,6 @@ import { InstagramTopicsView } from './InstagramTopicsView';
 import { InstagramScriptsView } from './InstagramScriptsView';
 import { InstagramSwimlaneView } from './InstagramSwimlaneView';
 import { InstagramCalendarView } from './InstagramCalendarView';
-import { InstagramIntegrationsView } from './InstagramIntegrationsView';
 import { InstagramConnectModal } from './InstagramConnectModal';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeToggle } from '../ThemeToggle';
@@ -47,15 +46,16 @@ export type InstagramSubTab =
   | 'topics'
   | 'scripts'
   | 'swimlane'
-  | 'calendar'
-  | 'integrations';
+  | 'calendar';
 
 interface InstagramWorkspaceProps {
   onOpenSettings?: () => void;
+  onNavigateToSettings?: (tab?: string, subTab?: string) => void;
 }
 
 export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
-  onOpenSettings
+  onOpenSettings,
+  onNavigateToSettings
 }) => {
   const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<InstagramSubTab>('dashboard');
@@ -370,8 +370,7 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
       icon: Kanban,
       badge: scripts.filter((s) => !s.assignedWriterId).length > 0 ? scripts.filter((s) => !s.assignedWriterId).length : undefined
     },
-    { key: 'calendar', label: 'Content Calendar', icon: Calendar, badge: calendar.filter((c) => c.status === 'scheduled').length },
-    { key: 'integrations', label: 'Integrations', icon: Share2 }
+    { key: 'calendar', label: 'Content Calendar', icon: Calendar, badge: calendar.filter((c) => c.status === 'scheduled').length }
   ];
 
   if (loading) {
@@ -723,6 +722,7 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
             onTopicUpdated={loadAllData}
             onMoveSelectedToScripts={handleMoveSelectedToScripts}
             isGenerating={isGeneratingTopics}
+            onNavigateToSettings={onNavigateToSettings}
           />
         )}
 
@@ -737,6 +737,7 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
             onNavigateToCalendar={(scriptId) => setActiveTab('calendar')}
             onSwitchToSwimlane={() => setActiveTab('swimlane')}
             isGenerating={isGeneratingScript}
+            onNavigateToSettings={onNavigateToSettings}
           />
         )}
 
@@ -776,13 +777,6 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
             }}
             onNavigateToScripts={() => setActiveTab('scripts')}
             onPostUpdated={loadAllData}
-          />
-        )}
-
-        {activeTab === 'integrations' && (
-          <InstagramIntegrationsView
-            account={selectedAccount}
-            onShowToast={(msg, type) => showToast(msg, type)}
           />
         )}
       </div>

@@ -14,8 +14,8 @@ import { useTheme } from '../context/ThemeContext';
 import { ThemeToggle } from './ThemeToggle';
 
 interface SidebarProps {
-  activeNav: 'overview' | 'personal' | 'workflow' | 'instagram' | 'workflows' | 'mcp' | 'settings';
-  onNavigate: (nav: 'instagram' | 'workflows' | 'mcp' | 'settings') => void;
+  activeNav: 'overview' | 'personal' | 'workflow' | 'instagram' | 'workflows' | 'settings';
+  onNavigate: (nav: 'instagram' | 'workflows' | 'settings') => void;
   onCreateWorkflow: () => void;
   onOpenSettings: () => void;
   isCollapsed: boolean;
@@ -188,26 +188,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <Workflow className={`w-4 h-4 shrink-0 ${isDark ? 'text-[#f4f4f5]' : 'text-slate-700'}`} />
             {!isCollapsed && <span>Workflows</span>}
-          </button>
-
-          {/* MCP Connections */}
-          <button
-            id="nav-mcp-connections"
-            type="button"
-            onClick={() => onNavigate('mcp')}
-            title="MCP Connections"
-            className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-              activeNav === 'mcp'
-                ? isDark
-                  ? 'bg-[#222226] text-white shadow-sm font-semibold border border-[#3f3f46]'
-                  : 'bg-slate-100 text-slate-950 shadow-xs font-semibold border border-slate-300'
-                : isDark
-                ? 'text-[#a1a1aa] hover:bg-[#1a1a1e] hover:text-[#f4f4f5]'
-                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            }`}
-          >
-            <Server className={`w-4 h-4 shrink-0 ${isDark ? 'text-[#a1a1aa]' : 'text-slate-500'}`} />
-            {!isCollapsed && <span>MCP Connections</span>}
           </button>
         </nav>
       </div>

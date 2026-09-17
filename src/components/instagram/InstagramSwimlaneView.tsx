@@ -1,0 +1,1276 @@
+import React, { useState } from 'react';
+import {
+  FileText,
+  User,
+  CheckCircle2,
+  Clock,
+  Sparkles,
+  ChevronRight,
+  ChevronLeft,
+  ChevronDown,
+  Plus,
+  Search,
+  Filter,
+  ShieldCheck,
+  Video,
+  Copy,
+  ArrowRight,
+  AlertCircle,
+  ExternalLink,
+  Edit3,
+  CheckSquare,
+  Eye,
+  Send,
+  Kanban,
+  Users,
+  Film,
+  GripVertical,
+  ArrowDown
+} from 'lucide-react';
+import { ScriptItem, TeamMember } from '../../types/instagram';
+
+export type SwimlaneStage = 'needs_writing' | 'draft' | 'in_review' | 'ready_to_record' | 'completed';
+
+export interface SwimlaneStageConfig {
+  key: SwimlaneStage;
+  label: string;
+  sublabel: string;
+  badgeColor: string;
+  borderAccent: string;
+  headerBg: string;
+}
+
+export const SWIMLANE_STAGES: SwimlaneStageConfig[] = [
+  {
+    key: 'needs_writing',
+    label: 'Needs Writing',
+    sublabel: 'Backlog / Topic ready',
+    badgeColor: 'bg-slate-100 text-slate-700 border-slate-200',
+    borderAccent: 'border-slate-300',
+    headerBg: 'bg-slate-50'
+  },
+  {
+    key: 'draft',
+    label: 'Drafting',
+    sublabel: 'Writer developing hook & scenes',
+    badgeColor: 'bg-blue-100 text-blue-800 border-blue-200',
+    borderAccent: 'border-blue-400',
+    headerBg: 'bg-blue-50/60'
+  },
+  {
+    key: 'in_review',
+    label: 'In Review',
+    sublabel: 'Editorial & AI scoring polish',
+    badgeColor: 'bg-amber-100 text-amber-900 border-amber-200',
+    borderAccent: 'border-amber-400',
+    headerBg: 'bg-amber-50/60'
+  },
+  {
+    key: 'ready_to_record',
+    label: 'Ready to Record',
+    sublabel: 'Approved script ready for creator',
+    badgeColor: 'bg-purple-100 text-purple-900 border-purple-200',
+    borderAccent: 'border-purple-400',
+    headerBg: 'bg-purple-50/60'
+  },
+  {
+    key: 'completed',
+    label: 'Sent / Completed',
+    sublabel: 'Dispatched to agency or scheduled',
+    badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    borderAccent: 'border-emerald-400',
+    headerBg: 'bg-emerald-50/60'
+  }
+];
+
+interface InstagramSwimlaneViewProps {
+  scripts: ScriptItem[];
+  teamMembers: TeamMember[];
+  onSaveScript: (scriptId: string, updates: Partial<ScriptItem>) => Promise<void>;
+  onOpenScriptEditor: (scriptId: string) => void;
+  onAddTeamMember?: (member: Partial<TeamMember>) => Promise<TeamMember>;
+  onCreateScript?: (data: Partial<ScriptItem>) => Promise<void>;
+}
+
+export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
+  scripts,
+  teamMembers,
+  onSaveScript,
+  onOpenScriptEditor,
+  onAddTeamMember,
+  onCreateScript
+}) => {
+  // Filtering & Search
+  const [searchQuery, setSearchQuery] = useState('');
+  const [formatFilter, setFormatFilter] = useState<'all' | 'Reel' | 'Carousel'>('all');
+  const [writerFilter, setWriterFilter] = useState<string>('all');
+  const [isPolicyInfoOpen, setIsPolicyInfoOpen] = useState(false);
+
+  // Active Assignee Dropdown Popover
+  const [openAssigneeDropdownScriptId, setOpenAssigneeDropdownScriptId] = useState<string | null>(null);
+
+  // Quick New Script Modal
+  const [isNewScriptModalOpen, setIsNewScriptModalOpen] = useState(false);
+  const [newScriptTitle, setNewScriptTitle] = useState('');
+  const [newScriptFormat, setNewScriptFormat] = useState<'Reel' | 'Carousel'>('Reel');
+  const [newScriptHook, setNewScriptHook] = useState('');
+  const [newScriptWriterId, setNewScriptWriterId] = useState<string>('');
+  const [isCreatingScript, setIsCreatingScript] = useState(false);
+
+  // Add Script Writer Modal
+  const [isAddWriterModalOpen, setIsAddWriterModalOpen] = useState(false);
+  const [newWriterName, setNewWriterName] = useState('');
+  const [newWriterEmail, setNewWriterEmail] = useState('');
+  const [isAddingWriter, setIsAddingWriter] = useState(false);
+
+  // Error / Status feedback
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  // Filter team members by role: ONLY Script Writers
+  const isScriptWriter = (member: TeamMember) =>
+    member.role === 'Script Writer' || (member.role as string) === 'script_writer';
+
+  const scriptWriters = teamMembers.filter(isScriptWriter);
+  const nonScriptWriters = teamMembers.filter((m) => !isScriptWriter(m));
+
+  // Map script status into 5 swimlane stages
+  const mapScriptToSwimlaneStage = (status: string): SwimlaneStage => {
+    switch (status) {
+      case 'needs_writing':
+        return 'needs_writing';
+      case 'draft':
+        return 'draft';
+      case 'in_review':
+        return 'in_review';
+      case 'ready_to_record':
+        return 'ready_to_record';
+      case 'completed':
+      case 'sent_to_agency':
+      case 'approved':
+        return 'completed';
+      default:
+        return 'draft';
+    }
+  };
+
+  // Stage navigation
+  const stageOrder: SwimlaneStage[] = ['needs_writing', 'draft', 'in_review', 'ready_to_record', 'completed'];
+
+  // Drag and Drop States
+  const [draggedScriptId, setDraggedScriptId] = useState<string | null>(null);
+  const [dragOverCell, setDragOverCell] = useState<{ writerId: string; stageKey: SwimlaneStage } | null>(null);
+
+  // Drag and Drop drop handler (Moves stage and/or reassigns writer with strict role enforcement)
+  const handleDropScript = async (
+    scriptId: string,
+    targetWriterId: string | 'unassigned',
+    targetStageKey: SwimlaneStage
+  ) => {
+    setDragOverCell(null);
+    setDraggedScriptId(null);
+    try {
+      setActionError(null);
+      const script = scripts.find((s) => s.id === scriptId);
+      if (!script) return;
+
+      const updates: Partial<ScriptItem> = {
+        status: targetStageKey
+      };
+
+      if (targetWriterId === 'unassigned') {
+        updates.assignedWriterId = undefined;
+        updates.assignedWriterName = undefined;
+        updates.assignedWriterEmail = undefined;
+      } else {
+        const targetMember = teamMembers.find((m) => m.id === targetWriterId);
+        if (targetMember) {
+          // Strict Role Enforcement: Only Script Writers can be assigned!
+          if (!isScriptWriter(targetMember)) {
+            setActionError(
+              `Cannot assign: "${targetMember.name}" has role ${targetMember.role}. Only team members with the 'Script Writer' role can be assigned.`
+            );
+            return;
+          }
+          updates.assignedWriterId = targetMember.id;
+          updates.assignedWriterName = targetMember.name;
+          updates.assignedWriterEmail = targetMember.email;
+        }
+      }
+
+      await onSaveScript(scriptId, updates);
+    } catch (err: any) {
+      setActionError(err.message || 'Failed to move script');
+    }
+  };
+
+  const handleAdvanceStage = async (script: ScriptItem, direction: 'next' | 'prev') => {
+    const currentStage = mapScriptToSwimlaneStage(script.status);
+    const currentIndex = stageOrder.indexOf(currentStage);
+    const newIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+
+    if (newIndex >= 0 && newIndex < stageOrder.length) {
+      const nextStage = stageOrder[newIndex];
+      try {
+        setActionError(null);
+        await onSaveScript(script.id, { status: nextStage });
+      } catch (err: any) {
+        setActionError(err.message || 'Failed to update stage');
+      }
+    }
+  };
+
+  // Handle assigning script writer (Strictly enforced!)
+  const handleAssignWriter = async (scriptId: string, memberId: string | 'unassigned') => {
+    try {
+      setActionError(null);
+      setOpenAssigneeDropdownScriptId(null);
+
+      if (memberId === 'unassigned') {
+        await onSaveScript(scriptId, {
+          assignedWriterId: undefined,
+          assignedWriterName: undefined,
+          assignedWriterEmail: undefined
+        });
+        return;
+      }
+
+      const targetMember = teamMembers.find((m) => m.id === memberId);
+      if (!targetMember) {
+        setActionError('Selected team member was not found');
+        return;
+      }
+
+      // STRICT VALIDATION: Only members with 'Script Writer' role can be assigned!
+      if (!isScriptWriter(targetMember)) {
+        setActionError(
+          `Action blocked: Only team members with the 'Script Writer' role can be assigned to scripts. "${targetMember.name}" is an ${targetMember.role}.`
+        );
+        return;
+      }
+
+      await onSaveScript(scriptId, {
+        assignedWriterId: targetMember.id,
+        assignedWriterName: targetMember.name,
+        assignedWriterEmail: targetMember.email
+      });
+    } catch (err: any) {
+      setActionError(err.message || 'Failed to assign script writer');
+    }
+  };
+
+  // Quick create script assigned to a specific writer
+  const handleCreateNewScript = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newScriptTitle.trim()) return;
+
+    try {
+      setIsCreatingScript(true);
+      setActionError(null);
+
+      let writerName: string | undefined;
+      let writerEmail: string | undefined;
+
+      if (newScriptWriterId && newScriptWriterId !== 'unassigned') {
+        const writer = scriptWriters.find((w) => w.id === newScriptWriterId);
+        if (writer) {
+          writerName = writer.name;
+          writerEmail = writer.email;
+        }
+      }
+
+      if (onCreateScript) {
+        await onCreateScript({
+          title: newScriptTitle.trim(),
+          format: newScriptFormat,
+          hook: newScriptHook.trim() || `Hook: The secret to ${newScriptTitle.trim()}`,
+          status: 'needs_writing',
+          assignedWriterId: newScriptWriterId !== 'unassigned' ? newScriptWriterId : undefined,
+          assignedWriterName: writerName,
+          assignedWriterEmail: writerEmail
+        });
+      }
+
+      setNewScriptTitle('');
+      setNewScriptHook('');
+      setNewScriptWriterId('');
+      setIsNewScriptModalOpen(false);
+    } catch (err: any) {
+      setActionError(err.message || 'Failed to create script');
+    } finally {
+      setIsCreatingScript(false);
+    }
+  };
+
+  // Add new Script Writer
+  const handleAddWriterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newWriterName.trim() || !newWriterEmail.trim() || !onAddTeamMember) return;
+
+    try {
+      setIsAddingWriter(true);
+      setActionError(null);
+
+      await onAddTeamMember({
+        name: newWriterName.trim(),
+        email: newWriterEmail.trim(),
+        role: 'Script Writer', // Pre-fixed strictly as Script Writer
+        status: 'active'
+      });
+
+      setNewWriterName('');
+      setNewWriterEmail('');
+      setIsAddWriterModalOpen(false);
+    } catch (err: any) {
+      setActionError(err.message || 'Failed to add script writer');
+    } finally {
+      setIsAddingWriter(false);
+    }
+  };
+
+  // Filter scripts based on controls
+  const filteredScripts = scripts.filter((script) => {
+    const matchesSearch =
+      searchQuery === '' ||
+      script.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      script.hook.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (script.assignedWriterName && script.assignedWriterName.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    const matchesFormat = formatFilter === 'all' || script.format === formatFilter;
+
+    const matchesWriter =
+      writerFilter === 'all' ||
+      (writerFilter === 'unassigned' ? !script.assignedWriterId : script.assignedWriterId === writerFilter);
+
+    return matchesSearch && matchesFormat && matchesWriter;
+  });
+
+  // Calculate high-level stats
+  const totalInFlight = scripts.length;
+  const unassignedCount = scripts.filter((s) => !s.assignedWriterId).length;
+  const readyOrDoneCount = scripts.filter((s) => s.status === 'ready_to_record' || s.status === 'completed' || s.status === 'sent_to_agency').length;
+
+  return (
+    <div className="space-y-6">
+      {/* Header Banner & Policy Guardrail */}
+      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xs">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 mb-1.5">
+              <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wide bg-orange-50 text-orange-700 border border-orange-200 flex items-center gap-1.5">
+                <Kanban className="w-3.5 h-3.5 text-orange-600" />
+                Script Writer Swimlanes
+              </span>
+
+              {/* Policy Enforced Badge */}
+              <button
+                type="button"
+                onClick={() => setIsPolicyInfoOpen(!isPolicyInfoOpen)}
+                className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5 hover:bg-emerald-100 transition-colors cursor-pointer"
+                title="View role assignment policy"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Role Policy: Only Script Writers</span>
+              </button>
+
+              {/* Drag & Drop Pill */}
+              <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-orange-50 text-orange-800 border border-orange-200 flex items-center gap-1.5">
+                <GripVertical className="w-3.5 h-3.5 text-orange-600" />
+                <span>Drag & Drop Enabled</span>
+              </span>
+            </div>
+
+            <h1 className="text-xl font-bold text-gray-900 tracking-tight">
+              Script Production Swimlane Board
+            </h1>
+            <p className="text-xs text-gray-500 mt-1 max-w-2xl leading-relaxed">
+              Horizontal swimlanes organized by assigned Script Writer, tracking content from initial brief through drafting, review, and recording readiness.
+            </p>
+          </div>
+
+          {/* Quick Metrics Cards */}
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <div className="px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-center min-w-[90px]">
+              <span className="block text-base font-bold text-gray-900">{totalInFlight}</span>
+              <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Total Scripts</span>
+            </div>
+
+            <div className="px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-center min-w-[90px]">
+              <span className="block text-base font-bold text-purple-700">{scriptWriters.length}</span>
+              <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Script Writers</span>
+            </div>
+
+            <div
+              className={`px-3.5 py-2 border rounded-xl text-center min-w-[90px] ${
+                unassignedCount > 0 ? 'bg-amber-50 border-amber-300 text-amber-900' : 'bg-gray-50 border-gray-200'
+              }`}
+            >
+              <span className={`block text-base font-bold ${unassignedCount > 0 ? 'text-amber-700' : 'text-gray-900'}`}>
+                {unassignedCount}
+              </span>
+              <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Unassigned</span>
+            </div>
+
+            <div className="px-3.5 py-2 bg-emerald-50 border border-emerald-200 rounded-xl text-center min-w-[90px]">
+              <span className="block text-base font-bold text-emerald-700">{readyOrDoneCount}</span>
+              <span className="text-[10px] font-medium text-emerald-800 uppercase tracking-wider">Ready / Done</span>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2 pl-1">
+              <button
+                type="button"
+                onClick={() => setIsNewScriptModalOpen(true)}
+                className="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-xl shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>New Script</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsAddWriterModalOpen(true)}
+                className="px-3 py-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 text-xs font-semibold rounded-xl shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Add a team member with the Script Writer role"
+              >
+                <Users className="w-3.5 h-3.5 text-gray-500" />
+                <span>+ Add Writer</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Policy Explanation Banner (Toggled or visible) */}
+        {isPolicyInfoOpen && (
+          <div className="mt-4 p-3.5 bg-amber-50/80 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-start gap-2.5 animate-in fade-in duration-150">
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="font-semibold">Assignment Policy Rules Enforced:</p>
+              <p className="text-amber-800 leading-relaxed">
+                1. Only team members with the explicit <strong>&apos;Script Writer&apos;</strong> role can be assigned to scripts.
+                Account Managers, Content Creators, and general members cannot be assigned to writing lanes.
+              </p>
+              <p className="text-amber-800 leading-relaxed">
+                2. Only <strong>scripts</strong> have assigned writers; ideas, topics, and calendar assets inherit or delegate through the script lifecycle.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Action Error Alert */}
+        {actionError && (
+          <div className="mt-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+              <span>{actionError}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActionError(null)}
+              className="text-rose-600 hover:text-rose-800 font-semibold px-2 py-0.5 rounded cursor-pointer"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* Filter Controls Bar */}
+        <div className="mt-5 pt-4 border-t border-gray-100 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 flex-1 max-w-md">
+            <div className="relative flex-1">
+              <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search scripts by title, hook, or writer..."
+                className="w-full pl-9 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-500 focus:bg-white"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {/* Filter by Writer */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] font-medium text-gray-500">Writer:</span>
+              <select
+                value={writerFilter}
+                onChange={(e) => setWriterFilter(e.target.value)}
+                className="px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs text-gray-800 font-medium focus:outline-none focus:border-orange-500 cursor-pointer"
+              >
+                <option value="all">All Script Writers ({scriptWriters.length})</option>
+                {scriptWriters.map((w) => (
+                  <option key={w.id} value={w.id}>
+                    ✍️ {w.name}
+                  </option>
+                ))}
+                <option value="unassigned">⚠️ Unassigned ({unassignedCount})</option>
+              </select>
+            </div>
+
+            {/* Filter by Format */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] font-medium text-gray-500">Format:</span>
+              <div className="flex items-center bg-gray-100 p-0.5 rounded-lg border border-gray-200">
+                <button
+                  type="button"
+                  onClick={() => setFormatFilter('all')}
+                  className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                    formatFilter === 'all' ? 'bg-white text-gray-900 shadow-2xs' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  All
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormatFilter('Reel')}
+                  className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer flex items-center gap-1 ${
+                    formatFilter === 'Reel' ? 'bg-white text-orange-700 shadow-2xs font-semibold' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <Video className="w-3 h-3" />
+                  <span>Reel</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormatFilter('Carousel')}
+                  className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer flex items-center gap-1 ${
+                    formatFilter === 'Carousel' ? 'bg-white text-blue-700 shadow-2xs font-semibold' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <Copy className="w-3 h-3" />
+                  <span>Carousel</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Swimlane Matrix */}
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-xs overflow-x-auto">
+        <div className="min-w-[1100px]">
+          {/* Header Row: Stage Columns */}
+          <div className="grid grid-cols-12 border-b border-gray-200 bg-gray-50/80 sticky top-0 z-10">
+            {/* Lane Identifier Column Header */}
+            <div className="col-span-3 p-3.5 border-r border-gray-200 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-orange-600" />
+                <span className="text-xs font-bold text-gray-900 uppercase tracking-wider">
+                  Script Writer Swimlane
+                </span>
+              </div>
+              <span className="text-[10px] font-semibold text-gray-500 bg-gray-200/80 px-2 py-0.5 rounded-full">
+                {scriptWriters.length} Writers
+              </span>
+            </div>
+
+            {/* 5 Workflow Stage Column Headers */}
+            <div className="col-span-9 grid grid-cols-5">
+              {SWIMLANE_STAGES.map((stage, idx) => (
+                <div
+                  key={stage.key}
+                  className={`p-3 border-r border-gray-200 last:border-r-0 ${stage.headerBg}`}
+                >
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-xs font-bold text-gray-900 tracking-tight">
+                      {stage.label}
+                    </span>
+                    <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold border ${stage.badgeColor}`}>
+                      {filteredScripts.filter((s) => mapScriptToSwimlaneStage(s.status) === stage.key).length}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-gray-500 truncate">{stage.sublabel}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Swimlanes Body: 1 Swimlane Row per Script Writer */}
+          <div className="divide-y divide-gray-200">
+            {/* 1. Unassigned Scripts Swimlane (if any exist, or shown as top priority queue) */}
+            {unassignedCount > 0 && (writerFilter === 'all' || writerFilter === 'unassigned') && (
+              <div className="grid grid-cols-12 bg-amber-50/20 hover:bg-amber-50/30 transition-colors">
+                {/* Lane Header: Unassigned */}
+                <div className="col-span-3 p-4 border-r border-gray-200 flex flex-col justify-between bg-amber-50/40">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 font-bold text-xs shadow-2xs">
+                        ⚠️
+                      </div>
+                      <div>
+                        <h3 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+                          <span>Unassigned Scripts</span>
+                        </h3>
+                        <span className="inline-block px-1.5 py-0.2 rounded text-[10px] font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                          Awaiting Script Writer
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-2 leading-relaxed">
+                      Scripts needing writer assignment. Click on any card below to assign a designated Script Writer.
+                    </p>
+                  </div>
+
+                  <div className="mt-3 pt-2 border-t border-amber-200/60 flex items-center justify-between text-[11px] text-amber-900 font-medium">
+                    <span>{filteredScripts.filter((s) => !s.assignedWriterId).length} unassigned scripts</span>
+                    <span className="text-[10px] text-amber-700">Assign below ↓</span>
+                  </div>
+                </div>
+
+                {/* 5 Columns for Unassigned Lane */}
+                <div className="col-span-9 grid grid-cols-5 divide-x divide-gray-200">
+                  {SWIMLANE_STAGES.map((stage) => {
+                    const laneScripts = filteredScripts.filter(
+                      (s) => !s.assignedWriterId && mapScriptToSwimlaneStage(s.status) === stage.key
+                    );
+                    const isCellOver =
+                      dragOverCell?.writerId === 'unassigned' && dragOverCell?.stageKey === stage.key;
+
+                    return (
+                      <div
+                        key={stage.key}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.dataTransfer.dropEffect = 'move';
+                          if (dragOverCell?.writerId !== 'unassigned' || dragOverCell?.stageKey !== stage.key) {
+                            setDragOverCell({ writerId: 'unassigned', stageKey: stage.key });
+                          }
+                        }}
+                        onDragLeave={(e) => {
+                          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                            setDragOverCell(null);
+                          }
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          const scriptId = e.dataTransfer.getData('text/plain');
+                          if (scriptId) {
+                            handleDropScript(scriptId, 'unassigned', stage.key);
+                          }
+                        }}
+                        className={`p-2.5 min-h-[160px] flex flex-col gap-2 transition-all ${
+                          isCellOver ? 'bg-orange-100/60 ring-2 ring-inset ring-orange-400' : ''
+                        }`}
+                      >
+                        {isCellOver && draggedScriptId && (
+                          <div className="p-2 border-2 border-dashed border-orange-500 bg-orange-50 rounded-xl text-center text-[10px] font-bold text-orange-900 flex items-center justify-center gap-1 animate-pulse">
+                            <ArrowDown className="w-3 h-3 text-orange-600" />
+                            <span>Drop in {stage.label}</span>
+                          </div>
+                        )}
+                        {laneScripts.length === 0 && !isCellOver ? (
+                          <div className="flex-1 flex items-center justify-center p-3 text-center text-[11px] text-gray-400 border border-dashed border-gray-200 rounded-xl">
+                            <span className="text-[10px] text-gray-400">Empty</span>
+                          </div>
+                        ) : (
+                          laneScripts.map((script) => (
+                            <SwimlaneCard
+                              key={script.id}
+                              script={script}
+                              stageKey={stage.key}
+                              scriptWriters={scriptWriters}
+                              nonScriptWriters={nonScriptWriters}
+                              isDragging={draggedScriptId === script.id}
+                              onDragStart={() => setDraggedScriptId(script.id)}
+                              onDragEnd={() => {
+                                setDraggedScriptId(null);
+                                setDragOverCell(null);
+                              }}
+                              isAssigneeOpen={openAssigneeDropdownScriptId === script.id}
+                              onToggleAssignee={() =>
+                                setOpenAssigneeDropdownScriptId(
+                                  openAssigneeDropdownScriptId === script.id ? null : script.id
+                                )
+                              }
+                              onAssignWriter={(writerId) => handleAssignWriter(script.id, writerId)}
+                              onAdvanceStage={(dir) => handleAdvanceStage(script, dir)}
+                              onOpenEditor={() => onOpenScriptEditor(script.id)}
+                            />
+                          ))
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* 2. Registered Script Writers' Swimlanes */}
+            {scriptWriters.length === 0 ? (
+              <div className="p-12 text-center">
+                <Users className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                <p className="text-sm font-bold text-gray-800">No Script Writers Configured</p>
+                <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
+                  To use the script writer swimlane view, add at least one team member with the &apos;Script Writer&apos; role.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setIsAddWriterModalOpen(true)}
+                  className="mt-4 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-semibold inline-flex items-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Add First Script Writer
+                </button>
+              </div>
+            ) : (
+              scriptWriters
+                .filter((w) => writerFilter === 'all' || writerFilter === w.id)
+                .map((writer) => {
+                  const writerScripts = filteredScripts.filter((s) => s.assignedWriterId === writer.id);
+                  const inProgressCount = writerScripts.filter((s) => s.status === 'draft' || s.status === 'in_review').length;
+
+                  return (
+                    <div key={writer.id} className="grid grid-cols-12 hover:bg-gray-50/40 transition-colors">
+                      {/* Lane Header: Writer Profile & Workload */}
+                      <div className="col-span-3 p-4 border-r border-gray-200 flex flex-col justify-between bg-slate-50/40">
+                        <div>
+                          <div className="flex items-start gap-2.5">
+                            {/* Avatar */}
+                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 text-white font-bold text-xs flex items-center justify-center shadow-2xs shrink-0">
+                              {writer.name
+                                .split(' ')
+                                .map((n) => n[0])
+                                .join('')
+                                .slice(0, 2)
+                                .toUpperCase()}
+                            </div>
+
+                            <div className="min-w-0 flex-1">
+                              <h3 className="text-xs font-bold text-gray-900 truncate flex items-center gap-1.5">
+                                <span className="truncate">{writer.name}</span>
+                              </h3>
+                              <div className="flex items-center gap-1.5 mt-0.5">
+                                <span className="inline-flex items-center gap-1 px-2 py-0.2 rounded-full text-[10px] font-semibold bg-orange-100 text-orange-900 border border-orange-200">
+                                  <Edit3 className="w-2.5 h-2.5 text-orange-700" />
+                                  Script Writer
+                                </span>
+                              </div>
+                              <p className="text-[10px] text-gray-400 mt-1 truncate">{writer.email}</p>
+                            </div>
+                          </div>
+
+                          {/* Workload Stats */}
+                          <div className="mt-3.5 grid grid-cols-2 gap-1.5 text-center">
+                            <div className="p-1.5 bg-white border border-gray-200 rounded-lg">
+                              <span className="block text-xs font-bold text-gray-900">{writerScripts.length}</span>
+                              <span className="text-[9px] text-gray-500 font-medium uppercase">Assigned</span>
+                            </div>
+                            <div className="p-1.5 bg-white border border-gray-200 rounded-lg">
+                              <span className="block text-xs font-bold text-orange-600">{inProgressCount}</span>
+                              <span className="text-[9px] text-gray-500 font-medium uppercase">In Progress</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Lane Quick Action */}
+                        <div className="mt-3 pt-2 border-t border-gray-200 flex items-center justify-between">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setNewScriptWriterId(writer.id);
+                              setIsNewScriptModalOpen(true);
+                            }}
+                            className="text-[11px] font-semibold text-orange-600 hover:text-orange-800 flex items-center gap-1 cursor-pointer transition-colors"
+                          >
+                            <Plus className="w-3 h-3" />
+                            <span>Assign New Script</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* 5 Workflow Stage Columns for this Writer */}
+                      <div className="col-span-9 grid grid-cols-5 divide-x divide-gray-200">
+                        {SWIMLANE_STAGES.map((stage) => {
+                          const laneScripts = writerScripts.filter(
+                            (s) => mapScriptToSwimlaneStage(s.status) === stage.key
+                          );
+                          const isCellOver =
+                            dragOverCell?.writerId === writer.id && dragOverCell?.stageKey === stage.key;
+
+                          return (
+                            <div
+                              key={stage.key}
+                              onDragOver={(e) => {
+                                e.preventDefault();
+                                e.dataTransfer.dropEffect = 'move';
+                                if (dragOverCell?.writerId !== writer.id || dragOverCell?.stageKey !== stage.key) {
+                                  setDragOverCell({ writerId: writer.id, stageKey: stage.key });
+                                }
+                              }}
+                              onDragLeave={(e) => {
+                                if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                                  setDragOverCell(null);
+                                }
+                              }}
+                              onDrop={(e) => {
+                                e.preventDefault();
+                                const scriptId = e.dataTransfer.getData('text/plain');
+                                if (scriptId) {
+                                  handleDropScript(scriptId, writer.id, stage.key);
+                                }
+                              }}
+                              className={`p-2.5 min-h-[170px] flex flex-col gap-2 transition-all ${
+                                isCellOver ? 'bg-orange-100/60 ring-2 ring-inset ring-orange-400' : ''
+                              }`}
+                            >
+                              {isCellOver && draggedScriptId && (
+                                <div className="p-2 border-2 border-dashed border-orange-500 bg-orange-50 rounded-xl text-center text-[10px] font-bold text-orange-900 flex items-center justify-center gap-1 animate-pulse">
+                                  <ArrowDown className="w-3 h-3 text-orange-600" />
+                                  <span>Drop to assign {writer.name.split(' ')[0]} ({stage.label})</span>
+                                </div>
+                              )}
+                              {laneScripts.length === 0 && !isCellOver ? (
+                                <div className="flex-1 flex items-center justify-center p-3 text-center text-[11px] text-gray-400 border border-dashed border-gray-200 rounded-xl">
+                                  <span className="text-[10px] text-gray-400">No scripts</span>
+                                </div>
+                              ) : (
+                                laneScripts.map((script) => (
+                                  <SwimlaneCard
+                                    key={script.id}
+                                    script={script}
+                                    stageKey={stage.key}
+                                    scriptWriters={scriptWriters}
+                                    nonScriptWriters={nonScriptWriters}
+                                    isDragging={draggedScriptId === script.id}
+                                    onDragStart={() => setDraggedScriptId(script.id)}
+                                    onDragEnd={() => {
+                                      setDraggedScriptId(null);
+                                      setDragOverCell(null);
+                                    }}
+                                    isAssigneeOpen={openAssigneeDropdownScriptId === script.id}
+                                    onToggleAssignee={() =>
+                                      setOpenAssigneeDropdownScriptId(
+                                        openAssigneeDropdownScriptId === script.id ? null : script.id
+                                      )
+                                    }
+                                    onAssignWriter={(writerId) => handleAssignWriter(script.id, writerId)}
+                                    onAdvanceStage={(dir) => handleAdvanceStage(script, dir)}
+                                    onOpenEditor={() => onOpenScriptEditor(script.id)}
+                                  />
+                                ))
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* MODAL 1: Quick Create New Script & Assign to Writer */}
+      {isNewScriptModalOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-orange-600" />
+                <h3 className="text-base font-bold text-gray-900">Create & Assign New Script</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsNewScriptModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 text-sm font-bold p-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateNewScript} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Script Title</label>
+                <input
+                  type="text"
+                  value={newScriptTitle}
+                  onChange={(e) => setNewScriptTitle(e.target.value)}
+                  placeholder="e.g. The 50/30/20 Rule Hack: Double Your Investment Rate"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs text-gray-900 focus:outline-none focus:border-orange-500"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Content Format</label>
+                  <select
+                    value={newScriptFormat}
+                    onChange={(e) => setNewScriptFormat(e.target.value as 'Reel' | 'Carousel')}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs text-gray-900 focus:outline-none focus:border-orange-500 cursor-pointer"
+                  >
+                    <option value="Reel">🎬 Reel (9:16 Video Script)</option>
+                    <option value="Carousel">📑 Carousel (Multi-Slide Script)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
+                    Assign Script Writer <span className="text-orange-600 font-semibold">*Strict Role</span>
+                  </label>
+                  <select
+                    value={newScriptWriterId}
+                    onChange={(e) => setNewScriptWriterId(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs text-gray-900 focus:outline-none focus:border-orange-500 cursor-pointer"
+                  >
+                    <option value="unassigned">⚠️ Leave Unassigned</option>
+                    {scriptWriters.map((w) => (
+                      <option key={w.id} value={w.id}>
+                        ✍️ {w.name} (Script Writer)
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[10px] text-gray-400 mt-1">
+                    Only team members with &apos;Script Writer&apos; role are selectable.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Opening Hook (Optional)</label>
+                <textarea
+                  rows={2}
+                  value={newScriptHook}
+                  onChange={(e) => setNewScriptHook(e.target.value)}
+                  placeholder="3-second hook that stops users from scrolling..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs text-gray-900 focus:outline-none focus:border-orange-500"
+                />
+              </div>
+
+              <div className="pt-3 border-t border-gray-100 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsNewScriptModalOpen(false)}
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-xl cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isCreatingScript || !newScriptTitle.trim()}
+                  className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white text-xs font-semibold rounded-xl shadow-xs cursor-pointer flex items-center gap-1.5"
+                >
+                  {isCreatingScript ? 'Creating...' : 'Create in Swimlane'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: Add New Script Writer to Team */}
+      {isAddWriterModalOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-orange-600" />
+                <h3 className="text-base font-bold text-gray-900">Add Script Writer</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddWriterModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 text-sm font-bold p-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleAddWriterSubmit} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Full Name</label>
+                <input
+                  type="text"
+                  value={newWriterName}
+                  onChange={(e) => setNewWriterName(e.target.value)}
+                  placeholder="e.g. Neha Kapoor"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs text-gray-900 focus:outline-none focus:border-orange-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Email Address</label>
+                <input
+                  type="email"
+                  value={newWriterEmail}
+                  onChange={(e) => setNewWriterEmail(e.target.value)}
+                  placeholder="e.g. neha.k@contentlab.io"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs text-gray-900 focus:outline-none focus:border-orange-500"
+                  required
+                />
+              </div>
+
+              <div className="p-3 bg-orange-50/70 border border-orange-200 rounded-xl text-xs text-orange-900">
+                <div className="flex items-center gap-1.5 font-bold">
+                  <ShieldCheck className="w-4 h-4 text-orange-600" />
+                  <span>Fixed Role: Script Writer</span>
+                </div>
+                <p className="text-[11px] text-orange-800 mt-1 leading-relaxed">
+                  This member will be assigned the <strong>Script Writer</strong> role and will automatically get their own dedicated swimlane on this board.
+                </p>
+              </div>
+
+              <div className="pt-3 border-t border-gray-100 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddWriterModalOpen(false)}
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-xl cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isAddingWriter || !newWriterName.trim() || !newWriterEmail.trim()}
+                  className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white text-xs font-semibold rounded-xl shadow-xs cursor-pointer flex items-center gap-1.5"
+                >
+                  {isAddingWriter ? 'Adding...' : 'Add Script Writer'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Subcomponent: Individual Card in Swimlane
+interface SwimlaneCardProps {
+  script: ScriptItem;
+  stageKey: SwimlaneStage;
+  scriptWriters: TeamMember[];
+  nonScriptWriters: TeamMember[];
+  isDragging?: boolean;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
+  isAssigneeOpen: boolean;
+  onToggleAssignee: () => void;
+  onAssignWriter: (writerId: string) => void;
+  onAdvanceStage: (direction: 'next' | 'prev') => void;
+  onOpenEditor: () => void;
+}
+
+const SwimlaneCard: React.FC<SwimlaneCardProps> = ({
+  script,
+  stageKey,
+  scriptWriters,
+  nonScriptWriters,
+  isDragging = false,
+  onDragStart,
+  onDragEnd,
+  isAssigneeOpen,
+  onToggleAssignee,
+  onAssignWriter,
+  onAdvanceStage,
+  onOpenEditor
+}) => {
+  const isReel = script.format === 'Reel';
+  const stageOrder: SwimlaneStage[] = ['needs_writing', 'draft', 'in_review', 'ready_to_record', 'completed'];
+  const currentIndex = stageOrder.indexOf(stageKey);
+  const canGoPrev = currentIndex > 0;
+  const canGoNext = currentIndex < stageOrder.length - 1;
+
+  return (
+    <div
+      draggable={true}
+      onDragStart={(e) => {
+        e.dataTransfer.setData('text/plain', script.id);
+        e.dataTransfer.setData('application/json', JSON.stringify({ scriptId: script.id, stageKey }));
+        e.dataTransfer.effectAllowed = 'move';
+        onDragStart?.();
+      }}
+      onDragEnd={() => {
+        onDragEnd?.();
+      }}
+      className={`relative bg-white border rounded-xl p-3 shadow-xs hover:shadow-md transition-all flex flex-col justify-between gap-2.5 group cursor-grab active:cursor-grabbing select-none ${
+        isDragging
+          ? 'opacity-40 border-orange-500 ring-2 ring-orange-500 scale-[0.98]'
+          : 'border-gray-200 hover:border-orange-300'
+      }`}
+    >
+      {/* Top Row: Format badge + Viral Score */}
+      <div>
+        <div className="flex items-center justify-between gap-1.5 mb-1.5">
+          <div className="flex items-center gap-1.5">
+            <span
+              className="text-gray-400 group-hover:text-orange-500 transition-colors"
+              title="Drag to move stage or assign writer"
+            >
+              <GripVertical className="w-3.5 h-3.5" />
+            </span>
+            <span
+              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                isReel ? 'bg-orange-50 text-orange-700 border border-orange-200' : 'bg-blue-50 text-blue-700 border border-blue-200'
+              }`}
+            >
+              {isReel ? <Video className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+              <span>{script.format}</span>
+            </span>
+          </div>
+
+          {script.score !== undefined && (
+            <span className="px-1.5 py-0.2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-[10px] font-bold">
+              ★ {script.score}
+            </span>
+          )}
+        </div>
+
+        {/* Script Title */}
+        <h4
+          onClick={onOpenEditor}
+          className="text-xs font-bold text-gray-900 leading-snug line-clamp-2 hover:text-orange-600 transition-colors cursor-pointer"
+          title={script.title}
+        >
+          {script.title}
+        </h4>
+
+        {/* Hook Excerpt */}
+        {script.hook && (
+          <p className="text-[11px] text-gray-500 mt-1 line-clamp-2 italic leading-tight">
+            &ldquo;{script.hook}&rdquo;
+          </p>
+        )}
+      </div>
+
+      {/* Bottom Controls: Assignee Dropdown + Stage Arrows */}
+      <div className="pt-2 border-t border-gray-100 flex items-center justify-between gap-1">
+        {/* Assigned Writer Picker Button */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleAssignee();
+            }}
+            className={`px-2 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1.5 border transition-colors cursor-pointer ${
+              script.assignedWriterName
+                ? 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-200'
+                : 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-300 animate-pulse'
+            }`}
+            title="Assign script writer"
+          >
+            <Edit3 className="w-2.5 h-2.5 text-orange-600" />
+            <span className="max-w-[85px] truncate">
+              {script.assignedWriterName ? script.assignedWriterName.split(' ')[0] : 'Assign Writer'}
+            </span>
+            <ChevronDown className="w-2.5 h-2.5 text-gray-400" />
+          </button>
+
+          {/* Strict Assignee Dropdown */}
+          {isAssigneeOpen && (
+            <>
+              <div className="fixed inset-0 z-30" onClick={onToggleAssignee} />
+              <div
+                className="absolute left-0 bottom-full mb-1 w-56 bg-white text-gray-900 rounded-xl shadow-2xl border border-gray-200 py-2 z-40 animate-in fade-in zoom-in-95 duration-100"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="px-3 py-1.5 border-b border-gray-100">
+                  <span className="block text-[11px] font-bold text-gray-900">
+                    Assign Script Writer
+                  </span>
+                  <span className="block text-[9px] text-emerald-700 font-medium mt-0.5">
+                    ✓ Only &apos;Script Writer&apos; role allowed
+                  </span>
+                </div>
+
+                <div className="max-h-48 overflow-y-auto py-1">
+                  {/* Unassign option */}
+                  <button
+                    type="button"
+                    onClick={() => onAssignWriter('unassigned')}
+                    className="w-full px-3 py-1.5 text-left text-xs font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 flex items-center gap-2 cursor-pointer transition-colors"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-gray-300"></span>
+                    <span>None (Unassigned)</span>
+                  </button>
+
+                  {/* Eligible Script Writers */}
+                  {scriptWriters.map((writer) => {
+                    const isSelected = script.assignedWriterId === writer.id;
+                    return (
+                      <button
+                        key={writer.id}
+                        type="button"
+                        onClick={() => onAssignWriter(writer.id)}
+                        className={`w-full px-3 py-1.5 text-left text-xs font-semibold flex items-center justify-between cursor-pointer transition-colors ${
+                          isSelected
+                            ? 'bg-orange-50 text-orange-950 font-bold'
+                            : 'text-gray-800 hover:bg-orange-50/70 hover:text-orange-900'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <span className="w-5 h-5 rounded-full bg-orange-100 text-orange-800 text-[10px] font-bold flex items-center justify-center shrink-0">
+                            {writer.name[0]}
+                          </span>
+                          <span className="truncate">{writer.name}</span>
+                        </div>
+                        {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-orange-600 shrink-0" />}
+                      </button>
+                    );
+                  })}
+
+                  {/* Ineligible Other Roles (Disabled section showing enforcement) */}
+                  {nonScriptWriters.length > 0 && (
+                    <>
+                      <div className="px-3 pt-2 pb-1 border-t border-gray-100 mt-1">
+                        <span className="block text-[9px] font-bold uppercase tracking-wider text-gray-400">
+                          Other Roles (Ineligible for Script Assignment)
+                        </span>
+                      </div>
+                      {nonScriptWriters.map((member) => (
+                        <div
+                          key={member.id}
+                          className="px-3 py-1 text-xs text-gray-400 flex items-center justify-between opacity-60 cursor-not-allowed"
+                          title={`Cannot assign: ${member.name} has role '${member.role}', not 'Script Writer'`}
+                        >
+                          <span className="truncate">{member.name}</span>
+                          <span className="text-[9px] px-1.5 py-0.2 bg-gray-100 rounded text-gray-500">
+                            {member.role}
+                          </span>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Stage Advancement Arrow Controls */}
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            disabled={!canGoPrev}
+            onClick={() => onAdvanceStage('prev')}
+            className="p-1 bg-gray-50 hover:bg-gray-100 disabled:opacity-30 text-gray-600 rounded-md border border-gray-200 transition-colors cursor-pointer"
+            title="Move to previous stage"
+          >
+            <ChevronLeft className="w-3 h-3" />
+          </button>
+
+          <button
+            type="button"
+            onClick={onOpenEditor}
+            className="px-1.5 py-0.8 bg-gray-50 hover:bg-orange-50 text-gray-600 hover:text-orange-700 rounded-md border border-gray-200 text-[10px] font-semibold transition-colors cursor-pointer"
+            title="Open script details"
+          >
+            Edit
+          </button>
+
+          <button
+            type="button"
+            disabled={!canGoNext}
+            onClick={() => onAdvanceStage('next')}
+            className="p-1 bg-gray-50 hover:bg-gray-100 disabled:opacity-30 text-gray-600 rounded-md border border-gray-200 transition-colors cursor-pointer"
+            title="Move to next stage"
+          >
+            <ChevronRight className="w-3 h-3" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};

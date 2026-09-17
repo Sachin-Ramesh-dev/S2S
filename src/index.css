@@ -1,1 +1,83 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: dark;
+  --bg-canvas: #101013;
+  --bg-surface: #141417;
+  --bg-surface-elevated: #18181c;
+  --bg-surface-subtle: #1f1f24;
+  --bg-input: #121215;
+  --border-subtle: #27272b;
+  --border-muted: #38383f;
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+}
+
+html.light {
+  color-scheme: light;
+  --bg-canvas: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f1f5f9;
+  --bg-surface-subtle: #e2e8f0;
+  --bg-input: #ffffff;
+  --border-subtle: #e2e8f0;
+  --border-muted: #cbd5e1;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+}
+
+html.dark {
+  color-scheme: dark;
+  --bg-canvas: #101013;
+  --bg-surface: #141417;
+  --bg-surface-elevated: #18181c;
+  --bg-surface-subtle: #1f1f24;
+  --bg-input: #121215;
+  --border-subtle: #27272b;
+  --border-muted: #38383f;
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+}
+
+@layer base {
+  input, textarea, select {
+    color: inherit;
+  }
+}
+
+/* Smooth theme transitions */
+#nodeflow-app-root,
+#app-sidebar,
+#workflow-navbar,
+main {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+.light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+

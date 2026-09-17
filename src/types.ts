@@ -13,15 +13,81 @@ export interface NodePort {
   type?: 'main' | 'true' | 'false' | 'error' | string;
 }
 
+export type NodeParameterType =
+  | 'string'
+  | 'number'
+  | 'boolean'
+  | 'options'
+  | 'multiOptions'
+  | 'dateTime'
+  | 'color'
+  | 'json'
+  | 'code'
+  | 'secret'
+  | 'collection'
+  | 'fixedCollection'
+  | 'resourceMapper'
+  | 'notice'
+  | 'select'
+  | 'headers';
+
+export interface NodeParameterOption {
+  label: string;
+  value: any;
+  description?: string;
+}
+
+export interface CollectionField {
+  name: string;
+  label: string;
+  type: 'string' | 'number' | 'boolean' | 'options';
+  placeholder?: string;
+  default?: any;
+  options?: NodeParameterOption[];
+}
+
 export interface NodeParameterSchema {
   name: string;
   label: string;
-  type: 'string' | 'number' | 'boolean' | 'select' | 'json' | 'code' | 'secret' | 'headers';
+  type: NodeParameterType;
   default?: any;
-  options?: { label: string; value: string }[];
+  options?: NodeParameterOption[];
   description?: string;
   placeholder?: string;
   required?: boolean;
+  typeOptions?: {
+    rows?: number;
+    language?: 'javascript' | 'python' | 'json' | 'sql';
+    minValue?: number;
+    maxValue?: number;
+    step?: number;
+    multipleValues?: boolean;
+  };
+  displayOptions?: {
+    show?: Record<string, any[]>;
+    hide?: Record<string, any[]>;
+  };
+  noticeType?: 'info' | 'warning' | 'error' | 'success';
+  noticeText?: string;
+  collectionFields?: CollectionField[];
+  supportsExpression?: boolean;
+}
+
+export interface NodeConfigExample {
+  title: string;
+  description: string;
+  config: Record<string, any>;
+  sampleOutput?: any;
+}
+
+export interface NodeDocumentation {
+  overview?: string;
+  usageGuide?: string;
+  inputRequirements?: string;
+  outputDescription?: string;
+  configurationExamples?: NodeConfigExample[];
+  tips?: string[];
+  externalDocsUrl?: string;
 }
 
 export interface NodeDefinition {
@@ -38,16 +104,20 @@ export interface NodeDefinition {
   isTrigger?: boolean;
   isPlugin?: boolean;
   pluginId?: string;
+  documentation?: NodeDocumentation;
 }
 
 export interface WorkflowNode {
   id: string;
   type: string;
   name: string;
+  subtitle?: string;
   position: { x: number; y: number };
   parameters: Record<string, any>;
+  parameterModes?: Record<string, 'fixed' | 'expression'>;
   credentialsRef?: string;
   disabled?: boolean;
+  pinnedData?: any;
   notes?: string;
   pluginId?: string;
 }
@@ -58,6 +128,7 @@ export interface WorkflowConnection {
   sourcePortId: string;
   targetNodeId: string;
   targetPortId: string;
+  label?: string;
 }
 
 export interface Workflow {
@@ -71,9 +142,28 @@ export interface Workflow {
   updatedAt: string;
   tags?: string[];
   isEncrypted?: boolean;
+  isFavorite?: boolean;
+  isArchived?: boolean;
   scope?: string;
+  folder?: string;
   published?: boolean;
   triggerCount?: number;
+  settings?: {
+    executionOrder?: 'v1';
+    binaryMode?: 'separate';
+    availableInMCP?: boolean;
+    saveExecutionData?: 'all' | 'none' | 'errors';
+    timeoutMinutes?: number;
+    errorWorkflowId?: string;
+  };
+  versionHistory?: Array<{
+    id: string;
+    version: number;
+    name: string;
+    savedAt: string;
+    author: string;
+    nodeCount: number;
+  }>;
 }
 
 export type ExecutionStatus = 'idle' | 'running' | 'success' | 'error' | 'stopped';

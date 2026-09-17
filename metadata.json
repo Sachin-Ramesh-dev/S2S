@@ -1,6 +1,6 @@
 {
-  "name": "NodeFlow - Privacy-First Workflow Automation",
-  "description": "Self-hosted workflow automation platform with visual drag-and-drop editor, local database storage, end-to-end encryption, and custom node plugin system.",
+  "name": "S2S - Workflow Automation",
+  "description": "Workflow automation platform with visual node-based editor, Instagram content intelligence & page audit suite, and MCP connections.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

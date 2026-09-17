@@ -72,14 +72,21 @@ export const TemplateModal: React.FC<Props> = ({
                   <h3 className="text-sm font-bold text-white group-hover:text-indigo-300 transition-colors">
                     {wf.name}
                   </h3>
-                  {(wf.tags || []).map((t) => (
-                    <span
-                      key={t}
-                      className="px-2 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-[10px] font-mono text-neutral-400"
-                    >
-                      {t}
-                    </span>
-                  ))}
+                  {(wf.tags || []).map((t) => {
+                    const isAiGuide = t.includes('Codecademy') || t.includes('Gemini');
+                    return (
+                      <span
+                        key={t}
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono ${
+                          isAiGuide
+                            ? 'bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold'
+                            : 'bg-neutral-900 border border-neutral-800 text-neutral-400'
+                        }`}
+                      >
+                        {t}
+                      </span>
+                    );
+                  })}
                 </div>
                 <p className="text-xs text-neutral-400 leading-relaxed max-w-xl">
                   {wf.description}

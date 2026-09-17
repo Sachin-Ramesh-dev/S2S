@@ -19,10 +19,20 @@ import {
   CheckCircle2,
   AlertTriangle,
   Loader2,
-  Circle,
-  HelpCircle
+  HelpCircle,
+  Database,
+  Plus,
+  Repeat,
+  Filter,
+  GitMerge,
+  Boxes,
+  Sparkles,
+  AlertOctagon,
+  Mail,
+  MessageSquare
 } from 'lucide-react';
 import { WorkflowNode as IWorkflowNode, NodeDefinition, SingleNodeExecution } from '../types';
+import { useTheme } from '../context/ThemeContext';
 
 interface Props {
   node: IWorkflowNode;
@@ -32,10 +42,13 @@ interface Props {
   onSelect: (nodeId: string) => void;
   onStartDrag: (e: React.MouseEvent, nodeId: string) => void;
   onStartConnecting: (e: React.MouseEvent, nodeId: string, portId: string, isOutput: boolean) => void;
+  onEndConnecting?: (targetNodeId: string, targetPortId: string, isOutput: boolean) => void;
+  onQuickAddNextNode?: (sourceNodeId: string, portId: string) => void;
   onDelete: (nodeId: string) => void;
   onDuplicate: (node: IWorkflowNode) => void;
   onOpenDrawer: (node: IWorkflowNode) => void;
   scale: number;
+  isAnimatingLayout?: boolean;
 }
 
 const ICON_MAP: Record<string, any> = {
@@ -52,6 +65,16 @@ const ICON_MAP: Record<string, any> = {
   Send,
   BellRing,
   FileSpreadsheet,
+  Database,
+  Repeat,
+  Filter,
+  GitMerge,
+  Boxes,
+  Sparkles,
+  AlertOctagon,
+  AlertTriangle,
+  Mail,
+  MessageSquare
 };
 
 export const WorkflowNode: React.FC<Props> = ({
@@ -62,12 +85,74 @@ export const WorkflowNode: React.FC<Props> = ({
   onSelect,
   onStartDrag,
   onStartConnecting,
+  onEndConnecting,
+  onQuickAddNextNode,
   onDelete,
   onDuplicate,
-  onOpenDrawer
+  onOpenDrawer,
+  isAnimatingLayout = false
 }) => {
+  const { isDark } = useTheme();
   const IconComponent = ICON_MAP[definition?.icon] || HelpCircle;
   const status = executionState?.status || 'idle';
+  const hasOutputs = (definition?.outputs && definition.outputs.length > 0);
+  const hasInputs = (definition?.inputs && definition.inputs.length > 0);
+
+  const category =
+    definition?.category ||
+    (node.type.toLowerCase().includes('trigger')
+      ? 'trigger'
+      : node.type.toLowerCase().includes('branch') || node.type.toLowerCase().includes('if')
+      ? 'logic'
+      : 'action');
+
+  const catStyle = {
+    trigger: {
+      border: 'border-emerald-500/50',
+      hoverBorder: 'hover:border-emerald-400',
+      accent: '#10B981',
+      glow: 'shadow-[0_0_12px_rgba(16,185,129,0.18)]'
+    },
+    action: {
+      border: 'border-sky-500/50',
+      hoverBorder: 'hover:border-sky-400',
+      accent: '#0EA5E9',
+      glow: 'shadow-[0_0_12px_rgba(14,165,233,0.18)]'
+    },
+    transform: {
+      border: 'border-amber-500/50',
+      hoverBorder: 'hover:border-amber-400',
+      accent: '#F59E0B',
+      glow: 'shadow-[0_0_12px_rgba(245,158,11,0.18)]'
+    },
+    logic: {
+      border: 'border-purple-500/50',
+      hoverBorder: 'hover:border-purple-400',
+      accent: '#A855F7',
+      glow: 'shadow-[0_0_12px_rgba(168,85,247,0.18)]'
+    },
+    security: {
+      border: 'border-rose-500/50',
+      hoverBorder: 'hover:border-rose-400',
+      accent: '#F43F5E',
+      glow: 'shadow-[0_0_12px_rgba(244,63,94,0.18)]'
+    },
+    plugin: {
+      border: 'border-teal-500/50',
+      hoverBorder: 'hover:border-teal-400',
+      accent: '#14B8A6',
+      glow: 'shadow-[0_0_12px_rgba(20,184,166,0.18)]'
+    }
+  }[category] || {
+    border: 'border-sky-500/50',
+    hoverBorder: 'hover:border-sky-400',
+    accent: '#0EA5E9',
+    glow: 'shadow-[0_0_12px_rgba(14,165,233,0.18)]'
+  };
+
+  // Special rendering for n8n iconic nodes (like Webhook, SQL query, Respond to Webhook)
+  const isN8nWebhook = node.type === 'webhookTrigger' || node.type === 'respondToWebhook';
+  const isSqlQuery = node.type === 'sqlQuery';
 
   return (
     <div
@@ -82,194 +167,272 @@ export const WorkflowNode: React.FC<Props> = ({
       }}
       style={{
         transform: `translate3d(${node.position.x}px, ${node.position.y}px, 0)`,
-        width: 250,
+        width: 96
       }}
-      className={`absolute select-none cursor-move rounded-xl bg-neutral-900 border transition-shadow ${
-        isSelected
-          ? 'border-indigo-500 shadow-lg shadow-indigo-500/20 ring-2 ring-indigo-500/40 z-20'
-          : 'border-neutral-800 hover:border-neutral-700 shadow-md z-10'
-      } ${node.disabled ? 'opacity-50' : 'opacity-100'}`}
+      className={`absolute select-none group cursor-pointer ${
+        isAnimatingLayout
+          ? 'transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]'
+          : ''
+      } ${
+        node.disabled ? 'opacity-50' : 'opacity-100'
+      }`}
     >
-      {/* Category accent line */}
+      {/* Quick Action Buttons (Floating above on hover) */}
       <div
-        className="h-1.5 w-full rounded-t-xl"
-        style={{ backgroundColor: definition?.color || '#6366F1' }}
-      />
+        className={`absolute -top-7 left-1/2 -translate-x-1/2 hidden group-hover:flex items-center gap-1 rounded-md px-1.5 py-0.5 shadow-lg z-30 transition-colors border ${
+          isDark
+            ? 'bg-[#1c1c20] border-[#2e2e34]'
+            : 'bg-white border-slate-200 shadow-md'
+        }`}
+      >
+        <button
+          id={`btn-config-${node.id}`}
+          type="button"
+          title="Configure Node"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenDrawer(node);
+          }}
+          className={`p-1 rounded transition-colors ${
+            isDark
+              ? 'hover:bg-[#28282e] text-[#a1a1aa] hover:text-white'
+              : 'hover:bg-slate-100 text-slate-500 hover:text-slate-900'
+          }`}
+        >
+          <Settings className="w-3 h-3" />
+        </button>
+        <button
+          id={`btn-dup-${node.id}`}
+          type="button"
+          title="Duplicate"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDuplicate(node);
+          }}
+          className={`p-1 rounded transition-colors ${
+            isDark
+              ? 'hover:bg-[#28282e] text-[#a1a1aa] hover:text-white'
+              : 'hover:bg-slate-100 text-slate-500 hover:text-slate-900'
+          }`}
+        >
+          <Copy className="w-3 h-3" />
+        </button>
+        <button
+          id={`btn-del-${node.id}`}
+          type="button"
+          title="Delete"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(node.id);
+          }}
+          className={`p-1 rounded transition-colors ${
+            isDark
+              ? 'hover:bg-rose-950/60 text-[#a1a1aa] hover:text-rose-400'
+              : 'hover:bg-rose-50 text-slate-500 hover:text-rose-600'
+          }`}
+        >
+          <Trash2 className="w-3 h-3" />
+        </button>
+      </div>
 
-      {/* Main Node Header / Drag Handle */}
+      {/* Main Node Card Body (Drag Handle) */}
       <div
         onMouseDown={(e) => onStartDrag(e, node.id)}
-        className="p-3.5 flex items-start justify-between gap-2.5 cursor-grab active:cursor-grabbing"
+        className={`relative w-24 h-21 rounded-2xl border flex flex-col items-center justify-center transition-all cursor-grab active:cursor-grabbing shadow-lg ${
+          isDark ? 'bg-[#18181c]' : 'bg-white'
+        } ${
+          isSelected
+            ? 'border-[#EA580C] ring-2 ring-[#EA580C]/40 shadow-[#EA580C]/25 shadow-lg'
+            : `${catStyle.border} ${catStyle.hoverBorder} ${catStyle.glow} shadow-md`
+        }`}
       >
-        <div className="flex items-center gap-2.5 min-w-0">
+        {/* Category Color Indicator Pip */}
+        <div
+          className="absolute top-1.5 left-2 w-1.5 h-1.5 rounded-full"
+          style={{ backgroundColor: catStyle.accent }}
+          title={`Category: ${category}`}
+        />
+        {/* Node Icon Graphic */}
+        {isN8nWebhook ? (
+          // Distinct n8n 3-connected-nodes pink logo
+          <div className="flex items-center justify-center text-[#F43F5E]">
+            <svg
+              className="w-8 h-8 fill-current"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle cx="5" cy="12" r="3" fill="#F43F5E" />
+              <circle cx="19" cy="6" r="3" fill="#F43F5E" />
+              <circle cx="19" cy="18" r="3" fill="#F43F5E" />
+              <path
+                d="M5 12C9 12 11 6 19 6M5 12C9 12 11 18 19 18"
+                stroke="#F43F5E"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
+        ) : isSqlQuery ? (
+          // PostgreSQL Elephant / Database Icon in Blue
+          <div className="w-9 h-9 rounded-xl bg-[#336791]/15 text-[#38bdf8] flex items-center justify-center">
+            <Database className="w-6 h-6 text-[#38bdf8]" />
+          </div>
+        ) : (
           <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-inner"
+            className="w-9 h-9 rounded-xl flex items-center justify-center"
             style={{
               backgroundColor: `${definition?.color || '#6366F1'}20`,
               color: definition?.color || '#6366F1',
             }}
           >
-            <IconComponent className="w-4 h-4" />
+            <IconComponent className="w-5 h-5" />
           </div>
-          <div className="min-w-0">
-            <div className="text-sm font-semibold text-neutral-100 truncate flex items-center gap-1.5">
-              {node.name || definition?.name}
-            </div>
-            <div className="text-xs text-neutral-400 truncate">
-              {definition?.name}
-            </div>
-          </div>
-        </div>
+        )}
 
-        {/* Quick Action Buttons */}
-        <div className="flex items-center gap-1 shrink-0 opacity-80 hover:opacity-100">
-          <button
-            id={`btn-config-${node.id}`}
-            type="button"
-            title="Configure Node"
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenDrawer(node);
-            }}
-            className="p-1 rounded hover:bg-neutral-800 text-neutral-400 hover:text-neutral-200 transition-colors"
-          >
-            <Settings className="w-3.5 h-3.5" />
-          </button>
-          <button
-            id={`btn-dup-${node.id}`}
-            type="button"
-            title="Duplicate"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDuplicate(node);
-            }}
-            className="p-1 rounded hover:bg-neutral-800 text-neutral-400 hover:text-neutral-200 transition-colors"
-          >
-            <Copy className="w-3.5 h-3.5" />
-          </button>
-          <button
-            id={`btn-del-${node.id}`}
-            type="button"
-            title="Delete"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(node.id);
-            }}
-            className="p-1 rounded hover:bg-red-950 text-neutral-400 hover:text-red-400 transition-colors"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Node Info / Status Footer */}
-      <div className="px-3.5 pb-3 flex items-center justify-between text-xs text-neutral-400 border-t border-neutral-800/60 pt-2">
-        <div className="flex items-center gap-1.5">
-          {status === 'idle' && (
-            <span className="flex items-center gap-1 text-neutral-400">
-              <Circle className="w-2.5 h-2.5 text-neutral-500 fill-neutral-500" />
-              Ready
-            </span>
-          )}
-          {status === 'running' && (
-            <span className="flex items-center gap-1 text-amber-400 font-medium">
-              <Loader2 className="w-3 h-3 animate-spin text-amber-400" />
-              Running...
-            </span>
-          )}
+        {/* Small Status Indicator Dot (Green for success, Red for error, Yellow for running, Subtle slate for idle) */}
+        <div
+          id={`status-indicator-${node.id}`}
+          className={`absolute -top-1.5 -right-1.5 z-30 p-0.5 rounded-full border shadow-md flex items-center justify-center cursor-help transition-transform hover:scale-125 ${
+            isDark ? 'bg-[#18181c] border-[#2e2e34]' : 'bg-white border-slate-300'
+          }`}
+          title={
+            status === 'success'
+              ? `Last run: Succeeded${executionState?.durationMs ? ` (${executionState.durationMs}ms)` : ''}`
+              : status === 'error'
+              ? `Last run: Error (${executionState?.error || 'Encountered error in execution'})`
+              : status === 'running'
+              ? 'Status: Executing...'
+              : 'Last run: Not executed'
+          }
+        >
           {status === 'success' && (
-            <span className="flex items-center gap-1 text-emerald-400 font-medium">
-              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-              {executionState?.durationMs !== undefined ? `${executionState.durationMs}ms` : 'Success'}
+            <span className="relative flex h-3 w-3 items-center justify-center">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60 animate-ping" style={{ animationDuration: '3s' }} />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)] ring-1 ring-emerald-300" />
             </span>
           )}
           {status === 'error' && (
-            <span className="flex items-center gap-1 text-rose-400 font-medium">
-              <AlertTriangle className="w-3 h-3 text-rose-400" />
-              Error
+            <span className="relative flex h-3 w-3 items-center justify-center">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75 animate-ping" style={{ animationDuration: '2s' }} />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)] ring-1 ring-rose-300" />
             </span>
+          )}
+          {status === 'running' && (
+            <span className="relative flex h-3 w-3 items-center justify-center">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75 animate-ping" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.9)] ring-1 ring-amber-200" />
+            </span>
+          )}
+          {status === 'idle' && (
+            <span
+              className={`inline-flex rounded-full h-2 w-2 ${
+                isDark ? 'bg-zinc-600 border border-zinc-500/60' : 'bg-slate-300 border border-slate-400'
+              }`}
+            />
           )}
         </div>
 
-        {definition?.isPlugin && (
-          <span className="px-1.5 py-0.5 rounded bg-indigo-950/70 text-indigo-300 text-[10px] font-mono border border-indigo-800/40">
-            PLUGIN
-          </span>
+        {/* Input Port (Left Side) */}
+        {hasInputs &&
+          (definition?.inputs || []).map((port, idx) => {
+            const count = definition.inputs.length;
+            const topPercent = count === 1 ? 50 : ((idx + 1) / (count + 1)) * 100;
+            return (
+              <div
+                key={`in-${port.id}-${idx}`}
+                id={`port-in-${node.id}-${port.id}`}
+                title={`Input: ${port.label}`}
+                style={{ top: `${topPercent}%` }}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  onStartConnecting(e, node.id, port.id, false);
+                }}
+                onMouseUp={(e) => {
+                  e.stopPropagation();
+                  onEndConnecting?.(node.id, port.id, false);
+                }}
+                className={`absolute -left-2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 hover:border-[#EA580C] hover:scale-125 cursor-crosshair transition-all flex items-center justify-center z-30 ${
+                  isDark ? 'bg-[#202024] border-[#71717a]' : 'bg-slate-100 border-slate-400'
+                }`}
+              >
+                <div className={`w-1 h-1 rounded-full ${isDark ? 'bg-[#d4d4d8]' : 'bg-slate-600'}`} />
+              </div>
+            );
+          })}
+
+        {/* Output Port (Right Side) */}
+        {hasOutputs &&
+          (definition?.outputs || []).map((port, idx) => {
+            const count = definition.outputs.length;
+            const topPercent = count === 1 ? 50 : ((idx + 1) / (count + 1)) * 100;
+            return (
+              <div
+                key={`out-${port.id}-${idx}`}
+                id={`port-out-${node.id}-${port.id}`}
+                title={`Output: ${port.label}`}
+                style={{ top: `${topPercent}%` }}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  onStartConnecting(e, node.id, port.id, true);
+                }}
+                onMouseUp={(e) => {
+                  e.stopPropagation();
+                  onEndConnecting?.(node.id, port.id, true);
+                }}
+                className={`absolute -right-2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 hover:border-[#EA580C] hover:scale-125 cursor-crosshair transition-all flex items-center justify-center z-30 ${
+                  isDark ? 'bg-[#202024] border-[#71717a]' : 'bg-slate-100 border-slate-400'
+                }`}
+              >
+                <div className={`w-1 h-1 rounded-full ${isDark ? 'bg-[#d4d4d8]' : 'bg-slate-600'}`} />
+              </div>
+            );
+          })}
+
+        {/* Circular '+' Quick Add Button on Output */}
+        {hasOutputs && (
+          <button
+            id={`btn-quick-add-${node.id}`}
+            type="button"
+            title="Connect next step (+)"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onQuickAddNextNode) {
+                onQuickAddNextNode(node.id, definition.outputs[0]?.id || 'main');
+              } else {
+                onOpenDrawer(node);
+              }
+            }}
+            className={`absolute -right-6 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border hover:text-white hover:bg-[#EA580C] hover:border-[#EA580C] flex items-center justify-center transition-colors z-20 shadow-md ${
+              isDark
+                ? 'bg-[#28282e] border-[#3e3e46] text-[#a1a1aa]'
+                : 'bg-white border-slate-300 text-slate-600'
+            }`}
+          >
+            <Plus className="w-2.5 h-2.5" />
+          </button>
         )}
       </div>
 
-      {/* Input Ports (Left Side) */}
-      {(definition?.inputs || []).map((port, idx) => (
+      {/* Node Labels (Below the card) */}
+      <div className="mt-2 text-center pointer-events-none flex flex-col items-center">
         <div
-          key={`in-${port.id}-${idx}`}
-          id={`port-in-${node.id}-${port.id}`}
-          title={`Input: ${port.label}`}
-          onMouseDown={(e) => {
-            e.stopPropagation();
-            onStartConnecting(e, node.id, port.id, false);
-          }}
-          className="absolute -left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-neutral-800 border-2 border-neutral-400 hover:border-indigo-400 hover:scale-125 cursor-crosshair transition-all flex items-center justify-center z-30"
+          className={`text-xs font-semibold leading-tight tracking-tight whitespace-nowrap max-w-[150px] truncate ${
+            isDark ? 'text-[#f4f4f5]' : 'text-slate-800'
+          }`}
         >
-          <div className="w-1.5 h-1.5 rounded-full bg-neutral-300" />
+          {node.name || definition?.name}
         </div>
-      ))}
-
-      {/* Output Ports (Right Side) */}
-      {(definition?.outputs || []).map((port, idx) => {
-        const totalOutputs = definition.outputs.length;
-        // Calculate vertical distribution for multiple outputs (e.g. True / False)
-        let topOffset = '50%';
-        if (totalOutputs > 1) {
-          const step = 60 / (totalOutputs - 1);
-          topOffset = `${20 + idx * step}%`;
-        }
-
-        const isTrueBranch = port.type === 'true';
-        const isFalseBranch = port.type === 'false';
-
-        return (
+        {(node.subtitle || (node.parameters && node.parameters.operation)) && (
           <div
-            key={`out-${port.id}-${idx}`}
-            id={`port-out-${node.id}-${port.id}`}
-            title={`Output: ${port.label}`}
-            onMouseDown={(e) => {
-              e.stopPropagation();
-              onStartConnecting(e, node.id, port.id, true);
-            }}
-            style={{ top: topOffset }}
-            className={`absolute -right-2.5 -translate-y-1/2 w-4 h-4 rounded-full border-2 hover:scale-125 cursor-crosshair transition-all flex items-center justify-center z-30 ${
-              isTrueBranch
-                ? 'bg-emerald-950 border-emerald-400'
-                : isFalseBranch
-                ? 'bg-rose-950 border-rose-400'
-                : 'bg-neutral-800 border-neutral-400 hover:border-indigo-400'
+            className={`text-[11px] leading-tight mt-0.5 whitespace-nowrap max-w-[150px] truncate ${
+              isDark ? 'text-[#a1a1aa]' : 'text-slate-500'
             }`}
           >
-            <div
-              className={`w-1.5 h-1.5 rounded-full ${
-                isTrueBranch
-                  ? 'bg-emerald-300'
-                  : isFalseBranch
-                  ? 'bg-rose-300'
-                  : 'bg-neutral-300'
-              }`}
-            />
-            {totalOutputs > 1 && (
-              <span
-                className={`absolute left-5 text-[10px] font-mono px-1 rounded whitespace-nowrap pointer-events-none ${
-                  isTrueBranch
-                    ? 'text-emerald-400 bg-emerald-950/80 border border-emerald-800/50'
-                    : isFalseBranch
-                    ? 'text-rose-400 bg-rose-950/80 border border-rose-800/50'
-                    : 'text-neutral-400 bg-neutral-800'
-                }`}
-              >
-                {port.label}
-              </span>
-            )}
+            {node.subtitle || node.parameters?.operation}
           </div>
-        );
-      })}
+        )}
+      </div>
     </div>
   );
 };

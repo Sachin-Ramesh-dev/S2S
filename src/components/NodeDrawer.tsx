@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   WorkflowNode as IWorkflowNode,
   NodeDefinition,
   SingleNodeExecution,
-  VaultCredential
+  VaultCredential,
+  WorkflowConnection,
+  NodeParameterSchema
 } from '../types';
+import { NodeParameterField } from './node-ui/NodeParameterField';
+import { UiDataMapper } from './node-ui/UiDataMapper';
+import { NodeDocumentationView } from './node-ui/NodeDocumentationView';
+import { testNodeExecution } from '../services/api';
+import { useTheme } from '../context/ThemeContext';
 import {
   X,
   Play,
@@ -12,16 +19,23 @@ import {
   Check,
   Code2,
   Database,
-  Terminal,
-  ShieldCheck,
-  Eye,
-  EyeOff,
-  Wand2,
+  Pin,
+  Search,
+  Table,
+  FileCode2,
+  Loader2,
+  CheckCircle2,
+  AlertTriangle,
   Clock,
   Sparkles,
-  AlertCircle
+  SlidersHorizontal,
+  ChevronRight,
+  Send,
+  HelpCircle,
+  ExternalLink,
+  Layers,
+  BookOpen
 } from 'lucide-react';
-import { testNodeExecution } from '../services/api';
 
 interface Props {
   node: IWorkflowNode | null;
@@ -29,6 +43,8 @@ interface Props {
   workflowId: string;
   executionState?: SingleNodeExecution;
   vaultCredentials: VaultCredential[];
+  allNodes?: IWorkflowNode[];
+  connections?: WorkflowConnection[];
   onClose: () => void;
   onUpdateNode: (updated: IWorkflowNode) => void;
 }
@@ -39,51 +55,118 @@ export const NodeDrawer: React.FC<Props> = ({
   workflowId,
   executionState,
   vaultCredentials,
+  allNodes = [],
+  connections = [],
   onClose,
-  onUpdateNode,
+  onUpdateNode
 }) => {
-  const [activeTab, setActiveTab] = useState<'config' | 'data' | 'test'>('config');
-  const [dataViewMode, setDataViewMode] = useState<'json' | 'table'>('json');
+  const { isDark } = useTheme();
+  const [activePane, setActivePane] = useState<'all' | 'params' | 'input' | 'output' | 'docs'>('all');
+  const [activeParamTab, setActiveParamTab] = useState<'params' | 'mapper' | 'docs'>('params');
+  const [inputViewMode, setInputViewMode] = useState<'json' | 'table' | 'schema'>('json');
+  const [outputViewMode, setOutputViewMode] = useState<'json' | 'table'>('json');
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<any>(null);
-  const [testInputJson, setTestInputJson] = useState<string>(
-    JSON.stringify(
-      executionState?.inputData || {
-        event: 'test_execution',
-        sampleItem: { id: 101, name: 'Alice Smith', email: 'alice@example.com' }
-      },
-      null,
-      2
-    )
-  );
+  const [inputSearch, setInputSearch] = useState('');
+  const [outputSearch, setOutputSearch] = useState('');
+  const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [copiedWebhook, setCopiedWebhook] = useState(false);
-  const [showSecretMap, setShowSecretMap] = useState<Record<string, boolean>>({});
+  const [isEditingInput, setIsEditingInput] = useState(false);
+
+  // Compute upstream nodes connected into this node
+  const upstreamNodes = useMemo(() => {
+    if (!node) return [];
+    const incomingConnections = connections.filter((c) => c.targetNodeId === node.id);
+    const sourceIds = new Set(incomingConnections.map((c) => c.sourceNodeId));
+    return allNodes.filter((n) => sourceIds.has(n.id));
+  }, [node, connections, allNodes]);
+
+  // Custom editable test input data
+  const defaultSampleInput = useMemo(() => {
+    return (
+      node?.pinnedData ||
+      executionState?.inputData || {
+        event: 'order_completed',
+        id: 1042,
+        user: {
+          id: 'usr_8821',
+          name: 'Alex Mercer',
+          email: 'alex.mercer@example.com',
+          role: 'admin'
+        },
+        items: [
+          { sku: 'PRO-100', name: 'Enterprise Plan', price: 299 },
+          { sku: 'ADD-50', name: 'Dedicated Server Addon', price: 99 }
+        ],
+        status: 'approved',
+        timestamp: new Date().toISOString()
+      }
+    );
+  }, [node?.pinnedData, executionState?.inputData]);
+
+  const [customInputText, setCustomInputText] = useState(() =>
+    JSON.stringify(defaultSampleInput, null, 2)
+  );
 
   if (!node || !definition) return null;
 
   const webhookUrl = `${window.location.origin}/api/webhooks/${workflowId}/${node.id}`;
 
-  const handleParameterChange = (paramName: string, value: any) => {
+  const currentInput = (() => {
+    try {
+      return JSON.parse(customInputText);
+    } catch (e) {
+      return defaultSampleInput;
+    }
+  })();
+
+  const currentOutput = testResult ? (testResult.outputData ?? testResult) : executionState?.outputData;
+
+  // Handle parameter value change
+  const handleParamChange = (name: string, val: any) => {
     onUpdateNode({
       ...node,
       parameters: {
         ...node.parameters,
-        [paramName]: value
+        [name]: val
       }
     });
   };
 
-  const handleRunSingleTest = async () => {
+  // Handle parameter mode change (fixed vs expression)
+  const handleModeChange = (name: string, mode: 'fixed' | 'expression') => {
+    onUpdateNode({
+      ...node,
+      parameterModes: {
+        ...(node.parameterModes || {}),
+        [name]: mode
+      }
+    });
+  };
+
+  // Apply full configuration from documentation example
+  const handleApplyExampleConfig = (config: Record<string, any>) => {
+    onUpdateNode({
+      ...node,
+      parameters: {
+        ...node.parameters,
+        ...config
+      }
+    });
+  };
+
+  // Run isolated step execution test
+  const handleTestStep = async () => {
     setIsTesting(true);
     setTestResult(null);
     try {
-      let parsedInput = {};
+      let parsed = {};
       try {
-        parsedInput = JSON.parse(testInputJson);
+        parsed = JSON.parse(customInputText);
       } catch (e) {
-        parsedInput = { rawText: testInputJson };
+        parsed = { rawText: customInputText };
       }
-      const res = await testNodeExecution(node, parsedInput);
+      const res = await testNodeExecution(node, parsed);
       setTestResult(res);
     } catch (err: any) {
       setTestResult({
@@ -96,466 +179,742 @@ export const NodeDrawer: React.FC<Props> = ({
     }
   };
 
-  const toggleShowSecret = (paramName: string) => {
-    setShowSecretMap(prev => ({ ...prev, [paramName]: !prev[paramName] }));
+  // Toggle Pinned Data
+  const handleTogglePinData = () => {
+    if (node.pinnedData) {
+      onUpdateNode({ ...node, pinnedData: undefined });
+    } else {
+      onUpdateNode({ ...node, pinnedData: currentInput });
+    }
+  };
+
+  // Copy expression to clipboard helper
+  const handleCopyExpression = (path: string) => {
+    const expr = `{{ $json.${path} }}`;
+    navigator.clipboard.writeText(expr);
+    setCopiedToken(path);
+    setTimeout(() => setCopiedToken(null), 2000);
+  };
+
+  // Check displayOptions visibility rules
+  const isParamVisible = (param: NodeParameterSchema) => {
+    if (!param.displayOptions) return true;
+    const currentParams = node.parameters || {};
+
+    if (param.displayOptions.show) {
+      for (const [field, allowedValues] of Object.entries(param.displayOptions.show)) {
+        const val = currentParams[field] ?? definition.defaultParameters?.[field];
+        if (!allowedValues.includes(val)) {
+          return false;
+        }
+      }
+    }
+
+    if (param.displayOptions.hide) {
+      for (const [field, deniedValues] of Object.entries(param.displayOptions.hide)) {
+        const val = currentParams[field] ?? definition.defaultParameters?.[field];
+        if (deniedValues.includes(val)) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  };
+
+  const handleSelectMapperField = (expression: string, targetParamName?: string) => {
+    if (targetParamName) {
+      handleParamChange(targetParamName, expression);
+      handleModeChange(targetParamName, 'expression');
+    }
+    setActiveParamTab('params');
   };
 
   return (
     <div
-      id="node-inspector-drawer"
-      className="fixed inset-y-0 right-0 z-50 w-full max-w-xl bg-neutral-900 border-l border-neutral-800 shadow-2xl flex flex-col transition-transform duration-200"
+      id="node-drawer-backdrop"
+      className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-150"
     >
-      {/* Drawer Header */}
-      <div className="p-4 border-b border-neutral-800 flex items-center justify-between gap-3 bg-neutral-900/90 backdrop-blur">
-        <div className="flex items-center gap-3 min-w-0">
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-            style={{
-              backgroundColor: `${definition.color || '#6366F1'}25`,
-              color: definition.color || '#6366F1'
-            }}
-          >
-            <Database className="w-4 h-4" />
-          </div>
-          <div className="min-w-0">
-            <input
-              id="input-node-name"
-              type="text"
-              value={node.name}
-              onChange={(e) => onUpdateNode({ ...node, name: e.target.value })}
-              className="bg-transparent border border-transparent hover:border-neutral-700 focus:border-indigo-500 rounded px-1.5 py-0.5 text-sm font-bold text-neutral-100 focus:outline-none w-full"
-            />
-            <div className="text-xs text-neutral-400 truncate px-1.5">
-              {definition.name} • {definition.category.toUpperCase()}
+      <div
+        id="node-drawer-modal"
+        className={`w-full max-w-[96vw] h-[92vh] rounded-2xl border flex flex-col shadow-2xl overflow-hidden transition-colors ${
+          isDark ? 'bg-[#141416] border-[#222226] text-[#f4f4f5]' : 'bg-white border-slate-200 text-slate-900'
+        }`}
+      >
+        {/* ========================================================= */}
+        {/* TOP BAR: Node Details & Actions                           */}
+        {/* ========================================================= */}
+        <div className={`h-14 px-5 border-b flex items-center justify-between gap-4 shrink-0 select-none ${
+          isDark ? 'border-[#26262b] bg-[#18181c]' : 'border-slate-200 bg-slate-50'
+        }`}>
+          {/* Node Icon & Editable Title */}
+          <div className="flex items-center gap-3 min-w-0">
+            <div
+              className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-xs"
+              style={{
+                backgroundColor: `${definition.color || '#EA580C'}20`,
+                color: definition.color || '#EA580C'
+              }}
+            >
+              <Database className="w-4 h-4" />
+            </div>
+
+            <div className="flex items-center gap-2 min-w-0">
+              <input
+                id="input-node-name"
+                type="text"
+                value={node.name}
+                onChange={(e) => onUpdateNode({ ...node, name: e.target.value })}
+                className={`border border-transparent rounded px-2 py-1 text-sm font-bold focus:outline-none transition-colors max-w-[240px] sm:max-w-xs truncate ${
+                  isDark
+                    ? 'bg-transparent hover:bg-neutral-800/60 focus:bg-neutral-900 hover:border-neutral-700 focus:border-[#EA580C] text-white'
+                    : 'bg-transparent hover:bg-slate-200/60 focus:bg-white hover:border-slate-300 focus:border-[#EA580C] text-slate-900'
+                }`}
+              />
+              <span className={`text-[11px] font-mono px-2 py-0.5 rounded border shrink-0 ${
+                isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-400' : 'bg-slate-100 border-slate-200 text-slate-600'
+              }`}>
+                {definition.type}
+              </span>
             </div>
           </div>
+
+          {/* Center Pane Controls for Responsive screens */}
+          <div className={`hidden lg:flex items-center p-1 rounded-lg text-xs border ${
+            isDark ? 'bg-[#101012] border-[#26262b]' : 'bg-slate-100 border-slate-200'
+          }`}>
+            <button
+              type="button"
+              onClick={() => setActivePane('all')}
+              className={`px-3 py-1 rounded transition-colors cursor-pointer ${
+                activePane === 'all'
+                  ? isDark ? 'bg-[#26262b] text-white font-medium' : 'bg-white text-slate-900 shadow-xs font-semibold'
+                  : isDark ? 'text-neutral-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              3-Column View
+            </button>
+            <button
+              type="button"
+              onClick={() => setActivePane('input')}
+              className={`px-3 py-1 rounded transition-colors cursor-pointer ${
+                activePane === 'input'
+                  ? isDark ? 'bg-[#26262b] text-white font-medium' : 'bg-white text-slate-900 shadow-xs font-semibold'
+                  : isDark ? 'text-neutral-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Input
+            </button>
+            <button
+              type="button"
+              onClick={() => setActivePane('params')}
+              className={`px-3 py-1 rounded transition-colors cursor-pointer ${
+                activePane === 'params'
+                  ? isDark ? 'bg-[#26262b] text-white font-medium' : 'bg-white text-slate-900 shadow-xs font-semibold'
+                  : isDark ? 'text-neutral-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Parameters
+            </button>
+            <button
+              type="button"
+              onClick={() => setActivePane('output')}
+              className={`px-3 py-1 rounded transition-colors cursor-pointer ${
+                activePane === 'output'
+                  ? isDark ? 'bg-[#26262b] text-white font-medium' : 'bg-white text-slate-900 shadow-xs font-semibold'
+                  : isDark ? 'text-neutral-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Output
+            </button>
+            <button
+              id="btn-pane-docs"
+              type="button"
+              onClick={() => setActivePane('docs')}
+              className={`px-3 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
+                activePane === 'docs'
+                  ? 'bg-[#EA580C] text-white font-semibold shadow-xs'
+                  : isDark ? 'text-neutral-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Documentation</span>
+            </button>
+          </div>
+
+          {/* Right Action Buttons */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Active / Disabled Switch */}
+            <button
+              id="btn-toggle-active"
+              type="button"
+              onClick={() => onUpdateNode({ ...node, disabled: !node.disabled })}
+              title={node.disabled ? 'Enable Node' : 'Disable Node'}
+              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-lg border transition-colors cursor-pointer ${
+                node.disabled
+                  ? isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-400' : 'border-slate-300 bg-slate-100 text-slate-500'
+                  : 'border-emerald-700/60 bg-emerald-950/30 text-emerald-400'
+              }`}
+            >
+              <span className={`w-2 h-2 rounded-full ${node.disabled ? 'bg-neutral-500' : 'bg-emerald-400'}`} />
+              <span className="font-medium">{node.disabled ? 'Disabled' : 'Active'}</span>
+            </button>
+
+            {/* Pin Data Button */}
+            <button
+              id="btn-pin-data"
+              type="button"
+              onClick={handleTogglePinData}
+              title={node.pinnedData ? 'Unpin Data' : 'Pin Data (Freeze test dataset)'}
+              className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                node.pinnedData
+                  ? 'border-[#EA580C] bg-[#EA580C]/20 text-[#EA580C]'
+                  : isDark ? 'border-[#26262b] bg-[#1a1a1e] text-neutral-400 hover:text-white' : 'border-slate-300 bg-white text-slate-600 hover:text-slate-900 shadow-2xs'
+              }`}
+            >
+              <Pin className="w-4 h-4" />
+            </button>
+
+            {/* Execute / Test Step Button */}
+            <button
+              id="btn-test-step"
+              type="button"
+              onClick={handleTestStep}
+              disabled={isTesting}
+              className="px-3 py-1.5 bg-[#EA580C] hover:bg-[#c2410c] text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-50 cursor-pointer"
+            >
+              {isTesting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Executing...</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <span>Test step</span>
+                </>
+              )}
+            </button>
+
+            {/* Close Drawer Button */}
+            <button
+              id="btn-close-node-drawer"
+              type="button"
+              onClick={onClose}
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                isDark ? 'hover:bg-neutral-800 text-neutral-400 hover:text-white' : 'hover:bg-slate-200 text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            id="btn-toggle-disabled"
-            type="button"
-            title={node.disabled ? 'Enable Node' : 'Disable Node'}
-            onClick={() => onUpdateNode({ ...node, disabled: !node.disabled })}
-            className={`px-2 py-1 text-xs rounded border transition-colors ${
-              node.disabled
-                ? 'border-neutral-700 text-neutral-500 bg-neutral-800'
-                : 'border-emerald-800/80 text-emerald-400 bg-emerald-950/40'
-            }`}
-          >
-            {node.disabled ? 'Disabled' : 'Active'}
-          </button>
-          <button
-            id="btn-close-drawer"
-            type="button"
-            onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-
-      {/* Tabs Bar */}
-      <div className="flex items-center border-b border-neutral-800 bg-neutral-950/40 px-4 text-xs font-medium">
-        <button
-          id="tab-config"
-          type="button"
-          onClick={() => setActiveTab('config')}
-          className={`py-3 px-3 border-b-2 flex items-center gap-1.5 transition-colors ${
-            activeTab === 'config'
-              ? 'border-indigo-500 text-indigo-400'
-              : 'border-transparent text-neutral-400 hover:text-neutral-200'
-          }`}
-        >
-          <Code2 className="w-3.5 h-3.5" />
-          Configuration
-        </button>
-        <button
-          id="tab-data"
-          type="button"
-          onClick={() => setActiveTab('data')}
-          className={`py-3 px-3 border-b-2 flex items-center gap-1.5 transition-colors ${
-            activeTab === 'data'
-              ? 'border-indigo-500 text-indigo-400'
-              : 'border-transparent text-neutral-400 hover:text-neutral-200'
-          }`}
-        >
-          <Database className="w-3.5 h-3.5" />
-          Data Inspector
-          {executionState?.outputData && (
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          )}
-        </button>
-        <button
-          id="tab-test"
-          type="button"
-          onClick={() => setActiveTab('test')}
-          className={`py-3 px-3 border-b-2 flex items-center gap-1.5 transition-colors ${
-            activeTab === 'test'
-              ? 'border-indigo-500 text-indigo-400'
-              : 'border-transparent text-neutral-400 hover:text-neutral-200'
-          }`}
-        >
-          <Play className="w-3.5 h-3.5" />
-          Test Step
-        </button>
-      </div>
-
-      {/* Drawer Body */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-5 text-neutral-200 text-sm">
-        {/* TAB 1: CONFIGURATION */}
-        {activeTab === 'config' && (
-          <div className="space-y-4">
-            {/* Special info card for Webhooks */}
-            {node.type === 'webhookTrigger' && (
-              <div className="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-800/40 text-xs space-y-2">
-                <div className="font-semibold text-emerald-400 flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4" />
-                  Local Inbound Webhook Endpoint
-                </div>
-                <p className="text-neutral-300">
-                  Send external HTTP POST/GET calls directly to this local endpoint. All payloads remain strictly inside your private instance:
-                </p>
-                <div className="flex items-center gap-2 bg-neutral-950 p-2 rounded-lg border border-neutral-800 font-mono text-[11px] text-neutral-300 break-all">
-                  <span className="flex-1">{webhookUrl}</span>
-                  <button
-                    id="btn-copy-webhook-url"
-                    type="button"
-                    title="Copy Webhook URL"
-                    onClick={() => {
-                      navigator.clipboard.writeText(webhookUrl);
-                      setCopiedWebhook(true);
-                      setTimeout(() => setCopiedWebhook(false), 2000);
-                    }}
-                    className="p-1 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded"
-                  >
-                    {copiedWebhook ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Render node parameters */}
-            {definition.parametersSchema.map((param) => {
-              const currentValue =
-                node.parameters?.[param.name] ??
-                param.default ??
-                '';
-
-              return (
-                <div key={param.name} className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-semibold text-neutral-300">
-                      {param.label}
-                      {param.required && <span className="text-rose-400 ml-1">*</span>}
-                    </label>
-                    {param.type === 'secret' && (
-                      <button
-                        type="button"
-                        onClick={() => toggleShowSecret(param.name)}
-                        className="text-[11px] text-indigo-400 hover:underline flex items-center gap-1"
-                      >
-                        {showSecretMap[param.name] ? (
-                          <>
-                            <EyeOff className="w-3 h-3" /> Hide
-                          </>
-                        ) : (
-                          <>
-                            <Eye className="w-3 h-3" /> Reveal
-                          </>
-                        )}
-                      </button>
+        {/* ========================================================= */}
+        {/* MAIN BODY: 3 COLUMNS OR FULL DOCUMENTATION VIEW           */}
+        {/* ========================================================= */}
+        {activePane === 'docs' ? (
+          <div className="flex-1 overflow-hidden">
+            <NodeDocumentationView
+              node={node}
+              definition={definition}
+              onApplyExampleConfig={handleApplyExampleConfig}
+            />
+          </div>
+        ) : (
+          <div className="flex-1 flex overflow-hidden">
+            {/* ------------------------------------------------------- */}
+            {/* PANE 1: INPUT DATA (Left Column)                        */}
+            {/* ------------------------------------------------------- */}
+            {(activePane === 'all' || activePane === 'input') && (
+              <div className={`w-full lg:w-[28%] border-r flex flex-col overflow-hidden ${
+                isDark ? 'border-[#26262b] bg-[#111113]' : 'border-slate-200 bg-slate-50/50'
+              }`}>
+                {/* Input Header */}
+                <div className={`h-11 px-4 border-b flex items-center justify-between shrink-0 ${
+                  isDark ? 'border-[#26262b] bg-[#151518]' : 'border-slate-200 bg-slate-100'
+                }`}>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-bold tracking-wider uppercase ${isDark ? 'text-neutral-300' : 'text-slate-700'}`}>
+                      INPUT
+                    </span>
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono border ${
+                      isDark ? 'bg-neutral-800 border-neutral-700 text-neutral-300' : 'bg-white border-slate-300 text-slate-700'
+                    }`}>
+                      1 item
+                    </span>
+                    {node.pinnedData && (
+                      <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-bold">
+                        PINNED
+                      </span>
                     )}
                   </div>
 
-                  {param.description && (
-                    <p className="text-[11px] text-neutral-400">{param.description}</p>
-                  )}
+                  <div className="flex items-center gap-1">
+                    {/* View Switcher: Table | JSON */}
+                    <div className={`flex items-center p-0.5 rounded text-[10px] border ${
+                      isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-slate-300'
+                    }`}>
+                      <button
+                        type="button"
+                        onClick={() => setInputViewMode('json')}
+                        className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
+                          inputViewMode === 'json'
+                            ? isDark ? 'bg-neutral-800 text-white font-medium' : 'bg-slate-200 text-slate-900 font-semibold'
+                            : isDark ? 'text-neutral-400' : 'text-slate-500'
+                        }`}
+                      >
+                        JSON
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setInputViewMode('table')}
+                        className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
+                          inputViewMode === 'table'
+                            ? isDark ? 'bg-neutral-800 text-white font-medium' : 'bg-slate-200 text-slate-900 font-semibold'
+                            : isDark ? 'text-neutral-400' : 'text-slate-500'
+                        }`}
+                      >
+                        Table
+                      </button>
+                    </div>
 
-                  {/* Input Type Renderers */}
-                  {param.type === 'string' && (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingInput(!isEditingInput)}
+                      title="Edit test input payload"
+                      className={`p-1 rounded text-[11px] cursor-pointer ${
+                        isDark ? 'hover:bg-neutral-800 text-neutral-400 hover:text-white' : 'hover:bg-slate-200 text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      {isEditingInput ? 'Done' : 'Edit'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Input Search Bar */}
+                <div className={`p-2 border-b ${isDark ? 'border-[#26262b]/60 bg-[#121214]' : 'border-slate-200 bg-white'}`}>
+                  <div className="relative">
+                    <Search className={`w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 ${isDark ? 'text-neutral-500' : 'text-slate-400'}`} />
                     <input
                       type="text"
-                      value={currentValue}
-                      placeholder={param.placeholder}
-                      onChange={(e) => handleParameterChange(param.name, e.target.value)}
-                      className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-xs text-neutral-100 focus:border-indigo-500 focus:outline-none"
+                      placeholder="Search in input items..."
+                      value={inputSearch}
+                      onChange={(e) => setInputSearch(e.target.value)}
+                      className={`w-full pl-8 pr-2.5 py-1 rounded-md text-xs focus:outline-none focus:border-[#EA580C] border ${
+                        isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200 placeholder:text-neutral-500' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder:text-slate-400'
+                      }`}
                     />
-                  )}
+                  </div>
+                </div>
 
-                  {param.type === 'number' && (
-                    <input
-                      type="number"
-                      value={currentValue}
-                      onChange={(e) => handleParameterChange(param.name, parseFloat(e.target.value) || 0)}
-                      className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-xs text-neutral-100 focus:border-indigo-500 focus:outline-none"
-                    />
-                  )}
-
-                  {param.type === 'boolean' && (
-                    <label className="flex items-center gap-2 cursor-pointer pt-1">
-                      <input
-                        type="checkbox"
-                        checked={Boolean(currentValue)}
-                        onChange={(e) => handleParameterChange(param.name, e.target.checked)}
-                        className="w-4 h-4 rounded bg-neutral-950 border-neutral-800 text-indigo-600 focus:ring-0 focus:ring-offset-0 cursor-pointer"
-                      />
-                      <span className="text-xs text-neutral-300">Enabled</span>
-                    </label>
-                  )}
-
-                  {param.type === 'select' && (
-                    <select
-                      value={currentValue}
-                      onChange={(e) => handleParameterChange(param.name, e.target.value)}
-                      className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-xs text-neutral-100 focus:border-indigo-500 focus:outline-none"
-                    >
-                      {(param.options || []).map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-
-                  {param.type === 'secret' && (
-                    <div className="space-y-1.5">
-                      <input
-                        type={showSecretMap[param.name] ? 'text' : 'password'}
-                        value={currentValue}
-                        placeholder={param.placeholder || 'Encrypted secret key'}
-                        onChange={(e) => handleParameterChange(param.name, e.target.value)}
-                        className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-xs text-neutral-100 font-mono focus:border-indigo-500 focus:outline-none"
-                      />
-                      {vaultCredentials.length > 0 && (
-                        <div className="flex items-center gap-1.5 text-[11px] text-neutral-400">
-                          <span>Use Vault item:</span>
-                          <select
-                            onChange={(e) => {
-                              if (e.target.value) {
-                                handleParameterChange(param.name, e.target.value);
-                              }
-                            }}
-                            className="bg-neutral-900 border border-neutral-800 rounded px-1.5 py-0.5 text-[11px] text-indigo-300"
-                          >
-                            <option value="">-- Choose Credential --</option>
-                            {vaultCredentials.map((c) => (
-                              <option key={c.id} value={`vault:${c.id}`}>
-                                {c.name} ({c.type})
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {(param.type === 'code' || param.type === 'json') && (
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between text-[11px] text-neutral-500 font-mono">
-                        <span>{param.type === 'code' ? 'JavaScript Sandbox' : 'JSON Object'}</span>
-                        {param.type === 'json' && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              try {
-                                const parsed = JSON.parse(currentValue);
-                                handleParameterChange(param.name, JSON.stringify(parsed, null, 2));
-                              } catch (e) {}
-                            }}
-                            className="text-indigo-400 hover:underline flex items-center gap-1"
-                          >
-                            <Wand2 className="w-3 h-3" /> Format
-                          </button>
-                        )}
+                {/* Input Content */}
+                <div className="flex-1 overflow-auto p-3 font-mono text-xs">
+                  {isEditingInput ? (
+                    <div className="h-full flex flex-col gap-2">
+                      <div className={`text-[11px] ${isDark ? 'text-neutral-400' : 'text-slate-500'}`}>
+                        Customize the JSON data fed to this node during tests:
                       </div>
                       <textarea
-                        rows={param.type === 'code' ? 9 : 6}
-                        value={typeof currentValue === 'object' ? JSON.stringify(currentValue, null, 2) : currentValue}
-                        onChange={(e) => handleParameterChange(param.name, e.target.value)}
-                        className="w-full p-2.5 bg-neutral-950 border border-neutral-800 rounded-lg font-mono text-xs text-emerald-400 focus:border-indigo-500 focus:outline-none leading-relaxed"
+                        value={customInputText}
+                        onChange={(e) => setCustomInputText(e.target.value)}
+                        className={`flex-1 w-full p-2.5 rounded-lg text-xs font-mono text-emerald-400 focus:border-[#EA580C] focus:outline-none border ${
+                          isDark ? 'bg-neutral-950 border-neutral-800' : 'bg-slate-900 border-slate-800'
+                        }`}
                         spellCheck={false}
                       />
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* TAB 2: DATA INSPECTOR */}
-        {activeTab === 'data' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="text-xs text-neutral-400 flex items-center gap-2">
-                <span>Execution Status:</span>
-                <span
-                  className={`px-2 py-0.5 rounded text-[11px] font-medium ${
-                    executionState?.status === 'success'
-                      ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50'
-                      : executionState?.status === 'error'
-                      ? 'bg-rose-950 text-rose-400 border border-rose-800/50'
-                      : 'bg-neutral-800 text-neutral-400'
-                  }`}
-                >
-                  {executionState?.status ? executionState.status.toUpperCase() : 'NO RUN YET'}
-                </span>
-                {executionState?.durationMs !== undefined && (
-                  <span className="flex items-center gap-1 font-mono text-[11px] text-neutral-500">
-                    <Clock className="w-3 h-3" /> {executionState.durationMs}ms
-                  </span>
-                )}
-              </div>
-
-              <div className="flex items-center gap-1 bg-neutral-950 p-1 rounded border border-neutral-800 text-xs">
-                <button
-                  type="button"
-                  onClick={() => setDataViewMode('json')}
-                  className={`px-2 py-0.5 rounded ${
-                    dataViewMode === 'json' ? 'bg-indigo-600 text-white' : 'text-neutral-400'
-                  }`}
-                >
-                  JSON
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDataViewMode('table')}
-                  className={`px-2 py-0.5 rounded ${
-                    dataViewMode === 'table' ? 'bg-indigo-600 text-white' : 'text-neutral-400'
-                  }`}
-                >
-                  Table
-                </button>
-              </div>
-            </div>
-
-            {/* Upstream Input Data */}
-            <div className="space-y-1.5">
-              <div className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
-                Upstream Input Data
-              </div>
-              <div className="p-3 bg-neutral-950 border border-neutral-800 rounded-lg max-h-56 overflow-auto font-mono text-xs text-neutral-300">
-                {executionState?.inputData !== undefined ? (
-                  <pre>{JSON.stringify(executionState.inputData, null, 2)}</pre>
-                ) : (
-                  <span className="text-neutral-600 italic">No input data recorded for this step yet. Run workflow to capture.</span>
-                )}
-              </div>
-            </div>
-
-            {/* Downstream Output Data */}
-            <div className="space-y-1.5">
-              <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center justify-between">
-                <span>Output Data Payload</span>
-                {executionState?.outputData && (
-                  <button
-                    type="button"
-                    onClick={() => navigator.clipboard.writeText(JSON.stringify(executionState.outputData, null, 2))}
-                    className="text-[11px] text-neutral-400 hover:text-white flex items-center gap-1"
-                  >
-                    <Copy className="w-3 h-3" /> Copy JSON
-                  </button>
-                )}
-              </div>
-              <div className="p-3 bg-neutral-950 border border-neutral-800 rounded-lg max-h-64 overflow-auto font-mono text-xs text-emerald-300">
-                {executionState?.outputData !== undefined ? (
-                  <pre>{JSON.stringify(executionState.outputData, null, 2)}</pre>
-                ) : (
-                  <span className="text-neutral-600 italic">No output data generated yet. Click "Test Step" or run workflow.</span>
-                )}
-              </div>
-            </div>
-
-            {/* Execution Logs */}
-            {executionState?.logs && executionState.logs.length > 0 && (
-              <div className="space-y-1.5">
-                <div className="text-xs font-semibold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Terminal className="w-3.5 h-3.5 text-indigo-400" />
-                  Execution Logs & Telemetry
-                </div>
-                <div className="p-2.5 bg-neutral-950 border border-neutral-800 rounded-lg max-h-36 overflow-auto font-mono text-[11px] text-neutral-400 space-y-1">
-                  {executionState.logs.map((log, i) => (
-                    <div key={i} className="leading-snug">
-                      {log}
+                  ) : inputViewMode === 'json' ? (
+                    <div className="space-y-1">
+                      <div className={`text-[10px] mb-2 italic ${isDark ? 'text-neutral-500' : 'text-slate-400'}`}>
+                        Tip: Click any field below to copy its expression into your parameters.
+                      </div>
+                      {/* Render Interactive JSON Tree */}
+                      {Object.entries(typeof currentInput === 'object' ? currentInput : { value: currentInput }).map(
+                        ([key, val]) => {
+                          if (inputSearch && !key.toLowerCase().includes(inputSearch.toLowerCase())) {
+                            return null;
+                          }
+                          return (
+                            <div
+                              key={key}
+                              onClick={() => handleCopyExpression(key)}
+                              className={`group p-1.5 rounded flex items-center justify-between cursor-pointer transition-colors ${
+                                isDark ? 'hover:bg-neutral-800/80' : 'hover:bg-slate-200/70'
+                              }`}
+                              title={`Click to copy {{ $json.${key} }}`}
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <span className={`font-semibold ${isDark ? 'text-sky-400' : 'text-sky-700'}`}>{key}:</span>
+                                <span className={`truncate ${isDark ? 'text-neutral-300' : 'text-slate-700'}`}>
+                                  {typeof val === 'object' ? JSON.stringify(val) : String(val)}
+                                </span>
+                              </div>
+                              <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 text-[10px] text-[#EA580C] shrink-0">
+                                {copiedToken === key ? (
+                                  <>
+                                    <Check className="w-3 h-3 text-emerald-400" />
+                                    <span className="text-emerald-400 font-sans">Copied!</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy className="w-3 h-3" />
+                                    <span className="font-sans">Copy</span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        }
+                      )}
                     </div>
-                  ))}
+                  ) : (
+                    /* Table View */
+                    <div className={`border rounded-lg overflow-hidden text-xs ${
+                      isDark ? 'border-neutral-800' : 'border-slate-200'
+                    }`}>
+                      <table className="w-full text-left">
+                        <thead className={`border-b font-medium ${
+                          isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-400' : 'bg-slate-100 border-slate-200 text-slate-700'
+                        }`}>
+                          <tr>
+                            <th className="p-2">Key</th>
+                            <th className="p-2">Value</th>
+                          </tr>
+                        </thead>
+                        <tbody className={`divide-y ${isDark ? 'divide-neutral-800/60' : 'divide-slate-200'}`}>
+                          {Object.entries(typeof currentInput === 'object' ? currentInput : { value: currentInput }).map(
+                            ([k, v]) => (
+                              <tr
+                                key={k}
+                                onClick={() => handleCopyExpression(k)}
+                                className={`cursor-pointer transition-colors ${
+                                  isDark ? 'hover:bg-neutral-900/60' : 'hover:bg-slate-100'
+                                }`}
+                              >
+                                <td className={`p-2 font-semibold ${isDark ? 'text-sky-400' : 'text-sky-700'}`}>{k}</td>
+                                <td className={`p-2 break-all ${isDark ? 'text-neutral-300' : 'text-slate-700'}`}>
+                                  {typeof v === 'object' ? JSON.stringify(v) : String(v)}
+                                </td>
+                              </tr>
+                            )
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
-          </div>
-        )}
 
-        {/* TAB 3: TEST STEP */}
-        {activeTab === 'test' && (
-          <div className="space-y-4">
-            <div className="p-3 bg-indigo-950/30 border border-indigo-800/40 rounded-xl text-xs text-neutral-300 flex items-start gap-2.5">
-              <Sparkles className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-semibold text-indigo-300">Live Isolated Sandbox: </span>
-                Test this individual node directly against custom test inputs without executing the entire workflow pipeline.
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs font-semibold text-neutral-300">
-                <span>Mock Input Payload</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    try {
-                      setTestInputJson(JSON.stringify(JSON.parse(testInputJson), null, 2));
-                    } catch (e) {}
-                  }}
-                  className="text-[11px] text-indigo-400 hover:underline flex items-center gap-1"
-                >
-                  <Wand2 className="w-3 h-3" /> Format
-                </button>
-              </div>
-              <textarea
-                rows={6}
-                value={testInputJson}
-                onChange={(e) => setTestInputJson(e.target.value)}
-                className="w-full p-2.5 bg-neutral-950 border border-neutral-800 rounded-lg font-mono text-xs text-neutral-300 focus:border-indigo-500 focus:outline-none"
-              />
-            </div>
-
-            <button
-              id="btn-run-isolated-test"
-              type="button"
-              disabled={isTesting}
-              onClick={handleRunSingleTest}
-              className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold rounded-lg shadow-md flex items-center justify-center gap-2 transition-all"
-            >
-              <Play className="w-3.5 h-3.5 fill-current" />
-              {isTesting ? 'Testing Node in Sandbox...' : 'Test Step'}
-            </button>
-
-            {testResult && (
-              <div className="space-y-2 pt-2 border-t border-neutral-800">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-neutral-300 flex items-center gap-1.5">
-                    {testResult.status === 'success' ? (
-                      <span className="text-emerald-400 flex items-center gap-1">
-                        <Check className="w-3.5 h-3.5" /> Test Succeeded
+            {/* ------------------------------------------------------- */}
+            {/* PANE 2: NODE PARAMETERS (Center Column)                 */}
+            {/* ------------------------------------------------------- */}
+            {(activePane === 'all' || activePane === 'params') && (
+              <div className={`flex-1 border-r flex flex-col overflow-hidden ${
+                isDark ? 'border-[#26262b] bg-[#141416]' : 'border-slate-200 bg-white'
+              }`}>
+                {/* Parameters Header */}
+                <div className={`h-11 px-4 border-b flex items-center justify-between shrink-0 ${
+                  isDark ? 'border-[#26262b] bg-[#18181c]' : 'border-slate-200 bg-slate-50'
+                }`}>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setActiveParamTab('params')}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+                        activeParamTab === 'params'
+                          ? isDark ? 'bg-neutral-800 text-white shadow-xs' : 'bg-white text-slate-900 shadow-xs border border-slate-200'
+                          : isDark ? 'text-neutral-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <SlidersHorizontal className="w-3.5 h-3.5 text-[#EA580C]" />
+                      <span>Parameters</span>
+                    </button>
+                    <button
+                      id="btn-open-ui-mapper-tab"
+                      type="button"
+                      onClick={() => setActiveParamTab('mapper')}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+                        activeParamTab === 'mapper'
+                          ? 'bg-[#EA580C]/20 border border-[#EA580C]/40 text-[#EA580C]'
+                          : isDark ? 'text-neutral-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-[#EA580C]" />
+                      <span>UI Data Mapper</span>
+                      <span className="px-1.5 py-0.5 rounded text-[9px] bg-[#EA580C]/30 text-[#EA580C] font-bold">
+                        n8n
                       </span>
-                    ) : (
-                      <span className="text-rose-400 flex items-center gap-1">
-                        <AlertCircle className="w-3.5 h-3.5" /> Test Failed
+                    </button>
+                    <button
+                      id="btn-open-docs-tab"
+                      type="button"
+                      onClick={() => setActiveParamTab('docs')}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+                        activeParamTab === 'docs'
+                          ? 'bg-[#EA580C] text-white shadow-xs'
+                          : isDark ? 'text-neutral-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span>Documentation</span>
+                    </button>
+                  </div>
+                  <div className={`text-[11px] hidden sm:block ${isDark ? 'text-neutral-500' : 'text-slate-500'}`}>
+                    {(definition?.category || '').toUpperCase()} • {definition?.name || ''}
+                  </div>
+                </div>
+
+                {/* Tab Content: UI Mapper vs Standard Parameters vs Documentation */}
+                {activeParamTab === 'docs' ? (
+                  <div className="flex-1 overflow-hidden">
+                    <NodeDocumentationView
+                      node={node}
+                      definition={definition}
+                      onApplyExampleConfig={handleApplyExampleConfig}
+                    />
+                  </div>
+                ) : activeParamTab === 'mapper' ? (
+                  <div className="flex-1 overflow-hidden p-4">
+                    <UiDataMapper
+                      currentNode={node}
+                      allNodes={allNodes}
+                      upstreamNodes={upstreamNodes}
+                      inputData={currentInput}
+                      parametersSchema={definition.parametersSchema}
+                      onSelectField={handleSelectMapperField}
+                      onClose={() => setActiveParamTab('params')}
+                    />
+                  </div>
+                ) : (
+                  /* Parameters Body */
+                  <div className="flex-1 overflow-y-auto p-5 space-y-5">
+                    {/* Special Webhook Card if Webhook Trigger */}
+                    {node.type === 'webhookTrigger' && (
+                      <div className={`p-3.5 rounded-xl border text-xs space-y-2.5 ${
+                        isDark ? 'bg-rose-950/20 border-rose-800/30' : 'bg-rose-50 border-rose-200'
+                      }`}>
+                        <div className="font-semibold text-rose-500 flex items-center gap-1.5">
+                          <Send className="w-4 h-4" />
+                          Inbound Webhook URL Endpoint
+                        </div>
+                        <p className={`text-[11px] ${isDark ? 'text-neutral-300' : 'text-slate-700'}`}>
+                          Send HTTP {node.parameters?.httpMethod || 'POST'} requests directly to this local endpoint to trigger execution:
+                        </p>
+                        <div className={`flex items-center gap-2 p-2 rounded-lg border font-mono text-[11px] break-all ${
+                          isDark ? 'bg-neutral-950 border-neutral-800 text-neutral-300' : 'bg-white border-slate-300 text-slate-800'
+                        }`}>
+                          <span className="flex-1">{webhookUrl}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              navigator.clipboard.writeText(webhookUrl);
+                              setCopiedWebhook(true);
+                              setTimeout(() => setCopiedWebhook(false), 2000);
+                            }}
+                            className={`p-1 rounded cursor-pointer ${
+                              isDark ? 'hover:bg-neutral-800 text-neutral-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-900'
+                            }`}
+                            title="Copy webhook URL"
+                          >
+                            {copiedWebhook ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Render All Parameters with Upstream Context */}
+                    {definition.parametersSchema.map((param) => {
+                      if (!isParamVisible(param)) return null;
+
+                      const currentValue = node.parameters?.[param.name] ?? param.default;
+                      const currentMode = node.parameterModes?.[param.name] || 'fixed';
+
+                      return (
+                        <NodeParameterField
+                          key={param.name}
+                          param={param}
+                          value={currentValue}
+                          mode={currentMode}
+                          inputData={currentInput}
+                          vaultCredentials={vaultCredentials}
+                          upstreamNodes={upstreamNodes}
+                          allNodes={allNodes}
+                          onChangeValue={(val) => handleParamChange(param.name, val)}
+                          onChangeMode={(mode) => handleModeChange(param.name, mode)}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ------------------------------------------------------- */}
+            {/* PANE 3: OUTPUT DATA (Right Column)                      */}
+            {/* ------------------------------------------------------- */}
+            {(activePane === 'all' || activePane === 'output') && (
+              <div className={`w-full lg:w-[35%] flex flex-col overflow-hidden ${
+                isDark ? 'bg-[#111113]' : 'bg-slate-50/50'
+              }`}>
+                {/* Output Header */}
+                <div className={`h-11 px-4 border-b flex items-center justify-between shrink-0 ${
+                  isDark ? 'border-[#26262b] bg-[#151518]' : 'border-slate-200 bg-slate-100'
+                }`}>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-bold tracking-wider uppercase ${isDark ? 'text-neutral-300' : 'text-slate-700'}`}>
+                      OUTPUT
+                    </span>
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono border ${
+                      isDark ? 'bg-neutral-800 border-neutral-700 text-neutral-300' : 'bg-white border-slate-300 text-slate-700'
+                    }`}>
+                      {currentOutput ? (Array.isArray(currentOutput) ? `${currentOutput.length} items` : '1 item') : '0 items'}
+                    </span>
+                    {testResult && (
+                      <span
+                        className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                          testResult.status === 'error'
+                            ? 'bg-rose-950 text-rose-400 border border-rose-800/40'
+                            : 'bg-emerald-950 text-emerald-400 border border-emerald-800/40'
+                        }`}
+                      >
+                        {testResult.status === 'error' ? 'ERROR' : 'SUCCESS'}
                       </span>
                     )}
-                  </span>
-                  {testResult.durationMs !== undefined && (
-                    <span className="font-mono text-neutral-500 text-[11px]">
-                      {testResult.durationMs}ms
-                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    {/* View Switcher: Table | JSON */}
+                    <div className={`flex items-center p-0.5 rounded text-[10px] border ${
+                      isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-slate-300'
+                    }`}>
+                      <button
+                        type="button"
+                        onClick={() => setOutputViewMode('json')}
+                        className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
+                          outputViewMode === 'json'
+                            ? isDark ? 'bg-neutral-800 text-white font-medium' : 'bg-slate-200 text-slate-900 font-semibold'
+                            : isDark ? 'text-neutral-400' : 'text-slate-500'
+                        }`}
+                      >
+                        JSON
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setOutputViewMode('table')}
+                        className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
+                          outputViewMode === 'table'
+                            ? isDark ? 'bg-neutral-800 text-white font-medium' : 'bg-slate-200 text-slate-900 font-semibold'
+                            : isDark ? 'text-neutral-400' : 'text-slate-500'
+                        }`}
+                      >
+                        Table
+                      </button>
+                    </div>
+
+                    {currentOutput && (
+                      <button
+                        type="button"
+                        onClick={() => navigator.clipboard.writeText(JSON.stringify(currentOutput, null, 2))}
+                        className={`p-1 rounded cursor-pointer ${
+                          isDark ? 'hover:bg-neutral-800 text-neutral-400 hover:text-white' : 'hover:bg-slate-200 text-slate-600 hover:text-slate-900'
+                        }`}
+                        title="Copy Output JSON"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Output Search Bar */}
+                <div className={`p-2 border-b ${isDark ? 'border-[#26262b]/60 bg-[#121214]' : 'border-slate-200 bg-white'}`}>
+                  <div className="relative">
+                    <Search className={`w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 ${isDark ? 'text-neutral-500' : 'text-slate-400'}`} />
+                    <input
+                      type="text"
+                      placeholder="Filter output..."
+                      value={outputSearch}
+                      onChange={(e) => setOutputSearch(e.target.value)}
+                      className={`w-full pl-8 pr-2.5 py-1 rounded-md text-xs focus:outline-none focus:border-[#EA580C] border ${
+                        isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200 placeholder:text-neutral-500' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder:text-slate-400'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* Output Content */}
+                <div className="flex-1 overflow-auto p-3 font-mono text-xs">
+                  {isTesting ? (
+                    <div className="h-full flex flex-col items-center justify-center gap-2 text-neutral-500">
+                      <Loader2 className="w-6 h-6 animate-spin text-[#EA580C]" />
+                      <span>Executing step in sandbox...</span>
+                    </div>
+                  ) : currentOutput ? (
+                    outputViewMode === 'json' ? (
+                      <pre className="text-emerald-500 leading-relaxed overflow-auto">
+                        {JSON.stringify(currentOutput, null, 2)}
+                      </pre>
+                    ) : (
+                      /* Table View */
+                      <div className={`border rounded-lg overflow-hidden text-xs ${
+                        isDark ? 'border-neutral-800' : 'border-slate-200'
+                      }`}>
+                        <table className="w-full text-left">
+                          <thead className={`border-b font-medium ${
+                            isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-400' : 'bg-slate-100 border-slate-200 text-slate-700'
+                          }`}>
+                            <tr>
+                              <th className="p-2">Property</th>
+                              <th className="p-2">Value</th>
+                            </tr>
+                          </thead>
+                          <tbody className={`divide-y ${isDark ? 'divide-neutral-800/60' : 'divide-slate-200'}`}>
+                            {Object.entries(
+                              typeof currentOutput === 'object' ? currentOutput : { value: currentOutput }
+                            ).map(([k, v]) => (
+                              <tr key={k} className={isDark ? 'hover:bg-neutral-900/40' : 'hover:bg-slate-100'}>
+                                <td className={`p-2 font-semibold ${isDark ? 'text-indigo-400' : 'text-indigo-700'}`}>{k}</td>
+                                <td className={`p-2 break-all ${isDark ? 'text-neutral-300' : 'text-slate-700'}`}>
+                                  {typeof v === 'object' ? JSON.stringify(v) : String(v)}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )
+                  ) : (
+                    <div className={`h-full flex flex-col items-center justify-center p-6 text-center space-y-3 ${
+                      isDark ? 'text-neutral-500' : 'text-slate-400'
+                    }`}>
+                      <Play className="w-8 h-8 opacity-40" />
+                      <div>
+                        <div className={`font-semibold text-sm ${isDark ? 'text-neutral-300' : 'text-slate-700'}`}>No Output Data Yet</div>
+                        <div className={`text-[11px] mt-1 max-w-xs ${isDark ? 'text-neutral-500' : 'text-slate-500'}`}>
+                          Click the <span className="text-[#EA580C] font-semibold">Test step</span> button in the top right to execute this node with the input data.
+                        </div>
+                      </div>
+                    </div>
                   )}
                 </div>
 
-                <div className="p-3 bg-neutral-950 border border-neutral-800 rounded-lg font-mono text-xs text-emerald-300 max-h-56 overflow-auto">
-                  <pre>{JSON.stringify(testResult.outputData || testResult.error, null, 2)}</pre>
-                </div>
+                {/* Test Logs / Telemetry Drawer */}
+                {testResult?.logs && testResult.logs.length > 0 && (
+                  <div className={`border-t p-2 font-mono text-[10px] max-h-32 overflow-auto ${
+                    isDark ? 'border-[#26262b] bg-neutral-950 text-neutral-400' : 'border-slate-200 bg-slate-100 text-slate-700'
+                  }`}>
+                    <div className="font-semibold text-[#EA580C] mb-1 flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-[#EA580C]" /> Execution Telemetry ({testResult.durationMs ?? 0}ms)
+                    </div>
+                    {testResult.logs.map((log: string, i: number) => (
+                      <div key={i} className="truncate">
+                        {log}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>

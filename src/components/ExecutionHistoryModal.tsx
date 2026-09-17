@@ -123,7 +123,7 @@ export const ExecutionHistoryModal: React.FC<Props> = ({
                     >
                       {exec.status === 'success' && <CheckCircle2 className="w-2.5 h-2.5" />}
                       {exec.status === 'error' && <AlertTriangle className="w-2.5 h-2.5" />}
-                      {exec.status.toUpperCase()}
+                      {(exec.status || 'unknown').toUpperCase()}
                     </span>
                   </div>
 
@@ -155,7 +155,7 @@ export const ExecutionHistoryModal: React.FC<Props> = ({
                   <span className="font-bold text-neutral-100 text-sm">{currentExec.workflowName}</span>
                   <span className="text-neutral-400 font-mono text-[11px]">{currentExec.id}</span>
                   <span className="px-2 py-0.5 rounded bg-neutral-800 text-neutral-300 font-mono text-[10px]">
-                    Trigger: {currentExec.triggerType.toUpperCase()}
+                    Trigger: {(currentExec.triggerType || 'manual').toUpperCase()}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-neutral-400 font-mono text-[11px]">
@@ -197,7 +197,7 @@ export const ExecutionHistoryModal: React.FC<Props> = ({
                   <div className="space-y-4">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-bold text-neutral-200">
-                        Step: {activeNodeExec.nodeName} ({activeNodeExec.status.toUpperCase()})
+                        Step: {activeNodeExec.nodeName} ({(activeNodeExec.status || 'pending').toUpperCase()})
                       </span>
                       <span className="font-mono text-neutral-400">
                         Runtime: {activeNodeExec.durationMs ?? 0}ms

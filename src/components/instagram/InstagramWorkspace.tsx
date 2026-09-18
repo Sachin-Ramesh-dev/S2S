@@ -340,6 +340,47 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
     }
   };
 
+  const handleScheduleScriptToCalendar = async (script: ScriptItem) => {
+    if (!selectedAccount) return;
+    try {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const scheduledDate = tomorrow.toISOString().split('T')[0];
+      const scheduledTime = '18:30';
+
+      const pillar = (script as any).pillar || (topics.find((t) => t.id === script.topicId)?.pillar) || 'Educational Financial Literacy';
+
+      const newPost = await instagramApi.scheduleScript({
+        scriptId: script.id,
+        title: script.title,
+        format: script.format,
+        scheduledDate,
+        scheduledTime,
+        status: 'scheduled',
+        accountId: selectedAccount.id,
+        pillar
+      });
+
+      setCalendar((prev) => [newPost, ...prev.filter((p) => p.id !== newPost.id)]);
+
+      if (script.status !== 'approved') {
+        const updatedScript = await instagramApi.updateScript(script.id, { status: 'approved' });
+        setScripts((prev) => prev.map((s) => (s.id === script.id ? updatedScript : s)));
+      }
+
+      try {
+        await instagramApi.updatePipelineStage(script.id, 'scheduled');
+      } catch (e) {
+        // Pipeline item might be indexed by topicId or scriptId, ignore if not found
+      }
+
+      showToast(`Script "${script.title}" approved and scheduled for ${scheduledDate} at ${scheduledTime}!`, 'success');
+      setActiveTab('calendar');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to schedule script in calendar', 'error');
+    }
+  };
+
   const handleUpdateConfig = async (updates: Partial<AIConfiguration>) => {
     try {
       const updated = await instagramApi.updateConfiguration(updates);
@@ -846,6 +887,7 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
             onGenerateScript={handleGenerateScript}
             onSaveScript={handleSaveScript}
             onNavigateToCalendar={(scriptId) => setActiveTab('calendar')}
+            onScheduleScript={handleScheduleScriptToCalendar}
             onSwitchToSwimlane={() => setActiveTab('swimlane')}
             isGenerating={isGeneratingScript}
             onNavigateToSettings={onNavigateToSettings}

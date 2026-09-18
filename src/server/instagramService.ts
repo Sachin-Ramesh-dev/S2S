@@ -1451,6 +1451,32 @@ export class InstagramService {
     return this.calendar.filter(c => c.accountId === accountId);
   }
 
+  public schedulePost(data: Partial<CalendarPost>): CalendarPost {
+    const post: CalendarPost = {
+      id: data.id || `cal-${Date.now()}`,
+      accountId: data.accountId || this.accounts[0]?.id || 'ig-bajajfinance',
+      title: data.title || 'Scheduled Post',
+      format: (data.format as any) || 'Reel',
+      scheduledDate: data.scheduledDate || new Date(Date.now() + 86400000).toISOString().split('T')[0],
+      scheduledTime: data.scheduledTime || '18:30',
+      status: (data.status as any) || 'scheduled',
+      pillar: data.pillar || 'Educational Financial Literacy',
+      scriptId: data.scriptId,
+      pipelineItemId: data.pipelineItemId
+    };
+    this.calendar.unshift(post);
+    return post;
+  }
+
+  public updateCalendarPost(id: string, updates: Partial<CalendarPost>): CalendarPost | null {
+    const idx = this.calendar.findIndex(c => c.id === id);
+    if (idx >= 0) {
+      this.calendar[idx] = { ...this.calendar[idx], ...updates };
+      return this.calendar[idx];
+    }
+    return null;
+  }
+
   public getAiConfig(): AIConfiguration {
     return this.aiConfig;
   }
@@ -3483,6 +3509,11 @@ export class InstagramService {
   }): { account: InstagramAccount } {
     const cleanUsername = (params.username || 'new_brand').replace('@', '').trim().toLowerCase();
     
+    // In Live mode, reject simulated browser connections
+    if (params.isDemo === false && params.method !== 'meta_graph_api') {
+      throw new Error('Simulated Manus browser connections are only allowed in Demo Sandbox mode. Live Production mode requires verified Meta Graph API credentials.');
+    }
+
     // Check if account already exists with this username
     const existing = this.accounts.find(a => a.username.toLowerCase() === cleanUsername);
     if (existing) {
@@ -3491,7 +3522,7 @@ export class InstagramService {
       existing.connectionMethod = params.method;
       existing.manusSessionId = `manus-sess-${Math.random().toString(36).substring(2, 8)}`;
       existing.isVerified = true;
-      if (params.isDemo !== undefined) existing.isDemo = params.isDemo;
+      if (params.isDemo !== undefined) existing.isDemo = params.method === 'meta_graph_api' ? params.isDemo : true;
       if (params.displayName) existing.displayName = params.displayName;
       if (params.bio) existing.bio = params.bio;
       if (params.category) existing.category = params.category;
@@ -3523,7 +3554,7 @@ export class InstagramService {
       isVerified: true,
       metaPageId: `page_${Math.floor(10000000 + Math.random() * 90000000)}`,
       loginEmailOrUser: params.loginIdentifier || cleanUsername,
-      isDemo: params.isDemo ?? false,
+      isDemo: params.method === 'meta_graph_api' ? (params.isDemo ?? false) : true,
       contentPillars: [
         { name: 'Educational Tutorials & Guides', targetPercentage: 40, currentPercentage: 35, description: 'Actionable step-by-step how-to content' },
         { name: 'Viral Market Trends & Reels', targetPercentage: 35, currentPercentage: 35, description: 'High-share short reels and audio hooks' },

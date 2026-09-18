@@ -142,6 +142,12 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
     return () => clearTimeout(timer);
   }, [connectionStage, currentStepIndex]);
 
+  useEffect(() => {
+    if (isLiveMode) {
+      setActiveTab('meta_graph');
+    }
+  }, [isLiveMode, isOpen]);
+
   if (!isOpen) return null;
 
   const handleSelectPreset = (preset: DemoPreset) => {
@@ -153,6 +159,10 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
 
   const handleInstagramLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLiveMode) {
+      setErrorMessage('Simulated Manus browser connection is only permitted in Demo Sandbox mode. Please connect via Meta Graph API or switch to Demo Sandbox in the header.');
+      return;
+    }
     const cleanUser = (loginIdentifier || '').replace('@', '').trim();
     if (!cleanUser) {
       setErrorMessage('Please enter an Instagram handle, email, or phone number.');
@@ -192,6 +202,10 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
 
   const handleCrawlSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLiveMode) {
+      setErrorMessage('Simulated profile crawl is only permitted in Demo Sandbox mode. Please connect via Meta Graph API or switch to Demo Sandbox in the header.');
+      return;
+    }
     let cleanHandle = profileUrl.trim();
     if (cleanHandle.includes('instagram.com/')) {
       cleanHandle = cleanHandle.split('instagram.com/')[1].split('/')[0].split('?')[0];
@@ -288,7 +302,7 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="bg-[#11121c] rounded-2xl max-w-2xl w-full shadow-2xl border border-zinc-700/80 overflow-hidden my-4 transition-all flex flex-col max-h-[92vh]">
+      <div id="manus-connect-modal" className="bg-[#11121c] rounded-2xl max-w-2xl w-full shadow-2xl border border-zinc-700/80 overflow-hidden my-4 transition-all flex flex-col max-h-[92vh]">
         
         {/* ========================================================= */}
         {/* 1. MANUS CLOUD BROWSER WINDOW CHROME (Header) */}
@@ -394,39 +408,49 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
 
           {/* Connection Method Tabs Switcher */}
           <div className="flex items-center bg-[#141522] rounded-lg p-0.5 border border-zinc-700/60">
-            <button
-              type="button"
-              onClick={() => setActiveTab('instagram_login')}
-              className={`px-2.5 py-1 text-[11px] font-semibold rounded-md transition-all cursor-pointer ${
-                activeTab === 'instagram_login'
-                  ? 'bg-orange-600 text-white shadow-xs'
-                  : 'text-zinc-400 hover:text-zinc-200'
-              }`}
-            >
-              Login
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('browser_crawl')}
-              className={`px-2.5 py-1 text-[11px] font-semibold rounded-md transition-all cursor-pointer ${
-                activeTab === 'browser_crawl'
-                  ? 'bg-orange-600 text-white shadow-xs'
-                  : 'text-zinc-400 hover:text-zinc-200'
-              }`}
-            >
-              Public Crawl
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('meta_graph')}
-              className={`px-2.5 py-1 text-[11px] font-semibold rounded-md transition-all cursor-pointer ${
-                activeTab === 'meta_graph'
-                  ? 'bg-orange-600 text-white shadow-xs'
-                  : 'text-zinc-400 hover:text-zinc-200'
-              }`}
-            >
-              Graph API
-            </button>
+            {isLiveMode ? (
+              <div className="flex items-center gap-1.5 px-3 py-1 text-xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                <span className="font-bold text-emerald-300 text-[11px]">Meta Graph API v20.0</span>
+                <span className="text-[10px] text-zinc-400 font-mono">(Live Mode Required)</span>
+              </div>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('instagram_login')}
+                  className={`px-2.5 py-1 text-[11px] font-semibold rounded-md transition-all cursor-pointer ${
+                    activeTab === 'instagram_login'
+                      ? 'bg-orange-600 text-white shadow-xs'
+                      : 'text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  Login
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('browser_crawl')}
+                  className={`px-2.5 py-1 text-[11px] font-semibold rounded-md transition-all cursor-pointer ${
+                    activeTab === 'browser_crawl'
+                      ? 'bg-orange-600 text-white shadow-xs'
+                      : 'text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  Public Crawl
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('meta_graph')}
+                  className={`px-2.5 py-1 text-[11px] font-semibold rounded-md transition-all cursor-pointer ${
+                    activeTab === 'meta_graph'
+                      ? 'bg-orange-600 text-white shadow-xs'
+                      : 'text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  Graph API
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -434,14 +458,16 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
         {/* 3. ENVIRONMENT BANNER & QUICK BRAND PRESET BAR */}
         {/* ========================================================= */}
         {isLiveMode && connectionStage === 'idle' && (
-          <div className="bg-[#0c1e18] px-4 py-2 border-b border-emerald-900/60 flex items-center justify-between gap-2">
+          <div className="bg-[#0c1e18] px-4 py-2.5 border-b border-emerald-900/60 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 text-[11px] text-emerald-300 font-medium">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
               <span className="font-bold">Live Production Mode:</span>
-              <span className="text-emerald-400/80 hidden sm:inline">Connect verified creator or business accounts via Meta Graph API v20.0 or authentic credentials.</span>
+              <span className="text-emerald-400/90 hidden sm:inline">
+                Authentic Meta Graph API v20.0 credentials required. Simulated Manus browser connections are restricted to Demo Sandbox mode.
+              </span>
             </div>
             <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shrink-0">
-              Live OAuth Enabled
+              Verified Graph API Only
             </span>
           </div>
         )}

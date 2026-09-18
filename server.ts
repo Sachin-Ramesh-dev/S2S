@@ -1804,16 +1804,14 @@ app.post('/api/instagram/accounts/connect-manus', async (req, res) => {
       }
     }
 
-    // 2. In Live mode without Meta Token:
+    // 2. In Live Production mode: strictly require verified Meta Graph API
     if (!isDemo) {
-      if (!process.env.MANUS_API_KEY && !metaAccessToken) {
-        return res.status(400).json({
-          error: 'In Live Production mode, a valid MANUS_API_KEY or Meta Graph API Access Token is required to authenticate real accounts.'
-        });
-      }
+      return res.status(400).json({
+        error: 'Live Production mode requires an authentic Meta Graph API Access Token (starts with EAA...) verified with Meta. Simulated Manus browser connection is only permitted in Demo Sandbox mode.'
+      });
     }
 
-    // 3. Demo Mode or Authenticated Connection
+    // 3. Demo Sandbox Mode: Safe simulated connection (enforced isDemo = true)
     const result = instagramService.connectManusInstagramPage({
       method: method || 'manus_instagram_login',
       username: cleanUser,
@@ -1823,7 +1821,7 @@ app.post('/api/instagram/accounts/connect-manus', async (req, res) => {
       category,
       followersCount: followersCount ? Number(followersCount) : undefined,
       engagementRate: engagementRate ? Number(engagementRate) : undefined,
-      isDemo: isDemo
+      isDemo: true // ALWAYS enforce isDemo = true for simulated sandbox connections
     });
     persistInstagramState();
     res.json({ success: true, account: result.account });
@@ -2277,6 +2275,29 @@ app.post('/api/instagram/audits/guardrail', (req, res) => {
 app.get('/api/instagram/calendar', (req, res) => {
   const accountId = req.query.accountId as string | undefined;
   res.json({ success: true, calendar: instagramService.getCalendar(accountId) });
+});
+
+app.post('/api/instagram/calendar', (req, res) => {
+  try {
+    const post = instagramService.schedulePost(req.body);
+    persistInstagramState();
+    res.json({ success: true, post });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/instagram/calendar/:id', (req, res) => {
+  try {
+    const post = instagramService.updateCalendarPost(req.params.id, req.body);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    persistInstagramState();
+    res.json({ success: true, post });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // AI Configuration & Models Hub

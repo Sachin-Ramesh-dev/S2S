@@ -128,9 +128,13 @@ export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
 
   const handleGenerateTopicsFromAudit = () => {
     if (isGeneratingTopics) return;
-    const opps = currentAudit?.topic_opportunities || currentAudit?.opportunities || [];
-    const fallbackAngle = currentAudit?.content_gaps?.[0] || 'Focus on practical financial mathematics, EMI amortization, and low-friction CTAs';
-    const angleToUse = opps.length > 0 ? opps[0] : fallbackAngle;
+    const underIndexed = (account.contentPillars || []).filter(
+      p => (p.currentPercentage || 0) < (p.targetPercentage || 0)
+    );
+    const topGap = currentAudit?.content_gaps?.[0] || 'High-retention audience hook templates';
+    const angleToUse = underIndexed.length > 0
+      ? `Strategic Pillar Deficit: ${underIndexed.map(p => p.name).join(', ')} (Target: ${underIndexed[0].targetPercentage}%, Current: ${underIndexed[0].currentPercentage}%) - Addressing: ${topGap}`
+      : (currentAudit?.topic_opportunities?.[0] || `Audit Opportunity: ${topGap}`);
     onSendToTopics(angleToUse);
   };
 
@@ -858,75 +862,6 @@ ${(audit.recommendations || []).map(r => `- [Priority: ${r.priority || 'High'}] 
             </div>
           </div>
 
-          {/* Section F: Strategic Pipeline Bridge: Generate Strategy Topics from Audit */}
-          {(() => {
-            const underIndexed = (account.contentPillars || []).filter(
-              p => (p.currentPercentage || 0) < (p.targetPercentage || 0)
-            );
-            const topGap = currentAudit.content_gaps?.[0] || 'High-retention audience hook templates';
-            const targetAngle = underIndexed.length > 0
-              ? `Strategic Pillar Deficit: ${underIndexed.map(p => p.name).join(', ')} (Target: ${underIndexed[0].targetPercentage}%, Current: ${underIndexed[0].currentPercentage}%) - Addressing: ${topGap}`
-              : `Audit Opportunity: ${topGap}`;
-
-            return (
-              <div
-                className={`p-6 rounded-2xl border transition-all ${
-                  isDark
-                    ? 'bg-gradient-to-r from-orange-950/40 via-[#181820] to-purple-950/30 border-orange-500/30 shadow-lg'
-                    : 'bg-gradient-to-r from-orange-50 via-amber-50/60 to-purple-50/50 border-orange-200 shadow-sm'
-                }`}
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="space-y-1.5 max-w-xl">
-                    <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-orange-500/10 text-orange-400 border border-orange-500/20">
-                        Strategic Pipeline Action
-                      </span>
-                      {underIndexed.length > 0 && (
-                        <span className="text-[11px] font-semibold text-rose-400">
-                          • {underIndexed.length} Under-Indexed {underIndexed.length === 1 ? 'Pillar' : 'Pillars'} Identified
-                        </span>
-                      )}
-                    </div>
-                    <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                      Generate Strategy Topics from Audit Insights
-                    </h3>
-                    <p className={`text-xs leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Feed these diagnostic audit insights directly into the AI Topic Engine. Topics will be weighted to solve under-performing content pillars and attack uncovered competitor engagement gaps.
-                    </p>
-                    {underIndexed.length > 0 && (
-                      <div className="flex flex-wrap gap-2 pt-1">
-                        {underIndexed.map((p, i) => (
-                          <span
-                            key={i}
-                            className={`text-[10px] font-mono px-2 py-0.5 rounded border ${
-                              isDark ? 'bg-black/40 border-orange-500/30 text-orange-300' : 'bg-white border-orange-300 text-orange-800'
-                            }`}
-                          >
-                            {p.name}: {p.currentPercentage}% / {p.targetPercentage}% target
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <button
-                    type="button"
-                    id="btn-generate-topics-from-audit"
-                    disabled={isGeneratingTopics}
-                    onClick={() => onSendToTopics(targetAngle)}
-                    className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-xs bg-gradient-to-r from-[#EA580C] to-[#DD2A7B] hover:opacity-95 text-white shadow-md hover:shadow-lg transition-all cursor-pointer shrink-0 disabled:opacity-50"
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    <span>{isGeneratingTopics ? 'Generating Strategic Topics...' : 'Generate Topics from Insights'}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            );
-          })()}
-        </div>
-
           {/* Active Generation Live Tracker Banner */}
           {isGeneratingTopics && (
             <div className={`border-2 border-orange-500/80 rounded-2xl p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-300 ${
@@ -1004,41 +939,78 @@ ${(audit.recommendations || []).map(r => `- [Priority: ${r.priority || 'High'}] 
             </div>
           )}
 
-          {/* Section F: The Next Obvious Step */}
-          <div className="bg-gradient-to-r from-orange-600 to-amber-600 rounded-2xl p-6 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <Sparkles className="w-4 h-4 text-orange-200" />
-                <span className="text-xs font-bold uppercase tracking-wider text-orange-100">Next Obvious Step</span>
-              </div>
-              <h3 className="text-lg font-bold text-white">
-                Turn Audit Insights Into Guardrailed Viral Topics
-              </h3>
-              <p className="text-xs text-orange-100 mt-0.5">
-                Automatically generate high-impact topics that strictly avoid the defects identified in this audit.
-              </p>
-            </div>
+          {/* Section F: Strategic Pipeline Action */}
+          {(() => {
+            const underIndexed = (account.contentPillars || []).filter(
+              (p) => (p.currentPercentage || 0) < (p.targetPercentage || 0)
+            );
 
-            <button
-              id="btn-generate-topics-from-audit"
-              type="button"
-              disabled={isGeneratingTopics}
-              onClick={handleGenerateTopicsFromAudit}
-              className="px-6 py-3 bg-white hover:bg-orange-50 text-orange-700 font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all shrink-0 cursor-pointer disabled:opacity-85 disabled:cursor-not-allowed"
-            >
-              {isGeneratingTopics ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin text-orange-600" />
-                  <span>Synthesizing Topics ({topicProgressPct}%)...</span>
-                </>
-              ) : (
-                <>
-                  <span>Generate Content Topics from this Audit</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </div>
+            return (
+              <div
+                className={`p-6 rounded-2xl border transition-all ${
+                  isDark
+                    ? 'bg-gradient-to-r from-orange-950/40 via-[#181820] to-purple-950/30 border-orange-500/30 shadow-lg'
+                    : 'bg-gradient-to-r from-orange-50 via-amber-50/60 to-purple-50/50 border-orange-200 shadow-sm'
+                }`}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-1.5 max-w-xl">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                        Strategic Pipeline Action
+                      </span>
+                      {underIndexed.length > 0 && (
+                        <span className="text-[11px] font-semibold text-rose-400">
+                          • {underIndexed.length} Under-Indexed {underIndexed.length === 1 ? 'Pillar' : 'Pillars'} Identified
+                        </span>
+                      )}
+                    </div>
+                    <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      Generate Strategy Topics from Audit Insights
+                    </h3>
+                    <p className={`text-xs leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Feed diagnostic audit insights directly into the AI Topic Engine. Topics are dynamically weighted to solve under-performing content pillars and attack identified competitor gaps.
+                    </p>
+                    {underIndexed.length > 0 && (
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        {underIndexed.map((p, i) => (
+                          <span
+                            key={i}
+                            className={`text-[10px] font-mono px-2 py-0.5 rounded border ${
+                              isDark ? 'bg-black/40 border-orange-500/30 text-orange-300' : 'bg-white border-orange-300 text-orange-800'
+                            }`}
+                          >
+                            {p.name}: {p.currentPercentage}% / {p.targetPercentage}% target
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    id="btn-generate-topics-from-audit"
+                    disabled={isGeneratingTopics}
+                    onClick={handleGenerateTopicsFromAudit}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-xs bg-gradient-to-r from-[#EA580C] to-[#DD2A7B] hover:opacity-95 text-white shadow-md hover:shadow-lg transition-all cursor-pointer shrink-0 disabled:opacity-50"
+                  >
+                    {isGeneratingTopics ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                        <span>Synthesizing Topics ({topicProgressPct}%)...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4" />
+                        <span>Generate Topics from Insights</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       )}
 

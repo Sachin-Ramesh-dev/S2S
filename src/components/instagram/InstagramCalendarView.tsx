@@ -275,63 +275,75 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredPosts.map((post) => (
-            <div
-              key={post.id}
-              className={`p-5 rounded-xl border shadow-sm transition-all flex flex-col justify-between text-xs space-y-4 group ${
-                isDark
-                  ? 'bg-[#181820] border-gray-800 hover:border-orange-500/60 text-white'
-                  : 'bg-white border-gray-200 hover:border-orange-300 text-gray-900'
-              }`}
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border flex items-center gap-1 ${
-                      post.format === 'Reel'
-                        ? isDark ? 'bg-purple-950/60 text-purple-300 border-purple-800/60' : 'bg-purple-50 text-purple-700 border-purple-200'
-                        : isDark ? 'bg-blue-950/60 text-blue-300 border-blue-800/60' : 'bg-blue-50 text-blue-700 border-blue-200'
-                    }`}
-                  >
-                    {post.format === 'Reel' ? <Video className="w-3 h-3" /> : <Layers className="w-3 h-3" />}
-                    {post.format}
-                  </span>
+          {filteredPosts.map((post) => {
+            const linkedScript = scripts?.find((s) => s.id === post.scriptId);
+            return (
+              <div
+                key={post.id}
+                id={`calendar-card-${post.id}`}
+                className={`p-5 rounded-xl border shadow-sm transition-all flex flex-col justify-between text-xs space-y-4 group ${
+                  isDark
+                    ? 'bg-[#181820] border-gray-800 hover:border-orange-500/60 text-white'
+                    : 'bg-white border-gray-200 hover:border-orange-300 text-gray-900'
+                }`}
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border flex items-center gap-1 ${
+                        post.format === 'Reel'
+                          ? isDark ? 'bg-purple-950/60 text-purple-300 border-purple-800/60' : 'bg-purple-50 text-purple-700 border-purple-200'
+                          : isDark ? 'bg-blue-950/60 text-blue-300 border-blue-800/60' : 'bg-blue-50 text-blue-700 border-blue-200'
+                      }`}
+                    >
+                      {post.format === 'Reel' ? <Video className="w-3 h-3" /> : <Layers className="w-3 h-3" />}
+                      {post.format}
+                    </span>
 
-                  <span
-                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize border ${
-                      post.status === 'published'
-                        ? isDark ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800/60' : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                        : post.status === 'scheduled'
-                        ? isDark ? 'bg-orange-950/60 text-orange-300 border-orange-800/60' : 'bg-orange-50 text-orange-700 border-orange-200'
-                        : isDark ? 'bg-gray-800 text-gray-300 border-gray-700' : 'bg-gray-100 text-gray-700 border-gray-200'
-                    }`}
-                  >
-                    {post.status}
-                  </span>
-                </div>
-
-                <h3 className={`font-bold text-sm leading-snug ${isDark ? 'text-white' : 'text-gray-900'}`}>{post.title}</h3>
-
-                <div className={`p-2.5 rounded-lg border flex items-center justify-between text-xs ${
-                  isDark ? 'bg-[#141419] border-gray-800 text-gray-300' : 'bg-gray-50 border-gray-100 text-gray-600'
-                }`}>
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-orange-500" />
-                    <span>
-                      {post.scheduledDate} at {post.scheduledTime || '18:00'}
+                    <span
+                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize border ${
+                        post.status === 'published'
+                          ? isDark ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800/60' : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          : post.status === 'scheduled'
+                          ? isDark ? 'bg-orange-950/60 text-orange-300 border-orange-800/60' : 'bg-orange-50 text-orange-700 border-orange-200'
+                          : isDark ? 'bg-gray-800 text-gray-300 border-gray-700' : 'bg-gray-100 text-gray-700 border-gray-200'
+                      }`}
+                    >
+                      {post.status}
                     </span>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => handleOpenReschedule(post)}
-                    title="Reschedule post"
-                    className="text-[11px] font-semibold text-orange-500 hover:text-orange-400 hover:underline flex items-center gap-0.5 cursor-pointer"
-                  >
-                    <Edit2 className="w-3 h-3" /> Reschedule
-                  </button>
+                  <h3 className={`font-bold text-sm leading-snug ${isDark ? 'text-white' : 'text-gray-900'}`}>{post.title}</h3>
+
+                  {linkedScript?.hook && (
+                    <div className={`p-2.5 rounded-lg border text-[11px] leading-relaxed italic ${
+                      isDark ? 'bg-orange-950/20 text-orange-200/90 border-orange-900/40' : 'bg-orange-50/70 text-orange-900 border-orange-200/70'
+                    }`}>
+                      <span className="font-bold not-italic text-[10px] uppercase tracking-wider block text-orange-500 mb-0.5">Linked Hook Angle:</span>
+                      "{linkedScript.hook}"
+                    </div>
+                  )}
+
+                  <div className={`p-2.5 rounded-lg border flex items-center justify-between text-xs ${
+                    isDark ? 'bg-[#141419] border-gray-800 text-gray-300' : 'bg-gray-50 border-gray-100 text-gray-600'
+                  }`}>
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-orange-500" />
+                      <span>
+                        {post.scheduledDate} at {post.scheduledTime || '18:00'}
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleOpenReschedule(post)}
+                      title="Reschedule post"
+                      className="text-[11px] font-semibold text-orange-500 hover:text-orange-400 hover:underline flex items-center gap-0.5 cursor-pointer"
+                    >
+                      <Edit2 className="w-3 h-3" /> Reschedule
+                    </button>
+                  </div>
                 </div>
-              </div>
 
               {/* Bottom Actions (Section 31) */}
               <div className={`pt-3 border-t flex items-center justify-between ${
@@ -365,9 +377,10 @@ export const InstagramCalendarView: React.FC<InstagramCalendarViewProps> = ({
                 )}
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          );
+        })}
+      </div>
+    )}
 
       {/* Reschedule Modal (Section 31) */}
       {editingPost && (

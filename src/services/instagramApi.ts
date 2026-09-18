@@ -369,6 +369,9 @@ export const instagramApi = {
     scheduledDate: string;
     scheduledTime?: string;
     status?: string;
+    accountId?: string;
+    pillar?: string;
+    pipelineItemId?: string;
   }): Promise<CalendarPost> {
     const res = await safeFetchJson<{ post: CalendarPost }>(`${BASE_URL}/calendar`, {
       method: 'POST',

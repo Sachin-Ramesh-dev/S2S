@@ -1215,16 +1215,17 @@
       "id": "ig-bajajfinance",
       "username": "bajajfinance",
       "displayName": "Bajaj Finance Limited",
-      "bio": "Connected via Meta Graph API v20.0. Account ID: 178414092817409",
-      "followersCount": 1710000,
+      "bio": "Empowering 80M+ customers with smart loans, EMI solutions & transparent wealth insights. 🇮🇳 #FinSmartEveryday",
+      "followersCount": 428500,
       "followingCount": 142,
       "mediaCount": 1248,
       "engagementRate": 3.84,
       "averageReelViews": 48200,
-      "category": "Finance & Enterprise",
+      "category": "Finance & NBFC",
       "niche": "Personal Credit, EMI Cards & Wealth Literacy",
-      "connectedAt": "2026-09-18T02:37:21.719Z",
-      "lastSyncAt": "2026-09-18T02:37:21.719Z",
+      "connectedAt": "2026-08-10T10:00:00.000Z",
+      "lastSyncAt": "2026-09-18T09:07:23.787Z",
+      "isDemo": true,
       "contentPillars": [
         {
           "name": "Educational Financial Literacy",
@@ -1276,128 +1277,7 @@
         "hdfcbank",
         "zerodhaonline",
         "navi_app"
-      ],
-      "connectionMethod": "meta_graph_api",
-      "manusSessionId": "manus-sess-4cualj",
-      "isVerified": true,
-      "isDemo": true
-    },
-    {
-      "id": "ig-fintechdaily",
-      "username": "fintech_insider",
-      "displayName": "FinTech Insider Daily",
-      "bio": "Breaking down digital banking, UPI trends, AI in wealth, and fintech disruptors. 💡 #FintechRevolution",
-      "followersCount": 185200,
-      "followingCount": 220,
-      "mediaCount": 640,
-      "engagementRate": 4.12,
-      "averageReelViews": 32400,
-      "category": "Fintech & Technology",
-      "niche": "Digital Payments, AI Banking & Crypto Regulations",
-      "connectedAt": "2026-08-18T10:00:00.000Z",
-      "lastSyncAt": "2026-09-17T06:52:43.028Z",
-      "contentPillars": [
-        {
-          "name": "Tech Deep Dives",
-          "targetPercentage": 40,
-          "currentPercentage": 35,
-          "description": "Architecture, payment gateway & API breakdowns"
-        },
-        {
-          "name": "Founder Stories & Case Studies",
-          "targetPercentage": 30,
-          "currentPercentage": 25,
-          "description": "Interviews with startup founders and valuation metrics"
-        },
-        {
-          "name": "Regulatory Updates & RBI Watch",
-          "targetPercentage": 30,
-          "currentPercentage": 40,
-          "description": "RBI guidelines and global cross-border policy changes"
-        }
-      ],
-      "competitors": [
-        {
-          "username": "techcrunch",
-          "followers": 1500000,
-          "engagementRate": 1.8,
-          "note": "Global tech news benchmark."
-        }
-      ],
-      "competitorHandles": [
-        "techcrunch",
-        "inc42",
-        "entrackr"
       ]
-    },
-    {
-      "id": "ig-zerodhainvest-1789670328191",
-      "username": "zerodhainvest",
-      "displayName": "Zerodha Varsity",
-      "bio": "Democratizing financial education, stock markets, and long-term wealth compounding.",
-      "followersCount": 320000,
-      "followingCount": 188,
-      "mediaCount": 49,
-      "engagementRate": 4.9,
-      "averageReelViews": 134334,
-      "category": "Investing & FinTech",
-      "niche": "High-Impact Digital Content",
-      "avatarUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80",
-      "connectedAt": "2026-09-17T18:38:48.191Z",
-      "lastSyncAt": "2026-09-17T18:38:48.191Z",
-      "connectionMethod": "manus_instagram_login",
-      "manusSessionId": "manus-sess-sroky39",
-      "isVerified": true,
-      "metaPageId": "page_37951596",
-      "loginEmailOrUser": "zerodhainvest",
-      "contentPillars": [
-        {
-          "name": "Educational Tutorials & Guides",
-          "targetPercentage": 40,
-          "currentPercentage": 35,
-          "description": "Actionable step-by-step how-to content"
-        },
-        {
-          "name": "Viral Market Trends & Reels",
-          "targetPercentage": 35,
-          "currentPercentage": 35,
-          "description": "High-share short reels and audio hooks"
-        },
-        {
-          "name": "Client Proof & Case Studies",
-          "targetPercentage": 25,
-          "currentPercentage": 30,
-          "description": "Community transformations and customer proof"
-        }
-      ],
-      "competitors": [],
-      "competitorHandles": [
-        "zerodhaonline",
-        "tatacapital",
-        "cred_club"
-      ]
-    },
-    {
-      "id": "ig-tatacapital_loans-1789670541616",
-      "username": "tatacapital_loans",
-      "displayName": "Tata Capital Financial",
-      "bio": "Connected via Meta Graph API v20.0. Account ID: 178414092817409",
-      "followersCount": 1710000,
-      "followingCount": 188,
-      "mediaCount": 87,
-      "engagementRate": 4.8,
-      "averageReelViews": 122687,
-      "category": "Finance & Enterprise",
-      "niche": "High-Impact Digital Content",
-      "avatarUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80",
-      "connectedAt": "2026-09-18T02:36:34.364Z",
-      "lastSyncAt": "2026-09-18T02:36:34.370Z",
-      "connectionMethod": "meta_graph_api",
-      "manusSessionId": "manus-sess-m3d9b7",
-      "isVerified": true,
-      "metaPageId": "page_10672528",
-      "loginEmailOrUser": "tatacapital_loans",
-      "isDemo": true
     }
   ],
   "instagramAudits": [
@@ -1675,6 +1555,96 @@
   ],
   "instagramTopics": [
     {
+      "id": "topic-1789714244687-0",
+      "accountId": "ig-bajajfinance",
+      "title": "The Math Behind EMI Amortization",
+      "hook": "Stop guessing your interest payout. Here is the exact formula banks use to calculate your monthly burden.",
+      "format": "Reel",
+      "contentPillar": "Educational Financial Literacy",
+      "viralPotentialScore": 94,
+      "auditRationale": "Addresses the need for mathematical rigor and transparency by breaking down the amortization formula to build trust.",
+      "status": "pending",
+      "createdAt": "2026-09-18T06:50:44.687Z",
+      "generationId": "gen-1789714221937-vii2k",
+      "angleOptions": [
+        "Visual breakdown of Principal vs. Interest over 12 months",
+        "Why early payments lower total interest costs",
+        "The impact of tenure on EMI affordability"
+      ]
+    },
+    {
+      "id": "topic-1789714244687-1",
+      "accountId": "ig-bajajfinance",
+      "title": "EMI Card Security Checklist",
+      "hook": "3 signs someone is trying to access your Bajaj EMI card—and how to lock it instantly.",
+      "format": "Carousel",
+      "contentPillar": "Fraud Awareness & Consumer Safety",
+      "viralPotentialScore": 91,
+      "auditRationale": "High-utility content that protects the user, fostering brand loyalty through safety-first messaging.",
+      "status": "pending",
+      "createdAt": "2026-09-18T06:50:44.687Z",
+      "generationId": "gen-1789714221937-vii2k",
+      "angleOptions": [
+        "Step-by-step app security settings",
+        "Identifying phishing vs. official communication",
+        "What to do if you lose your card"
+      ]
+    },
+    {
+      "id": "topic-1789714244687-2",
+      "accountId": "ig-bajajfinance",
+      "title": "The True Cost of 'No-Cost' EMI",
+      "hook": "Is 'No-Cost' actually zero? We are showing the math behind the merchant discount and your final price.",
+      "format": "Reel",
+      "contentPillar": "Product Transparency & How-Tos",
+      "viralPotentialScore": 98,
+      "auditRationale": "Directly tackles the 'radical transparency' brand requirement by explaining the arithmetic behind zero-interest financing.",
+      "status": "pending",
+      "createdAt": "2026-09-18T06:50:44.687Z",
+      "generationId": "gen-1789714221937-vii2k",
+      "angleOptions": [
+        "Comparison of cash price vs. EMI price",
+        "How to read your loan statement clearly",
+        "The role of processing fees in total cost"
+      ]
+    },
+    {
+      "id": "topic-1789714244687-3",
+      "accountId": "ig-bajajfinance",
+      "title": "Debt-to-Income (DTI) Ratio Guide",
+      "hook": "Before you apply for your next loan, calculate your DTI. It is the #1 reason applications get rejected.",
+      "format": "Carousel",
+      "contentPillar": "Educational Financial Literacy",
+      "viralPotentialScore": 89,
+      "auditRationale": "Provides actionable, tactical advice that empowers the user to improve their creditworthiness.",
+      "status": "pending",
+      "createdAt": "2026-09-18T06:50:44.687Z",
+      "generationId": "gen-1789714221937-vii2k",
+      "angleOptions": [
+        "The simple formula for DTI calculation",
+        "How lenders view your existing debt load",
+        "Methods to improve your ratio before applying"
+      ]
+    },
+    {
+      "id": "topic-1789714244687-4",
+      "accountId": "ig-bajajfinance",
+      "title": "Smart Credit Management Case Study",
+      "hook": "How a customer saved 14% on total loan interest by using one simple repayment strategy.",
+      "format": "Reel",
+      "contentPillar": "Lifestyle & Real Customer Wins",
+      "viralPotentialScore": 85,
+      "auditRationale": "Uses a concrete, verifiable example to demonstrate the efficacy of responsible credit management.",
+      "status": "pending",
+      "createdAt": "2026-09-18T06:50:44.687Z",
+      "generationId": "gen-1789714221937-vii2k",
+      "angleOptions": [
+        "Scenario: Impact of prepayments on total loan tenure",
+        "The psychology of debt consolidation",
+        "Tracking your credit score improvement over 6 months"
+      ]
+    },
+    {
       "id": "topic-1789634045278-0",
       "accountId": "ig-bajajfinance",
       "title": "The 1 Extra EMI Math: How to Shave 6 Years Off a 20-Year Home Loan",
@@ -1853,9 +1823,67 @@
       "auditRationale": "Positions the brand as a forward-thinking market authority.",
       "source": "AI",
       "createdAt": "2026-09-17T18:42:21.616Z"
+    },
+    {
+      "id": "topic-ig-bajajfinance-1789714382780-1",
+      "accountId": "ig-bajajfinance-1789714382780",
+      "title": "3 Common Mistakes 90% of Users Make in Finance & Banking",
+      "contentPillar": "Educational Tutorials & Guides",
+      "angle": "Contrarian breakdown of costly mistakes with high bookmark retention",
+      "hook": "Stop doing this before you lose more time and money...",
+      "audience": "Ambitious professionals & digital consumers",
+      "format": "Reel",
+      "viralPotentialScore": 93,
+      "status": "approved",
+      "auditRationale": "Manus autonomous intelligence detected 45% higher save rates on negative hooks.",
+      "source": "AI",
+      "createdAt": "2026-09-18T06:53:02.780Z"
+    },
+    {
+      "id": "topic-ig-bajajfinance-1789714382780-2",
+      "accountId": "ig-bajajfinance-1789714382780",
+      "title": "The Ultimate 2026 Action Checklist for Brand official",
+      "contentPillar": "Viral Market Trends & Reels",
+      "angle": "Saveable multi-slide carousel visual roadmap",
+      "hook": "Save this post before you plan your next move...",
+      "audience": "Busy operators seeking quick reference material",
+      "format": "Carousel",
+      "viralPotentialScore": 95,
+      "status": "approved",
+      "auditRationale": "Fulfills carousel shortfall identified in Manus audit with viral bookmark potential.",
+      "source": "AI",
+      "createdAt": "2026-09-18T06:53:02.780Z"
+    },
+    {
+      "id": "topic-ig-bajajfinance-1789714382780-3",
+      "accountId": "ig-bajajfinance-1789714382780",
+      "title": "Why Traditional Strategies in Finance & Banking Are Quietly Dying",
+      "contentPillar": "Educational Tutorials & Guides",
+      "angle": "Thought leadership and narrative storytelling",
+      "hook": "The rules completely changed in 2026, here is why...",
+      "audience": "High-intent followers & decision makers",
+      "format": "Reel",
+      "viralPotentialScore": 89,
+      "status": "pending",
+      "auditRationale": "Positions the brand as a forward-thinking market authority.",
+      "source": "AI",
+      "createdAt": "2026-09-18T06:53:02.780Z"
     }
   ],
   "instagramPipeline": [
+    {
+      "id": "pipe-1789714545869",
+      "accountId": "ig-sachinsachinsachin-1789714414789",
+      "topicId": "topic-1789714545576-0",
+      "title": "The Exact Amortization Math: Slashing an 8.5% Home Loan by 7 Years",
+      "format": "Carousel",
+      "contentPillar": "Educational Tutorials & Guides",
+      "stage": "scripting",
+      "dueDate": "2026-09-23",
+      "createdAt": "2026-09-18T06:55:45.869Z",
+      "updatedAt": "2026-09-18T06:56:09.718Z",
+      "scriptId": "script-1789714569718"
+    },
     {
       "id": "pipe-1",
       "accountId": "ig-bajajfinance",
@@ -2254,6 +2282,16 @@
   ],
   "instagramCalendar": [
     {
+      "id": "cal-1789713440104",
+      "accountId": "ig-bajajfinance",
+      "title": "Test Scheduled Post",
+      "format": "Reel",
+      "scheduledDate": "2026-09-20",
+      "scheduledTime": "18:30",
+      "status": "scheduled",
+      "pillar": "Educational Financial Literacy"
+    },
+    {
       "id": "cal-1",
       "accountId": "ig-bajajfinance",
       "title": "The Prepayment Hack: Why 5% Extra Saves ₹1.2 Lakh",
@@ -2427,10 +2465,10 @@
       "monthlyBudgetUsd": 100,
       "warningThresholdPct": 80,
       "hardStopPct": 100,
-      "currentSpendUsd": 18.429000000000002,
+      "currentSpendUsd": 18.435750000000002,
       "currentMonth": "September 2026",
-      "requestCountThisMonth": 128,
-      "estimatedTokensThisMonth": 148800
+      "requestCountThisMonth": 131,
+      "estimatedTokensThisMonth": 153300
     },
     "learningSettings": {
       "enabled": true,
@@ -2794,6 +2832,297 @@
     }
   ],
   "instagramGenerations": [
+    {
+      "id": "gen-1789714545876-fzm7m",
+      "task": "script_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "script-prompt-v4",
+      "skillVersion": "v4",
+      "inputContextSummary": "@sachinsachinsachin (script_generation) - Skill v4",
+      "inputContext": {
+        "account": "sachinsachinsachin",
+        "skillVersion": "v4"
+      },
+      "output": {
+        "title": "The Exact Amortization Math: Slashing an 8.5% Home Loan by 7 Years",
+        "format": "Carousel",
+        "hook": "Paying 1 extra EMI per year doesn't save you 12 months—it cuts 7.2 years off a 30-year amortization schedule. Here is the verified calculation.",
+        "slides": [
+          {
+            "slideNumber": 1,
+            "slideType": "hook",
+            "visualLayout": "High-contrast split screen: 30 years vs 22.8 years, bold sans-serif font.",
+            "headline": "Cut 7.2 Years Off Your 30-Year Loan",
+            "bodyText": "The exact amortization math behind paying just one extra EMI annually.",
+            "swipeTrigger": "Swipe to see the math →"
+          },
+          {
+            "slideNumber": 2,
+            "slideType": "value",
+            "visualLayout": "Clean table format showing baseline assumptions.",
+            "headline": "The Assumptions",
+            "bodyText": "Loan: $500k | Rate: 8.5% | Tenure: 30 Years. We assume a fixed interest rate and consistent principal prepayments. Legal Note: Results vary based on bank-specific prepayment policies and interest reset cycles.",
+            "swipeTrigger": "See the impact on interest →"
+          },
+          {
+            "slideNumber": 3,
+            "slideType": "value",
+            "visualLayout": "Bar chart visualization.",
+            "headline": "The Power of 1 Extra EMI",
+            "bodyText": "By adding 1/12th of your annual principal burden each month (or 1 full EMI per year), you attack the principal balance directly, bypassing interest accrual.",
+            "swipeTrigger": "The math breakdown →"
+          },
+          {
+            "slideNumber": 4,
+            "slideType": "value",
+            "visualLayout": "Formula block.",
+            "headline": "The Amortization Formula",
+            "bodyText": "M = P [ i(1 + i)^n ] / [ (1 + i)^n – 1 ]. Reducing P (Principal) early creates a compounding effect that shortens 'n' (Total periods).",
+            "swipeTrigger": "The 7.2-year proof →"
+          },
+          {
+            "slideNumber": 5,
+            "slideType": "value",
+            "visualLayout": "Comparison graphic: Standard vs. Accelerated.",
+            "headline": "Standard vs. Accelerated",
+            "bodyText": "Standard: 360 payments. Accelerated (1 extra/year): 274 payments. You effectively kill 86 months of interest.",
+            "swipeTrigger": "The interest savings →"
+          },
+          {
+            "slideNumber": 6,
+            "slideType": "value",
+            "visualLayout": "Large text callout.",
+            "headline": "Total Interest Saved",
+            "bodyText": "At 8.5%, this strategy saves thousands in interest costs over the life of the loan. Your money works harder than the bank's compounding schedule.",
+            "swipeTrigger": "Check your loan terms →"
+          },
+          {
+            "slideNumber": 7,
+            "slideType": "value",
+            "visualLayout": "Checklist graphic.",
+            "headline": "Crucial Pre-requisites",
+            "bodyText": "1. Verify no 'prepayment penalties'. 2. Ensure extra payments are applied to Principal, not next month's EMI. 3. Confirm interest reset frequency.",
+            "swipeTrigger": "Summary of steps →"
+          },
+          {
+            "slideNumber": 8,
+            "slideType": "summary",
+            "visualLayout": "Condensed summary card.",
+            "headline": "The Strategy Summary",
+            "bodyText": "1 extra EMI/year = 7.2 years saved. Lower interest = Higher equity. Check your lender's policy first.",
+            "swipeTrigger": "Save this for later →"
+          },
+          {
+            "slideNumber": 9,
+            "slideType": "cta",
+            "visualLayout": "Dark mode with prominent button graphic.",
+            "headline": "Want to see your own timeline?",
+            "bodyText": "Comment 'CALC' and I'll DM you a guide on how to calculate your specific savings based on your current balance.",
+            "swipeTrigger": "Save this post →"
+          }
+        ],
+        "caption": "The math of debt isn't mysterious—it's just compounding working against you. When you pay 1 extra EMI per year, you aren't just paying off debt; you are slashing the interest-bearing principal that compounds over the remaining 30 years. \n\nAssumptions: $500k loan at 8.5% fixed interest. Individual results depend on your lender's prepayment policy and interest reset dates. Always check if your specific loan agreement allows principal prepayments without penalty.\n\nReady to see how much time you can cut off your specific loan? Comment 'CALC' below and I'll send you the breakdown framework.",
+        "hashtags": [
+          "#HomeLoanTips",
+          "#DebtFreedom",
+          "#FinancialLiteracy",
+          "#AmortizationMath",
+          "#SmartInvesting"
+        ],
+        "callToAction": "Comment 'CALC' for the breakdown"
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 23841,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-09-18T06:56:09.718Z"
+    },
+    {
+      "id": "gen-1789714525220-10ewf",
+      "task": "topic_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "topic-prompt-v8",
+      "skillVersion": "v4",
+      "inputContextSummary": "@sachinsachinsachin (topic_generation) - Skill v4",
+      "inputContext": {
+        "account": "sachinsachinsachin",
+        "skillVersion": "v4"
+      },
+      "output": [
+        {
+          "title": "The Exact Amortization Math: Slashing an 8.5% Home Loan by 7 Years",
+          "hook": "Paying 1 extra EMI per year doesn't save you 12 months—it cuts 7.2 years off a 30-year amortization schedule. Here is the verified calculation.",
+          "format": "Carousel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 95,
+          "auditRationale": "Directly implements skill v4 by eliminating generic debt advice and providing step-by-step arithmetic (principal reduction vs. interest compounding schedule) with a mandatory swipe trigger on slides 2-7 and a direct keyword CTA ('Comment AMORT for the Excel template').",
+          "angleOptions": [
+            "The 13th EMI Strategy: Principal Allocation Breakdown",
+            "Increasing EMI by 5% Annually: Impact on 30-Year Loan Tenor",
+            "Lump-Sum Prepayment at Month 36 vs. Month 120: Net Savings Comparison"
+          ]
+        },
+        {
+          "title": "The True Annualized Cost of 'No-Cost EMI' Financing",
+          "hook": "Your '0% Interest' checkout loan includes an upfront processing fee and 18% GST on interest rebates. Let's calculate the real APR.",
+          "format": "Reel",
+          "contentPillar": "Viral Market Trends & Reels",
+          "viralPotentialScore": 93,
+          "auditRationale": "Uses a 2-second visual pattern interrupt (zooming in on the hidden GST line of an actual loan agreement). Avoids hype by detailing precise discount surrender mathematics, legally disclaimed figures, and closing with a binary diagnostic CTA: 'Are you using No-Cost EMI: Yes or No?'.",
+          "angleOptions": [
+            "Subvention Model Audit: How Retailers Price In The Discount Loss",
+            "The Pre-Closure Trap: Why Foreclosing a 0% EMI Costs More",
+            "Credit Card Statement Breakdown: Tracking the Hidden Tax Component"
+          ]
+        },
+        {
+          "title": "Minimum Payment Trap: Daily Periodic Rate vs. Statement Balance",
+          "hook": "Paying the 5% minimum payment on a $5,000 balance at 36% APR keeps you in debt for 21.4 years. Here is the day-by-day compounding ledger.",
+          "format": "Carousel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 89,
+          "auditRationale": "Solves historical engagement gaps with a high-utility retention loop: each slide dissects one cycle of the Daily Periodic Rate formula. Explicitly requires 'Save this before your next statement generated date' and gives legal qualifications on APR variability.",
+          "angleOptions": [
+            "Why Minimum Due Resets Your Grace Period on New Purchases",
+            "The 36% APR Reality: How $1,000 Becomes $2,840 in 36 Months",
+            "Two-Cycle Average Daily Balance: How Issuers Compound Past Interest"
+          ]
+        },
+        {
+          "title": "Case Study: $42,000 Portfolio Audit (Avalanche vs. Snowball)",
+          "hook": "We audited two identical $42,000 debt profiles: Snowball cost $4,830 more in interest than Mathematical Avalanche. Here is the verified spreadsheet.",
+          "format": "Reel",
+          "contentPillar": "Client Proof & Case Studies",
+          "viralPotentialScore": 88,
+          "auditRationale": "Leverages real balance-sheet modeling with explicit baseline assumptions (weighted average rate of 16.4%, 36-month timeline). High-contrast visual overlay of debt repayment curves within 1.8 seconds. CTA triggers automated DM delivery: 'Comment CALC for the sheet'.",
+          "angleOptions": [
+            "When Psychology Trumps Math: The Exact $4,830 Cost of Snowball",
+            "Hybrid Payoff Strategy: Switching from Snowball to Avalanche at Debt #3",
+            "Refinancing First: Using Personal Loan Consolidation to Lower Weighted APR"
+          ]
+        },
+        {
+          "title": "The 20/4/10 Auto Rule Stress-Tested Against 9.5% Loan Rates",
+          "hook": "The traditional 20/4/10 car affordability rule is mathematically broken at 9.5% interest. Here is the adjusted safety formula.",
+          "format": "Carousel",
+          "contentPillar": "Viral Market Trends & Reels",
+          "viralPotentialScore": 91,
+          "auditRationale": "Addresses current market shifts with actionable consumer protection math. Features slide-by-slide swipe triggers recalculating debt-to-income caps including insurance inflation and depreciation curves, ending with the binary diagnostic: 'Does your car payment exceed 10% of gross income: Yes or No?'.",
+          "angleOptions": [
+            "Total Cost of Ownership Formula: Purchase Price vs. 5-Year Maintenance Math",
+            "Depreciation vs. Loan Balance: Avoiding Negative Equity in Year 2",
+            "The 20/3/8 Modified Rule: Adjusting for Elevated Prime Rates"
+          ]
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 20355,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-09-18T06:55:45.575Z"
+    },
+    {
+      "id": "gen-1789714221937-vii2k",
+      "task": "topic_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "topic-prompt-v8",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (topic_generation) - Skill v4",
+      "inputContext": {
+        "account": "bajajfinance",
+        "skillVersion": "v4"
+      },
+      "output": [
+        {
+          "title": "The Math Behind EMI Amortization",
+          "hook": "Stop guessing your interest payout. Here is the exact formula banks use to calculate your monthly burden.",
+          "format": "Reel",
+          "contentPillar": "Educational Financial Literacy",
+          "viralPotentialScore": 94,
+          "auditRationale": "Addresses the need for mathematical rigor and transparency by breaking down the amortization formula to build trust.",
+          "angleOptions": [
+            "Visual breakdown of Principal vs. Interest over 12 months",
+            "Why early payments lower total interest costs",
+            "The impact of tenure on EMI affordability"
+          ]
+        },
+        {
+          "title": "EMI Card Security Checklist",
+          "hook": "3 signs someone is trying to access your Bajaj EMI card—and how to lock it instantly.",
+          "format": "Carousel",
+          "contentPillar": "Fraud Awareness & Consumer Safety",
+          "viralPotentialScore": 91,
+          "auditRationale": "High-utility content that protects the user, fostering brand loyalty through safety-first messaging.",
+          "angleOptions": [
+            "Step-by-step app security settings",
+            "Identifying phishing vs. official communication",
+            "What to do if you lose your card"
+          ]
+        },
+        {
+          "title": "The True Cost of 'No-Cost' EMI",
+          "hook": "Is 'No-Cost' actually zero? We are showing the math behind the merchant discount and your final price.",
+          "format": "Reel",
+          "contentPillar": "Product Transparency & How-Tos",
+          "viralPotentialScore": 98,
+          "auditRationale": "Directly tackles the 'radical transparency' brand requirement by explaining the arithmetic behind zero-interest financing.",
+          "angleOptions": [
+            "Comparison of cash price vs. EMI price",
+            "How to read your loan statement clearly",
+            "The role of processing fees in total cost"
+          ]
+        },
+        {
+          "title": "Debt-to-Income (DTI) Ratio Guide",
+          "hook": "Before you apply for your next loan, calculate your DTI. It is the #1 reason applications get rejected.",
+          "format": "Carousel",
+          "contentPillar": "Educational Financial Literacy",
+          "viralPotentialScore": 89,
+          "auditRationale": "Provides actionable, tactical advice that empowers the user to improve their creditworthiness.",
+          "angleOptions": [
+            "The simple formula for DTI calculation",
+            "How lenders view your existing debt load",
+            "Methods to improve your ratio before applying"
+          ]
+        },
+        {
+          "title": "Smart Credit Management Case Study",
+          "hook": "How a customer saved 14% on total loan interest by using one simple repayment strategy.",
+          "format": "Reel",
+          "contentPillar": "Lifestyle & Real Customer Wins",
+          "viralPotentialScore": 85,
+          "auditRationale": "Uses a concrete, verifiable example to demonstrate the efficacy of responsible credit management.",
+          "angleOptions": [
+            "Scenario: Impact of prepayments on total loan tenure",
+            "The psychology of debt consolidation",
+            "Tracking your credit score improvement over 6 months"
+          ]
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 22748,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-09-18T06:50:44.685Z"
+    },
     {
       "id": "gen-1789634000318-vc7fu",
       "task": "topic_generation",

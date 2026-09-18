@@ -858,6 +858,75 @@ ${(audit.recommendations || []).map(r => `- [Priority: ${r.priority || 'High'}] 
             </div>
           </div>
 
+          {/* Section F: Strategic Pipeline Bridge: Generate Strategy Topics from Audit */}
+          {(() => {
+            const underIndexed = (account.contentPillars || []).filter(
+              p => (p.currentPercentage || 0) < (p.targetPercentage || 0)
+            );
+            const topGap = currentAudit.content_gaps?.[0] || 'High-retention audience hook templates';
+            const targetAngle = underIndexed.length > 0
+              ? `Strategic Pillar Deficit: ${underIndexed.map(p => p.name).join(', ')} (Target: ${underIndexed[0].targetPercentage}%, Current: ${underIndexed[0].currentPercentage}%) - Addressing: ${topGap}`
+              : `Audit Opportunity: ${topGap}`;
+
+            return (
+              <div
+                className={`p-6 rounded-2xl border transition-all ${
+                  isDark
+                    ? 'bg-gradient-to-r from-orange-950/40 via-[#181820] to-purple-950/30 border-orange-500/30 shadow-lg'
+                    : 'bg-gradient-to-r from-orange-50 via-amber-50/60 to-purple-50/50 border-orange-200 shadow-sm'
+                }`}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-1.5 max-w-xl">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                        Strategic Pipeline Action
+                      </span>
+                      {underIndexed.length > 0 && (
+                        <span className="text-[11px] font-semibold text-rose-400">
+                          • {underIndexed.length} Under-Indexed {underIndexed.length === 1 ? 'Pillar' : 'Pillars'} Identified
+                        </span>
+                      )}
+                    </div>
+                    <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      Generate Strategy Topics from Audit Insights
+                    </h3>
+                    <p className={`text-xs leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Feed these diagnostic audit insights directly into the AI Topic Engine. Topics will be weighted to solve under-performing content pillars and attack uncovered competitor engagement gaps.
+                    </p>
+                    {underIndexed.length > 0 && (
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        {underIndexed.map((p, i) => (
+                          <span
+                            key={i}
+                            className={`text-[10px] font-mono px-2 py-0.5 rounded border ${
+                              isDark ? 'bg-black/40 border-orange-500/30 text-orange-300' : 'bg-white border-orange-300 text-orange-800'
+                            }`}
+                          >
+                            {p.name}: {p.currentPercentage}% / {p.targetPercentage}% target
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    id="btn-generate-topics-from-audit"
+                    disabled={isGeneratingTopics}
+                    onClick={() => onSendToTopics(targetAngle)}
+                    className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-xs bg-gradient-to-r from-[#EA580C] to-[#DD2A7B] hover:opacity-95 text-white shadow-md hover:shadow-lg transition-all cursor-pointer shrink-0 disabled:opacity-50"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>{isGeneratingTopics ? 'Generating Strategic Topics...' : 'Generate Topics from Insights'}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+
           {/* Active Generation Live Tracker Banner */}
           {isGeneratingTopics && (
             <div className={`border-2 border-orange-500/80 rounded-2xl p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-300 ${

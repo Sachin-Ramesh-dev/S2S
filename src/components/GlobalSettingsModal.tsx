@@ -287,12 +287,20 @@ export const GlobalSettingsModal: React.FC<GlobalSettingsModalProps> = ({
                   <div
                     className={`p-3 rounded-lg text-xs flex items-center gap-2 ${
                       testResult.success
-                        ? 'bg-emerald-950/40 border border-emerald-800/40 text-emerald-300'
-                        : 'bg-rose-950/40 border border-rose-800/40 text-rose-300'
+                        ? isDark
+                          ? 'bg-emerald-950/40 border border-emerald-800/40 text-emerald-300'
+                          : 'bg-emerald-50 border border-emerald-300 text-emerald-900 shadow-2xs'
+                        : isDark
+                          ? 'bg-rose-950/40 border border-rose-800/40 text-rose-300'
+                          : 'bg-rose-50 border border-rose-300 text-rose-900 shadow-2xs'
                     }`}
                   >
-                    {testResult.success ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
-                    <span>{testResult.message}</span>
+                    {testResult.success ? (
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                    )}
+                    <span className="font-semibold">{testResult.message}</span>
                   </div>
                 )}
 

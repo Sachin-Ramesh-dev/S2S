@@ -42,8 +42,9 @@ async function safeFetchJson<T>(url: string, options?: RequestInit): Promise<T> 
 
 export const instagramApi = {
   // Accounts
-  async getAccounts(): Promise<InstagramAccount[]> {
-    const data = await safeFetchJson<{ accounts: InstagramAccount[] }>(`${BASE_URL}/accounts`);
+  async getAccounts(environment?: string): Promise<InstagramAccount[]> {
+    const url = environment ? `${BASE_URL}/accounts?environment=${encodeURIComponent(environment)}` : `${BASE_URL}/accounts`;
+    const data = await safeFetchJson<{ accounts: InstagramAccount[] }>(url);
     return data.accounts || [];
   },
 
@@ -56,6 +57,13 @@ export const instagramApi = {
     return data.account;
   },
 
+  async disconnectAccount(id: string): Promise<{ success: boolean; accounts: InstagramAccount[] }> {
+    const data = await safeFetchJson<{ success: boolean; accounts: InstagramAccount[] }>(`${BASE_URL}/accounts/${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    });
+    return data;
+  },
+
   async connectManusAccount(params: {
     method: 'manus_instagram_login' | 'manus_browser_crawl' | 'meta_graph_api';
     username: string;
@@ -65,6 +73,9 @@ export const instagramApi = {
     category?: string;
     followersCount?: number;
     engagementRate?: number;
+    metaAccessToken?: string;
+    metaPageId?: string;
+    isDemo?: boolean;
   }): Promise<InstagramAccount> {
     const data = await safeFetchJson<{ account: InstagramAccount }>(`${BASE_URL}/accounts/connect-manus`, {
       method: 'POST',
@@ -72,6 +83,21 @@ export const instagramApi = {
       body: JSON.stringify(params)
     });
     return data.account;
+  },
+
+  // Environment Settings
+  async getEnvironment(): Promise<'demo' | 'live'> {
+    const data = await safeFetchJson<{ environment: 'demo' | 'live' }>('/api/settings/environment');
+    return data.environment;
+  },
+
+  async setEnvironment(environment: 'demo' | 'live'): Promise<'demo' | 'live'> {
+    const data = await safeFetchJson<{ environment: 'demo' | 'live' }>('/api/settings/environment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ environment })
+    });
+    return data.environment;
   },
 
   // Audits

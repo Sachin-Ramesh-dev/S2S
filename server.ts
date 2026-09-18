@@ -99,6 +99,7 @@ interface DatabaseSchema {
   instagramSkills?: any[];
   instagramLearningProposals?: any[];
   instagramGenerations?: any[];
+  environment?: 'demo' | 'live';
 }
 
 function loadDatabase(): DatabaseSchema {
@@ -215,6 +216,17 @@ function persistInstagramState() {
   saveDatabase(db);
 }
 
+// App Environment State (Demo Sandbox vs Live Production)
+let currentAppEnvironment: 'demo' | 'live' = 'demo';
+try {
+  const initialDb = loadDatabase();
+  if (initialDb.environment === 'live' || initialDb.environment === 'demo') {
+    currentAppEnvironment = initialDb.environment;
+  }
+} catch (e) {
+  // Use default demo mode
+}
+
 // REST API ROUTES
 app.get('/api/health', (req, res) => {
   res.json({
@@ -222,8 +234,26 @@ app.get('/api/health', (req, res) => {
     version: '1.0.0',
     mode: 'self-hosted-local',
     storage: 'local-file-db',
+    environment: currentAppEnvironment,
     timestamp: new Date().toISOString()
   });
+});
+
+// App Environment Settings
+app.get('/api/settings/environment', (req, res) => {
+  res.json({ success: true, environment: currentAppEnvironment });
+});
+
+app.post('/api/settings/environment', (req, res) => {
+  const { environment } = req.body;
+  if (environment !== 'demo' && environment !== 'live') {
+    return res.status(400).json({ error: 'Invalid environment. Must be "demo" or "live"' });
+  }
+  currentAppEnvironment = environment;
+  const db = loadDatabase();
+  db.environment = environment;
+  saveDatabase(db);
+  res.json({ success: true, environment: currentAppEnvironment });
 });
 
 // Security & Vault status
@@ -1633,7 +1663,8 @@ app.post('/api/workflows/import', (req, res) => {
 
 // Accounts
 app.get(['/api/instagram/accounts', '/api/instagram/account'], (req, res) => {
-  res.json({ success: true, accounts: instagramService.getAccounts() });
+  const env = (req.query.environment as string) || currentAppEnvironment;
+  res.json({ success: true, accounts: instagramService.getAccounts(env) });
 });
 
 app.post(['/api/instagram/accounts', '/api/instagram/account'], (req, res) => {
@@ -1646,14 +1677,143 @@ app.post(['/api/instagram/accounts', '/api/instagram/account'], (req, res) => {
   res.json({ success: true, account: saved });
 });
 
-// Connect Instagram Page via Manus Autonomous Agent
-app.post('/api/instagram/accounts/connect-manus', (req, res) => {
+app.delete('/api/instagram/accounts/:id', (req, res) => {
+  const { id } = req.params;
+  const removed = instagramService.disconnectAccount(id);
+  if (removed) {
+    persistInstagramState();
+    return res.json({ success: true, message: `Account ${id} disconnected`, accounts: instagramService.getAccounts() });
+  }
+  return res.status(404).json({ error: 'Account not found or already disconnected' });
+});
+
+app.post('/api/instagram/accounts/:id/disconnect', (req, res) => {
+  const { id } = req.params;
+  const removed = instagramService.disconnectAccount(id);
+  if (removed) {
+    persistInstagramState();
+    return res.json({ success: true, message: `Account ${id} disconnected`, accounts: instagramService.getAccounts() });
+  }
+  return res.status(404).json({ error: 'Account not found or already disconnected' });
+});
+
+// Connect Instagram Page via Manus Autonomous Agent or Meta Graph API
+app.post('/api/instagram/accounts/connect-manus', async (req, res) => {
   try {
-    const { method, username, loginIdentifier, displayName, bio, category, followersCount, engagementRate } = req.body;
-    if (!username && !loginIdentifier) {
-      return res.status(400).json({ error: 'Instagram username or login account is required' });
+    const {
+      method,
+      username,
+      loginIdentifier,
+      displayName,
+      bio,
+      category,
+      followersCount,
+      engagementRate,
+      metaAccessToken,
+      metaPageId,
+      isDemo: explicitIsDemo
+    } = req.body;
+
+    const isDemo = explicitIsDemo !== undefined ? !!explicitIsDemo : currentAppEnvironment === 'demo';
+    const cleanUser = (username || loginIdentifier || '').replace('@', '').trim();
+
+    if (!cleanUser && !metaPageId) {
+      return res.status(400).json({ error: 'Instagram username or account identifier is required' });
     }
-    const cleanUser = username || loginIdentifier;
+
+    // 1. If Meta Access Token is supplied OR method is 'meta_graph_api'
+    if (metaAccessToken || method === 'meta_graph_api') {
+      const trimmedToken = (metaAccessToken || '').trim();
+      const isDemoPlaceholder = !trimmedToken || trimmedToken.includes('...') || trimmedToken.startsWith('EAAGNO4m') || trimmedToken.length < 35;
+
+      if (isDemo && isDemoPlaceholder) {
+        // Simulated Demo Sandbox Connection
+        const result = instagramService.connectManusInstagramPage({
+          method: 'meta_graph_api',
+          username: cleanUser || 'bajajfinance',
+          loginIdentifier: metaPageId || '178414092817409',
+          displayName: displayName || 'Bajaj Finance Limited',
+          bio: bio || 'Official Instagram of Bajaj Finance Limited. India’s most diversified NBFC.',
+          category: category || 'Financial Services',
+          followersCount: followersCount ? Number(followersCount) : 2480000,
+          engagementRate: engagementRate ? Number(engagementRate) : 4.15,
+          isDemo: true
+        });
+        persistInstagramState();
+        return res.json({ success: true, account: result.account });
+      }
+
+      if (!trimmedToken) {
+        if (!isDemo) {
+          return res.status(400).json({
+            error: 'Meta Graph API Access Token (starts with EAA...) is required in Live Production mode.'
+          });
+        }
+      } else if (!isDemo && trimmedToken.includes('...')) {
+        return res.status(400).json({
+          error: 'Live Production mode requires an authentic Meta Graph API System User token without placeholders (...).'
+        });
+      } else {
+        // Real Meta Graph API v20.0 Verification
+        const targetId = metaPageId || 'me';
+        const metaProfileUrl = `https://graph.facebook.com/v20.0/${targetId}?fields=id,name,username,biography,followers_count,follows_count,media_count,profile_picture_url&access_token=${encodeURIComponent(trimmedToken)}`;
+
+        let metaData: any;
+        try {
+          const metaRes = await fetch(metaProfileUrl);
+          metaData = await metaRes.json();
+          if (!metaRes.ok || metaData.error) {
+            return res.status(400).json({
+              error: metaData?.error?.message || 'Meta Graph API token verification failed. Please verify token permissions and expiration.',
+              metaError: metaData?.error
+            });
+          }
+        } catch (fetchErr: any) {
+          return res.status(502).json({
+            error: `Network error connecting to Meta Graph API: ${fetchErr.message}`
+          });
+        }
+
+        // Fetch recent media to compute real engagement rate
+        let calculatedEngagement = 3.5;
+        try {
+          const mediaUrl = `https://graph.facebook.com/v20.0/${targetId}/media?fields=id,like_count,comments_count&limit=10&access_token=${encodeURIComponent(trimmedToken)}`;
+          const mediaRes = await fetch(mediaUrl);
+          const mediaJson = await mediaRes.json();
+          if (mediaJson.data && Array.isArray(mediaJson.data) && mediaJson.data.length > 0 && metaData.followers_count) {
+            const totalInteractions = mediaJson.data.reduce((sum: number, item: any) => sum + (item.like_count || 0) + (item.comments_count || 0), 0);
+            calculatedEngagement = Number(((totalInteractions / (mediaJson.data.length * metaData.followers_count)) * 100).toFixed(2));
+          }
+        } catch (mediaErr) {
+          console.warn('Could not compute engagement from media:', mediaErr);
+        }
+
+        const result = instagramService.connectManusInstagramPage({
+          method: 'meta_graph_api',
+          username: metaData.username || cleanUser,
+          loginIdentifier: metaPageId || metaData.id,
+          displayName: metaData.name || displayName || metaData.username,
+          bio: metaData.biography || bio,
+          category: category || 'Creator / Business',
+          followersCount: metaData.followers_count,
+          engagementRate: calculatedEngagement,
+          isDemo: isDemo
+        });
+        persistInstagramState();
+        return res.json({ success: true, account: result.account });
+      }
+    }
+
+    // 2. In Live mode without Meta Token:
+    if (!isDemo) {
+      if (!process.env.MANUS_API_KEY && !metaAccessToken) {
+        return res.status(400).json({
+          error: 'In Live Production mode, a valid MANUS_API_KEY or Meta Graph API Access Token is required to authenticate real accounts.'
+        });
+      }
+    }
+
+    // 3. Demo Mode or Authenticated Connection
     const result = instagramService.connectManusInstagramPage({
       method: method || 'manus_instagram_login',
       username: cleanUser,
@@ -1662,12 +1822,13 @@ app.post('/api/instagram/accounts/connect-manus', (req, res) => {
       bio,
       category,
       followersCount: followersCount ? Number(followersCount) : undefined,
-      engagementRate: engagementRate ? Number(engagementRate) : undefined
+      engagementRate: engagementRate ? Number(engagementRate) : undefined,
+      isDemo: isDemo
     });
     persistInstagramState();
     res.json({ success: true, account: result.account });
   } catch (err: any) {
-    res.status(500).json({ error: err.message || 'Failed to connect Instagram page via Manus' });
+    res.status(500).json({ error: err.message || 'Failed to connect Instagram page' });
   }
 });
 

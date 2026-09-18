@@ -3,6 +3,7 @@ import { Workflow } from '../types';
 import { WorkflowOptionsMenu } from './workflow-modals/WorkflowOptionsMenu';
 import { useTheme } from '../context/ThemeContext';
 import { ThemeToggle } from './ThemeToggle';
+import { EnvironmentToggle } from './EnvironmentToggle';
 import {
   User,
   ChevronDown,
@@ -227,6 +228,9 @@ export const Navbar: React.FC<Props> = ({
 
       {/* Right: AI Builder & Publish Button with Dropdown (Screenshot 3) */}
       <div className="flex items-center gap-2">
+        {/* Environment Mode Toggle */}
+        <EnvironmentToggle variant="pill" />
+
         {/* Light / Dark Mode Toggle */}
         <ThemeToggle variant="icon" />
 

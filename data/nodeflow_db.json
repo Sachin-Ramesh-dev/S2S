@@ -1215,16 +1215,16 @@
       "id": "ig-bajajfinance",
       "username": "bajajfinance",
       "displayName": "Bajaj Finance Limited",
-      "bio": "Empowering 80M+ customers with smart loans, EMI solutions & transparent wealth insights. 🇮🇳 #FinSmartEveryday",
-      "followersCount": 428500,
+      "bio": "Connected via Meta Graph API v20.0. Account ID: 178414092817409",
+      "followersCount": 1710000,
       "followingCount": 142,
       "mediaCount": 1248,
       "engagementRate": 3.84,
       "averageReelViews": 48200,
-      "category": "Finance & NBFC",
+      "category": "Finance & Enterprise",
       "niche": "Personal Credit, EMI Cards & Wealth Literacy",
-      "connectedAt": "2026-08-10T10:00:00.000Z",
-      "lastSyncAt": "2026-09-17T07:14:43.775Z",
+      "connectedAt": "2026-09-18T02:37:21.719Z",
+      "lastSyncAt": "2026-09-18T02:37:21.719Z",
       "contentPillars": [
         {
           "name": "Educational Financial Literacy",
@@ -1276,7 +1276,11 @@
         "hdfcbank",
         "zerodhaonline",
         "navi_app"
-      ]
+      ],
+      "connectionMethod": "meta_graph_api",
+      "manusSessionId": "manus-sess-4cualj",
+      "isVerified": true,
+      "isDemo": true
     },
     {
       "id": "ig-fintechdaily",
@@ -1325,6 +1329,75 @@
         "inc42",
         "entrackr"
       ]
+    },
+    {
+      "id": "ig-zerodhainvest-1789670328191",
+      "username": "zerodhainvest",
+      "displayName": "Zerodha Varsity",
+      "bio": "Democratizing financial education, stock markets, and long-term wealth compounding.",
+      "followersCount": 320000,
+      "followingCount": 188,
+      "mediaCount": 49,
+      "engagementRate": 4.9,
+      "averageReelViews": 134334,
+      "category": "Investing & FinTech",
+      "niche": "High-Impact Digital Content",
+      "avatarUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80",
+      "connectedAt": "2026-09-17T18:38:48.191Z",
+      "lastSyncAt": "2026-09-17T18:38:48.191Z",
+      "connectionMethod": "manus_instagram_login",
+      "manusSessionId": "manus-sess-sroky39",
+      "isVerified": true,
+      "metaPageId": "page_37951596",
+      "loginEmailOrUser": "zerodhainvest",
+      "contentPillars": [
+        {
+          "name": "Educational Tutorials & Guides",
+          "targetPercentage": 40,
+          "currentPercentage": 35,
+          "description": "Actionable step-by-step how-to content"
+        },
+        {
+          "name": "Viral Market Trends & Reels",
+          "targetPercentage": 35,
+          "currentPercentage": 35,
+          "description": "High-share short reels and audio hooks"
+        },
+        {
+          "name": "Client Proof & Case Studies",
+          "targetPercentage": 25,
+          "currentPercentage": 30,
+          "description": "Community transformations and customer proof"
+        }
+      ],
+      "competitors": [],
+      "competitorHandles": [
+        "zerodhaonline",
+        "tatacapital",
+        "cred_club"
+      ]
+    },
+    {
+      "id": "ig-tatacapital_loans-1789670541616",
+      "username": "tatacapital_loans",
+      "displayName": "Tata Capital Financial",
+      "bio": "Connected via Meta Graph API v20.0. Account ID: 178414092817409",
+      "followersCount": 1710000,
+      "followingCount": 188,
+      "mediaCount": 87,
+      "engagementRate": 4.8,
+      "averageReelViews": 122687,
+      "category": "Finance & Enterprise",
+      "niche": "High-Impact Digital Content",
+      "avatarUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80",
+      "connectedAt": "2026-09-18T02:36:34.364Z",
+      "lastSyncAt": "2026-09-18T02:36:34.370Z",
+      "connectionMethod": "meta_graph_api",
+      "manusSessionId": "manus-sess-m3d9b7",
+      "isVerified": true,
+      "metaPageId": "page_10672528",
+      "loginEmailOrUser": "tatacapital_loans",
+      "isDemo": true
     }
   ],
   "instagramAudits": [
@@ -1690,6 +1763,96 @@
         "The 50/50 Compromise Matrix: Splitting festival bonuses between debt amortization and SIPs.",
         "Debt-Snowball Amortization: Prepaying highest-cost consumer debt first to unlock monthly cash flow."
       ]
+    },
+    {
+      "id": "topic-ig-zerodhainvest-1789670328191-1",
+      "accountId": "ig-zerodhainvest-1789670328191",
+      "title": "3 Common Mistakes 90% of Users Make in Investing & FinTech",
+      "contentPillar": "Educational Tutorials & Guides",
+      "angle": "Contrarian breakdown of costly mistakes with high bookmark retention",
+      "hook": "Stop doing this before you lose more time and money...",
+      "audience": "Ambitious professionals & digital consumers",
+      "format": "Reel",
+      "viralPotentialScore": 93,
+      "status": "approved",
+      "auditRationale": "Manus autonomous intelligence detected 45% higher save rates on negative hooks.",
+      "source": "AI",
+      "createdAt": "2026-09-17T18:38:48.191Z"
+    },
+    {
+      "id": "topic-ig-zerodhainvest-1789670328191-2",
+      "accountId": "ig-zerodhainvest-1789670328191",
+      "title": "The Ultimate 2026 Action Checklist for Zerodha Varsity",
+      "contentPillar": "Viral Market Trends & Reels",
+      "angle": "Saveable multi-slide carousel visual roadmap",
+      "hook": "Save this post before you plan your next move...",
+      "audience": "Busy operators seeking quick reference material",
+      "format": "Carousel",
+      "viralPotentialScore": 95,
+      "status": "approved",
+      "auditRationale": "Fulfills carousel shortfall identified in Manus audit with viral bookmark potential.",
+      "source": "AI",
+      "createdAt": "2026-09-17T18:38:48.191Z"
+    },
+    {
+      "id": "topic-ig-zerodhainvest-1789670328191-3",
+      "accountId": "ig-zerodhainvest-1789670328191",
+      "title": "Why Traditional Strategies in Investing & FinTech Are Quietly Dying",
+      "contentPillar": "Educational Tutorials & Guides",
+      "angle": "Thought leadership and narrative storytelling",
+      "hook": "The rules completely changed in 2026, here is why...",
+      "audience": "High-intent followers & decision makers",
+      "format": "Reel",
+      "viralPotentialScore": 89,
+      "status": "pending",
+      "auditRationale": "Positions the brand as a forward-thinking market authority.",
+      "source": "AI",
+      "createdAt": "2026-09-17T18:38:48.191Z"
+    },
+    {
+      "id": "topic-ig-tatacapital_loans-1789670541616-1",
+      "accountId": "ig-tatacapital_loans-1789670541616",
+      "title": "3 Common Mistakes 90% of Users Make in Finance & Banking",
+      "contentPillar": "Educational Tutorials & Guides",
+      "angle": "Contrarian breakdown of costly mistakes with high bookmark retention",
+      "hook": "Stop doing this before you lose more time and money...",
+      "audience": "Ambitious professionals & digital consumers",
+      "format": "Reel",
+      "viralPotentialScore": 93,
+      "status": "approved",
+      "auditRationale": "Manus autonomous intelligence detected 45% higher save rates on negative hooks.",
+      "source": "AI",
+      "createdAt": "2026-09-17T18:42:21.616Z"
+    },
+    {
+      "id": "topic-ig-tatacapital_loans-1789670541616-2",
+      "accountId": "ig-tatacapital_loans-1789670541616",
+      "title": "The Ultimate 2026 Action Checklist for Tata Capital Financial",
+      "contentPillar": "Viral Market Trends & Reels",
+      "angle": "Saveable multi-slide carousel visual roadmap",
+      "hook": "Save this post before you plan your next move...",
+      "audience": "Busy operators seeking quick reference material",
+      "format": "Carousel",
+      "viralPotentialScore": 95,
+      "status": "approved",
+      "auditRationale": "Fulfills carousel shortfall identified in Manus audit with viral bookmark potential.",
+      "source": "AI",
+      "createdAt": "2026-09-17T18:42:21.616Z"
+    },
+    {
+      "id": "topic-ig-tatacapital_loans-1789670541616-3",
+      "accountId": "ig-tatacapital_loans-1789670541616",
+      "title": "Why Traditional Strategies in Finance & Banking Are Quietly Dying",
+      "contentPillar": "Educational Tutorials & Guides",
+      "angle": "Thought leadership and narrative storytelling",
+      "hook": "The rules completely changed in 2026, here is why...",
+      "audience": "High-intent followers & decision makers",
+      "format": "Reel",
+      "viralPotentialScore": 89,
+      "status": "pending",
+      "auditRationale": "Positions the brand as a forward-thinking market authority.",
+      "source": "AI",
+      "createdAt": "2026-09-17T18:42:21.616Z"
     }
   ],
   "instagramPipeline": [
@@ -2160,7 +2323,9 @@
         "defaultAgent": "manus-research-v2",
         "timeoutMs": 35000,
         "maxRetries": 2,
-        "connectionStatus": "unconfigured"
+        "connectionStatus": "unavailable",
+        "lastTested": "2026-09-17T18:28:33.226Z",
+        "statusMessage": "Manus API request timed out."
       },
       "gemini": {
         "enabled": true,
@@ -2173,7 +2338,9 @@
         "systemInstruction": "You are an elite Instagram content intelligence and script strategist.",
         "timeoutMs": 30000,
         "retryCount": 2,
-        "connectionStatus": "unconfigured"
+        "connectionStatus": "connected",
+        "lastTested": "2026-09-17T19:25:23.944Z",
+        "statusMessage": "Gemini connected successfully."
       },
       "openai": {
         "enabled": false,
@@ -3119,5 +3286,6 @@
     "lastTestedAt": null,
     "lastTestStatus": null,
     "lastTestMessage": ""
-  }
+  },
+  "environment": "demo"
 }

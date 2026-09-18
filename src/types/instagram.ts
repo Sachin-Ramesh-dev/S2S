@@ -37,6 +37,7 @@ export interface InstagramAccount {
   isVerified?: boolean;
   metaPageId?: string;
   loginEmailOrUser?: string;
+  isDemo?: boolean;
 }
 
 export interface InstagramAuditScores {

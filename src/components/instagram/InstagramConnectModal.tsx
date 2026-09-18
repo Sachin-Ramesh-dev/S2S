@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { InstagramAccount } from '../../types/instagram';
 import { instagramApi } from '../../services/instagramApi';
+import { useEnvironment } from '../../context/EnvironmentContext';
 
 interface InstagramConnectModalProps {
   isOpen: boolean;
@@ -80,11 +81,12 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
   onConnected,
   existingAccounts = []
 }) => {
-  const [activeTab, setActiveTab] = useState<ConnectTab>('instagram_login');
+  const { environment, isLiveMode, isDemoMode } = useEnvironment();
+  const [activeTab, setActiveTab] = useState<ConnectTab>(isLiveMode ? 'meta_graph' : 'instagram_login');
   
   // Instagram Login Form State
-  const [loginIdentifier, setLoginIdentifier] = useState('tatacapital_loans');
-  const [password, setPassword] = useState('••••••••••••');
+  const [loginIdentifier, setLoginIdentifier] = useState(isLiveMode ? '' : 'tatacapital_loans');
+  const [password, setPassword] = useState(isLiveMode ? '' : '••••••••••••');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberSession, setRememberSession] = useState(true);
   
@@ -151,7 +153,7 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
 
   const handleInstagramLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanUser = (loginIdentifier || 'brand_account').replace('@', '').trim();
+    const cleanUser = (loginIdentifier || '').replace('@', '').trim();
     if (!cleanUser) {
       setErrorMessage('Please enter an Instagram handle, email, or phone number.');
       return;
@@ -165,16 +167,16 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
     ]);
 
     try {
-      // Look up preset if matches
-      const matchedPreset = PRESET_ACCOUNTS.find(p => p.username.toLowerCase() === cleanUser.toLowerCase());
+      const matchedPreset = isDemoMode ? PRESET_ACCOUNTS.find(p => p.username.toLowerCase() === cleanUser.toLowerCase()) : undefined;
       const res = await instagramApi.connectManusAccount({
         method: 'manus_instagram_login',
         username: cleanUser,
         loginIdentifier: cleanUser,
-        displayName: customDisplayName || matchedPreset?.displayName || cleanUser.replace(/[-_.]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-        category: customCategory || matchedPreset?.category || 'Finance & Business',
-        bio: matchedPreset?.bio,
-        followersCount: matchedPreset?.followers
+        displayName: customDisplayName || (isDemoMode ? matchedPreset?.displayName : cleanUser.replace(/[-_.]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())),
+        category: customCategory || (isDemoMode ? matchedPreset?.category : 'Finance & Business'),
+        bio: isDemoMode ? matchedPreset?.bio : undefined,
+        followersCount: isDemoMode ? matchedPreset?.followers : undefined,
+        isDemo: isDemoMode
       });
 
       // Wait for the steps animation to complete smoothly
@@ -209,15 +211,16 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
     ]);
 
     try {
-      const matchedPreset = PRESET_ACCOUNTS.find(p => p.username.toLowerCase() === cleanHandle.toLowerCase());
+      const matchedPreset = isDemoMode ? PRESET_ACCOUNTS.find(p => p.username.toLowerCase() === cleanHandle.toLowerCase()) : undefined;
       const res = await instagramApi.connectManusAccount({
         method: 'manus_browser_crawl',
         username: cleanHandle,
         loginIdentifier: cleanHandle,
-        displayName: customDisplayName || matchedPreset?.displayName,
-        category: customCategory || matchedPreset?.category,
-        bio: matchedPreset?.bio,
-        followersCount: matchedPreset?.followers
+        displayName: customDisplayName || (isDemoMode ? matchedPreset?.displayName : undefined),
+        category: customCategory || (isDemoMode ? matchedPreset?.category : undefined),
+        bio: isDemoMode ? matchedPreset?.bio : undefined,
+        followersCount: isDemoMode ? matchedPreset?.followers : undefined,
+        isDemo: isDemoMode
       });
 
       setTimeout(() => {
@@ -227,6 +230,52 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
     } catch (err: any) {
       setConnectionStage('idle');
       setErrorMessage(err.message || 'Failed to crawl Instagram profile via Manus browser.');
+    }
+  };
+
+  const handleMetaGraphSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanUser = (loginIdentifier || '').replace('@', '').trim();
+    if (!cleanUser && !metaPageId) {
+      setErrorMessage('Please enter an Instagram business handle or Facebook Page ID.');
+      return;
+    }
+    if (!metaAccessToken.trim()) {
+      setErrorMessage('Please enter your Meta Graph API Access Token (starts with EAA...).');
+      return;
+    }
+
+    setErrorMessage(null);
+    setConnectionStage('connecting');
+    setCurrentStepIndex(0);
+    setTerminalLogs([
+      `[${new Date().toLocaleTimeString()}] Authenticating Meta Graph API v20.0 for @${cleanUser || metaPageId}...`,
+      `[${new Date().toLocaleTimeString()}] Validating token signature and scopes (instagram_basic, pages_show_list, instagram_manage_insights)...`,
+      `[${new Date().toLocaleTimeString()}] Fetching Business Account metadata for ID: ${metaPageId || 'auto-resolved'}...`
+    ]);
+
+    try {
+      const matchedPreset = isDemoMode ? PRESET_ACCOUNTS.find(p => p.username.toLowerCase() === cleanUser.toLowerCase()) : undefined;
+      const res = await instagramApi.connectManusAccount({
+        method: 'meta_graph_api',
+        username: cleanUser || 'business_page',
+        loginIdentifier: metaPageId || cleanUser,
+        displayName: customDisplayName || (isDemoMode ? matchedPreset?.displayName : cleanUser.replace(/[-_.]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())),
+        category: customCategory || (isDemoMode ? matchedPreset?.category : 'Enterprise & Creator'),
+        bio: isDemoMode ? matchedPreset?.bio : undefined,
+        followersCount: isDemoMode ? matchedPreset?.followers : undefined,
+        metaAccessToken: metaAccessToken.trim(),
+        metaPageId: metaPageId.trim() || undefined,
+        isDemo: isDemoMode
+      });
+
+      setTimeout(() => {
+        setConnectedAccount(res);
+        setConnectionStage('success');
+      }, 2200);
+    } catch (err: any) {
+      setConnectionStage('idle');
+      setErrorMessage(err.message || 'Meta Graph API token verification failed. Please check permissions.');
     }
   };
 
@@ -382,9 +431,34 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
         </div>
 
         {/* ========================================================= */}
-        {/* 3. QUICK BRAND PRESET BAR (Speed up testing / connecting) */}
+        {/* 3. ENVIRONMENT BANNER & QUICK BRAND PRESET BAR */}
         {/* ========================================================= */}
-        {connectionStage === 'idle' && activeTab === 'instagram_login' && (
+        {isLiveMode && connectionStage === 'idle' && (
+          <div className="bg-[#0c1e18] px-4 py-2 border-b border-emerald-900/60 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-[11px] text-emerald-300 font-medium">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span className="font-bold">Live Production Mode:</span>
+              <span className="text-emerald-400/80 hidden sm:inline">Connect verified creator or business accounts via Meta Graph API v20.0 or authentic credentials.</span>
+            </div>
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shrink-0">
+              Live OAuth Enabled
+            </span>
+          </div>
+        )}
+
+        {isDemoMode && connectionStage === 'idle' && (
+          <div className="bg-[#1f160e] px-4 py-1.5 border-b border-amber-900/50 flex items-center justify-between text-[11px] text-amber-300">
+            <div className="flex items-center gap-1.5 font-medium">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span>Demo Sandbox Mode: Quick presets & simulated connections enabled for testing.</span>
+            </div>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">
+              Sandbox Safe
+            </span>
+          </div>
+        )}
+
+        {isDemoMode && connectionStage === 'idle' && activeTab === 'instagram_login' && (
           <div className="bg-[#151624] px-4 py-2 border-b border-zinc-800 flex items-center justify-between gap-2 overflow-x-auto">
             <div className="flex items-center gap-1.5 text-[11px] text-zinc-400 shrink-0 font-medium">
               <Zap className="w-3.5 h-3.5 text-amber-400" />
@@ -801,7 +875,7 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
                     </p>
                   </div>
 
-                  <form onSubmit={handleInstagramLogin} className="space-y-3 text-xs">
+                  <form onSubmit={handleMetaGraphSubmit} className="space-y-3 text-xs">
                     <div>
                       <label className="block text-gray-700 font-semibold mb-1">Instagram Business Account ID</label>
                       <input

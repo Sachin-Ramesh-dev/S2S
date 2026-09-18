@@ -1239,15 +1239,21 @@ export default function App() {
           id="toast-notification"
           className={`fixed bottom-6 right-6 z-60 px-4 py-2.5 rounded-xl border shadow-2xl flex items-center gap-2.5 text-xs font-semibold backdrop-blur-md transition-all ${
             notification.type === 'success'
-              ? 'bg-emerald-950/90 border-emerald-800 text-emerald-300'
+              ? isDark
+                ? 'bg-emerald-950/90 border-emerald-800 text-emerald-300'
+                : 'bg-emerald-50 border-emerald-300 text-emerald-900 shadow-lg'
               : notification.type === 'error'
-              ? 'bg-rose-950/90 border-rose-800 text-rose-300'
-              : 'bg-neutral-900/90 border-neutral-700 text-neutral-200'
+              ? isDark
+                ? 'bg-rose-950/90 border-rose-800 text-rose-300'
+                : 'bg-rose-50 border-rose-300 text-rose-900 shadow-lg'
+              : isDark
+              ? 'bg-neutral-900/90 border-neutral-700 text-neutral-200'
+              : 'bg-white border-slate-300 text-slate-800 shadow-lg'
           }`}
         >
-          {notification.type === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
-          {notification.type === 'error' && <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />}
-          {notification.type === 'info' && <Info className="w-4 h-4 text-indigo-400 shrink-0" />}
+          {notification.type === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />}
+          {notification.type === 'error' && <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />}
+          {notification.type === 'info' && <Info className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />}
           <span>{notification.message}</span>
         </div>
       )}

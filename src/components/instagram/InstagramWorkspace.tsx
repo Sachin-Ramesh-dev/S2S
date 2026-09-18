@@ -39,6 +39,8 @@ import { InstagramCalendarView } from './InstagramCalendarView';
 import { InstagramConnectModal } from './InstagramConnectModal';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeToggle } from '../ThemeToggle';
+import { useEnvironment } from '../../context/EnvironmentContext';
+import { EnvironmentToggle } from '../EnvironmentToggle';
 
 export type InstagramSubTab =
   | 'dashboard'
@@ -58,6 +60,7 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
   onNavigateToSettings
 }) => {
   const { isDark } = useTheme();
+  const { environment, isLiveMode, isDemoMode, setEnvironment } = useEnvironment();
   const [activeTab, setActiveTab] = useState<InstagramSubTab>('dashboard');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -105,7 +108,7 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Initial Load
+  // Initial Load with Environment Filtering
   const loadAllData = async () => {
     try {
       setLoading(true);
@@ -122,7 +125,7 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
         skillList,
         memberList
       ] = await Promise.all([
-        instagramApi.getAccounts(),
+        instagramApi.getAccounts(environment),
         instagramApi.getAuditHistory(),
         instagramApi.getTopics(),
         instagramApi.getPipeline(),
@@ -133,23 +136,38 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
         instagramApi.getTeamMembers()
       ]);
 
-      const initialAccList = accList.length > 0 ? accList : [
-        {
-          id: 'acc-bajaj',
-          username: 'bajajfinance',
-          displayName: 'Bajaj Finserv Official',
-          followersCount: 84500,
-          followingCount: 142,
-          postsCount: 1240,
-          engagementRate: 3.42,
-          category: 'Banking & Financial Services',
-          niche: 'Personal Loans & EMI Cards',
-          bio: 'India\'s fastest personal loans, smart EMI card financing and debt management.'
-        }
-      ];
+      let initialAccList: InstagramAccount[] = [];
+      if (accList.length > 0) {
+        initialAccList = accList;
+      } else if (isDemoMode) {
+        initialAccList = [
+          {
+            id: 'ig-bajajfinance',
+            username: 'bajajfinance',
+            displayName: 'Bajaj Finance Limited',
+            bio: 'Empowering 80M+ customers with smart loans, EMI solutions & transparent wealth insights. 🇮🇳 #FinSmartEveryday',
+            followersCount: 428500,
+            followingCount: 142,
+            mediaCount: 1248,
+            engagementRate: 3.84,
+            averageReelViews: 48200,
+            category: 'Finance & NBFC',
+            niche: 'Personal Credit, EMI Cards & Wealth Literacy',
+            connectedAt: '2026-08-10T10:00:00.000Z',
+            lastSyncAt: new Date().toISOString(),
+            isDemo: true,
+            contentPillars: [
+              { name: 'Educational Financial Literacy', targetPercentage: 40, currentPercentage: 28, description: 'Actionable breakdowns' },
+              { name: 'Product Transparency', targetPercentage: 25, currentPercentage: 32, description: 'Clear step-by-step guides' }
+            ],
+            competitors: [],
+            competitorHandles: ['tatacapital', 'cred_club']
+          }
+        ];
+      }
 
       setAccounts(initialAccList);
-      setSelectedAccount(initialAccList[0]);
+      setSelectedAccount(initialAccList.length > 0 ? initialAccList[0] : null);
       setAudits(auditList);
       setTopics(topicList);
       setPipeline(pipeList);
@@ -169,7 +187,7 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
 
   useEffect(() => {
     loadAllData();
-  }, []);
+  }, [environment]);
 
   // Switch Instagram Account
   const handleSwitchAccount = async (accountId: string) => {
@@ -383,6 +401,94 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
     );
   }
 
+  if (isLiveMode && accounts.length === 0) {
+    return (
+      <div className={`flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 transition-colors duration-200 ${
+        isDark ? 'bg-[#101015] text-[#f4f4f5]' : 'bg-slate-50 text-slate-900'
+      }`}>
+        {/* Top Header with Environment Toggle & Theme Toggle */}
+        <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border rounded-2xl p-4 shadow-xs transition-colors ${
+          isDark ? 'bg-[#181820] border-[#282834]' : 'bg-white border-slate-200'
+        }`}>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 p-0.5 flex items-center justify-center">
+              <Instagram className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold tracking-tight">Content & Audit Workspace</h2>
+              <p className={`text-[11px] ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+                Instagram AI Intelligence & Strategy Engine
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <EnvironmentToggle variant="pill" />
+            <ThemeToggle variant="pill" />
+          </div>
+        </div>
+
+        {/* Live Mode Zero State Hero Card */}
+        <div className={`max-w-2xl mx-auto my-12 p-8 border rounded-3xl text-center shadow-lg transition-colors ${
+          isDark ? 'bg-[#181822] border-[#2c2c3e]' : 'bg-white border-slate-200 shadow-slate-100'
+        }`}>
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 mx-auto mb-4 flex items-center justify-center shadow-inner">
+            <Instagram className="w-8 h-8 text-emerald-400" />
+          </div>
+
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-3">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Live Production Environment Active</span>
+          </div>
+
+          <h3 className="text-xl font-bold mb-2">No Live Instagram Accounts Connected</h3>
+          <p className={`text-xs max-w-md mx-auto mb-6 leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+            You are in <strong className="text-emerald-400 font-semibold">Live Production</strong> mode. Demo fixture accounts (such as @bajajfinance) are safely isolated. Connect your authentic creator or business account via Meta Graph API v20.0 or autonomous Manus OAuth to begin generating live content intelligence.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              id="btn-live-connect-instagram"
+              type="button"
+              onClick={() => setShowAddPageModal(true)}
+              className="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Connect Live Instagram Page</span>
+            </button>
+
+            <button
+              id="btn-switch-to-demo"
+              type="button"
+              onClick={() => setEnvironment('demo')}
+              className={`w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${
+                isDark
+                  ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border-zinc-700'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300'
+              }`}
+            >
+              Switch to Demo Sandbox (@bajajfinance)
+            </button>
+          </div>
+        </div>
+
+        {/* Modal for connecting */}
+        {showAddPageModal && (
+          <InstagramConnectModal
+            isOpen={showAddPageModal}
+            onClose={() => setShowAddPageModal(false)}
+            onConnected={(newAcc) => {
+              setAccounts([newAcc, ...accounts]);
+              setSelectedAccount(newAcc);
+              setShowAddPageModal(false);
+              showToast(`Connected @${newAcc.username} to Live Workspace!`, 'success');
+            }}
+            existingAccounts={accounts}
+          />
+        )}
+      </div>
+    );
+  }
+
   if (error || !selectedAccount || !config || !activeSkill) {
     return (
       <div className="max-w-xl mx-auto my-12 p-6 bg-white border border-rose-200 rounded-2xl shadow-sm text-center">
@@ -411,9 +517,13 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
         <div
           className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-2xl border text-xs font-semibold flex items-center gap-2 backdrop-blur-md animate-in fade-in slide-in-from-top-2 ${
             toast.type === 'success'
-              ? 'bg-emerald-950/90 text-emerald-300 border-emerald-800'
+              ? isDark
+                ? 'bg-emerald-950/90 text-emerald-300 border-emerald-800'
+                : 'bg-emerald-50 text-emerald-900 border-emerald-300 shadow-lg'
               : toast.type === 'error'
-              ? 'bg-rose-950/90 text-rose-300 border-rose-800'
+              ? isDark
+                ? 'bg-rose-950/90 text-rose-300 border-rose-800'
+                : 'bg-rose-50 text-rose-900 border-rose-300 shadow-lg'
               : isDark
               ? 'bg-zinc-900/90 text-zinc-200 border-zinc-700'
               : 'bg-white text-slate-800 border-slate-300 shadow-lg'
@@ -513,6 +623,7 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
 
         {/* Right: Theme Toggle & Instagram Page Switcher Dropdown */}
         <div className="flex items-center gap-2.5 shrink-0">
+          <EnvironmentToggle variant="pill" />
           <ThemeToggle variant="pill" />
 
           <div className="relative shrink-0" ref={dropdownRef}>

@@ -1017,18 +1017,25 @@ export const InstagramTopicsView: React.FC<InstagramTopicsViewProps> = ({
                             <Edit3 className="w-3.5 h-3.5" />
                           </button>
 
-                          {/* Move to Script */}
+                          {/* Approve & Generate Script Button */}
                           <button
                             type="button"
-                            onClick={() => onGenerateScript(topic.id, topic.format === 'Carousel' ? 'Carousel' : 'Reel')}
-                            title="Draft script from topic"
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-semibold text-xs shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap shrink-0 group/script ml-0.5 ${
+                            id={`btn-approve-and-script-${topic.id}`}
+                            onClick={() => {
+                              if (topic.status !== 'approved' && topic.status !== 'selected') {
+                                onApproveTopic(topic.id);
+                              }
+                              onGenerateScript(topic.id, topic.format === 'Carousel' ? 'Carousel' : 'Reel');
+                            }}
+                            title="Approve topic and immediately generate 4-act viral script"
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-bold text-xs shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap shrink-0 group/script ml-1 ${
                               isDark 
-                                ? 'bg-orange-950/60 hover:bg-orange-600 active:bg-orange-700 text-orange-300 hover:text-white border-orange-800/80 hover:border-orange-600' 
-                                : 'bg-orange-50 hover:bg-orange-600 active:bg-orange-700 text-orange-700 hover:text-white border-orange-200/90 hover:border-orange-600'
+                                ? 'bg-gradient-to-r from-orange-950/80 to-[#EA580C]/40 hover:from-orange-600 hover:to-[#DD2A7B] text-orange-200 hover:text-white border-orange-700/60 hover:border-orange-500' 
+                                : 'bg-gradient-to-r from-orange-50 to-orange-100/80 hover:from-orange-600 hover:to-[#DD2A7B] text-orange-800 hover:text-white border-orange-300 hover:border-orange-500'
                             }`}
                           >
-                            <span>Script</span>
+                            <Sparkles className="w-3.5 h-3.5 text-orange-500 group-hover/script:text-white shrink-0" />
+                            <span>Approve & Generate Script</span>
                             <ArrowRight className="w-3.5 h-3.5 text-orange-500 group-hover/script:text-white transition-transform group-hover/script:translate-x-0.5 shrink-0" />
                           </button>
                         </div>

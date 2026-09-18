@@ -287,6 +287,7 @@ export const DEFAULT_ACCOUNTS: InstagramAccount[] = [
     niche: 'Personal Credit, EMI Cards & Wealth Literacy',
     connectedAt: '2026-08-10T10:00:00.000Z',
     lastSyncAt: new Date().toISOString(),
+    isDemo: true,
     contentPillars: [
       {
         name: 'Educational Financial Literacy',
@@ -1392,12 +1393,16 @@ export class InstagramService {
     db.teamsConfig = this.teamsConfig;
   }
 
-  public getAccounts(): InstagramAccount[] {
+  public getAccounts(environment?: string): InstagramAccount[] {
+    if (environment === 'live') {
+      return this.accounts.filter(a => !a.isDemo && a.id !== 'ig-bajajfinance');
+    }
     return this.accounts;
   }
 
-  public getAccount(id: string): InstagramAccount | undefined {
-    return this.accounts.find(a => a.id === id) || this.accounts[0];
+  public getAccount(id: string, environment?: string): InstagramAccount | undefined {
+    const list = this.getAccounts(environment);
+    return list.find(a => a.id === id) || (list.length > 0 ? list[0] : undefined);
   }
 
   public saveAccount(acc: InstagramAccount): InstagramAccount {
@@ -1408,6 +1413,12 @@ export class InstagramService {
       this.accounts.push(acc);
     }
     return acc;
+  }
+
+  public disconnectAccount(id: string): boolean {
+    const initialLen = this.accounts.length;
+    this.accounts = this.accounts.filter(a => a.id !== id && a.username !== id);
+    return this.accounts.length < initialLen;
   }
 
   public getAudits(accountId?: string): InstagramAuditRecord[] {
@@ -3468,6 +3479,7 @@ export class InstagramService {
     category?: string;
     followersCount?: number;
     engagementRate?: number;
+    isDemo?: boolean;
   }): { account: InstagramAccount } {
     const cleanUsername = (params.username || 'new_brand').replace('@', '').trim().toLowerCase();
     
@@ -3479,6 +3491,7 @@ export class InstagramService {
       existing.connectionMethod = params.method;
       existing.manusSessionId = `manus-sess-${Math.random().toString(36).substring(2, 8)}`;
       existing.isVerified = true;
+      if (params.isDemo !== undefined) existing.isDemo = params.isDemo;
       if (params.displayName) existing.displayName = params.displayName;
       if (params.bio) existing.bio = params.bio;
       if (params.category) existing.category = params.category;
@@ -3510,6 +3523,7 @@ export class InstagramService {
       isVerified: true,
       metaPageId: `page_${Math.floor(10000000 + Math.random() * 90000000)}`,
       loginEmailOrUser: params.loginIdentifier || cleanUsername,
+      isDemo: params.isDemo ?? false,
       contentPillars: [
         { name: 'Educational Tutorials & Guides', targetPercentage: 40, currentPercentage: 35, description: 'Actionable step-by-step how-to content' },
         { name: 'Viral Market Trends & Reels', targetPercentage: 35, currentPercentage: 35, description: 'High-share short reels and audio hooks' },

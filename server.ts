@@ -1830,6 +1830,140 @@ app.post('/api/instagram/accounts/connect-manus', async (req, res) => {
   }
 });
 
+// 4. Token Auto-Discovery via Meta Graph API v20.0
+app.post('/api/instagram/accounts/inspect-token', async (req, res) => {
+  try {
+    const { token, isDemo } = req.body;
+    const trimmedToken = (token || '').trim();
+
+    if (!trimmedToken) {
+      return res.status(400).json({ error: 'Access token is required' });
+    }
+
+    // If demo mode or placeholder
+    if (isDemo || trimmedToken.includes('...') || trimmedToken.startsWith('EAAGNO4m')) {
+      return res.json({
+        success: true,
+        detectedAccounts: [
+          {
+            id: '178414092817409',
+            username: 'bajajfinance',
+            displayName: 'Bajaj Finance Limited',
+            followersCount: 2480000,
+            category: 'Financial Services',
+            isDemo: true
+          },
+          {
+            id: '178414002819821',
+            username: 'fintech_insider',
+            displayName: 'FinTech Insider Daily',
+            followersCount: 185200,
+            category: 'Fintech & Technology',
+            isDemo: true
+          }
+        ]
+      });
+    }
+
+    // Real Meta Graph API v20.0 Inspection
+    const metaAccountsUrl = `https://graph.facebook.com/v20.0/me/accounts?fields=id,name,instagram_business_account{id,username,name,biography,followers_count,follows_count,media_count,profile_picture_url}&access_token=${encodeURIComponent(trimmedToken)}`;
+    const metaRes = await fetch(metaAccountsUrl);
+    const metaData: any = await metaRes.json();
+
+    if (!metaRes.ok || metaData.error) {
+      return res.status(400).json({
+        error: metaData?.error?.message || 'Failed to inspect token with Meta Graph API. Please verify token permissions.',
+        metaError: metaData?.error
+      });
+    }
+
+    const detectedAccounts: any[] = [];
+    if (Array.isArray(metaData.data)) {
+      for (const page of metaData.data) {
+        if (page.instagram_business_account) {
+          const ig = page.instagram_business_account;
+          detectedAccounts.push({
+            id: ig.id,
+            username: ig.username,
+            displayName: ig.name || page.name,
+            bio: ig.biography || '',
+            followersCount: ig.followers_count || 0,
+            mediaCount: ig.media_count || 0,
+            profilePictureUrl: ig.profile_picture_url,
+            isDemo: false
+          });
+        }
+      }
+    }
+
+    return res.json({
+      success: true,
+      detectedAccounts,
+      rawCount: detectedAccounts.length
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Error inspecting Meta Graph API token' });
+  }
+});
+
+// 5. Meta OAuth Helper Endpoints
+app.get('/api/instagram/oauth/url', (req, res) => {
+  const appId = process.env.META_APP_ID || '';
+  const redirectUri = `${req.protocol}://${req.get('host')}/api/instagram/oauth/callback`;
+  const scope = 'instagram_basic,pages_show_list,instagram_manage_insights,pages_read_engagement';
+
+  const oauthUrl = appId
+    ? `https://www.facebook.com/v20.0/dialog/oauth?client_id=${encodeURIComponent(appId)}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}&response_type=code`
+    : '';
+
+  res.json({
+    success: true,
+    appId,
+    redirectUri,
+    oauthUrl,
+    hasAppId: Boolean(appId)
+  });
+});
+
+app.get('/api/instagram/oauth/callback', (req, res) => {
+  const { code, error, error_description } = req.query;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Instagram Authorization</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+          .card { background: #1e293b; padding: 32px; border-radius: 16px; text-align: center; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+          h2 { margin: 0 0 12px; color: ${error ? '#f87171' : '#34d399'}; }
+          p { color: #94a3b8; font-size: 14px; margin-bottom: 20px; line-height: 1.5; }
+          button { background: #ea580c; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <h2>${error ? 'Authorization Failed' : 'Instagram Authorized!'}</h2>
+          <p>${error ? (error_description || 'Meta declined access.') : 'Successfully connected with Meta OAuth. This window will close automatically.'}</p>
+          <button onclick="window.close()">Close Window</button>
+        </div>
+        <script>
+          if (window.opener) {
+            window.opener.postMessage({
+              type: 'INSTAGRAM_OAUTH_RESULT',
+              code: '${code || ''}',
+              error: '${error || ''}',
+              errorDescription: '${error_description || ''}'
+            }, '*');
+            setTimeout(() => window.close(), 1500);
+          }
+        </script>
+      </body>
+    </html>
+  `;
+  res.send(html);
+});
+
 // Audits (Manus AI integration)
 app.get('/api/instagram/audits', (req, res) => {
   const accountId = req.query.accountId as string | undefined;

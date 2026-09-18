@@ -1548,12 +1548,12 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                                 type="button"
                                 id="btn-open-instagram-modal"
                                 onClick={() => setShowAddInstagramModal(true)}
-                                className={`text-[11px] font-medium flex items-center gap-1 transition-colors cursor-pointer ${
-                                  isDark ? 'text-zinc-400 hover:text-zinc-200' : 'text-slate-500 hover:text-slate-800'
+                                className={`text-[11px] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                                  isDark ? 'text-orange-400 hover:text-orange-300' : 'text-orange-600 hover:text-orange-700'
                                 }`}
                               >
                                 <ExternalLink className="w-3 h-3" />
-                                <span>Or connect via Manus Browser Modal / OAuth</span>
+                                <span>Connect via Meta OAuth 2.0 / Token Auto-Discovery</span>
                               </button>
 
                               <button

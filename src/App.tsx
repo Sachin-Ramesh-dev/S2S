@@ -46,6 +46,19 @@ import { UnifiedSettingsPage } from './components/UnifiedSettingsPage';
 import { McpConnectionsPage } from './components/McpConnectionsPage';
 import { GlobalSettingsModal } from './components/GlobalSettingsModal';
 import { useTheme } from './context/ThemeContext';
+import { useEnvironment } from './context/EnvironmentContext';
+import { DomainId, SubViewId, S2S_DOMAINS } from './types/navigation';
+import { S2SHomeHub } from './components/S2SHomeHub';
+import { S2STopHeader } from './components/S2STopHeader';
+import { StrategyWorkspace } from './components/strategy/StrategyWorkspace';
+import { ContentWorkspace } from './components/content/ContentWorkspace';
+import { WorkflowsWorkspace } from './components/workflows/WorkflowsWorkspace';
+import { PublishingWorkspace } from './components/publishing/PublishingWorkspace';
+import { IntelligenceWorkspace } from './components/intelligence/IntelligenceWorkspace';
+import { CollaborationWorkspace } from './components/collaboration/CollaborationWorkspace';
+import { InstagramConnectModal } from './components/instagram/InstagramConnectModal';
+import { instagramApi } from './services/instagramApi';
+import { InstagramAccount, ScriptItem, CalendarPost, TopicIdea, ContentPipelineItem, InstagramAuditRecord, AISkillRecord } from './types/instagram';
 import {
   EditMetadataModal,
   WorkflowSettingsModal,
@@ -68,6 +81,26 @@ import {
 
 export default function App() {
   const { isDark } = useTheme();
+  const { environment, isLiveMode, isDemoMode } = useEnvironment();
+
+  // S2S 7-Domain Information Architecture Navigation State
+  const [activeDomain, setActiveDomain] = useState<DomainId>('home');
+  const [activeSubView, setActiveSubView] = useState<SubViewId>('overview');
+
+  // Shared Instagram Engine State
+  const [accounts, setAccounts] = useState<InstagramAccount[]>([]);
+  const [selectedAccount, setSelectedAccount] = useState<InstagramAccount | null>(null);
+  const [audits, setAudits] = useState<InstagramAuditRecord[]>([]);
+  const [topics, setTopics] = useState<TopicIdea[]>([]);
+  const [pipeline, setPipeline] = useState<ContentPipelineItem[]>([]);
+  const [scripts, setScripts] = useState<ScriptItem[]>([]);
+  const [calendar, setCalendar] = useState<CalendarPost[]>([]);
+  const [skills, setSkills] = useState<AISkillRecord[]>([]);
+  const [selectedScriptId, setSelectedScriptId] = useState<string | undefined>(undefined);
+  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
+  const [isRunningAudit, setIsRunningAudit] = useState(false);
+  const [isGeneratingTopics, setIsGeneratingTopics] = useState(false);
+
   // Navigation View: 'instagram' | 'workflows' | 'workflow' | 'settings' | 'mcp' | 'overview' | 'personal'
   const [currentView, setCurrentView] = useState<'instagram' | 'workflows' | 'workflow' | 'settings' | 'mcp' | 'overview' | 'personal'>('instagram');
   const [previousView, setPreviousView] = useState<'instagram' | 'workflows'>('instagram');
@@ -76,6 +109,131 @@ export default function App() {
   const [workflowSubView, setWorkflowSubView] = useState<'editor' | 'executions' | 'evaluations'>('editor');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isGlobalSettingsOpen, setIsGlobalSettingsOpen] = useState(false);
+
+  // Load Instagram engine data across domains
+  const loadInstagramData = useCallback(async () => {
+    try {
+      const [accs, auds, tops, pipe, scrs, cal, sks] = await Promise.all([
+        instagramApi.getAccounts(environment),
+        instagramApi.getAudits(),
+        instagramApi.getTopics(),
+        instagramApi.getPipeline(),
+        instagramApi.getScripts(),
+        instagramApi.getCalendar(),
+        instagramApi.getSkills()
+      ]);
+      setAccounts(accs);
+      if (accs.length > 0) {
+        setSelectedAccount(prev => (prev && accs.find(a => a.id === prev.id)) || accs[0]);
+      } else {
+        setSelectedAccount(null);
+      }
+      setAudits(auds);
+      setTopics(tops);
+      setPipeline(pipe);
+      setScripts(scrs);
+      if (scrs.length > 0 && !selectedScriptId) {
+        setSelectedScriptId(scrs[0].id);
+      }
+      setCalendar(cal);
+      setSkills(sks);
+    } catch (e) {
+      console.error('Failed to load Instagram engine data:', e);
+    }
+  }, [environment]);
+
+  useEffect(() => {
+    loadInstagramData();
+  }, [loadInstagramData]);
+
+  const handleDomainNavigate = (domain: DomainId, subView?: SubViewId) => {
+    setActiveDomain(domain);
+    if (subView) {
+      setActiveSubView(subView);
+    } else {
+      const domainConfig = S2S_DOMAINS.find(d => d.id === domain);
+      setActiveSubView(domainConfig ? domainConfig.defaultSubView : 'overview');
+    }
+
+    if (domain === 'settings') {
+      const mappedSub = subView as any;
+      if (mappedSub === 'integrations' || mappedSub === 'mcp' || mappedSub === 'ai' || mappedSub === 'security') {
+        setSettingsInitialTab(mappedSub);
+      } else {
+        setSettingsInitialTab('general');
+      }
+    }
+  };
+
+  const handleRunAudit = async () => {
+    if (!selectedAccount) return;
+    setIsRunningAudit(true);
+    try {
+      const newAudit = await instagramApi.runAudit(selectedAccount.id, 'full');
+      setAudits(prev => [newAudit, ...prev]);
+    } catch (e) {
+      console.error('Audit run error:', e);
+    } finally {
+      setIsRunningAudit(false);
+    }
+  };
+
+  const handleGenerateTopics = async (prompt: string, count: number) => {
+    if (!selectedAccount) return;
+    setIsGeneratingTopics(true);
+    try {
+      const newTopics = await instagramApi.generateTopics({
+        accountId: selectedAccount.id,
+        userPrompt: prompt,
+        count
+      });
+      setTopics(prev => [...newTopics, ...prev]);
+    } catch (e) {
+      console.error('Topic gen error:', e);
+    } finally {
+      setIsGeneratingTopics(false);
+    }
+  };
+
+  const handleApproveTopicAndGenerateScript = async (topic: TopicIdea) => {
+    if (!selectedAccount) return;
+    try {
+      const created = await instagramApi.generateScriptFromTopic({
+        topicId: topic.id,
+        accountId: selectedAccount.id,
+        angle: topic.angle,
+        format: topic.format
+      });
+      setScripts(prev => [created, ...prev]);
+      setSelectedScriptId(created.id);
+      handleDomainNavigate('content', 'scripts');
+    } catch (e) {
+      console.error('Generate script error:', e);
+    }
+  };
+
+  const handleApproveAndScheduleScript = async (script: ScriptItem) => {
+    if (!selectedAccount) return;
+    try {
+      const scheduledDate = new Date();
+      scheduledDate.setDate(scheduledDate.getDate() + 1);
+      scheduledDate.setHours(18, 30, 0, 0);
+
+      const scheduledPost = await instagramApi.scheduleScript({
+        scriptId: script.id,
+        scheduledFor: scheduledDate.toISOString(),
+        caption: `${script.hookSentence}\n\n${script.body.slice(0, 140)}...\n\n#Fintech #Banking #AI`,
+        accountId: selectedAccount.id,
+        pillar: script.pillar
+      });
+
+      setCalendar(prev => [...prev, scheduledPost]);
+      setScripts(prev => prev.map(s => s.id === script.id ? { ...s, status: 'approved' } : s));
+      handleDomainNavigate('publishing', 'calendar');
+    } catch (e) {
+      console.error('Schedule error:', e);
+    }
+  };
 
   // Workflow State
   const [workflows, setWorkflows] = useState<Workflow[]>(() => {
@@ -684,33 +842,11 @@ export default function App() {
 
       {/* Main Workspace Frame */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Persistent Left Sidebar (matching Screenshots 1, 2, and 3) */}
+        {/* Persistent Left Sidebar */}
         <Sidebar
-          activeNav={currentView}
-          onNavigate={(nav) => {
-            if (nav === 'settings') {
-              if (currentView !== 'settings') {
-                setPreviousView(currentView === 'workflow' ? 'workflows' : (currentView as 'instagram' | 'workflows'));
-              }
-              setSettingsInitialTab('general');
-              setSettingsInitialSubTab(undefined);
-              setCurrentView('settings');
-            } else {
-              setCurrentView(nav);
-            }
-          }}
-          onCreateWorkflow={() => {
-            handleNewWorkflow();
-            setCurrentView('workflow');
-          }}
-          onOpenSettings={() => {
-            if (currentView !== 'settings') {
-              setPreviousView(currentView === 'workflow' ? 'workflows' : (currentView as 'instagram' | 'workflows'));
-            }
-            setSettingsInitialTab('general');
-            setSettingsInitialSubTab(undefined);
-            setCurrentView('settings');
-          }}
+          activeDomain={activeDomain}
+          activeSubView={activeSubView}
+          onNavigate={handleDomainNavigate}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           onQuickSearch={() => setIsPaletteOpen(true)}
@@ -719,75 +855,121 @@ export default function App() {
 
         {/* Right View Panel */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-          {currentView === 'settings' ? (
-            /* Unified Full-Page Settings & Integrations Workspace */
-            <UnifiedSettingsPage
-              onBack={() => setCurrentView(previousView)}
-              previousViewName={previousView === 'instagram' ? 'Content & Audit' : 'Workflows'}
-              initialTab={settingsInitialTab}
-              initialSubTab={settingsInitialSubTab}
-              onOpenVault={() => setIsVaultOpen(true)}
-            />
-          ) : currentView === 'instagram' ? (
-            /* Instagram Content Intelligence & Page Audit Workspace */
-            <InstagramWorkspace
-              onOpenSettings={() => {
-                setPreviousView('instagram');
-                setSettingsInitialTab('general');
-                setSettingsInitialSubTab(undefined);
-                setCurrentView('settings');
-              }}
-              onNavigateToSettings={(tab, subTab) => {
-                setPreviousView('instagram');
-                setSettingsInitialTab((tab as any) || 'integrations');
-                setSettingsInitialSubTab(subTab);
-                setCurrentView('settings');
-              }}
-            />
-          ) : currentView === 'mcp' ? (
-            /* Deprecated standalone MCP route - redirect smoothly to Unified Settings MCP tab */
-            <UnifiedSettingsPage
-              onBack={() => setCurrentView(previousView)}
-              previousViewName={previousView === 'instagram' ? 'Content & Audit' : 'Workflows'}
-              initialTab="mcp"
-              onOpenVault={() => setIsVaultOpen(true)}
-            />
-          ) : currentView === 'workflows' || currentView === 'overview' || currentView === 'personal' ? (
-            /* Workflows Home Dashboard (Overview, Personal, Templates) */
-            <HomePage
-              activeNav={currentView === 'personal' ? 'personal' : 'overview'}
-              onChangeNav={(nav) => setCurrentView(nav)}
-              workflows={workflows}
-              executions={executions}
-              vaultCredentials={vaultCredentials}
-              securityStatus={securityStatus}
-              allFolders={customFolders}
-              onCreateFolder={handleCreateFolder}
-              onDeleteFolder={handleDeleteFolder}
-              onUpdateWorkflowFolder={handleUpdateWorkflowFolder}
-              onOpenShortcuts={() => setIsShortcutsModalOpen(true)}
-              onOpenWorkflow={(wf) => {
-                setCurrentWorkflow(wf);
-                setCurrentView('workflow');
-                setWorkflowSubView('editor');
-              }}
-              onCreateWorkflow={(folder) => {
-                handleNewWorkflow(folder);
-                setCurrentView('workflow');
-              }}
-              onDuplicateWorkflow={handleDuplicateWorkflow}
-              onDeleteWorkflow={handleDeleteWorkflow}
-              onRenameWorkflow={handleRenameWorkflowDirect}
-              onToggleWorkflowPublished={handleToggleWorkflowPublished}
-              onOpenTemplates={() => setIsTemplatesOpen(true)}
-              onOpenVault={() => setIsVaultOpen(true)}
-              onOpenShare={(wf) => {
-                setCurrentWorkflow(wf);
-                setIsShareOpen(true);
-              }}
-              onOpenAiBuilder={() => setIsAiBuilderOpen(true)}
-            />
-          ) : (
+          {/* Global Top Header with Breadcrumbs, EnvironmentToggle, ThemeToggle, and Account Switcher */}
+          <S2STopHeader
+            activeDomain={activeDomain}
+            activeSubView={activeSubView}
+            accounts={accounts}
+            selectedAccount={selectedAccount}
+            onSelectAccount={(acc) => setSelectedAccount(acc)}
+            onOpenConnectModal={() => setIsConnectModalOpen(true)}
+          />
+
+          {/* Domain Content */}
+          <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+            {activeDomain === 'home' ? (
+              <S2SHomeHub
+                account={selectedAccount}
+                scripts={scripts}
+                calendar={calendar}
+                onNavigate={handleDomainNavigate}
+                onOpenConnectModal={() => setIsConnectModalOpen(true)}
+                onQuickRunAudit={handleRunAudit}
+              />
+            ) : activeDomain === 'strategy' ? (
+              <StrategyWorkspace
+                activeSubView={activeSubView as any}
+                onSubViewChange={(sub) => setActiveSubView(sub)}
+                account={selectedAccount}
+                audits={audits}
+                onRunAudit={handleRunAudit}
+                isRunningAudit={isRunningAudit}
+                onGenerateTopicsFromAudit={({ deficitNotes }) => {
+                  handleGenerateTopics(deficitNotes, 5);
+                  handleDomainNavigate('content', 'topics');
+                }}
+                onNavigateToContentTopics={() => handleDomainNavigate('content', 'topics')}
+              />
+            ) : activeDomain === 'content' ? (
+              <ContentWorkspace
+                activeSubView={activeSubView as any}
+                onSubViewChange={(sub) => setActiveSubView(sub)}
+                account={selectedAccount}
+                topics={topics}
+                scripts={scripts}
+                selectedScriptId={selectedScriptId}
+                onSelectScript={(id) => setSelectedScriptId(id)}
+                onGenerateTopics={(prompt, count) => handleGenerateTopics(prompt, count)}
+                isGeneratingTopics={isGeneratingTopics}
+                onApproveTopicAndGenerateScript={handleApproveTopicAndGenerateScript}
+                onApproveAndScheduleScript={handleApproveAndScheduleScript}
+                onCreateScript={() => {}}
+                skills={skills}
+              />
+            ) : activeDomain === 'publishing' ? (
+              <PublishingWorkspace
+                activeSubView={activeSubView as any}
+                onSubViewChange={(sub) => setActiveSubView(sub)}
+                account={selectedAccount}
+                calendar={calendar}
+                scripts={scripts}
+                pipeline={pipeline}
+                onOpenScript={(scriptId) => {
+                  setSelectedScriptId(scriptId);
+                  handleDomainNavigate('content', 'scripts');
+                }}
+                onNavigateToScripts={() => handleDomainNavigate('content', 'scripts')}
+                onPostUpdated={loadInstagramData}
+              />
+            ) : activeDomain === 'intelligence' ? (
+              <IntelligenceWorkspace
+                activeSubView={activeSubView as any}
+                onSubViewChange={(sub) => setActiveSubView(sub)}
+                account={selectedAccount}
+                scripts={scripts}
+                audits={audits}
+              />
+            ) : activeDomain === 'collaboration' ? (
+              <CollaborationWorkspace
+                activeSubView={activeSubView as any}
+                onSubViewChange={(sub) => setActiveSubView(sub)}
+                account={selectedAccount}
+                scripts={scripts}
+                topics={topics}
+                onOpenScript={(scriptId) => {
+                  setSelectedScriptId(scriptId);
+                  handleDomainNavigate('content', 'scripts');
+                }}
+              />
+            ) : activeDomain === 'settings' ? (
+              <UnifiedSettingsPage
+                onBack={() => handleDomainNavigate('home')}
+                previousViewName="Home Hub"
+                initialTab={settingsInitialTab}
+                initialSubTab={settingsInitialSubTab}
+                onOpenVault={() => setIsVaultOpen(true)}
+              />
+            ) : activeDomain === 'workflows' && activeSubView !== 'builder' ? (
+              <WorkflowsWorkspace
+                activeSubView={activeSubView as any}
+                onSubViewChange={(sub) => setActiveSubView(sub)}
+                workflow={currentWorkflow}
+                nodeDefinitions={BUILTIN_NODES}
+                customPlugins={plugins}
+                onNodesChange={(nodes) => handleWorkflowChange({ ...currentWorkflow, nodes })}
+                onConnectionsChange={(connections) => handleWorkflowChange({ ...currentWorkflow, connections })}
+                onNodeSelect={(node) => {
+                  setSelectedNodeId(node.id);
+                  setIsDrawerOpen(true);
+                }}
+                selectedNode={currentWorkflow.nodes.find(n => n.id === selectedNodeId) || null}
+                onOpenTemplates={() => setIsTemplatesOpen(true)}
+                onOpenHistory={() => setIsHistoryOpen(true)}
+                onOpenAiBuilder={() => setIsAiBuilderOpen(true)}
+                onExecuteWorkflow={handleExecuteWorkflow}
+                isExecuting={isExecuting}
+              />
+            ) : (
             /* Screenshot 3: Workflow Editor Screen */
             <div className="flex-1 flex flex-col h-full overflow-hidden">
               {/* Header Bar matching Screenshot 3 */}
@@ -1256,7 +1438,19 @@ export default function App() {
           {notification.type === 'info' && <Info className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />}
           <span>{notification.message}</span>
         </div>
-      )}
+      {/* Global Instagram Connect Modal */}
+      <InstagramConnectModal
+        isOpen={isConnectModalOpen}
+        onClose={() => setIsConnectModalOpen(false)}
+        onConnected={(newAcc) => {
+          setAccounts((prev) => [newAcc, ...prev.filter((a) => a.id !== newAcc.id)]);
+          setSelectedAccount(newAcc);
+          setIsConnectModalOpen(false);
+          loadInstagramData();
+          showToast('success', `Connected @${newAcc.username} via Meta Graph API!`);
+        }}
+        existingAccounts={accounts}
+      />
     </div>
   );
 }

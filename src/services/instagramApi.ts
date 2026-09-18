@@ -85,6 +85,18 @@ export const instagramApi = {
     return data.account;
   },
 
+  async inspectToken(token: string, isDemo?: boolean): Promise<{ success: boolean; detectedAccounts: any[] }> {
+    return await safeFetchJson<{ success: boolean; detectedAccounts: any[] }>(`${BASE_URL}/accounts/inspect-token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, isDemo })
+    });
+  },
+
+  async getOAuthUrl(): Promise<{ success: boolean; appId: string; redirectUri: string; oauthUrl: string; hasAppId: boolean }> {
+    return await safeFetchJson<{ success: boolean; appId: string; redirectUri: string; oauthUrl: string; hasAppId: boolean }>(`${BASE_URL}/oauth/url`);
+  },
+
   // Environment Settings
   async getEnvironment(): Promise<'demo' | 'live'> {
     const data = await safeFetchJson<{ environment: 'demo' | 'live' }>('/api/settings/environment');

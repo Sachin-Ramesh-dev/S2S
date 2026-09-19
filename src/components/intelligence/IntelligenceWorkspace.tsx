@@ -81,7 +81,7 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
           </button>
 
           <button
-            id="subnav-intelligence-content"
+            id="subnav-intelligence-content-intelligence"
             type="button"
             onClick={() => onSubViewChange('content_intelligence')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${

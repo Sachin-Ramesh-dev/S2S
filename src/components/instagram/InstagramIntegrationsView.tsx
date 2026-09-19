@@ -24,6 +24,7 @@ import {
 import { useTheme } from '../../context/ThemeContext';
 import { TeamsIntegrationConfig, InstagramAccount } from '../../types/instagram';
 import { instagramApi } from '../../services/instagramApi';
+import { TeamsBrandIcon } from '../icons/BrandIcons';
 
 interface InstagramIntegrationsViewProps {
   account: InstagramAccount;
@@ -240,9 +241,7 @@ export const InstagramIntegrationsView: React.FC<InstagramIntegrationsViewProps>
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-purple-600 text-white flex items-center justify-center shadow-lg shadow-purple-500/20 shrink-0">
-              <Share2 className="w-6 h-6" />
-            </div>
+            <TeamsBrandIcon size={48} />
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="text-lg font-bold">Microsoft Teams & Automation</h1>

@@ -97,7 +97,7 @@ export const CollaborationWorkspace: React.FC<CollaborationWorkspaceProps> = ({
           </button>
 
           <button
-            id="subnav-collaboration-client"
+            id="subnav-collaboration-client-portal"
             type="button"
             onClick={() => onSubViewChange('client_portal')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${

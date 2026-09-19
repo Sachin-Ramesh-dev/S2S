@@ -496,7 +496,7 @@ export const InstagramScriptsView: React.FC<InstagramScriptsViewProps> = ({
               <FileText className="w-3.5 h-3.5 text-orange-500" /> Scripts Studio
             </span>
             <span className={`text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-              Active Strategy Rulebook: <strong className={isDark ? 'text-white' : 'text-gray-900'}>{activeSkill.version}</strong>
+              Active Strategy Rulebook: <strong className={isDark ? 'text-white' : 'text-gray-900'}>{activeSkill?.version || 'v4'}</strong>
             </span>
           </div>
           <h1 className={`text-xl font-bold mt-1.5 tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>

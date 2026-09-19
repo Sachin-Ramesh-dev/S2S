@@ -37,7 +37,8 @@ export const InstagramAiSkillsView: React.FC<InstagramAiSkillsViewProps> = ({
   const [editingProposalId, setEditingProposalId] = useState<string | null>(null);
   const [customRuleText, setCustomRuleText] = useState('');
 
-  const currentSkill = activeSkill || skills.find((s) => s.isActive) || skills[skills.length - 1];
+  const safeSkills = Array.isArray(skills) ? skills : [];
+  const currentSkill = activeSkill || safeSkills.find((s) => s.isActive) || safeSkills[safeSkills.length - 1];
   const pendingProposals = proposals.filter((p) => p.status === 'pending');
 
   const handleRollback = async (version: string) => {

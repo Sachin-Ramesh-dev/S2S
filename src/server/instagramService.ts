@@ -93,6 +93,27 @@ export const DEFAULT_SMTP_CONFIG: SmtpConfig = {
 
 export const DEFAULT_MCP_CONNECTIONS: McpConnection[] = [
   {
+    id: 'mcp-instagram',
+    name: 'Instagram Live MCP',
+    transport: 'http',
+    serverUrl: 'https://graph.facebook.com/v20.0',
+    authMethod: 'bearer',
+    hasCredentials: true,
+    maskedToken: 'EAA...live',
+    status: 'connected',
+    tools: [
+      { name: 'get_account_profile', description: 'Retrieve live Instagram Professional account profile details including handle, bio, follower count, following count, media count, and profile picture.', permissionCategory: 'read', enabled: true },
+      { name: 'get_recent_media', description: 'Retrieve the most recent published media items (Reels, Carousels, Images) from the connected Instagram account with captions, timestamps, like counts, and comment counts.', permissionCategory: 'read', enabled: true },
+      { name: 'get_media_insights', description: 'Retrieve detailed engagement insights for a specific media post/Reel, such as reach, impressions, saves, shares, and total interactions.', permissionCategory: 'read', enabled: true },
+      { name: 'get_account_insights', description: 'Retrieve account-level performance trends such as overall reach, impressions, profile views, and follower demographics over a 28-day period.', permissionCategory: 'read', enabled: true },
+      { name: 'get_recent_comments', description: 'Retrieve recent user comments on a specific post to assess audience sentiment, questions, pain points, and feedback.', permissionCategory: 'read', enabled: true }
+    ],
+    lastConnected: new Date().toISOString(),
+    enabled: true,
+    allowDestructive: false,
+    createdAt: '2026-09-18T10:00:00.000Z'
+  },
+  {
     id: 'mcp-gdrive',
     name: 'Google Drive MCP',
     transport: 'sse',
@@ -225,7 +246,7 @@ export const DEFAULT_AI_CONFIG: AIConfiguration = {
     }
   },
   routing: {
-    instagram_audit: { provider: 'manus', model: 'manus-research-v2' },
+    instagram_audit: { provider: 'gemini_mcp', model: 'gemini-3.6-flash' },
     topic_generation: { provider: 'gemini', model: 'gemini-3.8-flash' },
     script_ideas: { provider: 'gemini', model: 'gemini-3.8-flash' },
     script_generation: { provider: 'gemini', model: 'gemini-3.8-flash' },
@@ -1360,6 +1381,10 @@ export class InstagramService {
     }
     if (db.mcpConnections && Array.isArray(db.mcpConnections) && db.mcpConnections.length > 0) {
       this.mcpConnections = db.mcpConnections;
+      if (!this.mcpConnections.some(c => c.id === 'mcp-instagram')) {
+        const defaultIg = DEFAULT_MCP_CONNECTIONS.find(c => c.id === 'mcp-instagram');
+        if (defaultIg) this.mcpConnections.unshift(defaultIg);
+      }
     }
     if (db.instagramGenerations && Array.isArray(db.instagramGenerations)) {
       this.generations = db.instagramGenerations;
@@ -1543,6 +1568,8 @@ export class InstagramService {
       model: generationRecord.model,
       skillVersion: activeSkill.version,
       promptVersion: generationRecord.promptVersion,
+      dataSources: result.structuredAudit?.dataSources || ['instagram_mcp'],
+      structuredAudit: result.structuredAudit,
       scores: result.scores || {
         profile_score: result.profile_score || 88,
         content_score: result.content_score || 82,
@@ -1556,65 +1583,30 @@ export class InstagramService {
           title: 'Direct-to-Problem Micro-Hooks (< 2.5s)',
           detail: 'Videos stating the exact viewer pain point in the opening 2 seconds achieved 3.8x comment velocity.',
           reason: 'Pattern interrupts create urgent curiosity gap and stop habitual feed swiping.'
-        },
-        {
-          title: 'Structured Step-by-Step Educational Checklists',
-          detail: 'Carousels and Reels providing saveable numerical frameworks produced 3.2x bookmark rate.',
-          reason: 'Provides permanent reference value that users store in their private Instagram collections.'
         }
       ],
       whatsNotWorking: (result.whatsNotWorking && result.whatsNotWorking.length > 0) ? result.whatsNotWorking : [
         {
           title: 'Conversational Greetings & Studio Intros',
-          detail: '58% viewer drop-off within 3 seconds when host begins with "Hey guys, hope you are having..."',
+          detail: '58% viewer drop-off within 3 seconds when host begins with conversational greetings.',
           reason: 'Mobile users have zero patience for greetings; lack of immediate value triggers immediate skip.',
           guardrailRule: 'Never open content with pleasantries or greetings. Start instantly with the core dilemma or counter-intuitive premise.',
           addedToSkills: true
-        },
-        {
-          title: 'Multiple Competing Calls-To-Action (CTAs)',
-          detail: 'Posts asking users to "Like, comment, share and click link" suffered 62% decrease in actual link clicks.',
-          reason: 'Choice overload paralyzes viewers. Multiple instructions reduce action on all of them.',
-          guardrailRule: 'Enforce exactly one single clear CTA per script (e.g. either "Bookmark this checklist" or "Comment GUIDE below").',
-          addedToSkills: true
         }
       ],
-      markdownReport: result.markdownReport || `# Manus AI Instagram Page Intelligence Report
-**Account:** @${account.username} (${account.displayName})
-**Category:** ${account.category} | **Niche:** ${account.niche}
-**Followers:** ${account.followersCount.toLocaleString()} | **Engagement Rate:** ${account.engagementRate}%
-**Audit Date:** ${new Date().toISOString().split('T')[0]} | **Engine:** Manus Autonomous Browser Agent v2
-
----
-
-## Performance Scores
-- **Overall Score:** ${result.overall_score || 85}/100
-- **Profile Optimization:** ${result.profile_score || 88}/100
-- **Content & Hooks:** ${result.content_score || 82}/100
-- **Posting Consistency:** ${result.consistency_score || 85}/100
-- **Engagement Velocity:** ${result.engagement_score || 79}/100
-- **Niche Positioning:** ${result.positioning_score || 90}/100
-
----
-
-## What's Working
-1. **Direct-to-Problem Micro-Hooks (< 2.5s):** Immediate emotional tension prevents swipe-away.
-2. **Structured Step-by-Step Educational Checklists:** High utility bookmark rates.
-
----
-
-## What's NOT Working & Root Causes (Self-Learning Guardrails)
-1. **Conversational Greetings & Studio Intros:** 58% viewer loss in first 3s. *Guardrail:* Never open content with pleasantries. Start immediately with the core dilemma.
-2. **Multiple Competing CTAs:** Choice overload. *Guardrail:* Enforce exactly one single clear CTA per asset.
-
----
-*Self-learning content engine updated: negative guardrails synced to Active Skill.*`,
-      strengths: result.strengths || [],
-      weaknesses: result.weaknesses || [],
-      critical_issues: result.critical_issues || [],
-      content_gaps: result.content_gaps || [],
-      topic_opportunities: result.topic_opportunities || [],
-      recommendations: result.recommendations || [],
+      markdownReport: result.markdownReport,
+      strengths: result.strengths || result.structuredAudit?.summary?.keyObservations || [],
+      weaknesses: result.weaknesses || result.structuredAudit?.contentGaps || [],
+      critical_issues: result.critical_issues || (result.structuredAudit?.contentGaps || []).slice(0, 2),
+      content_gaps: result.content_gaps || result.structuredAudit?.contentGaps || [],
+      topic_opportunities: result.topic_opportunities || result.structuredAudit?.topicOpportunities || [],
+      opportunities: result.opportunities || result.structuredAudit?.opportunities || [],
+      recommendations: result.recommendations || (result.structuredAudit?.recommendations || []).map((r: any) => ({
+        text: typeof r === 'string' ? r : (r.text || String(r)),
+        priority: 'high',
+        impact: 'high',
+        completed: false
+      })),
       content_pillar_analysis: result.content_pillar_analysis || [],
       competitor_observations: result.competitor_observations || [],
       changes_since_previous_audit: result.changes_since_previous_audit || [],
@@ -1632,7 +1624,7 @@ export class InstagramService {
         }
         item.addedToSkills = true;
       });
-      activeSkill.changeSummary = `Self-learned guardrails ingested from Manus AI audit for @${account.username}. Engine will actively avoid detected anti-patterns in upcoming topics and scripts.`;
+      activeSkill.changeSummary = `Self-learned guardrails ingested from Live Instagram MCP audit for @${account.username}. Engine will actively avoid detected anti-patterns in upcoming topics and scripts.`;
       activeSkill.approvedAt = new Date().toISOString();
     }
 
@@ -3506,12 +3498,25 @@ export class InstagramService {
     followersCount?: number;
     engagementRate?: number;
     isDemo?: boolean;
+    metaAccessToken?: string;
+    instagramBusinessId?: string;
   }): { account: InstagramAccount } {
     const cleanUsername = (params.username || 'new_brand').replace('@', '').trim().toLowerCase();
     
     // In Live mode, reject simulated browser connections
     if (params.isDemo === false && params.method !== 'meta_graph_api') {
       throw new Error('Simulated Manus browser connections are only allowed in Demo Sandbox mode. Live Production mode requires verified Meta Graph API credentials.');
+    }
+
+    // Update live MCP connection if token provided
+    if (params.metaAccessToken) {
+      const liveMcp = this.mcpConnections.find(m => m.id === 'mcp-instagram');
+      if (liveMcp) {
+        liveMcp.status = 'connected';
+        liveMcp.hasCredentials = true;
+        liveMcp.maskedToken = `${params.metaAccessToken.slice(0, 4)}...${params.metaAccessToken.slice(-4)}`;
+        liveMcp.lastConnected = new Date().toISOString();
+      }
     }
 
     // Check if account already exists with this username
@@ -3527,6 +3532,8 @@ export class InstagramService {
       if (params.bio) existing.bio = params.bio;
       if (params.category) existing.category = params.category;
       if (params.followersCount) existing.followersCount = params.followersCount;
+      if (params.metaAccessToken) existing.metaAccessToken = params.metaAccessToken;
+      if (params.instagramBusinessId) existing.instagramBusinessId = params.instagramBusinessId;
       return { account: existing };
     }
 
@@ -3538,7 +3545,7 @@ export class InstagramService {
       id: `ig-${cleanUsername}-${Date.now()}`,
       username: cleanUsername,
       displayName: params.displayName || cleanUsername.replace(/[-_.]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-      bio: params.bio || `Official Instagram page for ${cleanUsername}. Autonomous research & strategy connected via Manus AI engine.`,
+      bio: params.bio || `Official Instagram page for ${cleanUsername}. Live strategic intelligence connected via Instagram MCP & Gemini Agent.`,
       followersCount: followers,
       followingCount: Math.floor(180 + Math.random() * 240),
       mediaCount: Math.floor(45 + Math.random() * 120),
@@ -3555,6 +3562,8 @@ export class InstagramService {
       metaPageId: `page_${Math.floor(10000000 + Math.random() * 90000000)}`,
       loginEmailOrUser: params.loginIdentifier || cleanUsername,
       isDemo: params.method === 'meta_graph_api' ? (params.isDemo ?? false) : true,
+      metaAccessToken: params.metaAccessToken,
+      instagramBusinessId: params.instagramBusinessId,
       contentPillars: [
         { name: 'Educational Tutorials & Guides', targetPercentage: 40, currentPercentage: 35, description: 'Actionable step-by-step how-to content' },
         { name: 'Viral Market Trends & Reels', targetPercentage: 35, currentPercentage: 35, description: 'High-share short reels and audio hooks' },

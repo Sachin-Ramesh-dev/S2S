@@ -47,6 +47,17 @@ import { EnvironmentToggle } from './EnvironmentToggle';
 import { InstagramIntegrationsView } from './instagram/InstagramIntegrationsView';
 import { McpConnectionsPage } from './McpConnectionsPage';
 import { InstagramConnectModal } from './instagram/InstagramConnectModal';
+import {
+  InstagramBrandIcon,
+  YouTubeBrandIcon,
+  LinkedInBrandIcon,
+  CanvaBrandIcon,
+  ElevenLabsBrandIcon,
+  TeamsBrandIcon,
+  SlackBrandIcon,
+  NotionBrandIcon,
+  WebhookBrandIcon
+} from './icons/BrandIcons';
 
 export type UnifiedSettingsTab = 'general' | 'ai' | 'integrations' | 'mcp' | 'notifications' | 'security';
 export type IntegrationId =
@@ -497,8 +508,6 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          <EnvironmentToggle variant="pill" />
-          <ThemeToggle variant="pill" />
           {savedSuccess && (
             <span className="text-xs text-emerald-700 dark:text-emerald-400 flex items-center gap-1 font-semibold animate-fadeIn">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
@@ -960,9 +969,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                         }`}
                       >
                         <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] flex items-center justify-center text-white font-bold shadow-xs shrink-0">
-                            <Instagram className="w-5 h-5" />
-                          </div>
+                          <InstagramBrandIcon size={40} />
                           <div>
                             <div className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                               Instagram Graph API
@@ -1001,9 +1008,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                         }`}
                       >
                         <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-[#FF0000] flex items-center justify-center text-white font-bold shadow-xs shrink-0">
-                            <Youtube className="w-5 h-5 fill-current" />
-                          </div>
+                          <YouTubeBrandIcon size={40} />
                           <div>
                             <div className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                               YouTube Studio & Data API
@@ -1038,9 +1043,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                         }`}
                       >
                         <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-[#0A66C2] flex items-center justify-center text-white font-bold shadow-xs shrink-0">
-                            <Linkedin className="w-5 h-5 fill-current" />
-                          </div>
+                          <LinkedInBrandIcon size={40} />
                           <div>
                             <div className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                               LinkedIn Marketing API
@@ -1097,9 +1100,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                         }`}
                       >
                         <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00C4CC] to-[#7D2AE8] flex items-center justify-center text-white font-bold shadow-xs shrink-0">
-                            <Palette className="w-5 h-5" />
-                          </div>
+                          <CanvaBrandIcon size={40} />
                           <div>
                             <div className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                               Canva Connect
@@ -1134,9 +1135,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                         }`}
                       >
                         <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-black flex items-center justify-center text-violet-400 font-bold shadow-xs shrink-0 border border-zinc-700/50">
-                            <Volume2 className="w-5 h-5" />
-                          </div>
+                          <ElevenLabsBrandIcon size={40} />
                           <div>
                             <div className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                               ElevenLabs Voice AI
@@ -1193,11 +1192,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                         }`}
                       >
                         <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4F46E5] to-[#7C3AED] flex items-center justify-center text-white font-bold shadow-xs shrink-0">
-                            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                              <path d="M19.5 7.5h-4.2c.4-.7.7-1.5.7-2.5 0-2.2-1.8-4-4-4-1.5 0-2.8.8-3.5 2C7.8 1.8 6.5 1 5 1 2.8 1 1 2.8 1 5c0 1 .3 1.8.7 2.5H1.5C.7 7.5 0 8.2 0 9v10c0 .8.7 1.5 1.5 1.5h18c.8 0 1.5-.7 1.5-1.5V9c0-.8-.7-1.5-1.5-1.5zM12 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zM5 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm14 15.5H2v-8h17v8zm-7-2h3v-4h-3v4zm-5 0h3v-4H7v4z"/>
-                            </svg>
-                          </div>
+                          <TeamsBrandIcon size={40} />
                           <div>
                             <div className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                               Microsoft Teams
@@ -1226,9 +1221,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                         }`}
                       >
                         <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-[#4A154B] flex items-center justify-center text-white font-bold shadow-xs shrink-0 border border-purple-800/40">
-                            <Hash className="w-5 h-5 text-amber-300" />
-                          </div>
+                          <SlackBrandIcon size={40} />
                           <div>
                             <div className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                               Slack Webhook
@@ -1257,9 +1250,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                         }`}
                       >
                         <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-[#191919] flex items-center justify-center text-white font-bold shadow-xs shrink-0 border border-zinc-700/60">
-                            <FileText className="w-5 h-5 text-zinc-200" />
-                          </div>
+                          <NotionBrandIcon size={40} />
                           <div>
                             <div className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                               Notion Workspace
@@ -1294,9 +1285,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                         }`}
                       >
                         <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white font-bold shadow-xs shrink-0">
-                            <Zap className="w-5 h-5 text-amber-200" />
-                          </div>
+                          <WebhookBrandIcon size={40} />
                           <div>
                             <div className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                               Production Webhooks
@@ -1382,9 +1371,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                       }`}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] flex items-center justify-center text-white font-bold shadow-xs">
-                              <Instagram className="w-5 h-5" />
-                            </div>
+                            <InstagramBrandIcon size={40} />
                             <div>
                               <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                 Instagram Graph API Connector
@@ -1694,9 +1681,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                       }`}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-[#4A154B] flex items-center justify-center text-white font-bold shadow-xs border border-purple-800/40">
-                              <Hash className="w-5 h-5 text-amber-300" />
-                            </div>
+                            <SlackBrandIcon size={40} />
                             <div>
                               <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                 Slack Webhook Escalations
@@ -1792,9 +1777,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                       }`}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white font-bold shadow-xs">
-                              <Zap className="w-5 h-5 text-amber-200" />
-                            </div>
+                            <WebhookBrandIcon size={40} />
                             <div>
                               <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                 Production Webhook Dispatches
@@ -1852,9 +1835,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                       }`}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-[#FF0000] flex items-center justify-center text-white font-bold shadow-xs">
-                              <Youtube className="w-5 h-5 fill-current" />
-                            </div>
+                            <YouTubeBrandIcon size={40} />
                             <div>
                               <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                 YouTube Studio & Data API Connector
@@ -1986,9 +1967,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                       }`}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-[#0A66C2] flex items-center justify-center text-white font-bold shadow-xs">
-                              <Linkedin className="w-5 h-5 fill-current" />
-                            </div>
+                            <LinkedInBrandIcon size={40} />
                             <div>
                               <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                 LinkedIn Marketing API
@@ -2117,9 +2096,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                       }`}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00C4CC] to-[#7D2AE8] flex items-center justify-center text-white font-bold shadow-xs">
-                              <Palette className="w-5 h-5" />
-                            </div>
+                            <CanvaBrandIcon size={40} />
                             <div>
                               <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                 Canva Connect Platform
@@ -2247,9 +2224,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                       }`}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-black flex items-center justify-center text-violet-400 font-bold shadow-xs border border-zinc-700/50">
-                              <Volume2 className="w-5 h-5" />
-                            </div>
+                            <ElevenLabsBrandIcon size={40} />
                             <div>
                               <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                 ElevenLabs Voice AI Studio
@@ -2433,9 +2408,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
                       }`}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-[#191919] flex items-center justify-center text-white font-bold shadow-xs border border-zinc-700/60">
-                              <FileText className="w-5 h-5 text-zinc-200" />
-                            </div>
+                            <NotionBrandIcon size={40} />
                             <div>
                               <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                 Notion Workspace Sync

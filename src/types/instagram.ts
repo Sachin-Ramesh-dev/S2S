@@ -38,6 +38,80 @@ export interface InstagramAccount {
   metaPageId?: string;
   loginEmailOrUser?: string;
   isDemo?: boolean;
+  metaAccessToken?: string;
+  instagramBusinessId?: string;
+}
+
+export interface StructuredPageAuditData {
+  auditId: string;
+  account: {
+    username: string;
+    name: string;
+    followers: number | null;
+    following: number | null;
+    posts: number | null;
+  };
+  auditPeriod: {
+    start: string;
+    end: string;
+  };
+  dataSources: string[];
+  summary: {
+    overview: string;
+    keyObservations: string[];
+  };
+  contentPerformance: {
+    topContent: Array<{
+      id?: string;
+      caption?: string;
+      mediaType?: string;
+      likes?: number;
+      comments?: number;
+      views?: number;
+      reach?: number;
+      permalink?: string;
+      whyItWorked?: string;
+    }>;
+    lowPerformingContent: Array<{
+      id?: string;
+      caption?: string;
+      mediaType?: string;
+      likes?: number;
+      comments?: number;
+      permalink?: string;
+      whyItUnderperformed?: string;
+    }>;
+    formats: Array<{
+      format: string;
+      count: number;
+      percentage: number;
+      avgEngagement?: number;
+    }>;
+    patterns: string[];
+  };
+  reelAnalysis: {
+    observations: string[];
+    hookPatterns: string[];
+    contentPatterns: string[];
+  };
+  captionAnalysis: {
+    observations: string[];
+    patterns: string[];
+  };
+  postingAnalysis: {
+    frequency: string;
+    consistency: string;
+    observations: string[];
+  };
+  audienceInsights: {
+    observations: string[];
+  };
+  contentGaps: string[];
+  opportunities: string[];
+  recommendations: string[];
+  topicOpportunities: string[];
+  confidence: string;
+  generatedAt: string;
 }
 
 export interface InstagramAuditScores {
@@ -81,6 +155,8 @@ export interface InstagramAuditRecord {
   model: string;
   skillVersion: string;
   promptVersion: string;
+  dataSources?: string[];
+  structuredAudit?: StructuredPageAuditData;
   scores: InstagramAuditScores;
   strengths: string[];
   weaknesses: string[];

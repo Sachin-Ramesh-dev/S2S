@@ -97,6 +97,14 @@ export const instagramApi = {
     return await safeFetchJson<{ success: boolean; appId: string; redirectUri: string; oauthUrl: string; hasAppId: boolean }>(`${BASE_URL}/oauth/url`);
   },
 
+  async exchangeOAuthCode(code: string): Promise<{ success: boolean; accessToken?: string; detectedAccounts?: any[]; error?: string; requiresConfig?: boolean }> {
+    return await safeFetchJson<{ success: boolean; accessToken?: string; detectedAccounts?: any[]; error?: string; requiresConfig?: boolean }>(`${BASE_URL}/oauth/exchange`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    });
+  },
+
   // Environment Settings
   async getEnvironment(): Promise<'demo' | 'live'> {
     const data = await safeFetchJson<{ environment: 'demo' | 'live' }>('/api/settings/environment');

@@ -78,21 +78,58 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
         } else if (code) {
           setIsConnecting(true);
           try {
-            // Verify and link account
-            const newAcc = await instagramApi.connectManusAccount({
-              method: 'meta_graph_api',
-              username: 'fintech_insider',
-              displayName: 'FinTech Insider Daily',
-              category: 'Fintech & Technology',
-              bio: 'Connected via Meta OAuth 2.0 Authorization.',
-              metaAccessToken: `EAA_OAUTH_${code.slice(0, 20)}`,
-              isDemo: isDemoMode
-            });
-            setOauthSuccess(true);
-            setTimeout(() => {
-              onConnected(newAcc);
-              onClose();
-            }, 1200);
+            if (isDemoMode) {
+              const newAcc = await instagramApi.connectManusAccount({
+                method: 'meta_graph_api',
+                username: 'fintech_insider',
+                displayName: 'FinTech Insider Daily',
+                category: 'Fintech & Technology',
+                bio: 'Connected via Meta OAuth 2.0 Authorization.',
+                metaAccessToken: `EAA_OAUTH_${code.slice(0, 20)}`,
+                isDemo: true
+              });
+              setOauthSuccess(true);
+              setTimeout(() => {
+                onConnected(newAcc);
+                onClose();
+              }, 1200);
+            } else {
+              // Production: Exchange code for live Meta access token & discover accounts
+              const exchangeRes = await instagramApi.exchangeOAuthCode(code);
+              if (exchangeRes.requiresConfig) {
+                setOauthError(exchangeRes.error || 'META_APP_ID and META_APP_SECRET must be set in .env.');
+                setIsConnecting(false);
+                return;
+              }
+              if (!exchangeRes.success || !exchangeRes.accessToken) {
+                setOauthError(exchangeRes.error || 'Failed to exchange authorization code with Meta.');
+                setIsConnecting(false);
+                return;
+              }
+
+              if (exchangeRes.detectedAccounts && exchangeRes.detectedAccounts.length > 0) {
+                const detected = exchangeRes.detectedAccounts[0];
+                const newAcc = await instagramApi.connectManusAccount({
+                  method: 'meta_graph_api',
+                  username: detected.username,
+                  displayName: detected.displayName,
+                  category: detected.category,
+                  bio: detected.bio || `Connected via Meta OAuth 2.0 (ID: ${detected.id})`,
+                  followersCount: detected.followersCount,
+                  metaAccessToken: exchangeRes.accessToken,
+                  metaPageId: detected.id,
+                  isDemo: false
+                });
+                setOauthSuccess(true);
+                setTimeout(() => {
+                  onConnected(newAcc);
+                  onClose();
+                }, 1200);
+              } else {
+                setOauthError('Meta authorized successfully, but no Instagram Professional account is linked to your Facebook Page. Please link your Instagram account in Meta Business Suite.');
+                setIsConnecting(false);
+              }
+            }
           } catch (err: any) {
             setOauthError(err.message || 'Failed to exchange authorization code with Meta.');
             setIsConnecting(false);
@@ -229,7 +266,8 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       <div
-        id="manus-connect-modal"
+        id="instagram-connect-modal"
+        data-testid="manus-connect-modal"
         className="bg-[#11121c] rounded-2xl max-w-2xl w-full shadow-2xl border border-zinc-700/80 overflow-hidden my-4 transition-all flex flex-col max-h-[92vh]"
       >
         {/* Modal Window Header */}
@@ -256,6 +294,7 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
             </div>
 
             <button
+              id="btn-close-connect-modal"
               type="button"
               onClick={onClose}
               className="p-1 text-zinc-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
@@ -270,6 +309,7 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
         <div className="bg-[#141520] px-4 py-2 border-b border-zinc-800/80 flex items-center justify-between">
           <div className="flex items-center gap-1.5 p-1 rounded-xl bg-black/40 border border-zinc-800">
             <button
+              id="tab-oauth-connect"
               type="button"
               onClick={() => setActiveTab('oauth')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
@@ -283,6 +323,7 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
             </button>
 
             <button
+              id="tab-graph-connect"
               type="button"
               onClick={() => setActiveTab('meta_graph')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
@@ -433,7 +474,8 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
               <div className="flex items-center gap-2">
                 <input
                   type="password"
-                  id="input-modal-meta-token"
+                  id="input-access-token"
+                  data-testid="input-modal-meta-token"
                   placeholder="EAAGNO4m...system_user_token"
                   value={metaAccessToken}
                   onChange={(e) => setMetaAccessToken(e.target.value)}
@@ -441,9 +483,10 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
                 />
                 <button
                   type="button"
-                  id="btn-inspect-token"
+                  id="btn-auto-detect-token"
+                  data-testid="btn-inspect-token"
                   onClick={handleInspectToken}
-                  disabled={isInspectingToken || !metaAccessToken.trim()}
+                  disabled={isInspectingToken}
                   className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shrink-0"
                 >
                   {isInspectingToken ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}

@@ -111,6 +111,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
       } ${className}`}
     >
       <button
+        id="btn-theme-toggle-light"
         type="button"
         onClick={() => {
           if (!isDark) return;
@@ -129,6 +130,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
       </button>
 
       <button
+        id="btn-theme-toggle-dark"
         type="button"
         onClick={() => {
           if (isDark) return;

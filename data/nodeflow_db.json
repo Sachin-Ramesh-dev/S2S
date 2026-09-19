@@ -1278,9 +1278,184 @@
         "zerodhaonline",
         "navi_app"
       ]
+    },
+    {
+      "id": "ig-snacc.mart-1789742398762",
+      "username": "snacc.mart",
+      "displayName": "Snacc Mart | Traditional & Modern Snacks",
+      "bio": "Traditional & Modern Snacks\nHot Chips • Chaat • Cool Drinks\n📍 Electronic City, Bengaluru\n⬇️ Blogs • Store • Updates",
+      "followersCount": 38,
+      "followingCount": 227,
+      "mediaCount": 91,
+      "engagementRate": 110.26,
+      "averageReelViews": 23,
+      "category": "Finance & Technology",
+      "niche": "High-Impact Digital Content",
+      "avatarUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80",
+      "connectedAt": "2026-09-18T14:40:25.879Z",
+      "lastSyncAt": "2026-09-18T14:45:12.342Z",
+      "connectionMethod": "meta_graph_api",
+      "manusSessionId": "manus-sess-zqfstr",
+      "isVerified": true,
+      "metaPageId": "page_90082483",
+      "loginEmailOrUser": "686943144496628",
+      "isDemo": false,
+      "contentPillars": [
+        {
+          "name": "Educational Tutorials & Guides",
+          "targetPercentage": 40,
+          "currentPercentage": 35,
+          "description": "Actionable step-by-step how-to content"
+        },
+        {
+          "name": "Viral Market Trends & Reels",
+          "targetPercentage": 35,
+          "currentPercentage": 35,
+          "description": "High-share short reels and audio hooks"
+        },
+        {
+          "name": "Client Proof & Case Studies",
+          "targetPercentage": 25,
+          "currentPercentage": 30,
+          "description": "Community transformations and customer proof"
+        }
+      ],
+      "competitors": [],
+      "competitorHandles": [
+        "zerodhaonline",
+        "tatacapital",
+        "cred_club"
+      ]
     }
   ],
   "instagramAudits": [
+    {
+      "id": "audit-1789742712342",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "timestamp": "2026-09-18T14:45:12.342Z",
+      "auditMode": "full",
+      "status": "completed",
+      "provider": "manus",
+      "model": "manus-research-v2",
+      "skillVersion": "v4",
+      "promptVersion": "audit-prompt-v5",
+      "scores": {
+        "profile_score": 81,
+        "content_score": 75,
+        "consistency_score": 79,
+        "engagement_score": 73,
+        "positioning_score": 80,
+        "overall_score": 77
+      },
+      "whatsWorking": [
+        {
+          "title": "Problem-First Hook Velocity (< 2.5 seconds)",
+          "detail": "Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.",
+          "reason": "Instant pattern interrupts create emotional tension and stop the user from swiping."
+        },
+        {
+          "title": "7-10 Slide Educational Diagnostic Carousels",
+          "detail": "Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.",
+          "reason": "High utility content turns posts into permanent reference bookmarks in the user collection."
+        },
+        {
+          "title": "Verified Calculation Breakdowns & Transparent Math",
+          "detail": "Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.",
+          "reason": "Concrete numbers establish institutional authority and eliminate skepticism."
+        }
+      ],
+      "whatsNotWorking": [
+        {
+          "title": "Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")",
+          "detail": "First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.",
+          "reason": "Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.",
+          "guardrailRule": "Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.",
+          "addedToSkills": true
+        },
+        {
+          "title": "Multi-Concept Overloaded Carousels",
+          "detail": "Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.",
+          "reason": "Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.",
+          "guardrailRule": "Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.",
+          "addedToSkills": true
+        },
+        {
+          "title": "Small Gray Subtitles & Uncaptioned Video Feeds",
+          "detail": "Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.",
+          "reason": "Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.",
+          "guardrailRule": "Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.",
+          "addedToSkills": true
+        }
+      ],
+      "markdownReport": "# Instagram Content Audit Report: @snacc.mart\n\n**Audit date:** 2026-09-18  \n**Account requested:** @snacc.mart — Snacc Mart | Traditional & Modern Snacks  \n**Audit scope:** T-2 diagnostic for 2026-09-16 and a requested audit of the latest 20 posts  \n**Report status:** Evidence-bounded; the connected Instagram account is not the requested account.\n\n## Executive conclusion\n\nThe requested handle is publicly discoverable and its profile positioning is clear: **Traditional & Modern Snacks; Hot Chips; Chaat; Cool Drinks; Electronic City, Bengaluru**. However, the enabled Instagram connector is bound to **@bajajfinance**, not @snacc.mart, so post-level insights, reach, views, saves, shares, and a verified latest-20 sample could not be retrieved for the requested account. Publicly rendered profile evidence shows 38 followers and visible content dated as recently as July 31, 2026, but does not expose a post published on T-2, September 16, 2026. Accordingly, the T-2 result is recorded as **NO_T2_POSTS_FOUND** in the accessible evidence, not as proof that the account had no post. The provisional scorecard indicates a strong local product proposition and weak measurement, CTA, consistency, and conversion evidence.\n\n> **Critical data limitation:** The connector returned @bajajfinance posts when queried. Those posts were excluded from the Snacc Mart audit and must not be treated as Snacc Mart content.\n\n---\n\n# SECTION 1: T-2 (48 HOURS AGO) POST DIAGNOSTIC\n\n**T-2 date used:** 2026-09-16, based on the audit date of 2026-09-18.  \n**Inspection result:** **NO_T2_POSTS_FOUND** in the accessible public profile evidence.\n\nNo verified @snacc.mart post dated 2026-09-16 was available through the connected data source or publicly rendered profile page. Because no T-2 post was found, post-specific hook, retention, reach, comment, and root-cause findings cannot be responsibly assigned.\n\n### 1. What Worked (Hooks, format, early reach)\n\nNot applicable to T-2: no verified post was found for 2026-09-16. For context only, two publicly indexed older examples show that the account uses short, conversational Reel concepts: “Looks like someone forgot something...” and “Plot twist: Every customer is our favorite customer.” These establish a usable local-humour and customer-love direction, but they are not T-2 evidence.\n\n### 2. What Did Not Work (Drop-offs, weak retention, low comments)\n\nNot measurable for T-2. The available source did not provide a T-2 asset, reach, views, watch-time retention, saves, shares, or comment data. Do not infer drop-off or low retention from the absence of a public result.\n\n### 3. Root-Cause Analysis (Why lift or drop occurred)\n\nNo T-2 root cause can be determined. The immediate operational cause of the missing diagnostic is data access and account mismatch: the connected Instagram account is @bajajfinance rather than @snacc.mart. A second limitation is that public profile rendering exposes captions and aggregate visible interactions for selected posts, but not the full Insights dataset needed for early-reach and retention analysis.\n\n### 4. Strategic Adjustments (2-3 direct actionable pivots)\n\n1. **Correct the account binding before the next audit:** connect or authorize the Instagram Business/Creator account for @snacc.mart, then retrieve post-level Insights for timestamp, reach, views, saves, shares, comments, and profile actions.\n2. **Create a T-2 evidence packet:** for every new post, record publish time in IST, format, first-frame hook, caption CTA, reach at 2/24/48 hours, 3-second views, average watch time, completion rate, saves, shares, comments, and profile visits.\n3. **Use a conversion-first local CTA:** end each caption with one action such as “Comment CHIPS for today’s available flavours,” “Save this snack pairing,” or “DM MENU for the current menu,” and compare CTA-specific response rates across the next five posts.\n\n---\n\n# SECTION 2: 20-POST ACCOUNT AUDIT & STRATEGY SCORECARD\n\n## Sample and evidence status\n\nThe requested sample was the latest 20 posts. A verified 20-post @snacc.mart sample was **not available** in this session. The connector returned @bajajfinance as the active account and supplied its posts; those records were excluded. Public profile rendering exposed the following dated items or content references: July 31, July 3, June 29, June 10, June 8, June 7, June 4, May 5, April 21, and January 27, 2026, plus a July 11, 2025 post. This is fewer than 20 and does not include complete Insights.\n\nThe detailed observations below therefore distinguish **verified public evidence**, **not observable**, and **recommendation**. Scores are provisional operating scores, not a statistically complete performance scorecard.\n\n## Account and sample overview\n\n| Metric | Finding | Evidence / limitation |\n|---|---:|---|\n| Username | @snacc.mart | Public profile match |\n| Display name | Snacc Mart \\| Traditional & Modern Snacks | Public profile |\n| Followers | 38 | Public profile at audit time |\n| Following | 1 | Public profile at audit time |\n| Bio | Traditional & Modern Snacks; Hot Chips • Chaat • Cool Drinks; Electronic City, Bengaluru; Blogs • Store • Updates | Public profile |\n| Historical engagement rate | 110.26% | Supplied by requester; calculation basis not provided |\n| Average Reel views | 23 | Supplied by requester; time window not provided |\n| Verified latest-20 count | 0 | Connector mismatch; public rendering exposed fewer than 20 dated references |\n| T-2 post on 2026-09-16 | Not found in accessible evidence | **NO_T2_POSTS_FOUND**; not proof of no post |\n| Reach, views, saves, shares, watch time | Not available | Account Insights not connected |\n\n## Six-score account scorecard\n\n| Score | Score / 100 | Rationale |\n|---|---:|---|\n| Profile | 72 | Clear niche, location, products, and link hub; follower base is small and the bio CTA is broad rather than action-specific. |\n| Content | 48 | Public evidence shows humour, customer-love, and local-store content, but the accessible sample is incomplete and lacks measurable save/share or product-education evidence. |\n| Consistency | 42 | Visible dates are irregular, ranging from January to July 2026; the requested current cadence cannot be verified. |\n| Engagement | 35 | The supplied average Reel views is 23; public examples show visible interactions, but no denominator or Insights metrics are available for a reliable engagement-rate calculation. |\n| Positioning | 68 | Traditional/modern snack positioning and Electronic City location are distinct and commercially useful; the account could sharpen its signature promise and recurring content lanes. |\n| Overall | 50 | Promising local proposition, but measurement, cadence, CTA discipline, and conversion instrumentation materially limit growth diagnosis. |\n\n## Strategy-rule assessment\n\n| Strategy rule | Assessment | Evidence | Priority |\n|---|---|---|---|\n| Never display absolute financial figures, interest terms, or partner offers without proximate, legible legal qualification | **Not applicable to the visible snack positioning; not verifiable for all 20 posts** | No accessible financial creative was supplied. The account appears food retail-oriented, but visual supers and all captions were not available. | Medium |\n| Ground practical finance posts in verifiable arithmetic with assumptions, formulas, and breakdowns | **Not applicable / not evidenced** | No verified finance post in the accessible Snacc Mart evidence. | Low |\n| Educational or product creative must have a dedicated single-action CTA | **Partially met at best** | Public captions include “Visit Snacc Mart” but not a consistent single-action CTA such as SAVE, DM MENU, or a keyword trigger. | High |\n| Captions end with a binary diagnostic prompt or specific keyword CTA | **Not met in reviewed public examples** | Example captions end with hashtags or location lines, not a binary prompt or keyword trigger. | High |\n| Avoid generic motivational or listicle topics unless grounded in verifiable mathematics | **Not applicable to food retail; avoid generic humour without product bridge** | Public content is humour/customer-love oriented. The equivalent snack rule is to connect entertainment to a product, visit, or order action. | Medium |\n| Every Reel starts with a high-contrast visual/audio pattern interrupt within 2.5 seconds | **Not observable** | Public text extraction cannot verify first-frame visual contrast, audio, or timing. | High |\n| Carousels require a swipe trigger on slides 2–8 | **Not observable; carousel evidence incomplete** | No slide-by-slide assets were available. | Medium |\n| Every script must feature a specific, low-friction CTA | **Weak / inconsistent** | “Visit Snacc Mart” is a general CTA; no verified low-friction keyword or save/share action was found in the accessible examples. | High |\n\n## Format mix, content lanes, hooks, jargon, and compliance\n\n### Format mix\n\nPublic profile rendering labels at least seven visible items as videos and at least three as photos, with one additional older photo reference. This suggests a Reel-led mix, but it is not a verified 20-post denominator. A complete audit should report exact percentages for Reels, carousels, static posts, and other formats after connector access is corrected.\n\n### Content lanes\n\nThe visible evidence supports three probable lanes: **local-store/community**, **customer-love and humour**, and **snack/product discovery**. The account should formalize these into recurring series so followers understand what to expect: for example, “Snack of the Week,” “Electronic City Quick Bite,” “Traditional vs Modern,” and “What’s Fresh Today.”\n\n### Hooks\n\nTwo publicly readable hooks are direct and conversational: “Looks like someone forgot something...” and “Plot twist: Every customer is our favorite customer.” These are useful attention hooks because they create curiosity and warmth. They are weaker educational or conversion hooks because they do not immediately specify the snack, offer, flavour, price, availability, or next action. A stronger pattern would combine curiosity with product utility: “Can you identify this South Indian crunch in one bite?” followed by the product reveal and a DM/order CTA.\n\n### Accessibility and jargon\n\nNo technical finance jargon was identified in the accessible Snacc Mart captions. Food-specific terms should still be made concrete where needed: name the snack, flavour, spice level, serving size, and availability in plain language. Add on-screen text for product names and location because visual/audio execution could not be verified from text-only evidence.\n\n### Fraud-awareness lane\n\nNo fraud-awareness content was verified in the accessible Snacc Mart evidence. For this food-retail brand, a light trust-and-safety lane may still be useful if relevant to actual operations: official ordering links, payment-scam warnings, and a clear statement of official contact/order channels. This should not displace the core snack proposition.\n\n### Compliance and disclaimers\n\nNo specific financial claim was verified for @snacc.mart in the accessible evidence. The supplied financial-claim rules should remain a guardrail if the account later promotes financing, partner offers, cashback, investment-like claims, or absolute monetary benefits. Caption evidence alone cannot establish whether on-screen legal qualification is present; legal review is required for any such creative.\n\n## Publicly verified post examples\n\n| Publicly visible post | Date shown | Format | Caption evidence | Audit interpretation |\n|---|---|---|---|---|\n| [DaKl_HgOw0f](https://www.instagram.com/reel/DaKl_HgOw0f/) | June 29, 2026 | Video / Reel | “Looks like someone forgot something...”; “Visit Snacc Mart...” | Strong curiosity and humour; CTA is broad; comments show playful community response. |\n| [DZUHapSuP5D](https://www.instagram.com/reel/DZUHapSuP5D/) | June 8, 2026 | Video / Reel | “Plot twist: Every customer is our favorite customer.” | Warm customer-love positioning; no specific product or keyword CTA visible. |\n| Profile item | July 31, 2026 | Video | Caption not exposed in the rendered profile | Recency is visible, but performance and content classification are not. |\n| Profile item | July 3, 2026 | Video | Caption not exposed in the rendered profile | Content classification and CTA not observable. |\n| Profile items | June 10, June 7, June 4, 2026 | Videos | Captions not exposed | Indicates a Reel-led presence, but not enough for a 20-post audit. |\n| Profile items | May 5 and April 21, 2026 | Photos | Captions not exposed | Static format exists; carousel status and slide triggers not observable. |\n\n## Executive recommendations and scored recommendation table\n\n| Recommendation | Score / 100 | Priority | Change and example execution | Success metric |\n|---|---:|---|---|---|\n| Fix account connection and measurement | 95 | Critical | Bind the Instagram connector to @snacc.mart and retrieve 20 posts plus Insights; maintain a weekly export. | 100% of sampled posts have timestamp, reach, views, saves, shares, comments, and permalink. |\n| Install single-action CTAs | 90 | High | End every caption with one action: “DM MENU,” “Comment CHIPS,” “Save this pairing,” or “Share with your snack buddy.” | CTA response rate, profile visits, DMs, and saves per reach. |\n| Build four recurring content series | 86 | High | Run Snack of the Week, Traditional vs Modern, Electronic City Quick Bite, and Fresh-at-the-Counter. | At least 4 repeatable lanes; compare median reach and saves by lane after 30 days. |\n| Strengthen the first 2.5 seconds | 84 | High | Use close-up crunch/sizzle, bold product name, and a spoken or visual challenge: “Guess the flavour.” | 3-second hold rate and average watch time improve versus baseline. |\n| Make product utility explicit | 80 | High | Show product, portion/use occasion, location, and price only when accurate; connect humour to an order or visit action. | Product-tag taps, DMs, link clicks, and store-direction actions. |\n| Create a weekly local discovery post | 76 | Medium | Feature Electronic City landmarks, office snack breaks, student combos, or evening chaat moments. | Local reach, saves, shares, and follower growth from Bengaluru accounts. |\n| Add a lightweight trust lane | 62 | Medium | Pin official order links and publish a periodic “official channels only” reminder if fraud or impersonation risk exists. | Reduced confusion in comments/DMs; clicks to official link hub. |\n| Standardize audit data capture | 92 | Critical | Record publish time in IST, format, hook, CTA, caption ending, and 48-hour metrics in a single sheet. | No missing fields in the next 20-post review. |\n\n## 30-day test plan\n\n**Week 1:** Correct account access, baseline the latest 20 posts, and define the four content lanes. Rewrite the bio CTA from a broad “Blogs • Store • Updates” direction into one measurable action, such as “Order snacks / See today’s menu ↓,” if operationally accurate.\n\n**Weeks 2–3:** Publish six posts: two product close-ups, two local/community Reels, one traditional-versus-modern comparison, and one customer-love post. Test two hook families—sensory pattern interrupt versus curiosity question—and keep the CTA format constant within each comparison.\n\n**Week 4:** Compare 48-hour reach, 3-second hold, average watch time, saves, shares, comments, profile visits, link clicks, and DMs. Promote the lane with the strongest **useful engagement**, prioritizing saves, shares, and attributable store actions over likes alone.\n\n## Method and limitations\n\nThe audit used the connected Instagram tools for account verification and post retrieval, plus public web-rendered Instagram pages for @snacc.mart. The connector identified the active account as @bajajfinance; its returned posts were excluded from this report. No @snacc.mart post-level Insights were available, so interaction rate by reach could not be calculated. The requester supplied a historical engagement rate of 110.26% and average Reel views of 23, but did not supply the formula, denominator, date range, or raw dataset; these figures are reported as supplied and not independently validated.\n\nCaption text is evidence of caption text only. It is not proof of visual supers, audio, first-2.5-second pacing, slide-by-slide swipe triggers, or legal end cards. Public profile rendering is incomplete and exposed fewer than 20 dated items. Therefore, the scorecard is provisional and should be recalculated after the correct connector account is authorized.\n\n## References\n\n1. [@snacc.mart public Instagram profile](https://www.instagram.com/snacc.mart/)\n2. [Publicly readable Snacc Mart Reel: “Looks like someone forgot something...”](https://www.instagram.com/reel/DaKl_HgOw0f/)\n3. [Publicly readable Snacc Mart Reel: “Plot twist: Every customer is our favorite customer.”](https://www.instagram.com/reel/DZUHapSuP5D/)\n4. [Snacc Mart Linktree](https://linktr.ee/snacc.mart)\n\n## Final assessment\n\nSnacc Mart has a recognizable local snack proposition and a workable warm-humour voice. The immediate strategic constraint is not creative potential but **measurement and conversion discipline**: connect the correct account, instrument 48-hour performance, make every post’s action explicit, and turn each entertaining local moment into a product or store-discovery pathway. \n",
+      "strengths": [
+        "High organic credibility in the Finance & Technology domain with 38 engaged followers.",
+        "Content Pillars (Educational Tutorials & Guides & Viral Market Trends & Reels) demonstrate strong retention.",
+        "Bio clearly articulates niche positioning and value proposition for targeted demographic."
+      ],
+      "weaknesses": [
+        "Under-indexing on high-share educational carousel carousels (currently only 35% vs target 40%).",
+        "Reel watch-time drops 35% after the 7-second mark due to slow visual pacing.",
+        "Inconsistent posting times resulting in unpredictable algorithm reach spikes."
+      ],
+      "critical_issues": [
+        "Missing clear call-to-action hooks on 40% of recent Reels.",
+        "Bio link does not route to tracked campaign landings."
+      ],
+      "content_gaps": [
+        "Actionable 60-second step-by-step breakdowns answering common customer dilemmas in High-Impact Digital Content.",
+        "Save-worthy checklist carousels comparing complex industry options.",
+        "Customer story spotlights demonstrating tangible outcome metrics."
+      ],
+      "topic_opportunities": [
+        "The 3 Costly Mistakes Customers Make When Navigating Finance & Technology (Reel breakdown).",
+        "5-Slide Emergency Checklist: What to Do Before Committing to Any Financial Contract.",
+        "Why Traditional Advice Fails: The Modern Framework for Rapid Personal Growth."
+      ],
+      "recommendations": [
+        {
+          "text": "Incorporate active AI Skill v4 guidelines into every video hook (first 2.5s).",
+          "priority": "high",
+          "completed": false
+        },
+        {
+          "text": "Shift weekly Reel distribution to 3 high-impact Reels and 2 10-slide Carousels.",
+          "priority": "high",
+          "completed": false
+        },
+        {
+          "text": "Audit competitor @competitor top-performing sound selection.",
+          "priority": "medium",
+          "completed": false
+        }
+      ],
+      "content_pillar_analysis": [
+        {
+          "pillar": "Educational Tutorials & Guides",
+          "performance": "Under-allocated",
+          "recommendation": "Target 40% allocation by generating 2 specialized pieces next week."
+        },
+        {
+          "pillar": "Viral Market Trends & Reels",
+          "performance": "On Target",
+          "recommendation": "Target 35% allocation by generating 2 specialized pieces next week."
+        },
+        {
+          "pillar": "Client Proof & Case Studies",
+          "performance": "On Target",
+          "recommendation": "Target 25% allocation by generating 2 specialized pieces next week."
+        }
+      ],
+      "competitor_observations": [],
+      "changes_since_previous_audit": [
+        "Overall account health index changed to 77/100 (+0 pts).",
+        "Applied active skill rules from version v4 into audit assessment criteria.",
+        "Identified 3 new high-priority content gaps ready for Gemini topic generation."
+      ],
+      "taskUrl": "https://manus.im/app/3aqEVR38Wv4DmTv4EVYjnP",
+      "shareUrl": "https://manus.im/app/3aqEVR38Wv4DmTv4EVYjnP",
+      "attachmentUrl": "https://private-us-east-1.manuscdn.com/sessionFile/3aqEVR38Wv4DmTv4EVYjnP/sandbox/qvBrnEMTkCtNZYkTNn3gwy_1789742550042_na1fn_L2hvbWUvdWJ1bnR1L3NuYWNjX21hcnRfaW5zdGFncmFtX2F1ZGl0XzIwMjYtMDktMTg.md?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvM2FxRVZSMzhXdjREbVR2NEVWWWpuUC9zYW5kYm94L3F2QnJuRU1Ua0N0TlpZa1RObjNnd3lfMTc4OTc0MjU1MDA0Ml9uYTFmbl9MMmh2YldVdmRXSjFiblIxTDNOdVlXTmpYMjFoY25SZmFXNXpkR0ZuY21GdFgyRjFaR2wwWHpJd01qWXRNRGt0TVRnLm1kIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzkyMDIyNDAwfX19XX0_&Key-Pair-Id=K2QY5QTL8JSY6C&Signature=MEQCIGscvzYfSdzMlFOkW5ec8sscbBzYdNt9puWAehfDbs5cAiB8Mrp4oxIbtTji84joWd9Ptw-LNgOkipcPixbZAB9prw__"
+    },
     {
       "id": "audit-1789629283774",
       "accountId": "ig-bajajfinance",
@@ -1554,6 +1729,114 @@
     }
   ],
   "instagramTopics": [
+    {
+      "id": "topic-1789791237928-0",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "title": "The 3 Costly Mistakes in Snack Pricing",
+      "hook": "Stop losing money on snacks. 3 hidden traps.",
+      "format": "Reel",
+      "contentPillar": "Educational Tutorials & Guides",
+      "viralPotentialScore": 92,
+      "auditRationale": "Addresses the need for actionable 60-second breakdowns and fixes the gap in tactical customer education using high-contrast overlays for silent viewing.",
+      "status": "approved",
+      "createdAt": "2026-09-19T04:13:57.928Z",
+      "generationId": "gen-1789791227942-36ybm",
+      "angleOptions": [
+        "The 'Combo' trap vs individual pricing math",
+        "Hidden markup in premium imports",
+        "Why 'Buy 2' isn't always cheaper"
+      ]
+    },
+    {
+      "id": "topic-1789791237928-1",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "title": "5-Slide Emergency Checklist: Smart Snacking",
+      "hook": "Before you buy: The 5-point snack audit.",
+      "format": "Carousel",
+      "contentPillar": "Educational Tutorials & Guides",
+      "viralPotentialScore": 88,
+      "auditRationale": "Directly solves the 'Save-worthy checklist' audit gap by providing a repeatable decision framework for customers to evaluate product value.",
+      "status": "pending",
+      "createdAt": "2026-09-19T04:13:57.928Z",
+      "generationId": "gen-1789791227942-36ybm",
+      "angleOptions": [
+        "Ingredient transparency checklist",
+        "Price-per-gram calculation guide",
+        "Freshness verification steps"
+      ]
+    },
+    {
+      "id": "topic-1789791164210-0",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "title": "The Hidden 20% Markup Trap",
+      "hook": "Stop overpaying for your snacks.",
+      "format": "Reel",
+      "contentPillar": "Educational Tutorials & Guides",
+      "viralPotentialScore": 94,
+      "auditRationale": "Addresses the gap for actionable 60-second breakdowns by mathematically proving why bulk buying specific snack categories at Snacc Mart saves consumers money compared to fragmented retail, fulfilling the 'mathematically rigorous' requirement.",
+      "status": "approved",
+      "createdAt": "2026-09-19T04:12:44.210Z",
+      "generationId": "gen-1789791154159-d3sj5",
+      "angleOptions": [
+        "Break down the unit cost difference between individual packets vs. bulk packs",
+        "Show a side-by-side price comparison of local shop vs. Snacc Mart",
+        "Visualize the monthly savings calculation for a household of four"
+      ]
+    },
+    {
+      "id": "topic-1789791164210-1",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "title": "The 5-Step Snacc Selection Checklist",
+      "hook": "Before you buy, check this.",
+      "format": "Carousel",
+      "contentPillar": "Viral Market Trends & Reels",
+      "viralPotentialScore": 89,
+      "auditRationale": "Directly solves the identified gap for 'save-worthy checklist carousels' while adhering to the v4 skill of providing a single-concept decision framework for customers choosing between traditional and modern snack profiles.",
+      "status": "pending",
+      "createdAt": "2026-09-19T04:12:44.210Z",
+      "generationId": "gen-1789791154159-d3sj5",
+      "angleOptions": [
+        "Create a 5-slide decision matrix based on nutritional density vs. craving satisfaction",
+        "Slide-by-slide comparison of traditional ingredients vs. modern alternatives",
+        "A flow-chart style guide to picking the right snack for specific times of the day"
+      ]
+    },
+    {
+      "id": "topic-1789791129943-0",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "title": "The Hidden Math of Snacking: Store vs. Delivery Apps",
+      "hook": "Stop losing 30% on snacks.",
+      "format": "Reel",
+      "contentPillar": "Educational Tutorials & Guides",
+      "viralPotentialScore": 92,
+      "auditRationale": "Addresses the gap for actionable 60-second step-by-step breakdowns by applying mathematical rigor to everyday consumer decisions, aligning with the brand's 'customer-first protector' voice.",
+      "status": "pending",
+      "createdAt": "2026-09-19T04:12:09.943Z",
+      "generationId": "gen-1789791118075-3j6fq",
+      "angleOptions": [
+        "Comparison of delivery app service fees vs. direct walk-in savings",
+        "Breakdown of bulk purchase vs. single-item impulse buying",
+        "The arithmetic of loyalty rewards vs. immediate discount coupons"
+      ]
+    },
+    {
+      "id": "topic-1789791129943-1",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "title": "The 5-Slide Snack Audit: Before You Buy",
+      "hook": "Is your snack habit costing your savings?",
+      "format": "Carousel",
+      "contentPillar": "Viral Market Trends & Reels",
+      "viralPotentialScore": 89,
+      "auditRationale": "Utilizes the '5-Slide Emergency Checklist' audit recommendation to provide high-retention, save-worthy content that educates users on financial discipline while staying relevant to the store's niche.",
+      "status": "pending",
+      "createdAt": "2026-09-19T04:12:09.943Z",
+      "generationId": "gen-1789791118075-3j6fq",
+      "angleOptions": [
+        "The 5-point checklist for choosing quality over quantity",
+        "Comparing ingredient transparency in traditional vs. modern snacks",
+        "How to calculate cost-per-gram for smart pantry management"
+      ]
+    },
     {
       "id": "topic-1789714244687-0",
       "accountId": "ig-bajajfinance",
@@ -1868,9 +2151,80 @@
       "auditRationale": "Positions the brand as a forward-thinking market authority.",
       "source": "AI",
       "createdAt": "2026-09-18T06:53:02.780Z"
+    },
+    {
+      "id": "topic-ig-snacc.mart-1789742398762-1",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "title": "3 Common Mistakes 90% of Users Make in Food & Beverage",
+      "contentPillar": "Educational Tutorials & Guides",
+      "angle": "Contrarian breakdown of costly mistakes with high bookmark retention",
+      "hook": "Stop doing this before you lose more time and money...",
+      "audience": "Ambitious professionals & digital consumers",
+      "format": "Reel",
+      "viralPotentialScore": 93,
+      "status": "approved",
+      "auditRationale": "Manus autonomous intelligence detected 45% higher save rates on negative hooks.",
+      "source": "AI",
+      "createdAt": "2026-09-18T14:39:58.762Z"
+    },
+    {
+      "id": "topic-ig-snacc.mart-1789742398762-2",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "title": "The Ultimate 2026 Action Checklist for Snacc Mart | Traditional & Modern Snacks",
+      "contentPillar": "Viral Market Trends & Reels",
+      "angle": "Saveable multi-slide carousel visual roadmap",
+      "hook": "Save this post before you plan your next move...",
+      "audience": "Busy operators seeking quick reference material",
+      "format": "Carousel",
+      "viralPotentialScore": 95,
+      "status": "approved",
+      "auditRationale": "Fulfills carousel shortfall identified in Manus audit with viral bookmark potential.",
+      "source": "AI",
+      "createdAt": "2026-09-18T14:39:58.762Z"
+    },
+    {
+      "id": "topic-ig-snacc.mart-1789742398762-3",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "title": "Why Traditional Strategies in Food & Beverage Are Quietly Dying",
+      "contentPillar": "Educational Tutorials & Guides",
+      "angle": "Thought leadership and narrative storytelling",
+      "hook": "The rules completely changed in 2026, here is why...",
+      "audience": "High-intent followers & decision makers",
+      "format": "Reel",
+      "viralPotentialScore": 89,
+      "status": "pending",
+      "auditRationale": "Positions the brand as a forward-thinking market authority.",
+      "source": "AI",
+      "createdAt": "2026-09-18T14:39:58.762Z"
     }
   ],
   "instagramPipeline": [
+    {
+      "id": "pipe-1789791237943",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "topicId": "topic-1789791237928-0",
+      "title": "The 3 Costly Mistakes in Snack Pricing",
+      "format": "Reel",
+      "contentPillar": "Educational Tutorials & Guides",
+      "stage": "scripting",
+      "dueDate": "2026-09-24",
+      "createdAt": "2026-09-19T04:13:57.943Z",
+      "updatedAt": "2026-09-19T04:14:10.195Z",
+      "scriptId": "script-1789791250194"
+    },
+    {
+      "id": "pipe-1789791164232",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "topicId": "topic-1789791164210-0",
+      "title": "The Hidden 20% Markup Trap",
+      "format": "Reel",
+      "contentPillar": "Educational Tutorials & Guides",
+      "stage": "scripting",
+      "dueDate": "2026-09-24",
+      "createdAt": "2026-09-19T04:12:44.232Z",
+      "updatedAt": "2026-09-19T04:12:55.365Z",
+      "scriptId": "script-1789791175365"
+    },
     {
       "id": "pipe-1789714545869",
       "accountId": "ig-sachinsachinsachin-1789714414789",
@@ -1930,6 +2284,145 @@
     }
   ],
   "instagramScripts": [
+    {
+      "id": "script-1789791250194",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "topicId": "topic-1789791237928-0",
+      "title": "The 3 Costly Mistakes in Snack Pricing",
+      "format": "Reel",
+      "hook": "Stop losing money on snacks. 3 hidden traps.",
+      "scenes": [
+        {
+          "timeframe": "0:00 - 0:03",
+          "visualCue": "Fast cut, presenter pointing at a price tag with a red 'X' overlay.",
+          "onScreenText": "STOP LOSING MONEY: SNACK TRAPS",
+          "spokenAudio": "Stop losing money on snacks. Here are 3 hidden pricing traps.",
+          "audioNote": "High-energy rhythmic beat, sudden tempo change"
+        },
+        {
+          "timeframe": "0:03 - 0:15",
+          "visualCue": "Split screen: Bulk pack vs. single unit with cost-per-gram calculation.",
+          "onScreenText": "TRAP 1: THE UNIT PRICE ILLUSION",
+          "spokenAudio": "First, the unit price illusion. Small packs often cost 40% more per gram than bulk. Math: (Total Price / Total Grams) = True Cost.",
+          "audioNote": "Calculator typing sound effect"
+        },
+        {
+          "timeframe": "0:15 - 0:30",
+          "visualCue": "Presenter holding two items; overlay showing expiration date vs consumption rate.",
+          "onScreenText": "TRAP 2: BULK WASTE RATIO",
+          "spokenAudio": "Second, the bulk waste ratio. If you buy in bulk but throw away 20% due to expiry, your effective cost is actually 20% higher than the label price.",
+          "audioNote": "Trash bin sound effect"
+        },
+        {
+          "timeframe": "0:30 - 0:45",
+          "visualCue": "Graph animation showing 'Hidden Convenience Tax'.",
+          "onScreenText": "TRAP 3: CONVENIENCE TAX",
+          "spokenAudio": "Third, the convenience tax. Buying at gas stations or vending machines adds a 30-50% markup. Always check the unit price before you tap.",
+          "audioNote": "Cash register sound"
+        },
+        {
+          "timeframe": "0:45 - 0:50",
+          "visualCue": "Presenter pointing to the screen with clear CTA text.",
+          "onScreenText": "SAVE THIS FOR YOUR NEXT GROCERY RUN",
+          "spokenAudio": "Stop the bleed. Save this video to audit your next grocery receipt.",
+          "audioNote": "Upbeat finish"
+        }
+      ],
+      "caption": "Your snack habit might be eating your savings account without you even realizing it. 📉\n\nPricing is rarely transparent. Retailers use psychological anchors to make you feel like you're getting a deal, while the unit price tells the real story.\n\nHere is the breakdown:\n1. Unit Price = Total Price / Total Weight. Always check the small text on the shelf label.\n2. Wastage = (Retail Price) / (1 - Waste Percentage). If it goes bad, you paid a premium for the trash.\n3. The Convenience Tax = 30-50% markup on standard MSRP. \n\nStop overpaying for empty calories. \n\nSAVE this guide for your next grocery run.\n\nComment 'CHECKLIST' for our snack-audit calculator.",
+      "hashtags": [
+        "#snaccmart",
+        "#financialliteracy",
+        "#smartshopping",
+        "#budgethacks",
+        "#consumerrights",
+        "#grocerytips",
+        "#moneymatters",
+        "#unitpricing",
+        "#frugalliving",
+        "#savvyshopper",
+        "#inflationhacks",
+        "#personalfinance",
+        "#smartspending",
+        "#budgeting101",
+        "#foodbudget"
+      ],
+      "callToAction": "Save this for your next grocery run",
+      "status": "draft",
+      "modelUsed": "gemini-3.8-flash",
+      "generationId": "gen-1789791237957-8k2qq",
+      "skillVersion": "v4",
+      "createdAt": "2026-09-19T04:14:10.195Z",
+      "updatedAt": "2026-09-19T04:14:10.195Z"
+    },
+    {
+      "id": "script-1789791175365",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "topicId": "topic-1789791164210-0",
+      "title": "The Hidden 20% Markup Trap",
+      "format": "Reel",
+      "hook": "Stop overpaying for your snacks.",
+      "scenes": [
+        {
+          "timeframe": "0:00 - 0:03",
+          "visualCue": "High-contrast macro shot: Presenter slams two identical snack bags on table; bright red digital highlight box targets the price tag differences.",
+          "onScreenText": "STOP OVERPAYING FOR SNACKS",
+          "spokenAudio": "Stop overpaying for your snacks.",
+          "audioNote": "Heavy bass transient drop with immediate total silence"
+        },
+        {
+          "timeframe": "0:03 - 0:12",
+          "visualCue": "Clean split screen: Left side shows instant delivery app checkout screen; right side shows direct wholesale/mart pricing. Red line draws comparison.",
+          "onScreenText": "20% HIDDEN SHELF INFLATION",
+          "spokenAudio": "Instant delivery apps don't just charge a delivery fee. They quietly inflate item base prices by an average of twenty percent.",
+          "audioNote": "Low rhythmic tension pulse with subtle digital typing clicks"
+        },
+        {
+          "timeframe": "0:12 - 0:26",
+          "visualCue": "Presenter stands beside a clean digital breakdown board. Numbers pop onto screen in bright contrast pill badges. Proximate legal disclaimer pinned at bottom.",
+          "onScreenText": "$20 BASKET COSTS $29",
+          "spokenAudio": "Here is the exact arithmetic. A standard twenty-dollar snack basket lists at twenty-four dollars inside the app. Add a two-dollar platform fee and three-dollar delivery—your twenty-dollar order is now twenty-nine dollars.",
+          "audioNote": "Sharp mechanical register clicks on each numerical entry"
+        },
+        {
+          "timeframe": "0:26 - 0:38",
+          "visualCue": "Fast animated calculation counter rapidly counts up from $0 to $936 over a 52-week calendar graphic.",
+          "onScreenText": "$936 LOST EVERY YEAR",
+          "spokenAudio": "At just two orders per week, that invisible markup leaks nine hundred and thirty-six dollars cash out of your account every single year for zero additional food.",
+          "audioNote": "Deep warning sub-bass tone followed by a clean mute"
+        },
+        {
+          "timeframe": "0:38 - 0:48",
+          "visualCue": "Presenter holds up phone displaying transparent bulk cart on snacc.mart, points directly at screen. Large yellow CTA pill badge locks center screen.",
+          "onScreenText": "COMMENT 'SNACK' TO AUDIT",
+          "spokenAudio": "Audit your pantry spend and eliminate the middleman tax. Comment 'SNACK' and I'll send you our direct price comparison calculator.",
+          "audioNote": "High-energy, resolved synth sting"
+        }
+      ],
+      "caption": "Your favorite delivery apps are charging you a 20% convenience tax on every single item—before delivery fees even get calculated.\n\nHere is the verifiable breakdown on a standard weekly snack haul:\n• Direct retail cost: $20.00\n• In-app shelf markup (+20%): $24.00\n• Platform & processing fee: $2.00\n• Priority delivery fee: $3.00\n• Total cost per run: $29.00 (Effective markup: +45%)\n\nOrdered twice a week, that invisible margin compounds to an annual cash drain of $936.00 with zero added value.\n\n*Assumptions: Based on Q1 2024 pricing audit comparing quick-commerce app list prices against direct shelf pricing across identical 5-item snack baskets.\n\nAre you paying convenience fees on grocery runs, or buying direct in batch?\n\nComment SNACK below and we’ll DM you our direct markup diagnostic sheet instantly.",
+      "hashtags": [
+        "#SmartSpending",
+        "#SnackMart",
+        "#PriceTransparency",
+        "#HiddenFees",
+        "#ConsumerProtection",
+        "#BudgetMath",
+        "#GroceryAudit",
+        "#PantryRestock",
+        "#MoneyHacksDaily",
+        "#CostOfConvenience",
+        "#FinancialAwareness",
+        "#SnackSmart",
+        "#PersonalFinanceTips",
+        "#TransparentPricing"
+      ],
+      "callToAction": "Comment 'SNACK' to receive our direct markup comparison calculator.",
+      "status": "draft",
+      "modelUsed": "gemini-3.8-flash",
+      "generationId": "gen-1789791164244-66w6j",
+      "skillVersion": "v4",
+      "createdAt": "2026-09-19T04:12:55.365Z",
+      "updatedAt": "2026-09-19T04:12:55.365Z"
+    },
     {
       "id": "script-201",
       "pipelineItemId": "pipe-1",
@@ -2465,10 +2958,10 @@
       "monthlyBudgetUsd": 100,
       "warningThresholdPct": 80,
       "hardStopPct": 100,
-      "currentSpendUsd": 18.435750000000002,
+      "currentSpendUsd": 18.449250000000003,
       "currentMonth": "September 2026",
-      "requestCountThisMonth": 131,
-      "estimatedTokensThisMonth": 153300
+      "requestCountThisMonth": 137,
+      "estimatedTokensThisMonth": 162300
     },
     "learningSettings": {
       "enabled": true,
@@ -2616,6 +3109,9 @@
       "title": "Niche-Specific Educational & Tactical Actionability",
       "isActive": true,
       "rules": [
+        "Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.",
+        "Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.",
+        "Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.",
         "Never display absolute financial figures, interest terms, or partner offers without proximate, legible legal qualification on-screen.",
         "Always ground practical finance posts in verifiable arithmetic with stated assumptions, formulas, and transparent breakdowns.",
         "Never post educational or product creative without a dedicated, single-action CTA like 'SAVE' or keyword direct-response trigger.",
@@ -2647,14 +3143,14 @@
         "Reel",
         "Carousel"
       ],
-      "changeSummary": "Self-learned guardrails ingested from Manus AI audit for @bajajfinance. Engine will actively avoid detected anti-patterns in upcoming topics and scripts.",
+      "changeSummary": "Self-learned guardrails ingested from Manus AI audit for @snacc.mart. Engine will actively avoid detected anti-patterns in upcoming topics and scripts.",
       "changelog": "Enforced 2.5s pattern interrupts, verified EMI/compounding numbers, and swipe retention triggers.",
       "reason": "Performance metrics confirmed 2.4x higher save rates on mathematically grounded posts.",
       "supportingFeedback": [
         "High engagement on CIBIL score calculation breakdowns."
       ],
       "approvedBy": "Sachin Jayanth",
-      "approvedAt": "2026-09-17T07:14:43.775Z",
+      "approvedAt": "2026-09-18T14:45:12.342Z",
       "createdAt": "2026-09-05T11:00:00.000Z",
       "previousVersion": "v3"
     }
@@ -2691,6 +3187,52 @@
     }
   ],
   "mcpConnections": [
+    {
+      "id": "mcp-instagram",
+      "name": "Instagram Live MCP",
+      "transport": "http",
+      "serverUrl": "https://graph.facebook.com/v20.0",
+      "authMethod": "bearer",
+      "hasCredentials": true,
+      "maskedToken": "EAA...live",
+      "status": "connected",
+      "tools": [
+        {
+          "name": "get_account_profile",
+          "description": "Retrieve live Instagram Professional account profile details including handle, bio, follower count, following count, media count, and profile picture.",
+          "permissionCategory": "read",
+          "enabled": true
+        },
+        {
+          "name": "get_recent_media",
+          "description": "Retrieve the most recent published media items (Reels, Carousels, Images) from the connected Instagram account with captions, timestamps, like counts, and comment counts.",
+          "permissionCategory": "read",
+          "enabled": true
+        },
+        {
+          "name": "get_media_insights",
+          "description": "Retrieve detailed engagement insights for a specific media post/Reel, such as reach, impressions, saves, shares, and total interactions.",
+          "permissionCategory": "read",
+          "enabled": true
+        },
+        {
+          "name": "get_account_insights",
+          "description": "Retrieve account-level performance trends such as overall reach, impressions, profile views, and follower demographics over a 28-day period.",
+          "permissionCategory": "read",
+          "enabled": true
+        },
+        {
+          "name": "get_recent_comments",
+          "description": "Retrieve recent user comments on a specific post to assess audience sentiment, questions, pain points, and feedback.",
+          "permissionCategory": "read",
+          "enabled": true
+        }
+      ],
+      "lastConnected": "2026-09-18T10:00:00.000Z",
+      "enabled": true,
+      "allowDestructive": false,
+      "createdAt": "2026-09-18T10:00:00.000Z"
+    },
     {
       "id": "mcp-gdrive",
       "name": "Google Drive MCP",
@@ -2832,6 +3374,466 @@
     }
   ],
   "instagramGenerations": [
+    {
+      "id": "gen-1789791237957-8k2qq",
+      "task": "script_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "script-prompt-v4",
+      "skillVersion": "v4",
+      "inputContextSummary": "@snacc.mart (script_generation) - Skill v4",
+      "inputContext": {
+        "account": "snacc.mart",
+        "skillVersion": "v4"
+      },
+      "output": {
+        "title": "The 3 Costly Mistakes in Snack Pricing",
+        "format": "Reel",
+        "hook": "Stop losing money on snacks. 3 hidden traps.",
+        "scenes": [
+          {
+            "timeframe": "0:00 - 0:03",
+            "visualCue": "Fast cut, presenter pointing at a price tag with a red 'X' overlay.",
+            "onScreenText": "STOP LOSING MONEY: SNACK TRAPS",
+            "spokenAudio": "Stop losing money on snacks. Here are 3 hidden pricing traps.",
+            "audioNote": "High-energy rhythmic beat, sudden tempo change"
+          },
+          {
+            "timeframe": "0:03 - 0:15",
+            "visualCue": "Split screen: Bulk pack vs. single unit with cost-per-gram calculation.",
+            "onScreenText": "TRAP 1: THE UNIT PRICE ILLUSION",
+            "spokenAudio": "First, the unit price illusion. Small packs often cost 40% more per gram than bulk. Math: (Total Price / Total Grams) = True Cost.",
+            "audioNote": "Calculator typing sound effect"
+          },
+          {
+            "timeframe": "0:15 - 0:30",
+            "visualCue": "Presenter holding two items; overlay showing expiration date vs consumption rate.",
+            "onScreenText": "TRAP 2: BULK WASTE RATIO",
+            "spokenAudio": "Second, the bulk waste ratio. If you buy in bulk but throw away 20% due to expiry, your effective cost is actually 20% higher than the label price.",
+            "audioNote": "Trash bin sound effect"
+          },
+          {
+            "timeframe": "0:30 - 0:45",
+            "visualCue": "Graph animation showing 'Hidden Convenience Tax'.",
+            "onScreenText": "TRAP 3: CONVENIENCE TAX",
+            "spokenAudio": "Third, the convenience tax. Buying at gas stations or vending machines adds a 30-50% markup. Always check the unit price before you tap.",
+            "audioNote": "Cash register sound"
+          },
+          {
+            "timeframe": "0:45 - 0:50",
+            "visualCue": "Presenter pointing to the screen with clear CTA text.",
+            "onScreenText": "SAVE THIS FOR YOUR NEXT GROCERY RUN",
+            "spokenAudio": "Stop the bleed. Save this video to audit your next grocery receipt.",
+            "audioNote": "Upbeat finish"
+          }
+        ],
+        "caption": "Your snack habit might be eating your savings account without you even realizing it. 📉\n\nPricing is rarely transparent. Retailers use psychological anchors to make you feel like you're getting a deal, while the unit price tells the real story.\n\nHere is the breakdown:\n1. Unit Price = Total Price / Total Weight. Always check the small text on the shelf label.\n2. Wastage = (Retail Price) / (1 - Waste Percentage). If it goes bad, you paid a premium for the trash.\n3. The Convenience Tax = 30-50% markup on standard MSRP. \n\nStop overpaying for empty calories. \n\nSAVE this guide for your next grocery run.\n\nComment 'CHECKLIST' for our snack-audit calculator.",
+        "hashtags": [
+          "#snaccmart",
+          "#financialliteracy",
+          "#smartshopping",
+          "#budgethacks",
+          "#consumerrights",
+          "#grocerytips",
+          "#moneymatters",
+          "#unitpricing",
+          "#frugalliving",
+          "#savvyshopper",
+          "#inflationhacks",
+          "#personalfinance",
+          "#smartspending",
+          "#budgeting101",
+          "#foodbudget"
+        ],
+        "callToAction": "Save this for your next grocery run"
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 12237,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-09-19T04:14:10.194Z"
+    },
+    {
+      "id": "gen-1789791227942-36ybm",
+      "task": "topic_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "topic-prompt-v8",
+      "skillVersion": "v4",
+      "inputContextSummary": "@snacc.mart (topic_generation) - Skill v4",
+      "inputContext": {
+        "account": "snacc.mart",
+        "skillVersion": "v4"
+      },
+      "output": [
+        {
+          "title": "The 3 Costly Mistakes in Snack Pricing",
+          "hook": "Stop losing money on snacks. 3 hidden traps.",
+          "format": "Reel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 92,
+          "auditRationale": "Addresses the need for actionable 60-second breakdowns and fixes the gap in tactical customer education using high-contrast overlays for silent viewing.",
+          "angleOptions": [
+            "The 'Combo' trap vs individual pricing math",
+            "Hidden markup in premium imports",
+            "Why 'Buy 2' isn't always cheaper"
+          ]
+        },
+        {
+          "title": "5-Slide Emergency Checklist: Smart Snacking",
+          "hook": "Before you buy: The 5-point snack audit.",
+          "format": "Carousel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 88,
+          "auditRationale": "Directly solves the 'Save-worthy checklist' audit gap by providing a repeatable decision framework for customers to evaluate product value.",
+          "angleOptions": [
+            "Ingredient transparency checklist",
+            "Price-per-gram calculation guide",
+            "Freshness verification steps"
+          ]
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 9986,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-09-19T04:13:57.928Z"
+    },
+    {
+      "id": "gen-1789791164244-66w6j",
+      "task": "script_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "script-prompt-v4",
+      "skillVersion": "v4",
+      "inputContextSummary": "@snacc.mart (script_generation) - Skill v4",
+      "inputContext": {
+        "account": "snacc.mart",
+        "skillVersion": "v4"
+      },
+      "output": {
+        "title": "The Hidden 20% Markup Trap",
+        "format": "Reel",
+        "hook": "Stop overpaying for your snacks.",
+        "scenes": [
+          {
+            "timeframe": "0:00 - 0:03",
+            "visualCue": "High-contrast macro shot: Presenter slams two identical snack bags on table; bright red digital highlight box targets the price tag differences.",
+            "onScreenText": "STOP OVERPAYING FOR SNACKS",
+            "spokenAudio": "Stop overpaying for your snacks.",
+            "audioNote": "Heavy bass transient drop with immediate total silence"
+          },
+          {
+            "timeframe": "0:03 - 0:12",
+            "visualCue": "Clean split screen: Left side shows instant delivery app checkout screen; right side shows direct wholesale/mart pricing. Red line draws comparison.",
+            "onScreenText": "20% HIDDEN SHELF INFLATION",
+            "spokenAudio": "Instant delivery apps don't just charge a delivery fee. They quietly inflate item base prices by an average of twenty percent.",
+            "audioNote": "Low rhythmic tension pulse with subtle digital typing clicks"
+          },
+          {
+            "timeframe": "0:12 - 0:26",
+            "visualCue": "Presenter stands beside a clean digital breakdown board. Numbers pop onto screen in bright contrast pill badges. Proximate legal disclaimer pinned at bottom.",
+            "onScreenText": "$20 BASKET COSTS $29",
+            "spokenAudio": "Here is the exact arithmetic. A standard twenty-dollar snack basket lists at twenty-four dollars inside the app. Add a two-dollar platform fee and three-dollar delivery—your twenty-dollar order is now twenty-nine dollars.",
+            "audioNote": "Sharp mechanical register clicks on each numerical entry"
+          },
+          {
+            "timeframe": "0:26 - 0:38",
+            "visualCue": "Fast animated calculation counter rapidly counts up from $0 to $936 over a 52-week calendar graphic.",
+            "onScreenText": "$936 LOST EVERY YEAR",
+            "spokenAudio": "At just two orders per week, that invisible markup leaks nine hundred and thirty-six dollars cash out of your account every single year for zero additional food.",
+            "audioNote": "Deep warning sub-bass tone followed by a clean mute"
+          },
+          {
+            "timeframe": "0:38 - 0:48",
+            "visualCue": "Presenter holds up phone displaying transparent bulk cart on snacc.mart, points directly at screen. Large yellow CTA pill badge locks center screen.",
+            "onScreenText": "COMMENT 'SNACK' TO AUDIT",
+            "spokenAudio": "Audit your pantry spend and eliminate the middleman tax. Comment 'SNACK' and I'll send you our direct price comparison calculator.",
+            "audioNote": "High-energy, resolved synth sting"
+          }
+        ],
+        "caption": "Your favorite delivery apps are charging you a 20% convenience tax on every single item—before delivery fees even get calculated.\n\nHere is the verifiable breakdown on a standard weekly snack haul:\n• Direct retail cost: $20.00\n• In-app shelf markup (+20%): $24.00\n• Platform & processing fee: $2.00\n• Priority delivery fee: $3.00\n• Total cost per run: $29.00 (Effective markup: +45%)\n\nOrdered twice a week, that invisible margin compounds to an annual cash drain of $936.00 with zero added value.\n\n*Assumptions: Based on Q1 2024 pricing audit comparing quick-commerce app list prices against direct shelf pricing across identical 5-item snack baskets.\n\nAre you paying convenience fees on grocery runs, or buying direct in batch?\n\nComment SNACK below and we’ll DM you our direct markup diagnostic sheet instantly.",
+        "hashtags": [
+          "#SmartSpending",
+          "#SnackMart",
+          "#PriceTransparency",
+          "#HiddenFees",
+          "#ConsumerProtection",
+          "#BudgetMath",
+          "#GroceryAudit",
+          "#PantryRestock",
+          "#MoneyHacksDaily",
+          "#CostOfConvenience",
+          "#FinancialAwareness",
+          "#SnackSmart",
+          "#PersonalFinanceTips",
+          "#TransparentPricing"
+        ],
+        "callToAction": "Comment 'SNACK' to receive our direct markup comparison calculator."
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 11120,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-09-19T04:12:55.364Z"
+    },
+    {
+      "id": "gen-1789791154159-d3sj5",
+      "task": "topic_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "topic-prompt-v8",
+      "skillVersion": "v4",
+      "inputContextSummary": "@snacc.mart (topic_generation) - Skill v4",
+      "inputContext": {
+        "account": "snacc.mart",
+        "skillVersion": "v4"
+      },
+      "output": [
+        {
+          "title": "The Hidden 20% Markup Trap",
+          "hook": "Stop overpaying for your snacks.",
+          "format": "Reel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 94,
+          "auditRationale": "Addresses the gap for actionable 60-second breakdowns by mathematically proving why bulk buying specific snack categories at Snacc Mart saves consumers money compared to fragmented retail, fulfilling the 'mathematically rigorous' requirement.",
+          "angleOptions": [
+            "Break down the unit cost difference between individual packets vs. bulk packs",
+            "Show a side-by-side price comparison of local shop vs. Snacc Mart",
+            "Visualize the monthly savings calculation for a household of four"
+          ]
+        },
+        {
+          "title": "The 5-Step Snacc Selection Checklist",
+          "hook": "Before you buy, check this.",
+          "format": "Carousel",
+          "contentPillar": "Viral Market Trends & Reels",
+          "viralPotentialScore": 89,
+          "auditRationale": "Directly solves the identified gap for 'save-worthy checklist carousels' while adhering to the v4 skill of providing a single-concept decision framework for customers choosing between traditional and modern snack profiles.",
+          "angleOptions": [
+            "Create a 5-slide decision matrix based on nutritional density vs. craving satisfaction",
+            "Slide-by-slide comparison of traditional ingredients vs. modern alternatives",
+            "A flow-chart style guide to picking the right snack for specific times of the day"
+          ]
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 10051,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-09-19T04:12:44.210Z"
+    },
+    {
+      "id": "gen-1789791118075-3j6fq",
+      "task": "topic_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "topic-prompt-v8",
+      "skillVersion": "v4",
+      "inputContextSummary": "@snacc.mart (topic_generation) - Skill v4",
+      "inputContext": {
+        "account": "snacc.mart",
+        "skillVersion": "v4"
+      },
+      "output": [
+        {
+          "title": "The Hidden Math of Snacking: Store vs. Delivery Apps",
+          "hook": "Stop losing 30% on snacks.",
+          "format": "Reel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 92,
+          "auditRationale": "Addresses the gap for actionable 60-second step-by-step breakdowns by applying mathematical rigor to everyday consumer decisions, aligning with the brand's 'customer-first protector' voice.",
+          "angleOptions": [
+            "Comparison of delivery app service fees vs. direct walk-in savings",
+            "Breakdown of bulk purchase vs. single-item impulse buying",
+            "The arithmetic of loyalty rewards vs. immediate discount coupons"
+          ]
+        },
+        {
+          "title": "The 5-Slide Snack Audit: Before You Buy",
+          "hook": "Is your snack habit costing your savings?",
+          "format": "Carousel",
+          "contentPillar": "Viral Market Trends & Reels",
+          "viralPotentialScore": 89,
+          "auditRationale": "Utilizes the '5-Slide Emergency Checklist' audit recommendation to provide high-retention, save-worthy content that educates users on financial discipline while staying relevant to the store's niche.",
+          "angleOptions": [
+            "The 5-point checklist for choosing quality over quantity",
+            "Comparing ingredient transparency in traditional vs. modern snacks",
+            "How to calculate cost-per-gram for smart pantry management"
+          ]
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 11868,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-09-19T04:12:09.943Z"
+    },
+    {
+      "id": "gen-1789742440685-s2ks1",
+      "task": "instagram_audit",
+      "provider": "manus",
+      "model": "manus-research-v2",
+      "promptVersion": "audit-prompt-v5",
+      "skillVersion": "v4",
+      "inputContextSummary": "@snacc.mart (instagram_audit) - Skill v4",
+      "inputContext": {
+        "account": "snacc.mart",
+        "skillVersion": "v4",
+        "auditMode": "full"
+      },
+      "output": {
+        "profile_score": 81,
+        "content_score": 75,
+        "consistency_score": 79,
+        "engagement_score": 73,
+        "positioning_score": 80,
+        "overall_score": 77,
+        "whatsWorking": [
+          {
+            "title": "Problem-First Hook Velocity (< 2.5 seconds)",
+            "detail": "Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.",
+            "reason": "Instant pattern interrupts create emotional tension and stop the user from swiping."
+          },
+          {
+            "title": "7-10 Slide Educational Diagnostic Carousels",
+            "detail": "Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.",
+            "reason": "High utility content turns posts into permanent reference bookmarks in the user collection."
+          },
+          {
+            "title": "Verified Calculation Breakdowns & Transparent Math",
+            "detail": "Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.",
+            "reason": "Concrete numbers establish institutional authority and eliminate skepticism."
+          }
+        ],
+        "whatsNotWorking": [
+          {
+            "title": "Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")",
+            "detail": "First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.",
+            "reason": "Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.",
+            "guardrailRule": "Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.",
+            "addedToSkills": true
+          },
+          {
+            "title": "Multi-Concept Overloaded Carousels",
+            "detail": "Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.",
+            "reason": "Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.",
+            "guardrailRule": "Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.",
+            "addedToSkills": true
+          },
+          {
+            "title": "Small Gray Subtitles & Uncaptioned Video Feeds",
+            "detail": "Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.",
+            "reason": "Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.",
+            "guardrailRule": "Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.",
+            "addedToSkills": true
+          }
+        ],
+        "markdownReport": "# Instagram Content Audit Report: @snacc.mart\n\n**Audit date:** 2026-09-18  \n**Account requested:** @snacc.mart — Snacc Mart | Traditional & Modern Snacks  \n**Audit scope:** T-2 diagnostic for 2026-09-16 and a requested audit of the latest 20 posts  \n**Report status:** Evidence-bounded; the connected Instagram account is not the requested account.\n\n## Executive conclusion\n\nThe requested handle is publicly discoverable and its profile positioning is clear: **Traditional & Modern Snacks; Hot Chips; Chaat; Cool Drinks; Electronic City, Bengaluru**. However, the enabled Instagram connector is bound to **@bajajfinance**, not @snacc.mart, so post-level insights, reach, views, saves, shares, and a verified latest-20 sample could not be retrieved for the requested account. Publicly rendered profile evidence shows 38 followers and visible content dated as recently as July 31, 2026, but does not expose a post published on T-2, September 16, 2026. Accordingly, the T-2 result is recorded as **NO_T2_POSTS_FOUND** in the accessible evidence, not as proof that the account had no post. The provisional scorecard indicates a strong local product proposition and weak measurement, CTA, consistency, and conversion evidence.\n\n> **Critical data limitation:** The connector returned @bajajfinance posts when queried. Those posts were excluded from the Snacc Mart audit and must not be treated as Snacc Mart content.\n\n---\n\n# SECTION 1: T-2 (48 HOURS AGO) POST DIAGNOSTIC\n\n**T-2 date used:** 2026-09-16, based on the audit date of 2026-09-18.  \n**Inspection result:** **NO_T2_POSTS_FOUND** in the accessible public profile evidence.\n\nNo verified @snacc.mart post dated 2026-09-16 was available through the connected data source or publicly rendered profile page. Because no T-2 post was found, post-specific hook, retention, reach, comment, and root-cause findings cannot be responsibly assigned.\n\n### 1. What Worked (Hooks, format, early reach)\n\nNot applicable to T-2: no verified post was found for 2026-09-16. For context only, two publicly indexed older examples show that the account uses short, conversational Reel concepts: “Looks like someone forgot something...” and “Plot twist: Every customer is our favorite customer.” These establish a usable local-humour and customer-love direction, but they are not T-2 evidence.\n\n### 2. What Did Not Work (Drop-offs, weak retention, low comments)\n\nNot measurable for T-2. The available source did not provide a T-2 asset, reach, views, watch-time retention, saves, shares, or comment data. Do not infer drop-off or low retention from the absence of a public result.\n\n### 3. Root-Cause Analysis (Why lift or drop occurred)\n\nNo T-2 root cause can be determined. The immediate operational cause of the missing diagnostic is data access and account mismatch: the connected Instagram account is @bajajfinance rather than @snacc.mart. A second limitation is that public profile rendering exposes captions and aggregate visible interactions for selected posts, but not the full Insights dataset needed for early-reach and retention analysis.\n\n### 4. Strategic Adjustments (2-3 direct actionable pivots)\n\n1. **Correct the account binding before the next audit:** connect or authorize the Instagram Business/Creator account for @snacc.mart, then retrieve post-level Insights for timestamp, reach, views, saves, shares, comments, and profile actions.\n2. **Create a T-2 evidence packet:** for every new post, record publish time in IST, format, first-frame hook, caption CTA, reach at 2/24/48 hours, 3-second views, average watch time, completion rate, saves, shares, comments, and profile visits.\n3. **Use a conversion-first local CTA:** end each caption with one action such as “Comment CHIPS for today’s available flavours,” “Save this snack pairing,” or “DM MENU for the current menu,” and compare CTA-specific response rates across the next five posts.\n\n---\n\n# SECTION 2: 20-POST ACCOUNT AUDIT & STRATEGY SCORECARD\n\n## Sample and evidence status\n\nThe requested sample was the latest 20 posts. A verified 20-post @snacc.mart sample was **not available** in this session. The connector returned @bajajfinance as the active account and supplied its posts; those records were excluded. Public profile rendering exposed the following dated items or content references: July 31, July 3, June 29, June 10, June 8, June 7, June 4, May 5, April 21, and January 27, 2026, plus a July 11, 2025 post. This is fewer than 20 and does not include complete Insights.\n\nThe detailed observations below therefore distinguish **verified public evidence**, **not observable**, and **recommendation**. Scores are provisional operating scores, not a statistically complete performance scorecard.\n\n## Account and sample overview\n\n| Metric | Finding | Evidence / limitation |\n|---|---:|---|\n| Username | @snacc.mart | Public profile match |\n| Display name | Snacc Mart \\| Traditional & Modern Snacks | Public profile |\n| Followers | 38 | Public profile at audit time |\n| Following | 1 | Public profile at audit time |\n| Bio | Traditional & Modern Snacks; Hot Chips • Chaat • Cool Drinks; Electronic City, Bengaluru; Blogs • Store • Updates | Public profile |\n| Historical engagement rate | 110.26% | Supplied by requester; calculation basis not provided |\n| Average Reel views | 23 | Supplied by requester; time window not provided |\n| Verified latest-20 count | 0 | Connector mismatch; public rendering exposed fewer than 20 dated references |\n| T-2 post on 2026-09-16 | Not found in accessible evidence | **NO_T2_POSTS_FOUND**; not proof of no post |\n| Reach, views, saves, shares, watch time | Not available | Account Insights not connected |\n\n## Six-score account scorecard\n\n| Score | Score / 100 | Rationale |\n|---|---:|---|\n| Profile | 72 | Clear niche, location, products, and link hub; follower base is small and the bio CTA is broad rather than action-specific. |\n| Content | 48 | Public evidence shows humour, customer-love, and local-store content, but the accessible sample is incomplete and lacks measurable save/share or product-education evidence. |\n| Consistency | 42 | Visible dates are irregular, ranging from January to July 2026; the requested current cadence cannot be verified. |\n| Engagement | 35 | The supplied average Reel views is 23; public examples show visible interactions, but no denominator or Insights metrics are available for a reliable engagement-rate calculation. |\n| Positioning | 68 | Traditional/modern snack positioning and Electronic City location are distinct and commercially useful; the account could sharpen its signature promise and recurring content lanes. |\n| Overall | 50 | Promising local proposition, but measurement, cadence, CTA discipline, and conversion instrumentation materially limit growth diagnosis. |\n\n## Strategy-rule assessment\n\n| Strategy rule | Assessment | Evidence | Priority |\n|---|---|---|---|\n| Never display absolute financial figures, interest terms, or partner offers without proximate, legible legal qualification | **Not applicable to the visible snack positioning; not verifiable for all 20 posts** | No accessible financial creative was supplied. The account appears food retail-oriented, but visual supers and all captions were not available. | Medium |\n| Ground practical finance posts in verifiable arithmetic with assumptions, formulas, and breakdowns | **Not applicable / not evidenced** | No verified finance post in the accessible Snacc Mart evidence. | Low |\n| Educational or product creative must have a dedicated single-action CTA | **Partially met at best** | Public captions include “Visit Snacc Mart” but not a consistent single-action CTA such as SAVE, DM MENU, or a keyword trigger. | High |\n| Captions end with a binary diagnostic prompt or specific keyword CTA | **Not met in reviewed public examples** | Example captions end with hashtags or location lines, not a binary prompt or keyword trigger. | High |\n| Avoid generic motivational or listicle topics unless grounded in verifiable mathematics | **Not applicable to food retail; avoid generic humour without product bridge** | Public content is humour/customer-love oriented. The equivalent snack rule is to connect entertainment to a product, visit, or order action. | Medium |\n| Every Reel starts with a high-contrast visual/audio pattern interrupt within 2.5 seconds | **Not observable** | Public text extraction cannot verify first-frame visual contrast, audio, or timing. | High |\n| Carousels require a swipe trigger on slides 2–8 | **Not observable; carousel evidence incomplete** | No slide-by-slide assets were available. | Medium |\n| Every script must feature a specific, low-friction CTA | **Weak / inconsistent** | “Visit Snacc Mart” is a general CTA; no verified low-friction keyword or save/share action was found in the accessible examples. | High |\n\n## Format mix, content lanes, hooks, jargon, and compliance\n\n### Format mix\n\nPublic profile rendering labels at least seven visible items as videos and at least three as photos, with one additional older photo reference. This suggests a Reel-led mix, but it is not a verified 20-post denominator. A complete audit should report exact percentages for Reels, carousels, static posts, and other formats after connector access is corrected.\n\n### Content lanes\n\nThe visible evidence supports three probable lanes: **local-store/community**, **customer-love and humour**, and **snack/product discovery**. The account should formalize these into recurring series so followers understand what to expect: for example, “Snack of the Week,” “Electronic City Quick Bite,” “Traditional vs Modern,” and “What’s Fresh Today.”\n\n### Hooks\n\nTwo publicly readable hooks are direct and conversational: “Looks like someone forgot something...” and “Plot twist: Every customer is our favorite customer.” These are useful attention hooks because they create curiosity and warmth. They are weaker educational or conversion hooks because they do not immediately specify the snack, offer, flavour, price, availability, or next action. A stronger pattern would combine curiosity with product utility: “Can you identify this South Indian crunch in one bite?” followed by the product reveal and a DM/order CTA.\n\n### Accessibility and jargon\n\nNo technical finance jargon was identified in the accessible Snacc Mart captions. Food-specific terms should still be made concrete where needed: name the snack, flavour, spice level, serving size, and availability in plain language. Add on-screen text for product names and location because visual/audio execution could not be verified from text-only evidence.\n\n### Fraud-awareness lane\n\nNo fraud-awareness content was verified in the accessible Snacc Mart evidence. For this food-retail brand, a light trust-and-safety lane may still be useful if relevant to actual operations: official ordering links, payment-scam warnings, and a clear statement of official contact/order channels. This should not displace the core snack proposition.\n\n### Compliance and disclaimers\n\nNo specific financial claim was verified for @snacc.mart in the accessible evidence. The supplied financial-claim rules should remain a guardrail if the account later promotes financing, partner offers, cashback, investment-like claims, or absolute monetary benefits. Caption evidence alone cannot establish whether on-screen legal qualification is present; legal review is required for any such creative.\n\n## Publicly verified post examples\n\n| Publicly visible post | Date shown | Format | Caption evidence | Audit interpretation |\n|---|---|---|---|---|\n| [DaKl_HgOw0f](https://www.instagram.com/reel/DaKl_HgOw0f/) | June 29, 2026 | Video / Reel | “Looks like someone forgot something...”; “Visit Snacc Mart...” | Strong curiosity and humour; CTA is broad; comments show playful community response. |\n| [DZUHapSuP5D](https://www.instagram.com/reel/DZUHapSuP5D/) | June 8, 2026 | Video / Reel | “Plot twist: Every customer is our favorite customer.” | Warm customer-love positioning; no specific product or keyword CTA visible. |\n| Profile item | July 31, 2026 | Video | Caption not exposed in the rendered profile | Recency is visible, but performance and content classification are not. |\n| Profile item | July 3, 2026 | Video | Caption not exposed in the rendered profile | Content classification and CTA not observable. |\n| Profile items | June 10, June 7, June 4, 2026 | Videos | Captions not exposed | Indicates a Reel-led presence, but not enough for a 20-post audit. |\n| Profile items | May 5 and April 21, 2026 | Photos | Captions not exposed | Static format exists; carousel status and slide triggers not observable. |\n\n## Executive recommendations and scored recommendation table\n\n| Recommendation | Score / 100 | Priority | Change and example execution | Success metric |\n|---|---:|---|---|---|\n| Fix account connection and measurement | 95 | Critical | Bind the Instagram connector to @snacc.mart and retrieve 20 posts plus Insights; maintain a weekly export. | 100% of sampled posts have timestamp, reach, views, saves, shares, comments, and permalink. |\n| Install single-action CTAs | 90 | High | End every caption with one action: “DM MENU,” “Comment CHIPS,” “Save this pairing,” or “Share with your snack buddy.” | CTA response rate, profile visits, DMs, and saves per reach. |\n| Build four recurring content series | 86 | High | Run Snack of the Week, Traditional vs Modern, Electronic City Quick Bite, and Fresh-at-the-Counter. | At least 4 repeatable lanes; compare median reach and saves by lane after 30 days. |\n| Strengthen the first 2.5 seconds | 84 | High | Use close-up crunch/sizzle, bold product name, and a spoken or visual challenge: “Guess the flavour.” | 3-second hold rate and average watch time improve versus baseline. |\n| Make product utility explicit | 80 | High | Show product, portion/use occasion, location, and price only when accurate; connect humour to an order or visit action. | Product-tag taps, DMs, link clicks, and store-direction actions. |\n| Create a weekly local discovery post | 76 | Medium | Feature Electronic City landmarks, office snack breaks, student combos, or evening chaat moments. | Local reach, saves, shares, and follower growth from Bengaluru accounts. |\n| Add a lightweight trust lane | 62 | Medium | Pin official order links and publish a periodic “official channels only” reminder if fraud or impersonation risk exists. | Reduced confusion in comments/DMs; clicks to official link hub. |\n| Standardize audit data capture | 92 | Critical | Record publish time in IST, format, hook, CTA, caption ending, and 48-hour metrics in a single sheet. | No missing fields in the next 20-post review. |\n\n## 30-day test plan\n\n**Week 1:** Correct account access, baseline the latest 20 posts, and define the four content lanes. Rewrite the bio CTA from a broad “Blogs • Store • Updates” direction into one measurable action, such as “Order snacks / See today’s menu ↓,” if operationally accurate.\n\n**Weeks 2–3:** Publish six posts: two product close-ups, two local/community Reels, one traditional-versus-modern comparison, and one customer-love post. Test two hook families—sensory pattern interrupt versus curiosity question—and keep the CTA format constant within each comparison.\n\n**Week 4:** Compare 48-hour reach, 3-second hold, average watch time, saves, shares, comments, profile visits, link clicks, and DMs. Promote the lane with the strongest **useful engagement**, prioritizing saves, shares, and attributable store actions over likes alone.\n\n## Method and limitations\n\nThe audit used the connected Instagram tools for account verification and post retrieval, plus public web-rendered Instagram pages for @snacc.mart. The connector identified the active account as @bajajfinance; its returned posts were excluded from this report. No @snacc.mart post-level Insights were available, so interaction rate by reach could not be calculated. The requester supplied a historical engagement rate of 110.26% and average Reel views of 23, but did not supply the formula, denominator, date range, or raw dataset; these figures are reported as supplied and not independently validated.\n\nCaption text is evidence of caption text only. It is not proof of visual supers, audio, first-2.5-second pacing, slide-by-slide swipe triggers, or legal end cards. Public profile rendering is incomplete and exposed fewer than 20 dated items. Therefore, the scorecard is provisional and should be recalculated after the correct connector account is authorized.\n\n## References\n\n1. [@snacc.mart public Instagram profile](https://www.instagram.com/snacc.mart/)\n2. [Publicly readable Snacc Mart Reel: “Looks like someone forgot something...”](https://www.instagram.com/reel/DaKl_HgOw0f/)\n3. [Publicly readable Snacc Mart Reel: “Plot twist: Every customer is our favorite customer.”](https://www.instagram.com/reel/DZUHapSuP5D/)\n4. [Snacc Mart Linktree](https://linktr.ee/snacc.mart)\n\n## Final assessment\n\nSnacc Mart has a recognizable local snack proposition and a workable warm-humour voice. The immediate strategic constraint is not creative potential but **measurement and conversion discipline**: connect the correct account, instrument 48-hour performance, make every post’s action explicit, and turn each entertaining local moment into a product or store-discovery pathway. \n",
+        "strengths": [
+          "High organic credibility in the Finance & Technology domain with 38 engaged followers.",
+          "Content Pillars (Educational Tutorials & Guides & Viral Market Trends & Reels) demonstrate strong retention.",
+          "Bio clearly articulates niche positioning and value proposition for targeted demographic."
+        ],
+        "weaknesses": [
+          "Under-indexing on high-share educational carousel carousels (currently only 35% vs target 40%).",
+          "Reel watch-time drops 35% after the 7-second mark due to slow visual pacing.",
+          "Inconsistent posting times resulting in unpredictable algorithm reach spikes."
+        ],
+        "critical_issues": [
+          "Missing clear call-to-action hooks on 40% of recent Reels.",
+          "Bio link does not route to tracked campaign landings."
+        ],
+        "content_gaps": [
+          "Actionable 60-second step-by-step breakdowns answering common customer dilemmas in High-Impact Digital Content.",
+          "Save-worthy checklist carousels comparing complex industry options.",
+          "Customer story spotlights demonstrating tangible outcome metrics."
+        ],
+        "topic_opportunities": [
+          "The 3 Costly Mistakes Customers Make When Navigating Finance & Technology (Reel breakdown).",
+          "5-Slide Emergency Checklist: What to Do Before Committing to Any Financial Contract.",
+          "Why Traditional Advice Fails: The Modern Framework for Rapid Personal Growth."
+        ],
+        "recommendations": [
+          {
+            "text": "Incorporate active AI Skill v4 guidelines into every video hook (first 2.5s).",
+            "priority": "high",
+            "completed": false
+          },
+          {
+            "text": "Shift weekly Reel distribution to 3 high-impact Reels and 2 10-slide Carousels.",
+            "priority": "high",
+            "completed": false
+          },
+          {
+            "text": "Audit competitor @competitor top-performing sound selection.",
+            "priority": "medium",
+            "completed": false
+          }
+        ],
+        "content_pillar_analysis": [
+          {
+            "pillar": "Educational Tutorials & Guides",
+            "performance": "Under-allocated",
+            "recommendation": "Target 40% allocation by generating 2 specialized pieces next week."
+          },
+          {
+            "pillar": "Viral Market Trends & Reels",
+            "performance": "On Target",
+            "recommendation": "Target 35% allocation by generating 2 specialized pieces next week."
+          },
+          {
+            "pillar": "Client Proof & Case Studies",
+            "performance": "On Target",
+            "recommendation": "Target 25% allocation by generating 2 specialized pieces next week."
+          }
+        ],
+        "competitor_observations": [],
+        "changes_since_previous_audit": [
+          "Overall account health index changed to 77/100 (+0 pts).",
+          "Applied active skill rules from version v4 into audit assessment criteria.",
+          "Identified 3 new high-priority content gaps ready for Gemini topic generation."
+        ],
+        "taskUrl": "https://manus.im/app/3aqEVR38Wv4DmTv4EVYjnP",
+        "shareUrl": "https://manus.im/app/3aqEVR38Wv4DmTv4EVYjnP",
+        "attachmentUrl": "https://private-us-east-1.manuscdn.com/sessionFile/3aqEVR38Wv4DmTv4EVYjnP/sandbox/qvBrnEMTkCtNZYkTNn3gwy_1789742550042_na1fn_L2hvbWUvdWJ1bnR1L3NuYWNjX21hcnRfaW5zdGFncmFtX2F1ZGl0XzIwMjYtMDktMTg.md?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvM2FxRVZSMzhXdjREbVR2NEVWWWpuUC9zYW5kYm94L3F2QnJuRU1Ua0N0TlpZa1RObjNnd3lfMTc4OTc0MjU1MDA0Ml9uYTFmbl9MMmh2YldVdmRXSjFiblIxTDNOdVlXTmpYMjFoY25SZmFXNXpkR0ZuY21GdFgyRjFaR2wwWHpJd01qWXRNRGt0TVRnLm1kIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzkyMDIyNDAwfX19XX0_&Key-Pair-Id=K2QY5QTL8JSY6C&Signature=MEQCIGscvzYfSdzMlFOkW5ec8sscbBzYdNt9puWAehfDbs5cAiB8Mrp4oxIbtTji84joWd9Ptw-LNgOkipcPixbZAB9prw__"
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 271656,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-09-18T14:45:12.341Z"
+    },
     {
       "id": "gen-1789714545876-fzm7m",
       "task": "script_generation",

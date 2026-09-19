@@ -132,10 +132,10 @@ export const PublishingWorkspace: React.FC<PublishingWorkspaceProps> = ({
 
         {activeSubView === 'swimlane' && (
           <InstagramSwimlaneView
-            pipeline={pipeline}
-            onStageChange={() => {}}
-            onAssign={() => {}}
+            scripts={scripts || []}
             teamMembers={[]}
+            onSaveScript={async () => {}}
+            onOpenScriptEditor={onOpenScript || (() => {})}
           />
         )}
 

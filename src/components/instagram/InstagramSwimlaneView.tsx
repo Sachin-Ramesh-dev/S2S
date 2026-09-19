@@ -94,10 +94,10 @@ interface InstagramSwimlaneViewProps {
 }
 
 export const InstagramSwimlaneView: React.FC<InstagramSwimlaneViewProps> = ({
-  scripts,
-  teamMembers,
-  onSaveScript,
-  onOpenScriptEditor,
+  scripts = [],
+  teamMembers = [],
+  onSaveScript = async (_scriptId: string, _updates: Partial<ScriptItem>) => {},
+  onOpenScriptEditor = (_scriptId: string) => {},
   onAddTeamMember,
   onCreateScript
 }) => {

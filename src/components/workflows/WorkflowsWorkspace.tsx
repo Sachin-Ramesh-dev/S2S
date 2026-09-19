@@ -20,12 +20,19 @@ interface WorkflowsWorkspaceProps {
   activeSubView: WorkflowsSubView;
   onSubViewChange: (sub: WorkflowsSubView) => void;
   workflow: Workflow;
-  nodeDefinitions: NodeDefinition[];
-  customPlugins: CustomPluginNode[];
+  nodeDefinitions: Record<string, NodeDefinition> | NodeDefinition[];
+  customPlugins?: CustomPluginNode[];
   onNodesChange: (nodes: WorkflowNode[]) => void;
   onConnectionsChange: (connections: WorkflowConnection[]) => void;
-  onNodeSelect: (node: WorkflowNode) => void;
-  selectedNode: WorkflowNode | null;
+  onNodeSelect?: (node: WorkflowNode) => void;
+  selectedNode?: WorkflowNode | null;
+  selectedNodeId?: string | null;
+  onSelectNodeId?: (nodeId: string | null) => void;
+  onOpenDrawer?: (node: WorkflowNode) => void;
+  onOpenPalette?: () => void;
+  onQuickConnectNode?: (sourceNodeId: string, portId: string, targetPos?: { x: number; y: number }) => void;
+  onOpenShortcuts?: () => void;
+  executionResults?: Record<string, any>;
   onOpenTemplates: () => void;
   onOpenHistory: () => void;
   onOpenAiBuilder: () => void;
@@ -38,11 +45,18 @@ export const WorkflowsWorkspace: React.FC<WorkflowsWorkspaceProps> = ({
   onSubViewChange,
   workflow,
   nodeDefinitions,
-  customPlugins,
+  customPlugins = [],
   onNodesChange,
   onConnectionsChange,
   onNodeSelect,
   selectedNode,
+  selectedNodeId,
+  onSelectNodeId,
+  onOpenDrawer,
+  onOpenPalette,
+  onQuickConnectNode,
+  onOpenShortcuts,
+  executionResults = {},
   onOpenTemplates,
   onOpenHistory,
   onOpenAiBuilder,
@@ -50,6 +64,10 @@ export const WorkflowsWorkspace: React.FC<WorkflowsWorkspaceProps> = ({
   isExecuting = false
 }) => {
   const { isDark } = useTheme();
+
+  const nodeDefsMap: Record<string, NodeDefinition> = Array.isArray(nodeDefinitions)
+    ? nodeDefinitions.reduce((acc, n) => ({ ...acc, [n.type]: n }), {})
+    : (nodeDefinitions || {});
 
   return (
     <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
@@ -148,12 +166,25 @@ export const WorkflowsWorkspace: React.FC<WorkflowsWorkspaceProps> = ({
           <div className="w-full h-full relative">
             <Canvas
               workflow={workflow}
-              nodeDefinitions={nodeDefinitions}
-              customPlugins={customPlugins}
-              onNodesChange={onNodesChange}
-              onConnectionsChange={onConnectionsChange}
-              onNodeSelect={onNodeSelect}
-              selectedNode={selectedNode}
+              nodeDefinitions={nodeDefsMap}
+              executionResults={executionResults}
+              isExecuting={isExecuting}
+              selectedNodeId={selectedNodeId || (selectedNode?.id || null)}
+              onSelectNode={(nodeId) => {
+                if (onSelectNodeId) onSelectNodeId(nodeId);
+                const n = workflow.nodes.find(node => node.id === nodeId);
+                if (n && onNodeSelect) onNodeSelect(n);
+              }}
+              onUpdateNodes={onNodesChange}
+              onUpdateConnections={onConnectionsChange}
+              onOpenDrawer={(node) => {
+                if (onOpenDrawer) onOpenDrawer(node);
+                else if (onNodeSelect) onNodeSelect(node);
+              }}
+              onOpenPalette={onOpenPalette || (() => {})}
+              onQuickConnectNode={onQuickConnectNode}
+              onExecuteWorkflow={onExecuteWorkflow}
+              onOpenShortcuts={onOpenShortcuts}
             />
           </div>
         )}

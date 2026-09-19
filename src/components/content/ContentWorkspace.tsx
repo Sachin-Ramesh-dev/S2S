@@ -53,6 +53,8 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
   const { isDark } = useTheme();
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
 
+  const safeSkills = Array.isArray(skills) ? skills : (skills && (skills as any).skills ? (skills as any).skills : []);
+  const activeSkill = safeSkills.find((s: any) => s.isActive) || safeSkills[0] || ({ version: 'v4', title: 'Default Strategy', guardrails: [] } as any);
   const selectedScript = scripts.find(s => s.id === selectedScriptId) || scripts[0] || null;
 
   const handleCopy = (format: string, text: string) => {
@@ -156,12 +158,14 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
       <div className="flex-1 overflow-y-auto">
         {activeSubView === 'topics' && (
           <InstagramTopicsView
+            account={account || ({ id: 'default', username: 'account', displayName: 'Account', followersCount: 0 } as any)}
             topics={topics}
+            activeSkill={activeSkill}
             onApproveTopic={() => {}}
             onRejectTopic={() => {}}
             onGenerateScript={onCreateScript}
             onGenerateTopics={onGenerateTopics}
-            isGeneratingTopics={isGeneratingTopics}
+            isGenerating={isGeneratingTopics}
             onApproveTopicAndGenerateScript={onApproveTopicAndGenerateScript}
           />
         )}
@@ -172,7 +176,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
             selectedScriptId={selectedScriptId}
             onSelectScript={onSelectScript}
             onCreateScript={onCreateScript}
-            skills={skills}
+            skills={safeSkills}
             onApproveAndSchedule={onApproveAndScheduleScript}
           />
         )}

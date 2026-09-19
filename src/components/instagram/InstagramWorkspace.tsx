@@ -462,10 +462,7 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <EnvironmentToggle variant="pill" />
-            <ThemeToggle variant="pill" />
-          </div>
+
         </div>
 
         {/* Live Mode Zero State Hero Card */}
@@ -662,10 +659,8 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
           </div>
         </div>
 
-        {/* Right: Theme Toggle & Instagram Page Switcher Dropdown */}
+        {/* Right: Instagram Page Switcher Dropdown */}
         <div className="flex items-center gap-2.5 shrink-0">
-          <EnvironmentToggle variant="pill" />
-          <ThemeToggle variant="pill" />
 
           <div className="relative shrink-0" ref={dropdownRef}>
             <button

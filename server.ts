@@ -1755,31 +1755,67 @@ app.post('/api/instagram/accounts/connect-manus', async (req, res) => {
         });
       } else {
         // Real Meta Graph API v20.0 Verification
-        const targetId = metaPageId || 'me';
-        const metaProfileUrl = `https://graph.facebook.com/v20.0/${targetId}?fields=id,name,username,biography,followers_count,follows_count,media_count,profile_picture_url&access_token=${encodeURIComponent(trimmedToken)}`;
+        let metaData: any = null;
+        let igId = metaPageId;
 
-        let metaData: any;
-        try {
-          const metaRes = await fetch(metaProfileUrl);
-          metaData = await metaRes.json();
-          if (!metaRes.ok || metaData.error) {
-            return res.status(400).json({
-              error: metaData?.error?.message || 'Meta Graph API token verification failed. Please verify token permissions and expiration.',
-              metaError: metaData?.error
-            });
+        // 1. Try querying targetId directly as an Instagram Business User
+        if (igId && igId !== 'me') {
+          try {
+            const igRes = await fetch(`https://graph.facebook.com/v20.0/${encodeURIComponent(igId)}?fields=id,name,username,biography,followers_count,follows_count,media_count,profile_picture_url&access_token=${encodeURIComponent(trimmedToken)}`);
+            const igJson: any = await igRes.json();
+            if (igJson && igJson.username) {
+              metaData = igJson;
+            }
+          } catch (e) {
+            console.warn('Direct Instagram user query error:', e);
           }
-        } catch (fetchErr: any) {
-          return res.status(502).json({
-            error: `Network error connecting to Meta Graph API: ${fetchErr.message}`
+        }
+
+        // 2. If not found or if targetId was a Page ID, query page's instagram_business_account
+        if (!metaData) {
+          try {
+            const pageId = metaPageId || 'me';
+            const pageRes = await fetch(`https://graph.facebook.com/v20.0/${encodeURIComponent(pageId)}?fields=id,name,instagram_business_account{id,name,username,biography,followers_count,follows_count,media_count,profile_picture_url}&access_token=${encodeURIComponent(trimmedToken)}`);
+            const pageJson: any = await pageRes.json();
+            if (pageJson && pageJson.instagram_business_account) {
+              metaData = pageJson.instagram_business_account;
+              igId = metaData.id;
+            } else if (pageJson && pageJson.username) {
+              metaData = pageJson;
+              igId = metaData.id;
+            }
+          } catch (e) {
+            console.warn('Page instagram_business_account query error:', e);
+          }
+        }
+
+        // 3. Fallback to /me with instagram_business_account
+        if (!metaData) {
+          try {
+            const meRes = await fetch(`https://graph.facebook.com/v20.0/me?fields=id,name,instagram_business_account{id,name,username,biography,followers_count,follows_count,media_count,profile_picture_url}&access_token=${encodeURIComponent(trimmedToken)}`);
+            const meJson: any = await meRes.json();
+            if (meJson && meJson.instagram_business_account) {
+              metaData = meJson.instagram_business_account;
+              igId = metaData.id;
+            }
+          } catch (e) {
+            console.warn('Fallback /me query error:', e);
+          }
+        }
+
+        if (!metaData || !metaData.username) {
+          return res.status(400).json({
+            error: 'Could not resolve a connected Instagram Professional account for this token and Page. Please verify that your Instagram account is linked to your Facebook Page in Meta Business Suite.'
           });
         }
 
         // Fetch recent media to compute real engagement rate
-        let calculatedEngagement = 3.5;
+        let calculatedEngagement = 4.2;
         try {
-          const mediaUrl = `https://graph.facebook.com/v20.0/${targetId}/media?fields=id,like_count,comments_count&limit=10&access_token=${encodeURIComponent(trimmedToken)}`;
+          const mediaTarget = igId || metaData.id;
+          const mediaUrl = `https://graph.facebook.com/v20.0/${encodeURIComponent(mediaTarget)}/media?fields=id,like_count,comments_count&limit=10&access_token=${encodeURIComponent(trimmedToken)}`;
           const mediaRes = await fetch(mediaUrl);
-          const mediaJson = await mediaRes.json();
+          const mediaJson: any = await mediaRes.json();
           if (mediaJson.data && Array.isArray(mediaJson.data) && mediaJson.data.length > 0 && metaData.followers_count) {
             const totalInteractions = mediaJson.data.reduce((sum: number, item: any) => sum + (item.like_count || 0) + (item.comments_count || 0), 0);
             calculatedEngagement = Number(((totalInteractions / (mediaJson.data.length * metaData.followers_count)) * 100).toFixed(2));
@@ -1797,7 +1833,9 @@ app.post('/api/instagram/accounts/connect-manus', async (req, res) => {
           category: category || 'Creator / Business',
           followersCount: metaData.followers_count,
           engagementRate: calculatedEngagement,
-          isDemo: isDemo
+          isDemo: isDemo,
+          metaAccessToken: trimmedToken,
+          instagramBusinessId: metaData.id || metaPageId
         });
         persistInstagramState();
         return res.json({ success: true, account: result.account });
@@ -1866,33 +1904,73 @@ app.post('/api/instagram/accounts/inspect-token', async (req, res) => {
     }
 
     // Real Meta Graph API v20.0 Inspection
-    const metaAccountsUrl = `https://graph.facebook.com/v20.0/me/accounts?fields=id,name,instagram_business_account{id,username,name,biography,followers_count,follows_count,media_count,profile_picture_url}&access_token=${encodeURIComponent(trimmedToken)}`;
-    const metaRes = await fetch(metaAccountsUrl);
-    const metaData: any = await metaRes.json();
+    const detectedAccounts: any[] = [];
+    const seenIds = new Set<string>();
 
-    if (!metaRes.ok || metaData.error) {
-      return res.status(400).json({
-        error: metaData?.error?.message || 'Failed to inspect token with Meta Graph API. Please verify token permissions.',
-        metaError: metaData?.error
-      });
+    // 1. Check if token is directly a Page Access Token (/me returns the Page with instagram_business_account)
+    try {
+      const meUrl = `https://graph.facebook.com/v20.0/me?fields=id,name,instagram_business_account{id,username,name,biography,followers_count,follows_count,media_count,profile_picture_url}&access_token=${encodeURIComponent(trimmedToken)}`;
+      const meRes = await fetch(meUrl);
+      const meData: any = await meRes.json();
+      if (meData && meData.instagram_business_account && !seenIds.has(meData.instagram_business_account.id)) {
+        const ig = meData.instagram_business_account;
+        seenIds.add(ig.id);
+        detectedAccounts.push({
+          id: ig.id,
+          pageId: meData.id,
+          pageName: meData.name,
+          username: ig.username,
+          displayName: ig.name || meData.name || ig.username,
+          bio: ig.biography || '',
+          followersCount: ig.followers_count || 0,
+          mediaCount: ig.media_count || 0,
+          profilePictureUrl: ig.profile_picture_url,
+          isDemo: false
+        });
+      }
+    } catch (e) {
+      console.warn('Direct Page token inspection check:', e);
     }
 
-    const detectedAccounts: any[] = [];
-    if (Array.isArray(metaData.data)) {
-      for (const page of metaData.data) {
-        if (page.instagram_business_account) {
-          const ig = page.instagram_business_account;
-          detectedAccounts.push({
-            id: ig.id,
-            username: ig.username,
-            displayName: ig.name || page.name,
-            bio: ig.biography || '',
-            followersCount: ig.followers_count || 0,
-            mediaCount: ig.media_count || 0,
-            profilePictureUrl: ig.profile_picture_url,
-            isDemo: false
-          });
+    // 2. Also check if token is a User Access Token (/me/accounts returns list of Pages)
+    try {
+      const metaAccountsUrl = `https://graph.facebook.com/v20.0/me/accounts?fields=id,name,instagram_business_account{id,username,name,biography,followers_count,follows_count,media_count,profile_picture_url}&access_token=${encodeURIComponent(trimmedToken)}`;
+      const metaRes = await fetch(metaAccountsUrl);
+      const metaData: any = await metaRes.json();
+
+      if (metaData && Array.isArray(metaData.data)) {
+        for (const page of metaData.data) {
+          if (page.instagram_business_account && !seenIds.has(page.instagram_business_account.id)) {
+            const ig = page.instagram_business_account;
+            seenIds.add(ig.id);
+            detectedAccounts.push({
+              id: ig.id,
+              pageId: page.id,
+              pageName: page.name,
+              username: ig.username,
+              displayName: ig.name || page.name || ig.username,
+              bio: ig.biography || '',
+              followersCount: ig.followers_count || 0,
+              mediaCount: ig.media_count || 0,
+              profilePictureUrl: ig.profile_picture_url,
+              isDemo: false
+            });
+          }
         }
+      }
+    } catch (e) {
+      console.warn('User accounts inspection check:', e);
+    }
+
+    if (detectedAccounts.length === 0) {
+      // Check if token was fundamentally rejected by Meta
+      const checkRes = await fetch(`https://graph.facebook.com/v20.0/me?access_token=${encodeURIComponent(trimmedToken)}`);
+      const checkData: any = await checkRes.json();
+      if (checkData.error) {
+        return res.status(400).json({
+          error: checkData.error.message || 'Meta rejected the access token.',
+          metaError: checkData.error
+        });
       }
     }
 
@@ -1962,6 +2040,85 @@ app.get('/api/instagram/oauth/callback', (req, res) => {
     </html>
   `;
   res.send(html);
+});
+
+app.post('/api/instagram/oauth/exchange', async (req, res) => {
+  const { code } = req.body;
+  const appId = process.env.META_APP_ID;
+  const appSecret = process.env.META_APP_SECRET;
+  const redirectUri = `${req.protocol}://${req.get('host')}/api/instagram/oauth/callback`;
+
+  if (!code) {
+    return res.status(400).json({ success: false, error: 'Authorization code is required.' });
+  }
+
+  if (!appId || !appSecret) {
+    return res.status(400).json({
+      success: false,
+      error: 'META_APP_ID and META_APP_SECRET must be configured in .env to exchange OAuth code for tokens.',
+      requiresConfig: true
+    });
+  }
+
+  try {
+    // 1. Exchange authorization code for user access token
+    const tokenUrl = `https://graph.facebook.com/v20.0/oauth/access_token?client_id=${encodeURIComponent(appId)}&redirect_uri=${encodeURIComponent(redirectUri)}&client_secret=${encodeURIComponent(appSecret)}&code=${encodeURIComponent(code)}`;
+    const tokenResp = await fetch(tokenUrl);
+    const tokenData = await tokenResp.json() as any;
+
+    if (tokenData.error) {
+      return res.status(400).json({ success: false, error: tokenData.error.message || 'Meta token exchange failed.' });
+    }
+
+    const shortLivedToken = tokenData.access_token;
+
+    // 2. Exchange for long-lived access token (60-day validity)
+    let finalToken = shortLivedToken;
+    try {
+      const longLivedUrl = `https://graph.facebook.com/v20.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${encodeURIComponent(appId)}&client_secret=${encodeURIComponent(appSecret)}&fb_exchange_token=${encodeURIComponent(shortLivedToken)}`;
+      const longResp = await fetch(longLivedUrl);
+      const longData = await longResp.json() as any;
+      if (longData.access_token) {
+        finalToken = longData.access_token;
+      }
+    } catch (e) {
+      console.warn('Long-lived token exchange warning, proceeding with primary token:', e);
+    }
+
+    // 3. Inspect accounts linked to this token
+    const accountsUrl = `https://graph.facebook.com/v20.0/me/accounts?fields=id,name,category,access_token,instagram_business_account{id,username,name,profile_picture_url,followers_count,biography}&access_token=${encodeURIComponent(finalToken)}`;
+    const accResp = await fetch(accountsUrl);
+    const accData = await accResp.json() as any;
+
+    const detectedAccounts: any[] = [];
+    if (accData.data && Array.isArray(accData.data)) {
+      for (const page of accData.data) {
+        if (page.instagram_business_account) {
+          const ig = page.instagram_business_account;
+          detectedAccounts.push({
+            id: ig.id,
+            pageId: page.id,
+            pageName: page.name,
+            username: ig.username,
+            displayName: ig.name || ig.username,
+            category: page.category || 'Creator',
+            bio: ig.biography || '',
+            followersCount: ig.followers_count || 0,
+            profilePictureUrl: ig.profile_picture_url || '',
+            pageAccessToken: page.access_token
+          });
+        }
+      }
+    }
+
+    res.json({
+      success: true,
+      accessToken: finalToken,
+      detectedAccounts
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || 'Failed to exchange Meta authorization code.' });
+  }
 });
 
 // Audits (Manus AI integration)

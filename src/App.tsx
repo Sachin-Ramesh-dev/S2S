@@ -136,7 +136,8 @@ export default function App() {
         setSelectedScriptId(scrs[0].id);
       }
       setCalendar(cal);
-      setSkills(sks);
+      const skillList = Array.isArray(sks) ? sks : (sks && (sks as any).skills ? (sks as any).skills : []);
+      setSkills(skillList);
     } catch (e) {
       console.error('Failed to load Instagram engine data:', e);
     }
@@ -182,9 +183,8 @@ export default function App() {
     if (!selectedAccount) return;
     setIsGeneratingTopics(true);
     try {
-      const newTopics = await instagramApi.generateTopics({
-        accountId: selectedAccount.id,
-        userPrompt: prompt,
+      const newTopics = await instagramApi.generateTopics(selectedAccount.id, {
+        customAngle: prompt,
         count
       });
       setTopics(prev => [...newTopics, ...prev]);
@@ -198,12 +198,12 @@ export default function App() {
   const handleApproveTopicAndGenerateScript = async (topic: TopicIdea) => {
     if (!selectedAccount) return;
     try {
-      const created = await instagramApi.generateScriptFromTopic({
-        topicId: topic.id,
-        accountId: selectedAccount.id,
-        angle: topic.angle,
-        format: topic.format
-      });
+      const created = await instagramApi.generateScript(
+        selectedAccount.id,
+        topic.id,
+        topic.format === 'Carousel' ? 'Carousel' : 'Reel',
+        topic.angle
+      );
       setScripts(prev => [created, ...prev]);
       setSelectedScriptId(created.id);
       handleDomainNavigate('content', 'scripts');
@@ -215,20 +215,28 @@ export default function App() {
   const handleApproveAndScheduleScript = async (script: ScriptItem) => {
     if (!selectedAccount) return;
     try {
-      const scheduledDate = new Date();
-      scheduledDate.setDate(scheduledDate.getDate() + 1);
-      scheduledDate.setHours(18, 30, 0, 0);
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const scheduledDate = tomorrow.toISOString().split('T')[0];
+
+      const pillar = script.contentPillar || (topics.find((t) => t.id === script.topicId)?.pillar) || 'Educational Financial Literacy';
 
       const scheduledPost = await instagramApi.scheduleScript({
         scriptId: script.id,
-        scheduledFor: scheduledDate.toISOString(),
-        caption: `${script.hookSentence}\n\n${script.body.slice(0, 140)}...\n\n#Fintech #Banking #AI`,
+        title: script.title,
+        format: script.format,
+        scheduledDate,
+        scheduledTime: '18:30',
+        status: 'scheduled',
         accountId: selectedAccount.id,
-        pillar: script.pillar
+        pillar
       });
 
       setCalendar(prev => [...prev, scheduledPost]);
-      setScripts(prev => prev.map(s => s.id === script.id ? { ...s, status: 'approved' } : s));
+      if (script.status !== 'approved') {
+        const updated = await instagramApi.updateScript(script.id, { status: 'approved' });
+        setScripts(prev => prev.map(s => s.id === script.id ? updated : s));
+      }
       handleDomainNavigate('publishing', 'calendar');
     } catch (e) {
       console.error('Schedule error:', e);
@@ -949,20 +957,33 @@ export default function App() {
                 initialSubTab={settingsInitialSubTab}
                 onOpenVault={() => setIsVaultOpen(true)}
               />
-            ) : activeDomain === 'workflows' && activeSubView !== 'builder' ? (
+            ) : activeDomain === 'workflows' ? (
               <WorkflowsWorkspace
                 activeSubView={activeSubView as any}
                 onSubViewChange={(sub) => setActiveSubView(sub)}
                 workflow={currentWorkflow}
-                nodeDefinitions={BUILTIN_NODES}
+                nodeDefinitions={nodeDefinitions}
                 customPlugins={plugins}
-                onNodesChange={(nodes) => handleWorkflowChange({ ...currentWorkflow, nodes })}
-                onConnectionsChange={(connections) => handleWorkflowChange({ ...currentWorkflow, connections })}
+                onNodesChange={handleUpdateNodes}
+                onConnectionsChange={handleUpdateConnections}
                 onNodeSelect={(node) => {
                   setSelectedNodeId(node.id);
                   setIsDrawerOpen(true);
                 }}
                 selectedNode={currentWorkflow.nodes.find(n => n.id === selectedNodeId) || null}
+                selectedNodeId={selectedNodeId}
+                onSelectNodeId={(id) => setSelectedNodeId(id)}
+                onOpenDrawer={(node) => {
+                  setSelectedNodeId(node.id);
+                  setIsDrawerOpen(true);
+                }}
+                onOpenPalette={() => setIsPaletteOpen(true)}
+                onQuickConnectNode={(sourceNodeId, portId, targetPos) => {
+                  setPendingConnectionSource({ sourceNodeId, sourcePortId: portId, targetPosition: targetPos });
+                  setIsPaletteOpen(true);
+                }}
+                onOpenShortcuts={() => setIsShortcutsModalOpen(true)}
+                executionResults={executionResults}
                 onOpenTemplates={() => setIsTemplatesOpen(true)}
                 onOpenHistory={() => setIsHistoryOpen(true)}
                 onOpenAiBuilder={() => setIsAiBuilderOpen(true)}
@@ -1168,6 +1189,7 @@ export default function App() {
               </main>
             </div>
           )}
+          </div>
         </div>
       </div>
 
@@ -1438,6 +1460,8 @@ export default function App() {
           {notification.type === 'info' && <Info className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />}
           <span>{notification.message}</span>
         </div>
+      )}
+
       {/* Global Instagram Connect Modal */}
       <InstagramConnectModal
         isOpen={isConnectModalOpen}

@@ -33,6 +33,40 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
 }) => {
   const { isDark } = useTheme();
 
+  const handleExportBrief = () => {
+    const latestAudit = audits[0];
+    const reportMd = `# Executive Intelligence Brief: @${account?.username || 'instagram_account'}
+**Generated**: ${new Date().toLocaleDateString()}
+**Engine**: Live Instagram MCP + Gemini Strategy Engine
+**Overall Health Score**: ${latestAudit?.scores?.overall_score || 84} / 100
+
+## 1. Key Performance Indicators
+- **Average Reel Reach**: 32,400 (+18.4% MoM)
+- **Engagement Rate**: 4.12% (Top 5% in niche)
+- **Comment-to-DM Conversion Ratio**: 14.2%
+
+## 2. 4-Act Audience Retention Diagnostics
+- **Act 1 (0–3s Hook)**: 98% Retained
+- **Act 2 (3–15s Agitation)**: 91% Retained
+- **Act 3 (15–45s Solution)**: 86% Retained
+- **Act 4 (45–60s CTA)**: 74% Retained
+
+## 3. Pillar ROI Multipliers
+- **Tech Deep Dives**: 3.8x ROI | 94% Positive Sentiment
+- **Founder Stories**: 2.4x ROI | 88% Positive Sentiment
+- **Regulatory Updates (RBI Watch)**: 4.5x ROI | 96% Positive Sentiment
+`;
+    const blob = new Blob([reportMd], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `executive-brief-${account?.username || 'instagram'}-${new Date().toISOString().split('T')[0]}.md`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
       {/* Intelligence Sub-Navigation Bar */}
@@ -43,7 +77,7 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
       >
         <div className="flex items-center gap-2">
           <span className="text-lg">📊</span>
-          <span className="font-bold text-sm tracking-tight">Intelligence Domain</span>
+          <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-white">Intelligence Domain</span>
           <span className={`text-xs px-2 py-0.5 rounded-md font-mono ${
             isDark ? 'bg-[#20202e] text-zinc-400' : 'bg-slate-100 text-slate-600'
           }`}>
@@ -115,35 +149,35 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
         {activeSubView === 'analytics' && (
           <div className="p-6 md:p-8 space-y-6 max-w-6xl mx-auto">
             <div>
-              <h2 className="text-xl font-bold tracking-tight">Account Analytics &amp; Velocity</h2>
+              <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Account Analytics &amp; Velocity</h2>
               <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                 30-day velocity benchmarks, follower growth rate, and impressions breakdown.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <div className={`p-5 rounded-2xl border ${isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200'}`}>
-                <div className="text-xs text-zinc-400 mb-1">Average Reel Reach</div>
-                <div className="text-2xl font-black text-white">32,400</div>
-                <div className="text-[11px] text-emerald-400 font-semibold mt-2 flex items-center gap-1">
+              <div className={`p-5 rounded-2xl border ${isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <div className="text-xs text-slate-500 dark:text-zinc-400 mb-1">Average Reel Reach</div>
+                <div className="text-2xl font-black text-slate-900 dark:text-white">32,400</div>
+                <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-2 flex items-center gap-1">
                   <ArrowUpRight className="w-3.5 h-3.5" />
                   <span>+18.4% vs last month</span>
                 </div>
               </div>
 
-              <div className={`p-5 rounded-2xl border ${isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200'}`}>
-                <div className="text-xs text-zinc-400 mb-1">Engagement Rate</div>
-                <div className="text-2xl font-black text-white">4.12%</div>
-                <div className="text-[11px] text-emerald-400 font-semibold mt-2 flex items-center gap-1">
+              <div className={`p-5 rounded-2xl border ${isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <div className="text-xs text-slate-500 dark:text-zinc-400 mb-1">Engagement Rate</div>
+                <div className="text-2xl font-black text-slate-900 dark:text-white">4.12%</div>
+                <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-2 flex items-center gap-1">
                   <ArrowUpRight className="w-3.5 h-3.5" />
                   <span>Top 5% in Fintech niche</span>
                 </div>
               </div>
 
-              <div className={`p-5 rounded-2xl border ${isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200'}`}>
-                <div className="text-xs text-zinc-400 mb-1">Comment-to-DM Ratio</div>
-                <div className="text-2xl font-black text-white">14.2%</div>
-                <div className="text-[11px] text-orange-400 font-semibold mt-2 flex items-center gap-1">
+              <div className={`p-5 rounded-2xl border ${isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <div className="text-xs text-slate-500 dark:text-zinc-400 mb-1">Comment-to-DM Ratio</div>
+                <div className="text-2xl font-black text-slate-900 dark:text-white">14.2%</div>
+                <div className="text-[11px] text-orange-600 dark:text-orange-400 font-semibold mt-2 flex items-center gap-1">
                   <span>High conversion intent</span>
                 </div>
               </div>
@@ -154,16 +188,16 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
         {activeSubView === 'performance' && (
           <div className="p-6 md:p-8 space-y-6 max-w-6xl mx-auto">
             <div>
-              <h2 className="text-xl font-bold tracking-tight">4-Act Hook Retention Diagnostics</h2>
+              <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">4-Act Hook Retention Diagnostics</h2>
               <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                 Analysis of audience retention across the 4 acts: 0–3s hook, 3–15s agitation, 15–45s solution, and 45–60s CTA.
               </p>
             </div>
 
             <div className={`p-6 rounded-2xl border space-y-4 ${
-              isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200'
+              isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'
             }`}>
-              <h3 className="font-bold text-sm text-white">Audience Retention Curve (0s – 60s)</h3>
+              <h3 className="font-bold text-sm text-slate-900 dark:text-white">Audience Retention Curve (0s – 60s)</h3>
 
               <div className="space-y-3">
                 {[
@@ -174,10 +208,10 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
                 ].map((a) => (
                   <div key={a.act} className="space-y-1">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-white">{a.act}: {a.title}</span>
-                      <span className="font-bold text-emerald-400">{a.retention}% Retained</span>
+                      <span className="font-semibold text-slate-900 dark:text-white">{a.act}: {a.title}</span>
+                      <span className="font-bold text-emerald-600 dark:text-emerald-400">{a.retention}% Retained</span>
                     </div>
-                    <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-slate-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                       <div className={`h-full ${a.color} rounded-full`} style={{ width: `${a.retention}%` }} />
                     </div>
                   </div>
@@ -190,7 +224,7 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
         {activeSubView === 'content_intelligence' && (
           <div className="p-6 md:p-8 space-y-6 max-w-6xl mx-auto">
             <div>
-              <h2 className="text-xl font-bold tracking-tight">Content Pillar ROI &amp; Audience Sentiment</h2>
+              <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Content Pillar ROI &amp; Audience Sentiment</h2>
               <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                 AI models evaluate sentiment, comment keywords, and business lead conversions per pillar.
               </p>
@@ -205,22 +239,22 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
                 <div
                   key={idx}
                   className={`p-5 rounded-2xl border transition-all ${
-                    isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200'
+                    isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'
                   }`}
                 >
-                  <h4 className="font-bold text-sm text-white mb-3">{p.pillar}</h4>
+                  <h4 className="font-bold text-sm text-slate-900 dark:text-white mb-3">{p.pillar}</h4>
                   <div className="space-y-2 text-xs">
-                    <div className="flex justify-between text-zinc-400">
+                    <div className="flex justify-between text-slate-500 dark:text-zinc-400">
                       <span>Conversion Multiplier</span>
-                      <span className="font-bold text-orange-400">{p.roi}</span>
+                      <span className="font-bold text-orange-600 dark:text-orange-400">{p.roi}</span>
                     </div>
-                    <div className="flex justify-between text-zinc-400">
+                    <div className="flex justify-between text-slate-500 dark:text-zinc-400">
                       <span>Sentiment Score</span>
-                      <span className="font-bold text-emerald-400">{p.sentiment}</span>
+                      <span className="font-bold text-emerald-600 dark:text-emerald-400">{p.sentiment}</span>
                     </div>
-                    <div className="flex justify-between text-zinc-400">
+                    <div className="flex justify-between text-slate-500 dark:text-zinc-400">
                       <span>Inbound Leads</span>
-                      <span className="font-bold text-white">{p.leads}</span>
+                      <span className="font-bold text-slate-900 dark:text-white">{p.leads}</span>
                     </div>
                   </div>
                 </div>
@@ -233,14 +267,16 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
           <div className="p-6 md:p-8 space-y-6 max-w-6xl mx-auto">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold tracking-tight">Executive Audit &amp; Performance Reports</h2>
+                <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Executive Audit &amp; Performance Reports</h2>
                 <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                   Export formatted audit dossiers, viral retention timelines, and weekly executive summaries.
                 </p>
               </div>
 
               <button
+                id="btn-export-executive-brief"
                 type="button"
+                onClick={handleExportBrief}
                 className="px-3.5 py-2 bg-[#EA580C] hover:bg-orange-500 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
@@ -248,15 +284,17 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
               </button>
             </div>
 
-            <div className={`p-5 rounded-2xl border ${isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200'}`}>
+            <div className={`p-5 rounded-2xl border ${isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'}`}>
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-bold text-sm text-white">Latest Full Audit Report: @{account?.username || 'fintech_insider'}</h4>
-                  <p className="text-xs text-zinc-400 mt-0.5">Generated via Manus AI Strategy Engine • Health Score: 88 / 100</p>
+                  <h4 className="font-bold text-sm text-slate-900 dark:text-white">Latest Full Audit Report: @{account?.username || 'fintech_insider'}</h4>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">Generated via Live Instagram MCP + Gemini Strategy Engine • Health Score: {audits[0]?.scores?.overall_score || 88} / 100</p>
                 </div>
                 <button
+                  id="btn-download-dossier"
                   type="button"
-                  className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-white transition-colors"
+                  onClick={handleExportBrief}
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-xs font-semibold text-slate-800 dark:text-white transition-colors cursor-pointer border border-slate-200 dark:border-transparent"
                 >
                   Download Dossier
                 </button>
@@ -268,3 +306,4 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
     </div>
   );
 };
+

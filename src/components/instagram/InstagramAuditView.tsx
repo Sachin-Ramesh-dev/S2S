@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Search,
   ShieldCheck,
@@ -27,7 +27,17 @@ import {
   Radio,
   FileCode,
   Calendar,
-  Compass
+  Compass,
+  Trash2,
+  Archive,
+  CheckSquare,
+  Square,
+  Filter,
+  Bot,
+  AlertTriangle,
+  MoreVertical,
+  Sliders,
+  ChevronDown
 } from 'lucide-react';
 import {
   InstagramAccount,
@@ -37,6 +47,9 @@ import {
 } from '../../types/instagram';
 import { instagramApi } from '../../services/instagramApi';
 import { useTheme } from '../../context/ThemeContext';
+import { AuditCompareModal } from './AuditCompareModal';
+import { AuditMarkdownModal } from './AuditMarkdownModal';
+import { AuditSettingsModal } from './AuditSettingsModal';
 
 interface InstagramAuditViewProps {
   account: InstagramAccount | null;
@@ -48,6 +61,7 @@ interface InstagramAuditViewProps {
   onNavigateToTopics?: () => void;
   isRunningAudit: boolean;
   isGeneratingTopics?: boolean;
+  onAuditsUpdated?: () => void;
 }
 
 export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
@@ -59,7 +73,8 @@ export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
   onGenerateTopicsFromAudit,
   onNavigateToTopics,
   isRunningAudit,
-  isGeneratingTopics = false
+  isGeneratingTopics = false,
+  onAuditsUpdated
 }) => {
   const { isDark } = useTheme();
   const [selectedMode, setSelectedMode] = useState<InstagramAuditMode>('full');
@@ -68,11 +83,72 @@ export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
   const [syncedRules, setSyncedRules] = useState<Record<string, boolean>>({});
   const [syncToast, setSyncToast] = useState<string | null>(null);
   const [auditError, setAuditError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'gaps' | 'compare' | 'guardrails'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'gaps' | 'compare' | 'guardrails' | 'history'>('overview');
+
+  // Multi-select & Audit History State
+  const [selectedAuditIds, setSelectedAuditIds] = useState<string[]>([]);
+  const [compareModalPair, setCompareModalPair] = useState<[InstagramAuditRecord, InstagramAuditRecord] | null>(null);
+  const [viewingMarkdownAudit, setViewingMarkdownAudit] = useState<InstagramAuditRecord | null>(null);
+  const [showOverflowMenu, setShowOverflowMenu] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [historySearchQuery, setHistorySearchQuery] = useState('');
+  const [historyStatusFilter, setHistoryStatusFilter] = useState<'all' | 'completed' | 'in_progress' | 'failed' | 'archived'>('all');
+  const [historyProviderFilter, setHistoryProviderFilter] = useState<'all' | 'gemini' | 'manus'>('all');
 
   // Filter audits strictly for this account
   const accountAudits = audits.filter(a => account && (a.accountId === account.id || a.accountId === `ig-${account.username}`));
   const [selectedAuditId, setSelectedAuditId] = useState<string>(accountAudits[0]?.id || '');
+
+  // Filtered audits for the Audit History & Logs tab
+  const filteredHistoryAudits = useMemo(() => {
+    return accountAudits.filter(a => {
+      // Status filter
+      if (historyStatusFilter === 'completed' && a.status !== 'completed') return false;
+      if (historyStatusFilter === 'in_progress' && a.status !== 'in_progress' && (a.status as string) !== 'running') return false;
+      if (historyStatusFilter === 'failed' && a.status !== 'failed') return false;
+      if (historyStatusFilter === 'archived' && !a.isArchived) return false;
+      if (historyStatusFilter !== 'archived' && a.isArchived) return false;
+
+      // Provider filter
+      if (historyProviderFilter === 'gemini') {
+        const isGemini = !a.provider || a.provider.includes('gemini') || a.provider === 'gemini_mcp-fallback';
+        if (!isGemini) return false;
+      } else if (historyProviderFilter === 'manus') {
+        const isManus = a.provider === 'manus' || (a.markdownReport && a.markdownReport.includes('Manus'));
+        if (!isManus) return false;
+      }
+
+      // Search query
+      if (historySearchQuery.trim()) {
+        const q = historySearchQuery.toLowerCase();
+        const matchesMode = a.auditMode?.toLowerCase().includes(q);
+        const matchesProvider = (a.provider || 'gemini').toLowerCase().includes(q);
+        const matchesNotes = a.notes?.toLowerCase().includes(q);
+        const matchesId = a.id?.toLowerCase().includes(q);
+        const matchesReport = a.markdownReport?.toLowerCase().includes(q);
+        if (!matchesMode && !matchesProvider && !matchesNotes && !matchesId && !matchesReport) return false;
+      }
+
+      return true;
+    });
+  }, [accountAudits, historyStatusFilter, historyProviderFilter, historySearchQuery]);
+
+  // Persistent in-progress audit detection
+  const runningAudit = accountAudits.find(
+    a => a.status === 'in_progress' || (a.status as string) === 'running'
+  );
+  const effectiveIsRunning = isRunningAudit || !!runningAudit;
+
+  // Poll audits while an audit is in progress (resumes automatically across page reloads)
+  useEffect(() => {
+    let pollInterval: NodeJS.Timeout;
+    if (effectiveIsRunning) {
+      pollInterval = setInterval(() => {
+        if (onAuditsUpdated) onAuditsUpdated();
+      }, 3000);
+    }
+    return () => clearInterval(pollInterval);
+  }, [effectiveIsRunning, onAuditsUpdated]);
 
   // Sync selected audit if audits update
   const prevLatestAuditIdRef = useRef<string | undefined>(accountAudits[0]?.id);
@@ -108,7 +184,7 @@ export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (isRunningAudit) {
+    if (effectiveIsRunning) {
       setActiveStepIndex(0);
       interval = setInterval(() => {
         setActiveStepIndex((prev) => (prev < auditSteps.length - 1 ? prev + 1 : prev));
@@ -117,7 +193,92 @@ export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
       setActiveStepIndex(0);
     }
     return () => clearInterval(interval);
-  }, [isRunningAudit]);
+  }, [effectiveIsRunning]);
+
+  // Bulk audit action handlers
+  const handleToggleSelectAudit = (id: string) => {
+    setSelectedAuditIds(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAllAudits = (filteredList: InstagramAuditRecord[]) => {
+    if (selectedAuditIds.length === filteredList.length && filteredList.length > 0) {
+      setSelectedAuditIds([]);
+    } else {
+      setSelectedAuditIds(filteredList.map(a => a.id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedAuditIds.length === 0) return;
+    if (!window.confirm(`Are you sure you want to permanently delete ${selectedAuditIds.length} audit record(s)?`)) return;
+    try {
+      const count = selectedAuditIds.length;
+      await instagramApi.bulkDeleteAudits(selectedAuditIds);
+      setSelectedAuditIds([]);
+      setSyncToast(`Successfully deleted ${count} audit record(s)`);
+      setTimeout(() => setSyncToast(null), 3500);
+      if (onAuditsUpdated) onAuditsUpdated();
+    } catch (err: any) {
+      setAuditError(err.message || 'Failed to delete selected audits');
+    }
+  };
+
+  const handleBulkArchive = async (isArchived: boolean = true) => {
+    if (selectedAuditIds.length === 0) return;
+    try {
+      const count = selectedAuditIds.length;
+      await instagramApi.bulkArchiveAudits(selectedAuditIds, isArchived);
+      setSelectedAuditIds([]);
+      setSyncToast(`Successfully ${isArchived ? 'archived' : 'restored'} ${count} audit record(s)`);
+      setTimeout(() => setSyncToast(null), 3500);
+      if (onAuditsUpdated) onAuditsUpdated();
+    } catch (err: any) {
+      setAuditError(err.message || 'Failed to update archive status');
+    }
+  };
+
+  const handleOpenCompare = () => {
+    if (selectedAuditIds.length !== 2) return;
+    const a1 = accountAudits.find(a => a.id === selectedAuditIds[0]);
+    const a2 = accountAudits.find(a => a.id === selectedAuditIds[1]);
+    if (a1 && a2) {
+      setCompareModalPair([a1, a2]);
+    }
+  };
+
+  const handleExportSelectedMarkdown = () => {
+    if (selectedAuditIds.length === 0) return;
+    const selectedList = accountAudits.filter(a => selectedAuditIds.includes(a.id));
+    const content = selectedList.map(a =>
+      a.markdownReport || generateFallbackMarkdown(a, account)
+    ).join('\n\n---\n\n');
+
+    const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `audit_bundle_${account?.username || 'account'}_${selectedAuditIds.length}_reports.md`;
+    link.click();
+    URL.revokeObjectURL(url);
+    setSyncToast(`Exported ${selectedAuditIds.length} audit(s) as Markdown`);
+    setTimeout(() => setSyncToast(null), 3000);
+  };
+
+  const handleExportSelectedJson = () => {
+    if (selectedAuditIds.length === 0) return;
+    const selectedList = accountAudits.filter(a => selectedAuditIds.includes(a.id));
+    const blob = new Blob([JSON.stringify(selectedList, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `audit_bundle_${account?.username || 'account'}_${selectedAuditIds.length}_reports.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    setSyncToast(`Exported ${selectedAuditIds.length} audit(s) as JSON`);
+    setTimeout(() => setSyncToast(null), 3000);
+  };
 
   const handleStartAudit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -206,6 +367,23 @@ ${(audit.structuredAudit?.recommendations || audit.recommendations || []).map((r
 `;
   };
 
+  const extractCleanSummary = (audit?: InstagramAuditRecord): string => {
+    if (!audit) return 'No audit recorded yet. Click "Run Audit" to start.';
+    if (audit.structuredAudit?.summary?.overview) {
+      return audit.structuredAudit.summary.overview;
+    }
+    if (audit.markdownReport) {
+      const lines = audit.markdownReport
+        .split('\n')
+        .map(l => l.trim())
+        .filter(l => l && !l.startsWith('#') && !l.startsWith('**') && !l.startsWith('---') && !l.startsWith('|') && !l.startsWith('>'));
+      if (lines.length > 0) {
+        return lines.slice(0, 3).join(' ');
+      }
+    }
+    return 'Comprehensive diagnostic audit completed using live Instagram account telemetry.';
+  };
+
   const structured = currentAudit?.structuredAudit;
 
   if (!account) {
@@ -230,129 +408,48 @@ ${(audit.structuredAudit?.recommendations || audit.recommendations || []).map((r
         </div>
       )}
 
-      {/* 1. HEADER & AUDIT CONTROLS */}
-      <div className={`p-6 rounded-2xl border transition-colors shadow-sm ${
+      {/* 1. COMPACT HEADER & CONTROLS */}
+      <div className={`px-6 py-4 rounded-2xl border transition-colors shadow-xs ${
         isDark ? 'bg-[#181820] border-gray-800' : 'bg-white border-gray-200'
       }`}>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          {/* Left: Context & Metadata */}
           <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase bg-orange-500/10 text-orange-600 border border-orange-500/20 flex items-center gap-1.5">
-                <Radio className="w-3 h-3 text-orange-500 animate-pulse" />
-                Live Instagram MCP + Gemini Agent
+            <h1 className={`text-lg font-black tracking-tight flex items-center gap-2 ${
+              isDark ? 'text-white' : 'text-gray-900'
+            }`}>
+              <span>Page Audit</span>
+            </h1>
+            <div className="flex items-center gap-2 flex-wrap text-xs mt-1 text-gray-500 dark:text-gray-400">
+              <span className="font-semibold text-gray-700 dark:text-gray-300">Instagram</span>
+              <span>·</span>
+              <span className="font-mono text-orange-600 dark:text-orange-400 font-bold">
+                @{account?.username || 'account'}
               </span>
-              <span className="text-xs text-gray-400">•</span>
-              <span className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+              <span>·</span>
+              <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Live MCP
+              </span>
+              <span>·</span>
+              <span className="flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5" />
                 {currentAudit
                   ? `Last audited: ${currentAudit.audit_date || new Date(currentAudit.timestamp).toLocaleDateString()}`
-                  : 'No audit recorded yet'}
+                  : 'Not audited yet'}
               </span>
             </div>
-            <h1 className={`text-xl font-extrabold mt-1.5 flex items-center gap-2 ${
-              isDark ? 'text-white' : 'text-gray-900'
-            }`}>
-              Instagram Page Audit
-              <span className="text-sm font-normal text-gray-400 font-mono">@{account?.username || 'account'}</span>
-            </h1>
-            <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              Autonomous on-demand audit engine. Gemini actively queries the Instagram MCP to retrieve live Meta data before synthesizing content strategy and topic opportunities.
-            </p>
           </div>
 
-          {/* Quick Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2">
-            {currentAudit && (
-              <>
-                <button
-                  id="btn-view-md-report"
-                  type="button"
-                  onClick={() => setShowMarkdownModal(true)}
-                  className={`px-3 py-2 font-semibold text-xs rounded-lg border flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    isDark ? 'bg-gray-800 hover:bg-gray-700 text-gray-200 border-gray-700' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'
-                  }`}
-                  title="View formatted Markdown report"
-                >
-                  <FileText className="w-3.5 h-3.5 text-gray-500" />
-                  <span>View MD Report</span>
-                </button>
-
-                <button
-                  id="btn-download-md-report"
-                  type="button"
-                  onClick={handleDownloadMarkdown}
-                  className={`px-3 py-2 font-semibold text-xs rounded-lg border flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    isDark ? 'bg-emerald-950/40 hover:bg-emerald-900/40 text-emerald-300 border-emerald-800' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300'
-                  }`}
-                  title="Download Markdown (.md) Report generated from live Instagram data"
-                >
-                  <Download className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Download .MD</span>
-                </button>
-              </>
-            )}
-
-            {accountAudits.length > 0 && (
-              <div className="flex items-center gap-2">
-                <select
-                  id="select-previous-audit"
-                  value={selectedAuditId}
-                  onChange={(e) => setSelectedAuditId(e.target.value)}
-                  className={`text-xs rounded-lg px-3 py-2 font-medium focus:outline-none focus:border-orange-500 border ${
-                    isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-gray-50 border-gray-300 text-gray-900'
-                  }`}
-                >
-                  {accountAudits.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {(a.audit_date || new Date(a.timestamp).toLocaleDateString())} • {(a.auditMode || 'full').toUpperCase()} ({a.scores?.overall_score || 84}/100)
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Dedicated Action Strip: Active Account Badge + Audit Mode Selector + Refresh/Start Button */}
-        <div className={`mt-5 p-3 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-3 ${
-          isDark ? 'bg-[#121218] border-[#262634]' : 'bg-gray-50/80 border-gray-200'
-        }`}>
-          {/* Active Account Indicator Badge */}
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-0.5 shrink-0">
-              <div className={`w-full h-full rounded-full flex items-center justify-center text-xs font-bold uppercase ${
-                isDark ? 'bg-[#121218] text-white' : 'bg-white text-gray-900'
-              }`}>
-                {account?.username ? account.username.charAt(0) : '?'}
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className={`text-xs font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  @{account?.username || 'No Account Selected'}
-                </span>
-                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
-                  account?.connectionStatus === 'connected'
-                    ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                    : 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
-                }`}>
-                  {account?.connectionStatus === 'connected' ? 'Connected' : 'Active Account'}
-                </span>
-              </div>
-              <p className={`text-[11px] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                Target profile for live MCP data ingestion &amp; AI strategy synthesis
-              </p>
-            </div>
-          </div>
-
-          {/* Controls: Mode Selector & Trigger Button */}
-          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+          {/* Right: Actions */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Mode Selector */}
             <select
               id="select-audit-mode"
               value={selectedMode}
               onChange={(e) => setSelectedMode(e.target.value as InstagramAuditMode)}
               className={`rounded-xl text-xs px-3 py-2 font-medium focus:outline-none focus:border-orange-500 border ${
-                isDark ? 'bg-[#1a1a24] border-[#303042] text-white' : 'bg-white border-gray-300 text-gray-800'
+                isDark ? 'bg-[#14141c] border-[#2c2c3c] text-white' : 'bg-slate-50 border-gray-200 text-gray-800'
               }`}
             >
               <option value="full">Full 360° Audit</option>
@@ -361,34 +458,99 @@ ${(audit.structuredAudit?.recommendations || audit.recommendations || []).map((r
               <option value="quick">Quick Health Scan</option>
             </select>
 
+            {/* Run Audit Primary Button */}
             <button
               id="btn-run-page-audit"
               type="button"
               disabled={isRunningAudit || !account}
               onClick={() => handleStartAudit()}
-              className="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-semibold text-xs rounded-xl shadow-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 shrink-0 cursor-pointer active:scale-95"
+              className="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-bold text-xs rounded-xl shadow-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 shrink-0 cursor-pointer active:scale-95"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isRunningAudit ? 'animate-spin' : ''}`} />
               <span>
                 {isRunningAudit
-                  ? 'Auditing with Gemini MCP...'
-                  : (currentAudit ? 'Refresh Audit' : 'Start Page Audit')}
+                  ? 'Auditing...'
+                  : (currentAudit ? 'Run Audit' : 'Start Audit')}
               </span>
             </button>
-          </div>
-        </div>
 
-        {/* Data Freshness and Guardrail Banner */}
-        <div className="mt-4 p-3 bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-200/80 dark:border-indigo-900/50 rounded-xl flex items-center justify-between text-xs text-indigo-900 dark:text-indigo-200">
-          <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
-            <span>
-              <strong>Data Source:</strong> Live Instagram data (Instagram MCP). Anti-patterns discovered during live audits automatically train active Skill {String(activeSkill?.version || 'v1').startsWith('v') ? activeSkill?.version : `v${activeSkill?.version || 1}`} guardrails.
-            </span>
+            {/* Quick Audit History Button */}
+            <button
+              type="button"
+              id="btn-quick-audit-history"
+              onClick={() => setActiveTab('history')}
+              className={`px-3.5 py-2 rounded-xl text-xs font-semibold border flex items-center gap-1.5 transition-colors cursor-pointer ${
+                activeTab === 'history'
+                  ? 'bg-orange-500/10 border-orange-500/30 text-orange-600 dark:text-orange-400'
+                  : isDark
+                  ? 'bg-[#14141c] border-[#2c2c3c] text-zinc-300 hover:text-white'
+                  : 'bg-slate-50 border-gray-200 text-slate-700 hover:bg-slate-100'
+              }`}
+            >
+              <Clock className="w-3.5 h-3.5" />
+              <span>Audit History</span>
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-black/10 dark:bg-white/10 font-mono">
+                {accountAudits.length}
+              </span>
+            </button>
+
+            {/* Overflow Menu Button [•••] */}
+            <div className="relative">
+              <button
+                type="button"
+                id="btn-audit-overflow-menu"
+                onClick={() => setShowOverflowMenu(!showOverflowMenu)}
+                className={`p-2 rounded-xl border transition-colors cursor-pointer ${
+                  isDark ? 'bg-[#14141c] border-[#2c2c3c] text-zinc-400 hover:text-white' : 'bg-slate-50 border-gray-200 text-slate-600 hover:bg-slate-100'
+                }`}
+                title="More Actions"
+              >
+                <MoreVertical className="w-4 h-4" />
+              </button>
+
+              {showOverflowMenu && (
+                <div
+                  className={`absolute right-0 mt-2 w-56 rounded-xl border shadow-xl py-1 z-50 animate-in fade-in zoom-in-95 duration-150 ${
+                    isDark ? 'bg-[#181822] border-[#2a2a3c] text-zinc-200' : 'bg-white border-slate-200 text-slate-800'
+                  }`}
+                  onClick={() => setShowOverflowMenu(false)}
+                >
+                  {currentAudit && (
+                    <>
+                      <button
+                        type="button"
+                        id="btn-view-md-report"
+                        onClick={() => setViewingMarkdownAudit(currentAudit)}
+                        className="w-full px-3.5 py-2 text-left text-xs font-medium hover:bg-orange-500/10 hover:text-orange-600 flex items-center gap-2 cursor-pointer"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-gray-500" />
+                        <span>View MD Report</span>
+                      </button>
+                      <button
+                        type="button"
+                        id="btn-download-md-report"
+                        onClick={handleDownloadMarkdown}
+                        className="w-full px-3.5 py-2 text-left text-xs font-medium hover:bg-orange-500/10 hover:text-orange-600 flex items-center gap-2 cursor-pointer"
+                      >
+                        <Download className="w-3.5 h-3.5 text-emerald-500" />
+                        <span>Download .MD</span>
+                      </button>
+                      <hr className={`my-1 border-t ${isDark ? 'border-[#2a2a3c]' : 'border-slate-100'}`} />
+                    </>
+                  )}
+                  <button
+                    type="button"
+                    id="btn-open-audit-settings"
+                    onClick={() => setShowSettingsModal(true)}
+                    className="w-full px-3.5 py-2 text-left text-xs font-medium hover:bg-orange-500/10 hover:text-orange-600 flex items-center gap-2 cursor-pointer"
+                  >
+                    <Shield className="w-3.5 h-3.5 text-indigo-500" />
+                    <span>Audit Settings &amp; Data Source</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-200/70 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-300 shrink-0">
-            Live MCP Pipeline
-          </span>
         </div>
       </div>
 
@@ -413,14 +575,16 @@ ${(audit.structuredAudit?.recommendations || audit.recommendations || []).map((r
         </div>
       )}
 
-      {/* 2. IN-PROGRESS LIVE MCP + GEMINI STATUS TRACKER */}
-      {isRunningAudit && (
+      {/* 2. IN-PROGRESS LIVE MCP + GEMINI / MANUS STATUS TRACKER */}
+      {effectiveIsRunning && (
         <div className="bg-white dark:bg-[#181820] border-2 border-orange-400 dark:border-orange-500 rounded-2xl p-6 shadow-lg space-y-4 animate-pulse">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-orange-500 animate-ping"></span>
               <span className="text-xs font-bold text-orange-700 dark:text-orange-400 uppercase tracking-wider">
-                Status: In Progress — Gemini Agent Calling Instagram MCP
+                {runningAudit?.provider === 'manus' || runningAudit?.fallbackUsed
+                  ? 'Status: In Progress — Fallback Active: Manus AI Research Agent'
+                  : 'Status: In Progress — Gemini Agent Calling Instagram MCP'}
               </span>
             </div>
             <span className="text-xs text-gray-500 dark:text-gray-400 font-mono flex items-center gap-1">
@@ -430,10 +594,10 @@ ${(audit.structuredAudit?.recommendations || audit.recommendations || []).map((r
 
           <div className="space-y-3">
             <div className="text-sm font-bold text-gray-900 dark:text-white">
-              {auditSteps[activeStepIndex].title}
+              {runningAudit?.progressStep || auditSteps[activeStepIndex]?.title || 'Analyzing Instagram Profile...'}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              {auditSteps[activeStepIndex].detail}
+              {runningAudit?.progressStep ? `${runningAudit.progressStep} (Processing in background)` : auditSteps[activeStepIndex]?.detail}
             </p>
 
             {/* Step Progress Bar */}
@@ -474,187 +638,288 @@ ${(audit.structuredAudit?.recommendations || audit.recommendations || []).map((r
       )}
 
       {/* 3. AUDIT RESULTS TABS & CONTENT */}
-      {currentAudit && !isRunningAudit && (
+      {currentAudit && !effectiveIsRunning && (
         <div className="space-y-6">
           {/* Navigation Tabs */}
           <div className="flex border-b border-gray-200 dark:border-gray-800 overflow-x-auto gap-1">
             <button
+              id="tab-audit-overview"
               onClick={() => setActiveTab('overview')}
-              className={`px-4 py-2.5 text-xs font-bold border-b-2 transition-colors flex items-center gap-2 cursor-pointer shrink-0 ${
+              className={`px-4 py-2 text-xs font-bold border-b-2 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'overview'
                   ? 'border-orange-500 text-orange-600 dark:text-orange-400'
                   : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
               }`}
             >
-              <Users className="w-3.5 h-3.5" />
-              <span>Overview & Summary</span>
+              <span>Overview</span>
             </button>
 
             <button
+              id="tab-audit-content"
               onClick={() => setActiveTab('content')}
-              className={`px-4 py-2.5 text-xs font-bold border-b-2 transition-colors flex items-center gap-2 cursor-pointer shrink-0 ${
+              className={`px-4 py-2 text-xs font-bold border-b-2 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'content'
                   ? 'border-orange-500 text-orange-600 dark:text-orange-400'
                   : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
               }`}
             >
-              <Video className="w-3.5 h-3.5" />
-              <span>Content & Reels</span>
+              <span>Content</span>
             </button>
 
             <button
+              id="tab-audit-gaps"
               onClick={() => setActiveTab('gaps')}
-              className={`px-4 py-2.5 text-xs font-bold border-b-2 transition-colors flex items-center gap-2 cursor-pointer shrink-0 ${
+              className={`px-4 py-2 text-xs font-bold border-b-2 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'gaps'
                   ? 'border-orange-500 text-orange-600 dark:text-orange-400'
                   : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
               }`}
             >
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>Gaps & Topic Opportunities</span>
+              <span>Opportunities</span>
               {((structured?.topicOpportunities || currentAudit.topic_opportunities || []).length > 0) && (
-                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300">
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300 font-mono font-bold">
                   {(structured?.topicOpportunities || currentAudit.topic_opportunities || []).length}
                 </span>
               )}
             </button>
 
             <button
+              id="tab-audit-compare"
               onClick={() => setActiveTab('compare')}
-              className={`px-4 py-2.5 text-xs font-bold border-b-2 transition-colors flex items-center gap-2 cursor-pointer shrink-0 ${
+              className={`px-4 py-2 text-xs font-bold border-b-2 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'compare'
                   ? 'border-orange-500 text-orange-600 dark:text-orange-400'
                   : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
               }`}
             >
-              <GitCompare className="w-3.5 h-3.5" />
-              <span>Previous vs Current</span>
+              <span>Compare</span>
             </button>
 
             <button
+              id="tab-audit-guardrails"
               onClick={() => setActiveTab('guardrails')}
-              className={`px-4 py-2.5 text-xs font-bold border-b-2 transition-colors flex items-center gap-2 cursor-pointer shrink-0 ${
+              className={`px-4 py-2 text-xs font-bold border-b-2 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeTab === 'guardrails'
                   ? 'border-orange-500 text-orange-600 dark:text-orange-400'
                   : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
               }`}
             >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Self-Learning Guardrails</span>
+              <span>Guardrails</span>
+            </button>
+
+            <button
+              id="tab-audit-history"
+              onClick={() => setActiveTab('history')}
+              className={`px-4 py-2 text-xs font-bold border-b-2 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                activeTab === 'history'
+                  ? 'border-orange-500 text-orange-600 dark:text-orange-400'
+                  : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
+              }`}
+            >
+              <span>History</span>
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 font-mono">
+                {accountAudits.length}
+              </span>
             </button>
           </div>
 
-          {/* TAB 1: OVERVIEW & SUMMARY */}
+          {/* TAB 1: OVERVIEW */}
           {activeTab === 'overview' && (
-            <div className="space-y-6">
-              {/* Profile Card & Scorecard */}
-              <div className={`border rounded-2xl p-6 shadow-sm ${
-                isDark ? 'bg-[#141419] border-gray-800 text-white' : 'bg-white border-gray-200 text-gray-900'
+            <div className="space-y-5">
+              {/* PAGE HEALTH HERO & SUPPORTING DIMENSIONS */}
+              <div className={`p-6 rounded-2xl border shadow-xs transition-colors ${
+                isDark ? 'bg-[#181820] border-gray-800' : 'bg-white border-gray-200'
               }`}>
-                <div className={`flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b mb-4 gap-2 ${
-                  isDark ? 'border-gray-800' : 'border-gray-100'
-                }`}>
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-orange-600" />
-                    <h2 className="text-sm font-bold uppercase tracking-wider">
-                      Profile Overview & Scorecard
-                    </h2>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="px-2.5 py-0.5 rounded text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 flex items-center gap-1">
-                      <Check className="w-3 h-3" /> Live Meta Telemetry
-                    </span>
-                    <span className="text-xs text-gray-500 font-mono">
-                      Confidence: {structured?.confidence ? structured.confidence.toUpperCase() : 'HIGH'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-                  <div className={`p-4 rounded-xl border ${
-                    isDark ? 'bg-[#1a1a24] border-gray-800' : 'bg-gray-50 border-gray-100'
-                  }`}>
-                    <span className="text-[11px] font-medium text-gray-400">Followers</span>
-                    <div className="text-2xl font-bold mt-1">
-                      {(structured?.account?.followers ?? account.followersCount ?? 0).toLocaleString()}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-5 border-b border-gray-100 dark:border-gray-800">
+                  {/* Primary Visual Metric: Hero Score */}
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-500/20 via-amber-500/20 to-orange-500/10 border border-orange-500/30 flex items-center justify-center shrink-0">
+                      <span className="text-2xl font-black text-orange-600 dark:text-orange-400 font-mono">
+                        {currentAudit.scores?.overall_score || 80}
+                      </span>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+                          {currentAudit.scores?.overall_score || 80} / 100
+                        </span>
+                        <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          {(currentAudit.scores?.overall_score || 80) >= 80 ? 'Optimal' : (currentAudit.scores?.overall_score || 80) >= 65 ? 'Good with Gaps' : 'Needs Optimization'}
+                        </span>
+                      </div>
+                      <h2 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">
+                        Overall Page Health
+                      </h2>
                     </div>
                   </div>
 
-                  <div className={`p-4 rounded-xl border ${
-                    isDark ? 'bg-[#1a1a24] border-gray-800' : 'bg-gray-50 border-gray-100'
-                  }`}>
-                    <span className="text-[11px] font-medium text-gray-400">Following</span>
-                    <div className="text-2xl font-bold mt-1">
-                      {(structured?.account?.following ?? account.followingCount ?? 0).toLocaleString()}
+                  {/* Compact Account Telemetry Strip */}
+                  <div className="flex items-center gap-4 text-xs font-mono text-gray-500 dark:text-gray-400 flex-wrap">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-gray-400 block font-sans">Followers</span>
+                      <span className="font-bold text-gray-900 dark:text-white text-sm">
+                        {(structured?.account?.followers ?? account.followersCount ?? 0).toLocaleString()}
+                      </span>
                     </div>
-                  </div>
-
-                  <div className={`p-4 rounded-xl border ${
-                    isDark ? 'bg-[#1a1a24] border-gray-800' : 'bg-gray-50 border-gray-100'
-                  }`}>
-                    <span className="text-[11px] font-medium text-gray-400">Total Posts</span>
-                    <div className="text-2xl font-bold mt-1">
-                      {(structured?.account?.posts ?? account.mediaCount ?? 0).toLocaleString()}
+                    <span className="text-gray-300 dark:text-gray-700">|</span>
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-gray-400 block font-sans">Following</span>
+                      <span className="font-bold text-gray-900 dark:text-white text-sm">
+                        {(structured?.account?.following ?? account.followingCount ?? 0).toLocaleString()}
+                      </span>
                     </div>
-                  </div>
-
-                  <div className={`p-4 rounded-xl border ${
-                    isDark ? 'bg-[#1a1a24] border-gray-800' : 'bg-gray-50 border-gray-100'
-                  }`}>
-                    <span className="text-[11px] font-medium text-gray-400">Overall Audit Score</span>
-                    <div className="text-2xl font-bold text-emerald-500 mt-1">
-                      {currentAudit.scores?.overall_score || 80} / 100
+                    <span className="text-gray-300 dark:text-gray-700">|</span>
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-gray-400 block font-sans">Posts</span>
+                      <span className="font-bold text-gray-900 dark:text-white text-sm">
+                        {(structured?.account?.posts ?? account.mediaCount ?? 0).toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                {/* 5 Dimensional Score Bar */}
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-2 border-t border-gray-100 dark:border-gray-800">
-                  <div className="p-2.5 rounded-lg border dark:border-gray-800 text-center">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase">Profile</span>
-                    <div className="text-base font-bold text-orange-500">{currentAudit.scores?.profile_score || 85}%</div>
+                {/* Supporting Dimensions (Single Sleek Row) */}
+                <div className="pt-4">
+                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+                    Supporting Health Dimensions
                   </div>
-                  <div className="p-2.5 rounded-lg border dark:border-gray-800 text-center">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase">Content</span>
-                    <div className="text-base font-bold text-orange-500">{currentAudit.scores?.content_score || 78}%</div>
-                  </div>
-                  <div className="p-2.5 rounded-lg border dark:border-gray-800 text-center">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase">Consistency</span>
-                    <div className="text-base font-bold text-orange-500">{currentAudit.scores?.consistency_score || 75}%</div>
-                  </div>
-                  <div className="p-2.5 rounded-lg border dark:border-gray-800 text-center">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase">Engagement</span>
-                    <div className="text-base font-bold text-orange-500">{currentAudit.scores?.engagement_score || 72}%</div>
-                  </div>
-                  <div className="p-2.5 rounded-lg border dark:border-gray-800 text-center col-span-2 sm:col-span-1">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase">Positioning</span>
-                    <div className="text-base font-bold text-orange-500">{currentAudit.scores?.positioning_score || 88}%</div>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                    <div className="p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/30">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-500 dark:text-gray-400 font-medium">Profile</span>
+                        <span className="font-bold text-orange-600 dark:text-orange-400 font-mono">
+                          {currentAudit.scores?.profile_score || 85}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                        <div className="bg-orange-500 h-full rounded-full" style={{ width: `${currentAudit.scores?.profile_score || 85}%` }}></div>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/30">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-500 dark:text-gray-400 font-medium">Content</span>
+                        <span className="font-bold text-orange-600 dark:text-orange-400 font-mono">
+                          {currentAudit.scores?.content_score || 78}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                        <div className="bg-orange-500 h-full rounded-full" style={{ width: `${currentAudit.scores?.content_score || 78}%` }}></div>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/30">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-500 dark:text-gray-400 font-medium">Consistency</span>
+                        <span className="font-bold text-orange-600 dark:text-orange-400 font-mono">
+                          {currentAudit.scores?.consistency_score || 75}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                        <div className="bg-orange-500 h-full rounded-full" style={{ width: `${currentAudit.scores?.consistency_score || 75}%` }}></div>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/30">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-500 dark:text-gray-400 font-medium">Engagement</span>
+                        <span className="font-bold text-orange-600 dark:text-orange-400 font-mono">
+                          {currentAudit.scores?.engagement_score || 72}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                        <div className="bg-orange-500 h-full rounded-full" style={{ width: `${currentAudit.scores?.engagement_score || 72}%` }}></div>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/30 col-span-2 sm:col-span-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-500 dark:text-gray-400 font-medium">Positioning</span>
+                        <span className="font-bold text-orange-600 dark:text-orange-400 font-mono">
+                          {currentAudit.scores?.positioning_score || 88}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                        <div className="bg-orange-500 h-full rounded-full" style={{ width: `${currentAudit.scores?.positioning_score || 88}%` }}></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Executive Summary & Key Observations */}
-              <div className={`border rounded-2xl p-6 shadow-sm space-y-4 ${
-                isDark ? 'bg-[#141419] border-gray-800 text-white' : 'bg-white border-gray-200 text-gray-900'
+              {/* RECOMMENDED ACTIONS STRIP */}
+              <div className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                isDark ? 'bg-[#161622] border-gray-800' : 'bg-orange-50/60 border-orange-200/80'
               }`}>
-                <div className="flex items-center gap-2 pb-3 border-b border-gray-100 dark:border-gray-800 font-bold text-sm uppercase tracking-wider">
-                  <Sparkles className="w-4 h-4 text-orange-500" />
-                  <span>Executive Strategic Summary</span>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-orange-500 shrink-0" />
+                  <div>
+                    <span className="text-xs font-bold text-gray-900 dark:text-white">Recommended Actions</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">Next steps based on audit diagnostics:</span>
+                  </div>
                 </div>
-                <p className="text-xs leading-relaxed text-gray-700 dark:text-gray-300 font-medium">
-                  {structured?.summary?.overview || currentAudit.markdownReport?.slice(0, 350) || 'Comprehensive live diagnostic audit complete.'}
-                </p>
 
-                {((structured?.summary?.keyObservations || currentAudit.strengths || []).length > 0) && (
-                  <div className="pt-2">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 block mb-2">
-                      Key Observations
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    id="btn-action-generate-topics"
+                    onClick={() => setActiveTab('gaps')}
+                    className="px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Generate Topics</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    id="btn-action-view-gaps"
+                    onClick={() => setActiveTab('gaps')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold border flex items-center gap-1.5 transition-colors cursor-pointer ${
+                      isDark ? 'bg-[#1b1b26] border-[#2e2e42] text-zinc-200 hover:text-white' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
+                    <span>View Content Gaps</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    id="btn-action-review-guardrails"
+                    onClick={() => setActiveTab('guardrails')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold border flex items-center gap-1.5 transition-colors cursor-pointer ${
+                      isDark ? 'bg-[#1b1b26] border-[#2e2e42] text-zinc-200 hover:text-white' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                    <span>Review Guardrails</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* EXECUTIVE SUMMARY & KEY INSIGHTS */}
+              <div className={`p-6 rounded-2xl border shadow-xs space-y-4 ${
+                isDark ? 'bg-[#181820] border-gray-800' : 'bg-white border-gray-200'
+              }`}>
+                <div>
+                  <div className="flex items-center gap-2 pb-2 font-bold text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                    <FileText className="w-3.5 h-3.5 text-orange-500" />
+                    <span>Executive Summary</span>
+                  </div>
+                  <p className="text-xs leading-relaxed text-gray-700 dark:text-gray-300 font-medium">
+                    {extractCleanSummary(currentAudit)}
+                  </p>
+                </div>
+
+                {((structured?.summary?.keyObservations || currentAudit.strengths || currentAudit.whatsWorking || []).length > 0) && (
+                  <div className="pt-3 border-t border-gray-100 dark:border-gray-800">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 block mb-2.5">
+                      Key Insights &amp; Observations
                     </span>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                      {(structured?.summary?.keyObservations || currentAudit.strengths || []).map((obs, i) => (
-                        <div key={i} className="p-3 rounded-lg border dark:border-gray-800 flex items-start gap-2 bg-gray-50/50 dark:bg-gray-900/30">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                          <span className="text-gray-700 dark:text-gray-300">{obs}</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                      {(structured?.summary?.keyObservations || (currentAudit.whatsWorking || []).map(w => `${w.title}: ${w.detail}`) || currentAudit.strengths || []).slice(0, 4).map((obs, i) => (
+                        <div key={i} className="p-3 rounded-xl border border-gray-100 dark:border-gray-800 flex items-start gap-2.5 bg-gray-50/50 dark:bg-gray-900/30">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                          <span className="text-gray-700 dark:text-gray-300 leading-relaxed font-medium">{obs}</span>
                         </div>
                       ))}
                     </div>
@@ -964,6 +1229,87 @@ ${(audit.structuredAudit?.recommendations || audit.recommendations || []).map((r
                   ))}
                 </div>
               </div>
+
+              {/* Active Generation Live Tracker */}
+              {isGeneratingTopics && (
+                <div className={`border-2 border-orange-500/80 rounded-2xl p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-300 ${
+                  isDark ? 'bg-gradient-to-br from-orange-950/40 via-amber-950/30 to-[#181820]' : 'bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-amber-50'
+                }`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="relative flex items-center justify-center">
+                        <span className="w-4 h-4 rounded-full bg-orange-500 animate-ping absolute opacity-75"></span>
+                        <span className="w-3 h-3 rounded-full bg-orange-600 relative"></span>
+                      </div>
+                      <div>
+                        <span className={`text-xs font-bold uppercase tracking-wider block ${
+                          isDark ? 'text-orange-300' : 'text-orange-900'
+                        }`}>
+                          Gemini Content Planner In Progress
+                        </span>
+                        <span className={`text-xs ${isDark ? 'text-orange-200/80' : 'text-orange-700'}`}>
+                          Transforming audit gaps into structured viral topics with active guardrails
+                        </span>
+                      </div>
+                    </div>
+                    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold ${
+                      isDark ? 'bg-orange-950/70 text-orange-300 border border-orange-800/60' : 'bg-orange-100 text-orange-800'
+                    }`}>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin text-orange-500" />
+                      <span>Generating {topicProgressPct}%</span>
+                    </div>
+                  </div>
+
+                  <div className="w-full bg-orange-200/50 dark:bg-orange-950/50 rounded-full h-2.5 overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 h-2.5 transition-all duration-700 ease-out rounded-full shadow-xs"
+                      style={{ width: `${topicProgressPct}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+
+              {/* Strategic Content Pipeline: Generate Topics directly from Opportunities */}
+              <div className={`p-6 rounded-2xl border transition-all ${
+                isDark
+                  ? 'bg-gradient-to-r from-orange-950/40 via-[#181820] to-purple-950/30 border-orange-500/30 shadow-lg'
+                  : 'bg-gradient-to-r from-orange-50 via-amber-50/60 to-purple-50/50 border-orange-200 shadow-sm'
+              }`}>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-1.5 max-w-xl">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-orange-500/10 text-orange-500 border border-orange-500/20 inline-block">
+                      Strategic Content Pipeline
+                    </span>
+                    <h3 className="text-base font-bold text-gray-900 dark:text-white">
+                      Generate Topic Ideas from Live Audit Insights
+                    </h3>
+                    <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
+                      Feed live diagnostic gaps into the Gemini AI Topic Engine. Topics will be directly weighted to solve under-performing content lanes and address live audience demand.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    id="btn-generate-topics-from-audit"
+                    disabled={isGeneratingTopics}
+                    onClick={handleGenerateTopicsFromAudit}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-xs bg-gradient-to-r from-[#EA580C] to-[#DD2A7B] hover:opacity-95 text-white shadow-md hover:shadow-lg transition-all cursor-pointer shrink-0 disabled:opacity-50"
+                  >
+                    {isGeneratingTopics ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                        <span>Synthesizing Topics ({topicProgressPct}%)...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4" />
+                        <span>Generate Topics from Insights</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
@@ -1169,91 +1515,326 @@ ${(audit.structuredAudit?.recommendations || audit.recommendations || []).map((r
             </div>
           )}
 
-          {/* Active Generation Live Tracker Banner */}
-          {isGeneratingTopics && (
-            <div className={`border-2 border-orange-500/80 rounded-2xl p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-300 ${
-              isDark ? 'bg-gradient-to-br from-orange-950/40 via-amber-950/30 to-[#181820]' : 'bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-amber-50'
-            }`}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="relative flex items-center justify-center">
-                    <span className="w-4 h-4 rounded-full bg-orange-500 animate-ping absolute opacity-75"></span>
-                    <span className="w-3 h-3 rounded-full bg-orange-600 relative"></span>
+          {/* TAB 6: AUDIT HISTORY & LOGS */}
+          {activeTab === 'history' && (
+            <div className="space-y-4 animate-in fade-in">
+              {/* Filter & Search Bar */}
+              <div className={`p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-3 ${
+                isDark ? 'bg-[#181824] border-[#252534]' : 'bg-white border-slate-200'
+              }`}>
+                <div className="flex items-center gap-2 flex-1">
+                  <div className="relative flex-1 max-w-sm">
+                    <Search className="w-4 h-4 absolute left-3 top-2.5 text-zinc-400" />
+                    <input
+                      type="text"
+                      placeholder="Search audits by mode, provider, notes..."
+                      value={historySearchQuery}
+                      onChange={(e) => setHistorySearchQuery(e.target.value)}
+                      className={`w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border outline-none transition-colors ${
+                        isDark ? 'bg-[#12121a] border-[#2b2b3c] text-white focus:border-orange-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-orange-500'
+                      }`}
+                    />
                   </div>
-                  <div>
-                    <span className={`text-xs font-bold uppercase tracking-wider block ${
-                      isDark ? 'text-orange-300' : 'text-orange-900'
-                    }`}>
-                      Gemini Content Planner In Progress
-                    </span>
-                    <span className={`text-xs ${isDark ? 'text-orange-200/80' : 'text-orange-700'}`}>
-                      Transforming audit gaps into structured viral topics with active guardrails
-                    </span>
-                  </div>
+
+                  <select
+                    value={historyStatusFilter}
+                    onChange={(e) => setHistoryStatusFilter(e.target.value as any)}
+                    className={`px-3 py-1.5 text-xs rounded-lg border outline-none transition-colors cursor-pointer ${
+                      isDark ? 'bg-[#12121a] border-[#2b2b3c] text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    <option value="all">All Statuses</option>
+                    <option value="completed">Completed</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="failed">Failed</option>
+                    <option value="archived">Archived</option>
+                  </select>
+
+                  <select
+                    value={historyProviderFilter}
+                    onChange={(e) => setHistoryProviderFilter(e.target.value as any)}
+                    className={`px-3 py-1.5 text-xs rounded-lg border outline-none transition-colors cursor-pointer ${
+                      isDark ? 'bg-[#12121a] border-[#2b2b3c] text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    <option value="all">All Providers</option>
+                    <option value="gemini">Gemini MCP</option>
+                    <option value="manus">Manus AI</option>
+                  </select>
                 </div>
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold ${
-                  isDark ? 'bg-orange-950/70 text-orange-300 border border-orange-800/60' : 'bg-orange-100 text-orange-800'
-                }`}>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-orange-500" />
-                  <span>Generating {topicProgressPct}%</span>
+
+                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-zinc-400 font-mono">
+                  <span>Showing {filteredHistoryAudits.length} of {accountAudits.length} audits</span>
                 </div>
               </div>
 
-              <div className="w-full bg-orange-200/50 dark:bg-orange-950/50 rounded-full h-2.5 overflow-hidden">
-                <div
-                  className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 h-2.5 transition-all duration-700 ease-out rounded-full shadow-xs"
-                  style={{ width: `${topicProgressPct}%` }}
-                ></div>
+              {/* Multi-Select Bulk Actions Toolbar */}
+              {selectedAuditIds.length > 0 && (
+                <div className={`p-3 rounded-xl border flex flex-wrap items-center justify-between gap-3 animate-in fade-in ${
+                  isDark ? 'bg-orange-950/30 border-orange-800/60 text-orange-200' : 'bg-orange-50 border-orange-200 text-orange-900'
+                }`}>
+                  <div className="flex items-center gap-2 text-xs font-semibold">
+                    <CheckSquare className="w-4 h-4 text-orange-500" />
+                    <span>{selectedAuditIds.length} audit(s) selected</span>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedAuditIds([])}
+                      className="text-xs text-orange-600 dark:text-orange-400 hover:underline ml-1 cursor-pointer font-normal"
+                    >
+                      Deselect all
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      id="btn-bulk-compare"
+                      disabled={selectedAuditIds.length !== 2}
+                      onClick={handleOpenCompare}
+                      title={selectedAuditIds.length !== 2 ? 'Select exactly 2 audits to compare' : 'Compare 2 selected audits'}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
+                        selectedAuditIds.length === 2
+                          ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-xs cursor-pointer'
+                          : 'bg-zinc-800/40 text-zinc-500 border border-zinc-700/30 cursor-not-allowed'
+                      }`}
+                    >
+                      <GitCompare className="w-3.5 h-3.5" />
+                      <span>Compare (2 selected)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      id="btn-bulk-export-md"
+                      onClick={handleExportSelectedMarkdown}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold border flex items-center gap-1.5 transition-colors cursor-pointer ${
+                        isDark ? 'bg-[#1a1a24] border-[#2c2c3c] text-zinc-200 hover:text-white' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Export .MD</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      id="btn-bulk-export-json"
+                      onClick={handleExportSelectedJson}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold border flex items-center gap-1.5 transition-colors cursor-pointer ${
+                        isDark ? 'bg-[#1a1a24] border-[#2c2c3c] text-zinc-200 hover:text-white' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      <FileCode className="w-3.5 h-3.5" />
+                      <span>Export JSON</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      id="btn-bulk-archive"
+                      onClick={() => handleBulkArchive(true)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold border flex items-center gap-1.5 transition-colors cursor-pointer ${
+                        isDark ? 'bg-[#1a1a24] border-[#2c2c3c] text-zinc-200 hover:text-white' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      <Archive className="w-3.5 h-3.5" />
+                      <span>Archive</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      id="btn-bulk-delete"
+                      onClick={handleBulkDelete}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Audits Data Table */}
+              <div className={`rounded-xl border overflow-x-auto ${isDark ? 'bg-[#14141c] border-[#252534]' : 'bg-white border-slate-200'}`}>
+                <table className="w-full text-xs text-left">
+                  <thead className={`border-b text-[10px] uppercase font-mono ${
+                    isDark ? 'bg-[#181824] border-[#252534] text-zinc-400' : 'bg-slate-50 border-slate-200 text-slate-500'
+                  }`}>
+                    <tr>
+                      <th className="py-3 px-4 w-10 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedAuditIds.length === filteredHistoryAudits.length && filteredHistoryAudits.length > 0}
+                          onChange={() => handleSelectAllAudits(filteredHistoryAudits)}
+                          className="rounded cursor-pointer"
+                        />
+                      </th>
+                      <th className="py-3 px-4">Audit / Page Name</th>
+                      <th className="py-3 px-4">Date &amp; Time</th>
+                      <th className="py-3 px-4">Status</th>
+                      <th className="py-3 px-4">AI Provider &amp; Model</th>
+                      <th className="py-3 px-4">Execution Trail</th>
+                      <th className="py-3 px-4">Version</th>
+                      <th className="py-3 px-4 text-center">Score</th>
+                      <th className="py-3 px-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 dark:divide-zinc-800/60 font-sans">
+                    {filteredHistoryAudits.map((a) => {
+                      const isSelected = selectedAuditIds.includes(a.id);
+                      const isCurrent = a.id === selectedAuditId;
+                      const isInProgress = a.status === 'in_progress' || (a.status as string) === 'running';
+
+                      return (
+                        <tr
+                          key={a.id}
+                          className={`transition-colors ${
+                            isSelected
+                              ? isDark ? 'bg-orange-950/20' : 'bg-orange-50/70'
+                              : isCurrent
+                              ? isDark ? 'bg-white/5' : 'bg-slate-50'
+                              : isDark ? 'hover:bg-[#181824]' : 'hover:bg-slate-50'
+                          }`}
+                        >
+                          <td className="py-3.5 px-4 text-center">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => handleToggleSelectAudit(a.id)}
+                              className="rounded cursor-pointer"
+                            />
+                          </td>
+
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-slate-900 dark:text-white">
+                                @{account?.username || 'account'}
+                              </span>
+                              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-orange-500/10 text-orange-600 dark:text-orange-400 font-bold border border-orange-500/20">
+                                {a.auditMode.toUpperCase()}
+                              </span>
+                              {isCurrent && (
+                                <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold">
+                                  ACTIVE
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-[11px] text-slate-500 dark:text-zinc-400 font-mono mt-0.5">
+                              ID: {a.id}
+                            </div>
+                          </td>
+
+                          <td className="py-3.5 px-4 text-slate-600 dark:text-zinc-300 font-mono text-[11px]">
+                            {new Date(a.timestamp).toLocaleDateString()} {new Date(a.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </td>
+
+                          <td className="py-3.5 px-4">
+                            {isInProgress ? (
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                                <RefreshCw className="w-3 h-3 animate-spin" /> In Progress
+                              </span>
+                            ) : a.status === 'failed' ? (
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30">
+                                <AlertCircle className="w-3 h-3" /> Failed
+                              </span>
+                            ) : a.isArchived ? (
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-500/15 text-zinc-500 dark:text-zinc-400 border border-zinc-500/30">
+                                <Archive className="w-3 h-3" /> Archived
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                                <CheckCircle2 className="w-3 h-3" /> Completed
+                              </span>
+                            )}
+                          </td>
+
+                          <td className="py-3.5 px-4">
+                            <div className="font-semibold text-slate-800 dark:text-zinc-200">
+                              {a.provider.includes('manus') ? 'Manus AI' : 'Google Gemini'}
+                            </div>
+                            <div className="text-[10px] text-slate-500 dark:text-zinc-400 font-mono">
+                              {a.model || 'default'}
+                            </div>
+                          </td>
+
+                          <td className="py-3.5 px-4">
+                            {a.fallbackUsed || a.provider.includes('manus') || a.provider.includes('fallback') ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30" title={a.fallbackReason || 'Fallback triggered from Gemini'}>
+                                <AlertTriangle className="w-3 h-3" />
+                                Fallback (Manus AI)
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                                <ShieldCheck className="w-3 h-3" />
+                                Primary (Gemini MCP)
+                              </span>
+                            )}
+                          </td>
+
+                          <td className="py-3.5 px-4 text-slate-500 dark:text-zinc-400 font-mono text-[11px]">
+                            {a.version || 'v2.4'}
+                          </td>
+
+                          <td className="py-3.5 px-4 text-center">
+                            <span className="font-bold text-xs font-mono px-2 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200">
+                              {a.scores?.overall_score || 0}%
+                            </span>
+                          </td>
+
+                          <td className="py-3.5 px-4 text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <button
+                                type="button"
+                                id={`btn-view-report-${a.id}`}
+                                onClick={() => {
+                                  setSelectedAuditId(a.id);
+                                  setViewingMarkdownAudit(a);
+                                }}
+                                className="px-2.5 py-1 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1"
+                                title="View generated Markdown report (.md)"
+                              >
+                                <FileText className="w-3 h-3" />
+                                <span>View Report</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const content = a.markdownReport || generateFallbackMarkdown(a, account);
+                                  const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+                                  const url = URL.createObjectURL(blob);
+                                  const link = document.createElement('a');
+                                  link.href = url;
+                                  link.download = `audit_${account?.username || 'account'}_${a.id}.md`;
+                                  link.click();
+                                  URL.revokeObjectURL(url);
+                                }}
+                                title="Download Markdown Report"
+                                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-500 dark:text-zinc-400 transition-colors cursor-pointer"
+                              >
+                                <Download className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+
+                    {filteredHistoryAudits.length === 0 && (
+                      <tr>
+                        <td colSpan={9} className="py-10 text-center text-slate-500 dark:text-zinc-400">
+                          <Clock className="w-6 h-6 mx-auto mb-2 opacity-40" />
+                          <p className="text-xs">No audit records match your filters.</p>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
           )}
-
-          {/* Bottom Strategic Pipeline Banner */}
-          <div className={`p-6 rounded-2xl border transition-all ${
-            isDark
-              ? 'bg-gradient-to-r from-orange-950/40 via-[#181820] to-purple-950/30 border-orange-500/30 shadow-lg'
-              : 'bg-gradient-to-r from-orange-50 via-amber-50/60 to-purple-50/50 border-orange-200 shadow-sm'
-          }`}>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-1.5 max-w-xl">
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-orange-500/10 text-orange-500 border border-orange-500/20 inline-block">
-                  Strategic Content Pipeline
-                </span>
-                <h3 className="text-base font-bold text-gray-900 dark:text-white">
-                  Generate Topic Ideas from Live Audit Insights
-                </h3>
-                <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
-                  Feed live diagnostic gaps into the Gemini AI Topic Engine. Topics will be directly weighted to solve under-performing content lanes and address live audience demand.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                id="btn-generate-topics-from-audit"
-                disabled={isGeneratingTopics}
-                onClick={handleGenerateTopicsFromAudit}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-xs bg-gradient-to-r from-[#EA580C] to-[#DD2A7B] hover:opacity-95 text-white shadow-md hover:shadow-lg transition-all cursor-pointer shrink-0 disabled:opacity-50"
-              >
-                {isGeneratingTopics ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                    <span>Synthesizing Topics ({topicProgressPct}%)...</span>
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4" />
-                    <span>Generate Topics from Insights</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
         </div>
       )}
 
       {/* Empty State when no audit exists for this account */}
-      {!currentAudit && !isRunningAudit && (
+      {!currentAudit && !effectiveIsRunning && (
         <div className={`p-12 text-center rounded-2xl border ${
           isDark ? 'bg-[#181820] border-gray-800 text-white' : 'bg-white border-gray-200 text-gray-900'
         } space-y-4`}>
@@ -1278,64 +1859,35 @@ ${(audit.structuredAudit?.recommendations || audit.recommendations || []).map((r
         </div>
       )}
 
-      {/* 4. RAW MARKDOWN REPORT MODAL */}
-      {showMarkdownModal && currentAudit && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className={`rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl border ${
-            isDark ? 'bg-[#181820] border-gray-800 text-white' : 'bg-white border-gray-200 text-gray-900'
-          }`}>
-            <div className={`p-4 border-b flex items-center justify-between ${
-              isDark ? 'border-gray-800' : 'border-gray-100'
-            }`}>
-              <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-orange-500" />
-                <h3 className="text-base font-bold">
-                  Live Instagram MCP Audit Markdown Report
-                </h3>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleDownloadMarkdown}
-                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Download .MD</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowMarkdownModal(false)}
-                  className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                    isDark ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-800' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
+      {/* 4. RICH MARKDOWN REPORT MODAL */}
+      {viewingMarkdownAudit && (
+        <AuditMarkdownModal
+          audit={viewingMarkdownAudit}
+          account={account}
+          onClose={() => setViewingMarkdownAudit(null)}
+          onOpenInteractiveOverview={(auditId) => {
+            setSelectedAuditId(auditId);
+            setActiveTab('overview');
+          }}
+        />
+      )}
 
-            <div className={`p-6 overflow-y-auto font-mono text-xs whitespace-pre-wrap border-t border-b leading-relaxed select-text ${
-              isDark ? 'bg-[#121217] text-gray-200 border-gray-800' : 'bg-gray-50 text-gray-800 border-gray-100'
-            }`}>
-              {currentAudit.markdownReport || generateFallbackMarkdown(currentAudit, account)}
-            </div>
+      {/* Comparison Modal */}
+      {compareModalPair && (
+        <AuditCompareModal
+          auditA={compareModalPair[0]}
+          auditB={compareModalPair[1]}
+          onClose={() => setCompareModalPair(null)}
+        />
+      )}
 
-            <div className={`p-4 border-t flex items-center justify-between text-xs ${
-              isDark ? 'bg-[#141419] border-gray-800 text-gray-400' : 'bg-gray-50 border-gray-100 text-gray-500'
-            }`}>
-              <span>Data source: Live Instagram MCP via Meta Graph API v20.0</span>
-              <button
-                type="button"
-                onClick={() => setShowMarkdownModal(false)}
-                className={`px-4 py-2 rounded-lg font-semibold text-xs transition-colors cursor-pointer ${
-                  isDark ? 'bg-gray-800 hover:bg-gray-700 text-gray-200' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-                }`}
-              >
-                Close Preview
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Audit Settings & Data Source Modal */}
+      {showSettingsModal && (
+        <AuditSettingsModal
+          account={account}
+          activeSkill={activeSkill}
+          onClose={() => setShowSettingsModal(false)}
+        />
       )}
     </div>
   );

@@ -1376,7 +1376,7 @@ export const HomePage: React.FC<Props> = ({
               >
                 <div className={`flex items-center gap-2 text-xs font-bold ${isDark ? 'text-[#f4f4f5]' : 'text-slate-900'}`}>
                   <Database className="w-4 h-4 text-[#EA580C]" />
-                  <span>workflows</span>
+                  <span>Workflows</span>
                 </div>
                 <div className={`text-xs ${isDark ? 'text-[#a1a1aa]' : 'text-slate-500'}`}>{workflows.length} records stored</div>
               </div>
@@ -1387,7 +1387,7 @@ export const HomePage: React.FC<Props> = ({
               >
                 <div className={`flex items-center gap-2 text-xs font-bold ${isDark ? 'text-[#f4f4f5]' : 'text-slate-900'}`}>
                   <Lock className="w-4 h-4 text-[#10b981]" />
-                  <span>vault_credentials</span>
+                  <span>Vault Credentials</span>
                 </div>
                 <div className={`text-xs ${isDark ? 'text-[#a1a1aa]' : 'text-slate-500'}`}>{vaultCredentials.length} encrypted keys</div>
               </div>
@@ -1398,7 +1398,7 @@ export const HomePage: React.FC<Props> = ({
               >
                 <div className={`flex items-center gap-2 text-xs font-bold ${isDark ? 'text-[#f4f4f5]' : 'text-slate-900'}`}>
                   <Clock className="w-4 h-4 text-indigo-400" />
-                  <span>execution_logs</span>
+                  <span>Execution Logs</span>
                 </div>
                 <div className={`text-xs ${isDark ? 'text-[#a1a1aa]' : 'text-slate-500'}`}>{executions.length} runs recorded</div>
               </div>

@@ -27,6 +27,7 @@ interface StrategyWorkspaceProps {
   isRunningAudit: boolean;
   onGenerateTopicsFromAudit: (params: { pillars: string[]; deficitNotes: string }) => void;
   onNavigateToContentTopics?: () => void;
+  onAuditsUpdated?: () => void;
 }
 
 export const StrategyWorkspace: React.FC<StrategyWorkspaceProps> = ({
@@ -38,7 +39,8 @@ export const StrategyWorkspace: React.FC<StrategyWorkspaceProps> = ({
   onRunAudit,
   isRunningAudit,
   onGenerateTopicsFromAudit,
-  onNavigateToContentTopics
+  onNavigateToContentTopics,
+  onAuditsUpdated
 }) => {
   const { isDark } = useTheme();
   const latestAudit = audits[0] || null;
@@ -125,6 +127,7 @@ export const StrategyWorkspace: React.FC<StrategyWorkspaceProps> = ({
               }
             }}
             onNavigateToTopics={onNavigateToContentTopics}
+            onAuditsUpdated={onAuditsUpdated}
           />
         )}
 

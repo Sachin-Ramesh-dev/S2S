@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PublishingSubView } from '../../types/navigation';
-import { InstagramAccount, CalendarPost, ScriptItem, ContentPipelineItem } from '../../types/instagram';
+import { InstagramAccount, CalendarPost, ScriptItem, ContentPipelineItem, TeamMember } from '../../types/instagram';
 import { InstagramCalendarView } from '../instagram/InstagramCalendarView';
 import { InstagramSwimlaneView } from '../instagram/InstagramSwimlaneView';
+import { instagramApi } from '../../services/instagramApi';
 import {
   Calendar as CalendarIcon,
   Kanban,
@@ -25,6 +26,7 @@ interface PublishingWorkspaceProps {
   onOpenScript: (scriptId: string) => void;
   onNavigateToScripts: () => void;
   onPostUpdated?: () => void;
+  onSaveScript?: (scriptId: string, updates: Partial<ScriptItem>) => Promise<void>;
 }
 
 export const PublishingWorkspace: React.FC<PublishingWorkspaceProps> = ({
@@ -36,9 +38,17 @@ export const PublishingWorkspace: React.FC<PublishingWorkspaceProps> = ({
   pipeline,
   onOpenScript,
   onNavigateToScripts,
-  onPostUpdated
+  onPostUpdated,
+  onSaveScript
 }) => {
   const { isDark } = useTheme();
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+
+  useEffect(() => {
+    instagramApi.getTeamMembers().then((members) => {
+      if (Array.isArray(members)) setTeamMembers(members);
+    }).catch((err) => console.warn('Could not load team members:', err));
+  }, []);
 
   return (
     <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
@@ -50,7 +60,7 @@ export const PublishingWorkspace: React.FC<PublishingWorkspaceProps> = ({
       >
         <div className="flex items-center gap-2">
           <span className="text-lg">📅</span>
-          <span className="font-bold text-sm tracking-tight">Publishing Domain</span>
+          <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-white">Publishing Domain</span>
           <span className={`text-xs px-2 py-0.5 rounded-md font-mono ${
             isDark ? 'bg-[#20202e] text-zinc-400' : 'bg-slate-100 text-slate-600'
           }`}>
@@ -133,8 +143,11 @@ export const PublishingWorkspace: React.FC<PublishingWorkspaceProps> = ({
         {activeSubView === 'swimlane' && (
           <InstagramSwimlaneView
             scripts={scripts || []}
-            teamMembers={[]}
-            onSaveScript={async () => {}}
+            teamMembers={teamMembers}
+            onSaveScript={onSaveScript || (async (scriptId, updates) => {
+              await instagramApi.updateScript(scriptId, updates);
+              if (onPostUpdated) onPostUpdated();
+            })}
             onOpenScriptEditor={onOpenScript || (() => {})}
           />
         )}
@@ -143,14 +156,16 @@ export const PublishingWorkspace: React.FC<PublishingWorkspaceProps> = ({
           <div className="p-6 md:p-8 space-y-6 max-w-6xl mx-auto">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold tracking-tight">Multi-Post Growth Campaigns</h2>
+                <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Multi-Post Growth Campaigns</h2>
                 <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                   Group reels, carousels, and stories into unified strategic themes and product launch sprints.
                 </p>
               </div>
 
               <button
+                id="btn-new-campaign"
                 type="button"
+                onClick={() => alert('New Campaign sprint created! Add targeted reels & carousels.')}
                 className="px-3.5 py-2 bg-[#EA580C] hover:bg-orange-500 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -166,24 +181,24 @@ export const PublishingWorkspace: React.FC<PublishingWorkspaceProps> = ({
                 <div
                   key={idx}
                   className={`p-5 rounded-2xl border transition-all ${
-                    isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200'
+                    isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-600 dark:text-orange-400 border border-orange-500/30">
                       {c.status}
                     </span>
-                    <span className="text-xs text-zinc-400 font-mono">{c.dates}</span>
+                    <span className="text-xs text-slate-500 dark:text-zinc-400 font-mono">{c.dates}</span>
                   </div>
-                  <h3 className="font-bold text-sm mb-1 text-white">{c.title}</h3>
-                  <p className="text-xs text-zinc-400 mb-4">{c.posts} planned across reels &amp; carousels</p>
+                  <h3 className="font-bold text-sm mb-1 text-slate-900 dark:text-white">{c.title}</h3>
+                  <p className="text-xs text-slate-600 dark:text-zinc-400 mb-4">{c.posts} planned across reels &amp; carousels</p>
 
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-zinc-400">Progress</span>
-                      <span className="font-bold text-white">{c.progress}%</span>
+                      <span className="text-slate-500 dark:text-zinc-400">Progress</span>
+                      <span className="font-bold text-slate-900 dark:text-white">{c.progress}%</span>
                     </div>
-                    <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-slate-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                       <div className="h-full bg-orange-500 rounded-full" style={{ width: `${c.progress}%` }} />
                     </div>
                   </div>
@@ -196,40 +211,40 @@ export const PublishingWorkspace: React.FC<PublishingWorkspaceProps> = ({
         {activeSubView === 'scheduler' && (
           <div className="p-6 md:p-8 space-y-6 max-w-6xl mx-auto">
             <div>
-              <h2 className="text-xl font-bold tracking-tight">Publishing Cadence &amp; Peak Time Queue</h2>
+              <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Publishing Cadence &amp; Peak Time Queue</h2>
               <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                 Configure algorithmic delivery windows to publish content when your followers are most active.
               </p>
             </div>
 
             <div className={`p-6 rounded-2xl border space-y-4 ${
-              isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200'
+              isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'
             }`}>
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-bold text-sm text-white">Default Peak Engagement Window</h3>
-                  <p className="text-xs text-zinc-400">Posts approved in 4-Act Script Studio automatically book into this slot.</p>
+                  <h3 className="font-bold text-sm text-slate-900 dark:text-white">Default Peak Engagement Window</h3>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400">Posts approved in 4-Act Script Studio automatically book into this slot.</p>
                 </div>
-                <div className="px-3 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-xs font-bold font-mono">
+                <div className="px-3 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-xs font-bold font-mono">
                   18:30 IST (Optimal)
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-zinc-800 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-3 rounded-xl bg-[#13131c] border border-zinc-800">
-                  <div className="text-[10px] text-zinc-500 uppercase font-bold">Weekday Prime</div>
-                  <div className="font-mono text-sm font-bold text-white mt-1">18:30 – 19:15</div>
-                  <div className="text-[10px] text-emerald-400 mt-1">98% Active Audience</div>
+              <div className="pt-4 border-t border-slate-100 dark:border-zinc-800 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#13131c] border border-slate-200 dark:border-zinc-800">
+                  <div className="text-[10px] text-slate-500 dark:text-zinc-500 uppercase font-bold">Weekday Prime</div>
+                  <div className="font-mono text-sm font-bold text-slate-900 dark:text-white mt-1">18:30 – 19:15</div>
+                  <div className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1">98% Active Audience</div>
                 </div>
-                <div className="p-3 rounded-xl bg-[#13131c] border border-zinc-800">
-                  <div className="text-[10px] text-zinc-500 uppercase font-bold">Weekend Morning</div>
-                  <div className="font-mono text-sm font-bold text-white mt-1">11:00 – 12:00</div>
-                  <div className="text-[10px] text-emerald-400 mt-1">92% Active Audience</div>
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#13131c] border border-slate-200 dark:border-zinc-800">
+                  <div className="text-[10px] text-slate-500 dark:text-zinc-500 uppercase font-bold">Weekend Morning</div>
+                  <div className="font-mono text-sm font-bold text-slate-900 dark:text-white mt-1">11:00 – 12:00</div>
+                  <div className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1">92% Active Audience</div>
                 </div>
-                <div className="p-3 rounded-xl bg-[#13131c] border border-zinc-800">
-                  <div className="text-[10px] text-zinc-500 uppercase font-bold">Lunch Break Slot</div>
-                  <div className="font-mono text-sm font-bold text-white mt-1">13:15 – 14:00</div>
-                  <div className="text-[10px] text-amber-400 mt-1">84% Active Audience</div>
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#13131c] border border-slate-200 dark:border-zinc-800">
+                  <div className="text-[10px] text-slate-500 dark:text-zinc-500 uppercase font-bold">Lunch Break Slot</div>
+                  <div className="font-mono text-sm font-bold text-slate-900 dark:text-white mt-1">13:15 – 14:00</div>
+                  <div className="text-[10px] text-amber-600 dark:text-amber-400 mt-1">84% Active Audience</div>
                 </div>
               </div>
             </div>
@@ -239,3 +254,4 @@ export const PublishingWorkspace: React.FC<PublishingWorkspaceProps> = ({
     </div>
   );
 };
+

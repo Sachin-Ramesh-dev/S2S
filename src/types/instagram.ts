@@ -175,6 +175,11 @@ export interface InstagramAuditRecord {
   taskUrl?: string;
   shareUrl?: string;
   attachmentUrl?: string;
+  createdBy?: string;
+  version?: string;
+  isArchived?: boolean;
+  fallbackUsed?: boolean;
+  fallbackReason?: string;
 }
 
 export interface TeamMember {

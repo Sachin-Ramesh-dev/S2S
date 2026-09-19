@@ -1546,46 +1546,81 @@ export class InstagramService {
     const approvedTopics = this.topics.filter(t => t.accountId === accountId && t.status === 'approved');
     const rejectedTopics = this.topics.filter(t => t.accountId === accountId && t.status === 'rejected');
 
-    const { result, generationRecord } = await this.orchestrator.executeTask('instagram_audit', {
-      task: 'instagram_audit',
-      account,
-      activeSkill,
-      previousAudit,
-      approvedTopics,
-      rejectedTopics,
-      auditMode
-    });
-
-    this.generations.unshift(generationRecord);
-
-    const newAudit: InstagramAuditRecord = {
-      id: `audit-${Date.now()}`,
+    const auditId = `audit-${Date.now()}`;
+    const initialRunningAudit: InstagramAuditRecord = {
+      id: auditId,
       accountId: account.id,
       timestamp: new Date().toISOString(),
       auditMode,
-      status: 'completed',
-      provider: generationRecord.provider,
-      model: generationRecord.model,
+      status: 'in_progress',
+      progressStep: 'Initializing audit & querying AI strategy engine...',
+      provider: 'gemini_mcp',
+      model: 'gemini-3.6-flash',
       skillVersion: activeSkill.version,
-      promptVersion: generationRecord.promptVersion,
-      dataSources: result.structuredAudit?.dataSources || ['instagram_mcp'],
-      structuredAudit: result.structuredAudit,
-      scores: result.scores || {
+      promptVersion: 'mcp-audit-v2',
+      scores: {
+        profile_score: 0,
+        content_score: 0,
+        consistency_score: 0,
+        engagement_score: 0,
+        positioning_score: 0,
+        overall_score: 0
+      },
+      strengths: [],
+      weaknesses: [],
+      critical_issues: [],
+      content_gaps: [],
+      topic_opportunities: [],
+      recommendations: [],
+      content_pillar_analysis: [],
+      competitor_observations: [],
+      changes_since_previous_audit: [],
+      createdBy: 'System (User Request)',
+      version: 'v2.4',
+      fallbackUsed: false
+    };
+
+    // Prepend running audit immediately so it is persisted and visible on reload
+    this.audits.unshift(initialRunningAudit);
+
+    try {
+      const { result, generationRecord } = await this.orchestrator.executeTask('instagram_audit', {
+        task: 'instagram_audit',
+        account,
+        activeSkill,
+        previousAudit,
+        approvedTopics,
+        rejectedTopics,
+        auditMode
+      });
+
+      this.generations.unshift(generationRecord);
+
+      const targetAudit = this.audits.find(a => a.id === auditId) || initialRunningAudit;
+      targetAudit.status = 'completed';
+      targetAudit.progressStep = 'Audit completed successfully';
+      targetAudit.provider = generationRecord.provider;
+      targetAudit.model = generationRecord.model;
+      targetAudit.fallbackUsed = !!generationRecord.fallbackUsed || generationRecord.provider.includes('manus') || generationRecord.provider.includes('fallback');
+      targetAudit.fallbackReason = targetAudit.fallbackUsed ? (generationRecord.inputContextSummary || 'Gemini rate limited / unavailable') : undefined;
+      targetAudit.dataSources = result.structuredAudit?.dataSources || ['instagram_mcp'];
+      targetAudit.structuredAudit = result.structuredAudit;
+      targetAudit.scores = result.scores || {
         profile_score: result.profile_score || 88,
         content_score: result.content_score || 82,
         consistency_score: result.consistency_score || 85,
         engagement_score: result.engagement_score || 79,
         positioning_score: result.positioning_score || 90,
         overall_score: result.overall_score || 85
-      },
-      whatsWorking: (result.whatsWorking && result.whatsWorking.length > 0) ? result.whatsWorking : [
+      };
+      targetAudit.whatsWorking = (result.whatsWorking && result.whatsWorking.length > 0) ? result.whatsWorking : [
         {
           title: 'Direct-to-Problem Micro-Hooks (< 2.5s)',
           detail: 'Videos stating the exact viewer pain point in the opening 2 seconds achieved 3.8x comment velocity.',
           reason: 'Pattern interrupts create urgent curiosity gap and stop habitual feed swiping.'
         }
-      ],
-      whatsNotWorking: (result.whatsNotWorking && result.whatsNotWorking.length > 0) ? result.whatsNotWorking : [
+      ];
+      targetAudit.whatsNotWorking = (result.whatsNotWorking && result.whatsNotWorking.length > 0) ? result.whatsNotWorking : [
         {
           title: 'Conversational Greetings & Studio Intros',
           detail: '58% viewer drop-off within 3 seconds when host begins with conversational greetings.',
@@ -1593,44 +1628,67 @@ export class InstagramService {
           guardrailRule: 'Never open content with pleasantries or greetings. Start instantly with the core dilemma or counter-intuitive premise.',
           addedToSkills: true
         }
-      ],
-      markdownReport: result.markdownReport,
-      strengths: result.strengths || result.structuredAudit?.summary?.keyObservations || [],
-      weaknesses: result.weaknesses || result.structuredAudit?.contentGaps || [],
-      critical_issues: result.critical_issues || (result.structuredAudit?.contentGaps || []).slice(0, 2),
-      content_gaps: result.content_gaps || result.structuredAudit?.contentGaps || [],
-      topic_opportunities: result.topic_opportunities || result.structuredAudit?.topicOpportunities || [],
-      opportunities: result.opportunities || result.structuredAudit?.opportunities || [],
-      recommendations: result.recommendations || (result.structuredAudit?.recommendations || []).map((r: any) => ({
+      ];
+      targetAudit.markdownReport = result.markdownReport;
+      targetAudit.strengths = result.strengths || result.structuredAudit?.summary?.keyObservations || [];
+      targetAudit.weaknesses = result.weaknesses || result.structuredAudit?.contentGaps || [];
+      targetAudit.critical_issues = result.critical_issues || (result.structuredAudit?.contentGaps || []).slice(0, 2);
+      targetAudit.content_gaps = result.content_gaps || result.structuredAudit?.contentGaps || [];
+      targetAudit.topic_opportunities = result.topic_opportunities || result.structuredAudit?.topicOpportunities || [];
+      targetAudit.opportunities = result.opportunities || result.structuredAudit?.opportunities || [];
+      targetAudit.recommendations = result.recommendations || (result.structuredAudit?.recommendations || []).map((r: any) => ({
         text: typeof r === 'string' ? r : (r.text || String(r)),
         priority: 'high',
         impact: 'high',
         completed: false
-      })),
-      content_pillar_analysis: result.content_pillar_analysis || [],
-      competitor_observations: result.competitor_observations || [],
-      changes_since_previous_audit: result.changes_since_previous_audit || [],
-      taskUrl: result.taskUrl,
-      shareUrl: result.shareUrl,
-      attachmentUrl: result.attachmentUrl
-    };
+      }));
+      targetAudit.content_pillar_analysis = result.content_pillar_analysis || [];
+      targetAudit.competitor_observations = result.competitor_observations || [];
+      targetAudit.changes_since_previous_audit = result.changes_since_previous_audit || [];
+      targetAudit.taskUrl = result.taskUrl;
+      targetAudit.shareUrl = result.shareUrl;
+      targetAudit.attachmentUrl = result.attachmentUrl;
 
-    // Self-Learning Engine: Automatically ingest learned guardrails into activeSkill
-    if (newAudit.whatsNotWorking && Array.isArray(newAudit.whatsNotWorking)) {
-      newAudit.whatsNotWorking.forEach(item => {
-        const rule = item.guardrailRule || `Avoid ${item.title}: ${item.reason}`;
-        if (!activeSkill.rules.includes(rule)) {
-          activeSkill.rules.unshift(rule);
-        }
-        item.addedToSkills = true;
-      });
-      activeSkill.changeSummary = `Self-learned guardrails ingested from Live Instagram MCP audit for @${account.username}. Engine will actively avoid detected anti-patterns in upcoming topics and scripts.`;
-      activeSkill.approvedAt = new Date().toISOString();
+      // Self-Learning Engine: Automatically ingest learned guardrails into activeSkill
+      if (targetAudit.whatsNotWorking && Array.isArray(targetAudit.whatsNotWorking)) {
+        targetAudit.whatsNotWorking.forEach(item => {
+          const rule = item.guardrailRule || `Avoid ${item.title}: ${item.reason}`;
+          if (!activeSkill.rules.includes(rule)) {
+            activeSkill.rules.unshift(rule);
+          }
+          item.addedToSkills = true;
+        });
+        activeSkill.changeSummary = `Self-learned guardrails ingested from Live audit for @${account.username}. Engine will actively avoid detected anti-patterns in upcoming topics and scripts.`;
+        activeSkill.approvedAt = new Date().toISOString();
+      }
+
+      account.lastSyncAt = new Date().toISOString();
+      return targetAudit;
+    } catch (err: any) {
+      const targetAudit = this.audits.find(a => a.id === auditId);
+      if (targetAudit) {
+        targetAudit.status = 'failed';
+        targetAudit.progressStep = `Audit failed: ${err?.message || 'Unknown error'}`;
+      }
+      throw err;
     }
+  }
 
-    this.audits.unshift(newAudit);
-    account.lastSyncAt = new Date().toISOString();
-    return newAudit;
+  public bulkDeleteAudits(auditIds: string[]): { deletedCount: number } {
+    const initialLen = this.audits.length;
+    this.audits = this.audits.filter(a => !auditIds.includes(a.id));
+    return { deletedCount: initialLen - this.audits.length };
+  }
+
+  public bulkArchiveAudits(auditIds: string[], isArchived: boolean = true): { updatedCount: number } {
+    let count = 0;
+    this.audits.forEach(a => {
+      if (auditIds.includes(a.id)) {
+        a.isArchived = isArchived;
+        count++;
+      }
+    });
+    return { updatedCount: count };
   }
 
   // 2. GENERATE TOPIC IDEAS WITH GEMINI (SUPPORTING COUNT, FORMAT, CUSTOM ANGLE)

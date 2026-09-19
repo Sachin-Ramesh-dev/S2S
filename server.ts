@@ -2142,6 +2142,30 @@ app.post('/api/instagram/audits/run', async (req, res) => {
   }
 });
 
+app.post('/api/instagram/audits/bulk-delete', (req, res) => {
+  try {
+    const { auditIds } = req.body;
+    if (!Array.isArray(auditIds)) return res.status(400).json({ error: 'auditIds must be an array' });
+    const result = instagramService.bulkDeleteAudits(auditIds);
+    persistInstagramState();
+    res.json({ success: true, ...result });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to delete audits' });
+  }
+});
+
+app.post('/api/instagram/audits/bulk-archive', (req, res) => {
+  try {
+    const { auditIds, isArchived } = req.body;
+    if (!Array.isArray(auditIds)) return res.status(400).json({ error: 'auditIds must be an array' });
+    const result = instagramService.bulkArchiveAudits(auditIds, isArchived !== false);
+    persistInstagramState();
+    res.json({ success: true, ...result });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to archive audits' });
+  }
+});
+
 // Topic Ideas (Google Gemini integration)
 app.get('/api/instagram/topics', (req, res) => {
   const accountId = req.query.accountId as string | undefined;

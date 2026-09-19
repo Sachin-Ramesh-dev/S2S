@@ -136,6 +136,22 @@ export const instagramApi = {
     return data.audit;
   },
 
+  async bulkDeleteAudits(auditIds: string[]): Promise<{ success: boolean; deletedCount: number }> {
+    return safeFetchJson<{ success: boolean; deletedCount: number }>(`${BASE_URL}/audits/bulk-delete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ auditIds })
+    });
+  },
+
+  async bulkArchiveAudits(auditIds: string[], isArchived: boolean = true): Promise<{ success: boolean; updatedCount: number }> {
+    return safeFetchJson<{ success: boolean; updatedCount: number }>(`${BASE_URL}/audits/bulk-archive`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ auditIds, isArchived })
+    });
+  },
+
   // Topics
   async getTopics(accountId?: string): Promise<TopicIdea[]> {
     const url = accountId ? `${BASE_URL}/topics?accountId=${accountId}` : `${BASE_URL}/topics`;

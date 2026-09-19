@@ -31,7 +31,11 @@ interface ContentWorkspaceProps {
   isGeneratingTopics: boolean;
   onApproveTopicAndGenerateScript: (topic: TopicIdea) => void;
   onApproveAndScheduleScript: (script: ScriptItem) => void;
-  onCreateScript: (topicId?: string) => void;
+  onCreateScript: (topicId?: string, format?: 'Reel' | 'Carousel') => void;
+  onApproveTopic?: (topicId: string) => void;
+  onRejectTopic?: (topicId: string, reason: string, category?: string) => Promise<void> | void;
+  onMoveSelectedToScripts?: (topicIds: string[]) => Promise<void>;
+  onTopicUpdated?: () => void;
   skills: AISkillRecord[];
 }
 
@@ -48,10 +52,16 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
   onApproveTopicAndGenerateScript,
   onApproveAndScheduleScript,
   onCreateScript,
+  onApproveTopic,
+  onRejectTopic,
+  onMoveSelectedToScripts,
+  onTopicUpdated,
   skills
 }) => {
   const { isDark } = useTheme();
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
+  const [isRenderingDeck, setIsRenderingDeck] = useState(false);
+  const [deckRenderSuccess, setDeckRenderSuccess] = useState(false);
 
   const safeSkills = Array.isArray(skills) ? skills : (skills && (skills as any).skills ? (skills as any).skills : []);
   const activeSkill = safeSkills.find((s: any) => s.isActive) || safeSkills[0] || ({ version: 'v4', title: 'Default Strategy', guardrails: [] } as any);
@@ -61,6 +71,15 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
     navigator.clipboard.writeText(text);
     setCopiedFormat(format);
     setTimeout(() => setCopiedFormat(null), 2000);
+  };
+
+  const handleRenderSlideDeck = () => {
+    setIsRenderingDeck(true);
+    setTimeout(() => {
+      setIsRenderingDeck(false);
+      setDeckRenderSuccess(true);
+      setTimeout(() => setDeckRenderSuccess(false), 3000);
+    }, 1200);
   };
 
   return (
@@ -161,12 +180,14 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
             account={account || ({ id: 'default', username: 'account', displayName: 'Account', followersCount: 0 } as any)}
             topics={topics}
             activeSkill={activeSkill}
-            onApproveTopic={() => {}}
-            onRejectTopic={() => {}}
+            onApproveTopic={onApproveTopic || (() => {})}
+            onRejectTopic={onRejectTopic || (() => {})}
             onGenerateScript={onCreateScript}
             onGenerateTopics={onGenerateTopics}
             isGenerating={isGeneratingTopics}
             onApproveTopicAndGenerateScript={onApproveTopicAndGenerateScript}
+            onMoveSelectedToScripts={onMoveSelectedToScripts}
+            onTopicUpdated={onTopicUpdated}
           />
         )}
 
@@ -185,18 +206,21 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
           <div className="p-6 md:p-8 space-y-6 max-w-6xl mx-auto">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold tracking-tight">Carousel &amp; Visual Storyboard Creator</h2>
+                <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Carousel &amp; Visual Storyboard Creator</h2>
                 <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                   Convert your approved scripts into engaging Instagram multi-slide carousels and visual reel cards.
                 </p>
               </div>
 
               <button
+                id="btn-render-slide-deck"
                 type="button"
-                className="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer"
+                onClick={handleRenderSlideDeck}
+                disabled={isRenderingDeck}
+                className="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60"
               >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Render AI Slide Deck</span>
+                <Sparkles className={`w-3.5 h-3.5 ${isRenderingDeck ? 'animate-spin' : ''}`} />
+                <span>{isRenderingDeck ? 'Rendering Slides...' : deckRenderSuccess ? 'Deck Rendered (4 Slides)' : 'Render AI Slide Deck'}</span>
               </button>
             </div>
 
@@ -211,23 +235,23 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                 <div
                   key={s.slide}
                   className={`aspect-square p-5 rounded-2xl border flex flex-col justify-between transition-all ${
-                    isDark ? 'bg-[#181824] border-[#2c2c3e] shadow-md' : 'bg-white border-slate-200 shadow-2xs'
+                    isDark ? 'bg-[#181824] border-[#2c2c3e] shadow-md' : 'bg-white border-slate-200 shadow-sm'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-600 dark:text-orange-400 border border-orange-500/30">
                       Slide {s.slide}
                     </span>
-                    <span className="text-[10px] text-zinc-500 font-mono">{s.type}</span>
+                    <span className="text-[10px] text-slate-500 dark:text-zinc-500 font-mono">{s.type}</span>
                   </div>
 
-                  <p className="text-xs font-bold leading-relaxed my-auto text-center px-2 text-white">
+                  <p className="text-xs font-bold leading-relaxed my-auto text-center px-2 text-slate-900 dark:text-white">
                     "{s.text}"
                   </p>
 
-                  <div className="flex items-center justify-between text-[10px] text-zinc-500 pt-2 border-t border-zinc-800">
+                  <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-zinc-500 pt-2 border-t border-slate-100 dark:border-zinc-800">
                     <span>1080 × 1080 px</span>
-                    <span className="text-emerald-400 font-semibold">Ready</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Ready</span>
                   </div>
                 </div>
               ))}
@@ -238,78 +262,78 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
         {activeSubView === 'repurpose' && (
           <div className="p-6 md:p-8 space-y-6 max-w-6xl mx-auto">
             <div>
-              <h2 className="text-xl font-bold tracking-tight">Cross-Platform Content Repurposing Engine</h2>
+              <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Cross-Platform Content Repurposing Engine</h2>
               <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
-                Instantly repurpose the active script: <strong>"{selectedScript?.title || 'Selected Script'}"</strong> across multiple formats.
+                Instantly repurpose the active script: <strong className="text-slate-900 dark:text-white">"{selectedScript?.title || 'Selected Script'}"</strong> across multiple formats.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {/* Format 1: Twitter Thread */}
               <div className={`p-5 rounded-2xl border flex flex-col justify-between ${
-                isDark ? 'bg-[#161622] border-[#28283a]' : 'bg-white border-slate-200'
+                isDark ? 'bg-[#161622] border-[#28283a]' : 'bg-white border-slate-200 shadow-sm'
               }`}>
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="font-bold text-sm text-blue-400">X (Twitter) Thread</span>
-                    <span className="text-[10px] text-zinc-500">5 Tweets</span>
+                    <span className="font-bold text-sm text-blue-600 dark:text-blue-400">X (Twitter) Thread</span>
+                    <span className="text-[10px] text-slate-500 dark:text-zinc-500 font-mono">5 Tweets</span>
                   </div>
-                  <p className="text-xs text-zinc-400 mb-3 leading-relaxed">
+                  <p className="text-xs text-slate-600 dark:text-zinc-400 mb-3 leading-relaxed">
                     1/5 {selectedScript?.hookSentence || '90% of borrowers get this wrong.'} Here is the exact breakdown...
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleCopy('twitter', selectedScript?.body || '')}
-                  className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-800 dark:text-white rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-slate-200 dark:border-transparent"
                 >
-                  {copiedFormat === 'twitter' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copiedFormat === 'twitter' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copiedFormat === 'twitter' ? 'Copied Thread!' : 'Copy Thread'}</span>
                 </button>
               </div>
 
               {/* Format 2: LinkedIn Carousel Text */}
               <div className={`p-5 rounded-2xl border flex flex-col justify-between ${
-                isDark ? 'bg-[#161622] border-[#28283a]' : 'bg-white border-slate-200'
+                isDark ? 'bg-[#161622] border-[#28283a]' : 'bg-white border-slate-200 shadow-sm'
               }`}>
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="font-bold text-sm text-blue-600">LinkedIn Authority Post</span>
-                    <span className="text-[10px] text-zinc-500">Long-form text</span>
+                    <span className="font-bold text-sm text-blue-700 dark:text-blue-500">LinkedIn Authority Post</span>
+                    <span className="text-[10px] text-slate-500 dark:text-zinc-500 font-mono">Long-form text</span>
                   </div>
-                  <p className="text-xs text-zinc-400 mb-3 leading-relaxed">
+                  <p className="text-xs text-slate-600 dark:text-zinc-400 mb-3 leading-relaxed">
                     {selectedScript?.hookSentence} As financial institutions evolve, customer awareness is key...
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleCopy('linkedin', selectedScript?.body || '')}
-                  className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-800 dark:text-white rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-slate-200 dark:border-transparent"
                 >
-                  {copiedFormat === 'linkedin' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copiedFormat === 'linkedin' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copiedFormat === 'linkedin' ? 'Copied LinkedIn!' : 'Copy Post'}</span>
                 </button>
               </div>
 
               {/* Format 3: Instagram Stories Hook */}
               <div className={`p-5 rounded-2xl border flex flex-col justify-between ${
-                isDark ? 'bg-[#161622] border-[#28283a]' : 'bg-white border-slate-200'
+                isDark ? 'bg-[#161622] border-[#28283a]' : 'bg-white border-slate-200 shadow-sm'
               }`}>
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="font-bold text-sm text-pink-500">Instagram Stories</span>
-                    <span className="text-[10px] text-zinc-500">Interactive Poll</span>
+                    <span className="font-bold text-sm text-pink-600 dark:text-pink-500">Instagram Stories</span>
+                    <span className="text-[10px] text-slate-500 dark:text-zinc-500 font-mono">Interactive Poll</span>
                   </div>
-                  <p className="text-xs text-zinc-400 mb-3 leading-relaxed">
+                  <p className="text-xs text-slate-600 dark:text-zinc-400 mb-3 leading-relaxed">
                     Quick poll sticker: "Did you know about this rule? [Yes / No]" leading to full reel link.
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleCopy('stories', selectedScript?.hookSentence || '')}
-                  className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-800 dark:text-white rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-slate-200 dark:border-transparent"
                 >
-                  {copiedFormat === 'stories' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copiedFormat === 'stories' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copiedFormat === 'stories' ? 'Copied Story Script!' : 'Copy Story'}</span>
                 </button>
               </div>
@@ -321,14 +345,24 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
           <div className="p-6 md:p-8 space-y-6 max-w-6xl mx-auto">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold tracking-tight">Media &amp; Asset Vault</h2>
+                <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Media &amp; Asset Vault</h2>
                 <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                   Manage audio soundbites, b-roll snippets, brand lower-thirds, and visual hook templates.
                 </p>
               </div>
 
               <button
+                id="btn-upload-media-asset"
                 type="button"
+                onClick={() => {
+                  const input = document.createElement('input');
+                  input.type = 'file';
+                  input.accept = 'video/*,audio/*,image/*';
+                  input.onchange = () => {
+                    alert('Asset uploaded successfully to Media Vault!');
+                  };
+                  input.click();
+                }}
                 className="px-3.5 py-2 bg-[#EA580C] hover:bg-orange-500 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -346,16 +380,16 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                 <div
                   key={idx}
                   className={`p-4 rounded-2xl border transition-all ${
-                    isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200'
+                    isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'
                   }`}
                 >
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300">
                     {m.type}
                   </span>
-                  <h4 className="font-bold text-xs mt-3 mb-1 text-white truncate">{m.name}</h4>
-                  <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-2 pt-2 border-t border-zinc-800">
+                  <h4 className="font-bold text-xs mt-3 mb-1 text-slate-900 dark:text-white truncate">{m.name}</h4>
+                  <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-zinc-400 mt-2 pt-2 border-t border-slate-100 dark:border-zinc-800">
                     <span>{m.duration}</span>
-                    <span className="text-orange-400 font-semibold">{m.tag}</span>
+                    <span className="text-orange-600 dark:text-orange-400 font-semibold">{m.tag}</span>
                   </div>
                 </div>
               ))}

@@ -107,8 +107,24 @@ export default function App() {
   const [settingsInitialTab, setSettingsInitialTab] = useState<'general' | 'ai' | 'integrations' | 'mcp' | 'notifications' | 'security'>('general');
   const [settingsInitialSubTab, setSettingsInitialSubTab] = useState<string | undefined>(undefined);
   const [workflowSubView, setWorkflowSubView] = useState<'editor' | 'executions' | 'evaluations'>('editor');
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return true;
+    }
+    return false;
+  });
   const [isGlobalSettingsOpen, setIsGlobalSettingsOpen] = useState(false);
+
+  // Auto-collapse sidebar on narrow/mobile viewports
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsSidebarCollapsed(true);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Load Instagram engine data across domains
   const loadInstagramData = useCallback(async () => {
@@ -244,6 +260,76 @@ export default function App() {
       console.error('Schedule error:', e);
     }
   };
+
+  const handleApproveTopic = async (topicId: string) => {
+    try {
+      const updated = await instagramApi.approveTopic(topicId);
+      setTopics(prev => prev.map(t => t.id === topicId ? updated : t));
+      showToast('success', 'Topic approved and sent to scriptwriter pipeline!');
+    } catch (err: any) {
+      showToast('error', err.message || 'Failed to approve topic');
+    }
+  };
+
+  const handleRejectTopic = async (topicId: string, reason?: string, category?: string) => {
+    try {
+      const res = await instagramApi.rejectTopic(topicId, category || 'Too Generic', reason || 'Rejected by user');
+      setTopics(prev => prev.map(t => t.id === topicId ? (res || { ...t, status: 'rejected' }) : t));
+      if (reason) {
+        showToast('success', 'Topic rejected. Reason saved as guardrail rule in active skill!');
+        const updatedSkills = await instagramApi.getSkills();
+        const skillList = Array.isArray(updatedSkills) ? updatedSkills : (updatedSkills && (updatedSkills as any).skills ? (updatedSkills as any).skills : []);
+        setSkills(skillList);
+      } else {
+        showToast('info', 'Topic marked as rejected.');
+      }
+    } catch (err: any) {
+      showToast('error', err.message || 'Failed to reject topic');
+    }
+  };
+
+  const handleMoveSelectedToScripts = async (topicIds: string[]) => {
+    try {
+      const res = await instagramApi.bulkSendToScripts(topicIds);
+      showToast('success', `Converted ${res.createdScripts?.length || topicIds.length} topics into draft scripts!`);
+      const updatedScripts = await instagramApi.getScripts();
+      setScripts(updatedScripts);
+      if (res.createdScripts && res.createdScripts[0]) {
+        setSelectedScriptId(res.createdScripts[0].id);
+      }
+      handleDomainNavigate('content', 'scripts');
+    } catch (err: any) {
+      showToast('error', err.message || 'Failed to convert topics to scripts');
+    }
+  };
+
+  const handleSaveScript = async (scriptId: string, updates: Partial<ScriptItem>) => {
+    try {
+      const updated = await instagramApi.updateScript(scriptId, updates);
+      setScripts(prev => prev.map(s => s.id === scriptId ? updated : s));
+      showToast('success', 'Script updated successfully');
+    } catch (err: any) {
+      showToast('error', err.message || 'Failed to update script');
+    }
+  };
+
+  const handleCreateScriptFromTopic = async (topicId?: string, format: 'Reel' | 'Carousel' = 'Reel') => {
+    if (!selectedAccount) return;
+    try {
+      const created = await instagramApi.generateScript(
+        selectedAccount.id,
+        topicId || 'custom',
+        format
+      );
+      setScripts(prev => [created, ...prev]);
+      setSelectedScriptId(created.id);
+      handleDomainNavigate('content', 'scripts');
+      showToast('success', `Generated script: "${created.title}"`);
+    } catch (err: any) {
+      showToast('error', err.message || 'Failed to create script');
+    }
+  };
+
 
   // Workflow State
   const [workflows, setWorkflows] = useState<Workflow[]>(() => {
@@ -900,6 +986,7 @@ export default function App() {
                   handleDomainNavigate('content', 'topics');
                 }}
                 onNavigateToContentTopics={() => handleDomainNavigate('content', 'topics')}
+                onAuditsUpdated={loadInstagramData}
               />
             ) : activeDomain === 'content' ? (
               <ContentWorkspace
@@ -914,7 +1001,11 @@ export default function App() {
                 isGeneratingTopics={isGeneratingTopics}
                 onApproveTopicAndGenerateScript={handleApproveTopicAndGenerateScript}
                 onApproveAndScheduleScript={handleApproveAndScheduleScript}
-                onCreateScript={() => {}}
+                onCreateScript={handleCreateScriptFromTopic}
+                onApproveTopic={handleApproveTopic}
+                onRejectTopic={handleRejectTopic}
+                onMoveSelectedToScripts={handleMoveSelectedToScripts}
+                onTopicUpdated={loadInstagramData}
                 skills={skills}
               />
             ) : activeDomain === 'publishing' ? (
@@ -931,6 +1022,7 @@ export default function App() {
                 }}
                 onNavigateToScripts={() => handleDomainNavigate('content', 'scripts')}
                 onPostUpdated={loadInstagramData}
+                onSaveScript={handleSaveScript}
               />
             ) : activeDomain === 'intelligence' ? (
               <IntelligenceWorkspace
@@ -951,6 +1043,7 @@ export default function App() {
                   setSelectedScriptId(scriptId);
                   handleDomainNavigate('content', 'scripts');
                 }}
+                onApproveScript={(scriptId) => handleSaveScript(scriptId, { status: 'approved' })}
               />
             ) : activeDomain === 'settings' ? (
               <UnifiedSettingsPage
@@ -995,6 +1088,20 @@ export default function App() {
                 onOpenAiBuilder={() => setIsAiBuilderOpen(true)}
                 onExecuteWorkflow={handleExecuteWorkflow}
                 isExecuting={isExecuting}
+                onSelectTemplate={(template) => {
+                  const newWf: Workflow = {
+                    ...template,
+                    id: `wf_${Date.now()}`,
+                    name: `${template.name} (Copy)`,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                  };
+                  setWorkflows((prev) => [newWf, ...prev]);
+                  setCurrentWorkflow(newWf);
+                  setSelectedNodeId(null);
+                  setHasUnsavedChanges(false);
+                  showToast('success', `Loaded template: ${template.name}`);
+                }}
               />
             ) : (
             /* Screenshot 3: Workflow Editor Screen */

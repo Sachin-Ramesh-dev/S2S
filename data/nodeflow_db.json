@@ -1224,7 +1224,7 @@
       "category": "Finance & NBFC",
       "niche": "Personal Credit, EMI Cards & Wealth Literacy",
       "connectedAt": "2026-08-10T10:00:00.000Z",
-      "lastSyncAt": "2026-09-18T09:07:23.787Z",
+      "lastSyncAt": "2026-09-19T07:22:05.942Z",
       "isDemo": true,
       "contentPillars": [
         {
@@ -1293,7 +1293,7 @@
       "niche": "High-Impact Digital Content",
       "avatarUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80",
       "connectedAt": "2026-09-18T14:40:25.879Z",
-      "lastSyncAt": "2026-09-18T14:45:12.342Z",
+      "lastSyncAt": "2026-09-19T07:24:52.920Z",
       "connectionMethod": "meta_graph_api",
       "manusSessionId": "manus-sess-zqfstr",
       "isVerified": true,
@@ -1329,6 +1329,560 @@
     }
   ],
   "instagramAudits": [
+    {
+      "id": "audit-1789802692920",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "timestamp": "2026-09-19T07:24:52.920Z",
+      "auditMode": "full",
+      "status": "completed",
+      "provider": "gemini_mcp-fallback",
+      "model": "gemini-3.6-flash",
+      "skillVersion": "v4",
+      "promptVersion": "mcp-audit-v2",
+      "dataSources": [
+        "instagram_mcp"
+      ],
+      "scores": {
+        "profile_score": 86,
+        "content_score": 80,
+        "consistency_score": 84,
+        "engagement_score": 78,
+        "positioning_score": 85,
+        "overall_score": 82
+      },
+      "whatsWorking": [
+        {
+          "title": "Problem-First Hook Velocity (< 2.5 seconds)",
+          "detail": "Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.",
+          "reason": "Instant pattern interrupts create emotional tension and stop the user from swiping."
+        },
+        {
+          "title": "7-10 Slide Educational Diagnostic Carousels",
+          "detail": "Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.",
+          "reason": "High utility content turns posts into permanent reference bookmarks in the user collection."
+        },
+        {
+          "title": "Verified Calculation Breakdowns & Transparent Math",
+          "detail": "Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.",
+          "reason": "Concrete numbers establish institutional authority and eliminate skepticism."
+        }
+      ],
+      "whatsNotWorking": [
+        {
+          "title": "Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")",
+          "detail": "First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.",
+          "reason": "Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.",
+          "guardrailRule": "Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.",
+          "addedToSkills": true
+        },
+        {
+          "title": "Multi-Concept Overloaded Carousels",
+          "detail": "Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.",
+          "reason": "Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.",
+          "guardrailRule": "Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.",
+          "addedToSkills": true
+        },
+        {
+          "title": "Small Gray Subtitles & Uncaptioned Video Feeds",
+          "detail": "Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.",
+          "reason": "Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.",
+          "guardrailRule": "Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.",
+          "addedToSkills": true
+        }
+      ],
+      "markdownReport": "# Live Instagram MCP + Gemini Agent Content Audit\n**Account:** @snacc.mart (Snacc Mart | Traditional & Modern Snacks)\n**Category:** Finance & Technology | **Niche:** High-Impact Digital Content\n**Followers:** 38 | **Engagement Rate:** 110.26%\n**Audit Mode:** FULL | **Date:** 9/19/2026\n**Generated via:** Live Instagram MCP + Gemini 2.5 Flash Agent\n\n---\n\n## 1. Executive Performance Scores\n- **Overall Account Health Score:** 82/100\n- **Profile & Bio Optimization:** 86/100\n- **Content & Hook Retention:** 80/100\n- **Posting Consistency & Cadence:** 84/100\n- **Audience Engagement Velocity:** 78/100\n- **Niche Authority & Positioning:** 85/100\n\n---\n\n## 2. What's Working (Positive Content Drivers)\n### 1. Problem-First Hook Velocity (< 2.5 seconds)\n- **Performance Evidence:** Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.\n- **Root Driver:** Instant pattern interrupts create emotional tension and stop the user from swiping.\n\n### 2. 7-10 Slide Educational Diagnostic Carousels\n- **Performance Evidence:** Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.\n- **Root Driver:** High utility content turns posts into permanent reference bookmarks in the user collection.\n\n### 3. Verified Calculation Breakdowns & Transparent Math\n- **Performance Evidence:** Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.\n- **Root Driver:** Concrete numbers establish institutional authority and eliminate skepticism.\n\n\n---\n\n## 3. What's NOT Working & Root Cause Analysis\n### 1. Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")\n- **Observed Defect:** First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.\n- **Why It Fails:** Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.\n- **Self-Learning Guardrail Directive:** `Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.`\n\n### 2. Multi-Concept Overloaded Carousels\n- **Observed Defect:** Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.\n- **Why It Fails:** Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.\n- **Self-Learning Guardrail Directive:** `Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.`\n\n### 3. Small Gray Subtitles & Uncaptioned Video Feeds\n- **Observed Defect:** Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.\n- **Why It Fails:** Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.\n- **Self-Learning Guardrail Directive:** `Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.`\n\n\n---\n\n## 4. Competitive Intelligence & Counter-Strategies\n\n\n---\n\n## 5. Content Gaps & Tactical Opportunities\n- Actionable 60-second step-by-step breakdowns answering common customer dilemmas in High-Impact Digital Content.\n- Save-worthy checklist carousels comparing complex industry options.\n- Customer story spotlights demonstrating tangible outcome metrics.\n\n---\n*Report generated automatically by Manus AI Orchestrator. Learned guardrails have been synced to Active Skill v4.*\n",
+      "strengths": [
+        "High organic credibility in the Finance & Technology domain with 38 engaged followers.",
+        "Content Pillars (Educational Tutorials & Guides & Viral Market Trends & Reels) demonstrate strong retention.",
+        "Bio clearly articulates niche positioning and value proposition for targeted demographic."
+      ],
+      "weaknesses": [
+        "Under-indexing on high-share educational carousel carousels (currently only 35% vs target 40%).",
+        "Reel watch-time drops 35% after the 7-second mark due to slow visual pacing.",
+        "Inconsistent posting times resulting in unpredictable algorithm reach spikes."
+      ],
+      "critical_issues": [
+        "Missing clear call-to-action hooks on 40% of recent Reels.",
+        "Bio link does not route to tracked campaign landings."
+      ],
+      "content_gaps": [
+        "Actionable 60-second step-by-step breakdowns answering common customer dilemmas in High-Impact Digital Content.",
+        "Save-worthy checklist carousels comparing complex industry options.",
+        "Customer story spotlights demonstrating tangible outcome metrics."
+      ],
+      "topic_opportunities": [
+        "The 3 Costly Mistakes Customers Make When Navigating Finance & Technology (Reel breakdown).",
+        "5-Slide Emergency Checklist: What to Do Before Committing to Any Financial Contract.",
+        "Why Traditional Advice Fails: The Modern Framework for Rapid Personal Growth."
+      ],
+      "opportunities": [],
+      "recommendations": [
+        {
+          "text": "Incorporate active AI Skill v4 guidelines into every video hook (first 2.5s).",
+          "priority": "high",
+          "completed": false
+        },
+        {
+          "text": "Shift weekly Reel distribution to 3 high-impact Reels and 2 10-slide Carousels.",
+          "priority": "high",
+          "completed": false
+        },
+        {
+          "text": "Audit competitor @competitor top-performing sound selection.",
+          "priority": "medium",
+          "completed": false
+        }
+      ],
+      "content_pillar_analysis": [
+        {
+          "pillar": "Educational Tutorials & Guides",
+          "performance": "Under-allocated",
+          "recommendation": "Target 40% allocation by generating 2 specialized pieces next week."
+        },
+        {
+          "pillar": "Viral Market Trends & Reels",
+          "performance": "On Target",
+          "recommendation": "Target 35% allocation by generating 2 specialized pieces next week."
+        },
+        {
+          "pillar": "Client Proof & Case Studies",
+          "performance": "On Target",
+          "recommendation": "Target 25% allocation by generating 2 specialized pieces next week."
+        }
+      ],
+      "competitor_observations": [],
+      "changes_since_previous_audit": [
+        "Overall account health index changed to 82/100 (+3 pts).",
+        "Applied active skill rules from version v4 into audit assessment criteria.",
+        "Identified 3 new high-priority content gaps ready for Gemini topic generation."
+      ]
+    },
+    {
+      "id": "audit-1789802662500",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "timestamp": "2026-09-19T07:24:22.500Z",
+      "auditMode": "full",
+      "status": "completed",
+      "provider": "gemini_mcp-fallback",
+      "model": "gemini-3.6-flash",
+      "skillVersion": "v4",
+      "promptVersion": "mcp-audit-v2",
+      "dataSources": [
+        "instagram_mcp"
+      ],
+      "scores": {
+        "profile_score": 83,
+        "content_score": 77,
+        "consistency_score": 81,
+        "engagement_score": 75,
+        "positioning_score": 82,
+        "overall_score": 79
+      },
+      "whatsWorking": [
+        {
+          "title": "Problem-First Hook Velocity (< 2.5 seconds)",
+          "detail": "Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.",
+          "reason": "Instant pattern interrupts create emotional tension and stop the user from swiping."
+        },
+        {
+          "title": "7-10 Slide Educational Diagnostic Carousels",
+          "detail": "Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.",
+          "reason": "High utility content turns posts into permanent reference bookmarks in the user collection."
+        },
+        {
+          "title": "Verified Calculation Breakdowns & Transparent Math",
+          "detail": "Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.",
+          "reason": "Concrete numbers establish institutional authority and eliminate skepticism."
+        }
+      ],
+      "whatsNotWorking": [
+        {
+          "title": "Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")",
+          "detail": "First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.",
+          "reason": "Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.",
+          "guardrailRule": "Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.",
+          "addedToSkills": true
+        },
+        {
+          "title": "Multi-Concept Overloaded Carousels",
+          "detail": "Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.",
+          "reason": "Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.",
+          "guardrailRule": "Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.",
+          "addedToSkills": true
+        },
+        {
+          "title": "Small Gray Subtitles & Uncaptioned Video Feeds",
+          "detail": "Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.",
+          "reason": "Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.",
+          "guardrailRule": "Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.",
+          "addedToSkills": true
+        }
+      ],
+      "markdownReport": "# Live Instagram MCP + Gemini Agent Content Audit\n**Account:** @snacc.mart (Snacc Mart | Traditional & Modern Snacks)\n**Category:** Finance & Technology | **Niche:** High-Impact Digital Content\n**Followers:** 38 | **Engagement Rate:** 110.26%\n**Audit Mode:** FULL | **Date:** 9/19/2026\n**Generated via:** Live Instagram MCP + Gemini 2.5 Flash Agent\n\n---\n\n## 1. Executive Performance Scores\n- **Overall Account Health Score:** 79/100\n- **Profile & Bio Optimization:** 83/100\n- **Content & Hook Retention:** 77/100\n- **Posting Consistency & Cadence:** 81/100\n- **Audience Engagement Velocity:** 75/100\n- **Niche Authority & Positioning:** 82/100\n\n---\n\n## 2. What's Working (Positive Content Drivers)\n### 1. Problem-First Hook Velocity (< 2.5 seconds)\n- **Performance Evidence:** Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.\n- **Root Driver:** Instant pattern interrupts create emotional tension and stop the user from swiping.\n\n### 2. 7-10 Slide Educational Diagnostic Carousels\n- **Performance Evidence:** Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.\n- **Root Driver:** High utility content turns posts into permanent reference bookmarks in the user collection.\n\n### 3. Verified Calculation Breakdowns & Transparent Math\n- **Performance Evidence:** Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.\n- **Root Driver:** Concrete numbers establish institutional authority and eliminate skepticism.\n\n\n---\n\n## 3. What's NOT Working & Root Cause Analysis\n### 1. Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")\n- **Observed Defect:** First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.\n- **Why It Fails:** Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.\n- **Self-Learning Guardrail Directive:** `Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.`\n\n### 2. Multi-Concept Overloaded Carousels\n- **Observed Defect:** Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.\n- **Why It Fails:** Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.\n- **Self-Learning Guardrail Directive:** `Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.`\n\n### 3. Small Gray Subtitles & Uncaptioned Video Feeds\n- **Observed Defect:** Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.\n- **Why It Fails:** Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.\n- **Self-Learning Guardrail Directive:** `Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.`\n\n\n---\n\n## 4. Competitive Intelligence & Counter-Strategies\n\n\n---\n\n## 5. Content Gaps & Tactical Opportunities\n- Actionable 60-second step-by-step breakdowns answering common customer dilemmas in High-Impact Digital Content.\n- Save-worthy checklist carousels comparing complex industry options.\n- Customer story spotlights demonstrating tangible outcome metrics.\n\n---\n*Report generated automatically by Manus AI Orchestrator. Learned guardrails have been synced to Active Skill v4.*\n",
+      "strengths": [
+        "High organic credibility in the Finance & Technology domain with 38 engaged followers.",
+        "Content Pillars (Educational Tutorials & Guides & Viral Market Trends & Reels) demonstrate strong retention.",
+        "Bio clearly articulates niche positioning and value proposition for targeted demographic."
+      ],
+      "weaknesses": [
+        "Under-indexing on high-share educational carousel carousels (currently only 35% vs target 40%).",
+        "Reel watch-time drops 35% after the 7-second mark due to slow visual pacing.",
+        "Inconsistent posting times resulting in unpredictable algorithm reach spikes."
+      ],
+      "critical_issues": [
+        "Missing clear call-to-action hooks on 40% of recent Reels.",
+        "Bio link does not route to tracked campaign landings."
+      ],
+      "content_gaps": [
+        "Actionable 60-second step-by-step breakdowns answering common customer dilemmas in High-Impact Digital Content.",
+        "Save-worthy checklist carousels comparing complex industry options.",
+        "Customer story spotlights demonstrating tangible outcome metrics."
+      ],
+      "topic_opportunities": [
+        "The 3 Costly Mistakes Customers Make When Navigating Finance & Technology (Reel breakdown).",
+        "5-Slide Emergency Checklist: What to Do Before Committing to Any Financial Contract.",
+        "Why Traditional Advice Fails: The Modern Framework for Rapid Personal Growth."
+      ],
+      "opportunities": [],
+      "recommendations": [
+        {
+          "text": "Incorporate active AI Skill v4 guidelines into every video hook (first 2.5s).",
+          "priority": "high",
+          "completed": false
+        },
+        {
+          "text": "Shift weekly Reel distribution to 3 high-impact Reels and 2 10-slide Carousels.",
+          "priority": "high",
+          "completed": false
+        },
+        {
+          "text": "Audit competitor @competitor top-performing sound selection.",
+          "priority": "medium",
+          "completed": false
+        }
+      ],
+      "content_pillar_analysis": [
+        {
+          "pillar": "Educational Tutorials & Guides",
+          "performance": "Under-allocated",
+          "recommendation": "Target 40% allocation by generating 2 specialized pieces next week."
+        },
+        {
+          "pillar": "Viral Market Trends & Reels",
+          "performance": "On Target",
+          "recommendation": "Target 35% allocation by generating 2 specialized pieces next week."
+        },
+        {
+          "pillar": "Client Proof & Case Studies",
+          "performance": "On Target",
+          "recommendation": "Target 25% allocation by generating 2 specialized pieces next week."
+        }
+      ],
+      "competitor_observations": [],
+      "changes_since_previous_audit": [
+        "Overall account health index changed to 79/100 (+2 pts).",
+        "Applied active skill rules from version v4 into audit assessment criteria.",
+        "Identified 3 new high-priority content gaps ready for Gemini topic generation."
+      ]
+    },
+    {
+      "id": "audit-1789802525942",
+      "accountId": "ig-bajajfinance",
+      "timestamp": "2026-09-19T07:22:05.942Z",
+      "auditMode": "full",
+      "status": "completed",
+      "provider": "gemini_mcp-fallback",
+      "model": "gemini-3.6-flash",
+      "skillVersion": "v4",
+      "promptVersion": "mcp-audit-v2",
+      "dataSources": [
+        "instagram_mcp"
+      ],
+      "scores": {
+        "profile_score": 70,
+        "content_score": 64,
+        "consistency_score": 68,
+        "engagement_score": 62,
+        "positioning_score": 69,
+        "overall_score": 66
+      },
+      "whatsWorking": [
+        {
+          "title": "Problem-First Hook Velocity (< 2.5 seconds)",
+          "detail": "Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.",
+          "reason": "Instant pattern interrupts create emotional tension and stop the user from swiping."
+        },
+        {
+          "title": "7-10 Slide Educational Diagnostic Carousels",
+          "detail": "Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.",
+          "reason": "High utility content turns posts into permanent reference bookmarks in the user collection."
+        },
+        {
+          "title": "Verified Calculation Breakdowns & Transparent Math",
+          "detail": "Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.",
+          "reason": "Concrete numbers establish institutional authority and eliminate skepticism."
+        }
+      ],
+      "whatsNotWorking": [
+        {
+          "title": "Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")",
+          "detail": "First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.",
+          "reason": "Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.",
+          "guardrailRule": "Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.",
+          "addedToSkills": true
+        },
+        {
+          "title": "Multi-Concept Overloaded Carousels",
+          "detail": "Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.",
+          "reason": "Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.",
+          "guardrailRule": "Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.",
+          "addedToSkills": true
+        },
+        {
+          "title": "Small Gray Subtitles & Uncaptioned Video Feeds",
+          "detail": "Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.",
+          "reason": "Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.",
+          "guardrailRule": "Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.",
+          "addedToSkills": true
+        }
+      ],
+      "markdownReport": "# Live Instagram MCP + Gemini Agent Content Audit\n**Account:** @bajajfinance (Bajaj Finance Limited)\n**Category:** Finance & NBFC | **Niche:** Personal Credit, EMI Cards & Wealth Literacy\n**Followers:** 428,500 | **Engagement Rate:** 3.84%\n**Audit Mode:** FULL | **Date:** 9/19/2026\n**Generated via:** Live Instagram MCP + Gemini 2.5 Flash Agent\n\n---\n\n## 1. Executive Performance Scores\n- **Overall Account Health Score:** 66/100\n- **Profile & Bio Optimization:** 70/100\n- **Content & Hook Retention:** 64/100\n- **Posting Consistency & Cadence:** 68/100\n- **Audience Engagement Velocity:** 62/100\n- **Niche Authority & Positioning:** 69/100\n\n---\n\n## 2. What's Working (Positive Content Drivers)\n### 1. Problem-First Hook Velocity (< 2.5 seconds)\n- **Performance Evidence:** Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.\n- **Root Driver:** Instant pattern interrupts create emotional tension and stop the user from swiping.\n\n### 2. 7-10 Slide Educational Diagnostic Carousels\n- **Performance Evidence:** Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.\n- **Root Driver:** High utility content turns posts into permanent reference bookmarks in the user collection.\n\n### 3. Verified Calculation Breakdowns & Transparent Math\n- **Performance Evidence:** Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.\n- **Root Driver:** Concrete numbers establish institutional authority and eliminate skepticism.\n\n\n---\n\n## 3. What's NOT Working & Root Cause Analysis\n### 1. Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")\n- **Observed Defect:** First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.\n- **Why It Fails:** Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.\n- **Self-Learning Guardrail Directive:** `Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.`\n\n### 2. Multi-Concept Overloaded Carousels\n- **Observed Defect:** Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.\n- **Why It Fails:** Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.\n- **Self-Learning Guardrail Directive:** `Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.`\n\n### 3. Small Gray Subtitles & Uncaptioned Video Feeds\n- **Observed Defect:** Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.\n- **Why It Fails:** Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.\n- **Self-Learning Guardrail Directive:** `Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.`\n\n\n---\n\n## 4. Competitive Intelligence & Counter-Strategies\n- **@tatacapital:** Focuses heavily on controversial comparison angles. *Recommended Counter-Strategy:* Publish verified calculation breakdowns proving @bajajfinance's superior institutional transparency.\n- **@hdfcbank:** Focuses heavily on controversial comparison angles. *Recommended Counter-Strategy:* Publish verified calculation breakdowns proving @bajajfinance's superior institutional transparency.\n- **@zerodhaonline:** Focuses heavily on controversial comparison angles. *Recommended Counter-Strategy:* Publish verified calculation breakdowns proving @bajajfinance's superior institutional transparency.\n\n---\n\n## 5. Content Gaps & Tactical Opportunities\n- Actionable 60-second step-by-step breakdowns answering common customer dilemmas in Personal Credit, EMI Cards & Wealth Literacy.\n- Save-worthy checklist carousels comparing complex industry options.\n- Customer story spotlights demonstrating tangible outcome metrics.\n\n---\n*Report generated automatically by Manus AI Orchestrator. Learned guardrails have been synced to Active Skill v4.*\n",
+      "strengths": [
+        "High organic credibility in the Finance & NBFC domain with 428,500 engaged followers.",
+        "Content Pillars (Educational Financial Literacy & Product Transparency & How-Tos) demonstrate strong retention.",
+        "Bio clearly articulates niche positioning and value proposition for targeted demographic."
+      ],
+      "weaknesses": [
+        "Under-indexing on high-share educational carousel carousels (currently only 28% vs target 40%).",
+        "Reel watch-time drops 35% after the 7-second mark due to slow visual pacing.",
+        "Inconsistent posting times resulting in unpredictable algorithm reach spikes."
+      ],
+      "critical_issues": [
+        "Missing clear call-to-action hooks on 40% of recent Reels.",
+        "Bio link does not route to tracked campaign landings."
+      ],
+      "content_gaps": [
+        "Actionable 60-second step-by-step breakdowns answering common customer dilemmas in Personal Credit, EMI Cards & Wealth Literacy.",
+        "Save-worthy checklist carousels comparing complex industry options.",
+        "Customer story spotlights demonstrating tangible outcome metrics."
+      ],
+      "topic_opportunities": [
+        "The 3 Costly Mistakes Customers Make When Navigating Finance & NBFC (Reel breakdown).",
+        "5-Slide Emergency Checklist: What to Do Before Committing to Any Financial Contract.",
+        "Why Traditional Advice Fails: The Modern Framework for Rapid Personal Growth."
+      ],
+      "opportunities": [],
+      "recommendations": [
+        {
+          "text": "Incorporate active AI Skill v4 guidelines into every video hook (first 2.5s).",
+          "priority": "high",
+          "completed": false
+        },
+        {
+          "text": "Shift weekly Reel distribution to 3 high-impact Reels and 2 10-slide Carousels.",
+          "priority": "high",
+          "completed": false
+        },
+        {
+          "text": "Audit competitor @tatacapital top-performing sound selection.",
+          "priority": "medium",
+          "completed": false
+        }
+      ],
+      "content_pillar_analysis": [
+        {
+          "pillar": "Educational Financial Literacy",
+          "performance": "Under-allocated",
+          "recommendation": "Target 40% allocation by generating 2 specialized pieces next week."
+        },
+        {
+          "pillar": "Product Transparency & How-Tos",
+          "performance": "On Target",
+          "recommendation": "Target 25% allocation by generating 2 specialized pieces next week."
+        },
+        {
+          "pillar": "Fraud Awareness & Consumer Safety",
+          "performance": "Under-allocated",
+          "recommendation": "Target 15% allocation by generating 2 specialized pieces next week."
+        },
+        {
+          "pillar": "Lifestyle & Real Customer Wins",
+          "performance": "On Target",
+          "recommendation": "Target 20% allocation by generating 2 specialized pieces next week."
+        }
+      ],
+      "competitor_observations": [
+        {
+          "competitor": "@tatacapital",
+          "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+          "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+        },
+        {
+          "competitor": "@hdfcbank",
+          "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+          "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+        },
+        {
+          "competitor": "@zerodhaonline",
+          "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+          "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+        }
+      ],
+      "changes_since_previous_audit": [
+        "Overall account health index changed to 66/100 (+1 pts).",
+        "Applied active skill rules from version v4 into audit assessment criteria.",
+        "Identified 3 new high-priority content gaps ready for Gemini topic generation."
+      ]
+    },
+    {
+      "id": "audit-1789802459916",
+      "accountId": "ig-bajajfinance",
+      "timestamp": "2026-09-19T07:20:59.916Z",
+      "auditMode": "full",
+      "status": "completed",
+      "provider": "gemini_mcp-fallback",
+      "model": "gemini-3.6-flash",
+      "skillVersion": "v4",
+      "promptVersion": "mcp-audit-v2",
+      "dataSources": [
+        "instagram_mcp"
+      ],
+      "scores": {
+        "profile_score": 69,
+        "content_score": 63,
+        "consistency_score": 67,
+        "engagement_score": 61,
+        "positioning_score": 68,
+        "overall_score": 65
+      },
+      "whatsWorking": [
+        {
+          "title": "Problem-First Hook Velocity (< 2.5 seconds)",
+          "detail": "Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.",
+          "reason": "Instant pattern interrupts create emotional tension and stop the user from swiping."
+        },
+        {
+          "title": "7-10 Slide Educational Diagnostic Carousels",
+          "detail": "Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.",
+          "reason": "High utility content turns posts into permanent reference bookmarks in the user collection."
+        },
+        {
+          "title": "Verified Calculation Breakdowns & Transparent Math",
+          "detail": "Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.",
+          "reason": "Concrete numbers establish institutional authority and eliminate skepticism."
+        }
+      ],
+      "whatsNotWorking": [
+        {
+          "title": "Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")",
+          "detail": "First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.",
+          "reason": "Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.",
+          "guardrailRule": "Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.",
+          "addedToSkills": true
+        },
+        {
+          "title": "Multi-Concept Overloaded Carousels",
+          "detail": "Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.",
+          "reason": "Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.",
+          "guardrailRule": "Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.",
+          "addedToSkills": true
+        },
+        {
+          "title": "Small Gray Subtitles & Uncaptioned Video Feeds",
+          "detail": "Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.",
+          "reason": "Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.",
+          "guardrailRule": "Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.",
+          "addedToSkills": true
+        }
+      ],
+      "markdownReport": "# Live Instagram MCP + Gemini Agent Content Audit\n**Account:** @bajajfinance (Bajaj Finance Limited)\n**Category:** Finance & NBFC | **Niche:** Personal Credit, EMI Cards & Wealth Literacy\n**Followers:** 428,500 | **Engagement Rate:** 3.84%\n**Audit Mode:** FULL | **Date:** 9/19/2026\n**Generated via:** Live Instagram MCP + Gemini 2.5 Flash Agent\n\n---\n\n## 1. Executive Performance Scores\n- **Overall Account Health Score:** 65/100\n- **Profile & Bio Optimization:** 69/100\n- **Content & Hook Retention:** 63/100\n- **Posting Consistency & Cadence:** 67/100\n- **Audience Engagement Velocity:** 61/100\n- **Niche Authority & Positioning:** 68/100\n\n---\n\n## 2. What's Working (Positive Content Drivers)\n### 1. Problem-First Hook Velocity (< 2.5 seconds)\n- **Performance Evidence:** Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.\n- **Root Driver:** Instant pattern interrupts create emotional tension and stop the user from swiping.\n\n### 2. 7-10 Slide Educational Diagnostic Carousels\n- **Performance Evidence:** Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.\n- **Root Driver:** High utility content turns posts into permanent reference bookmarks in the user collection.\n\n### 3. Verified Calculation Breakdowns & Transparent Math\n- **Performance Evidence:** Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.\n- **Root Driver:** Concrete numbers establish institutional authority and eliminate skepticism.\n\n\n---\n\n## 3. What's NOT Working & Root Cause Analysis\n### 1. Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")\n- **Observed Defect:** First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.\n- **Why It Fails:** Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.\n- **Self-Learning Guardrail Directive:** `Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.`\n\n### 2. Multi-Concept Overloaded Carousels\n- **Observed Defect:** Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.\n- **Why It Fails:** Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.\n- **Self-Learning Guardrail Directive:** `Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.`\n\n### 3. Small Gray Subtitles & Uncaptioned Video Feeds\n- **Observed Defect:** Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.\n- **Why It Fails:** Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.\n- **Self-Learning Guardrail Directive:** `Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.`\n\n\n---\n\n## 4. Competitive Intelligence & Counter-Strategies\n- **@tatacapital:** Focuses heavily on controversial comparison angles. *Recommended Counter-Strategy:* Publish verified calculation breakdowns proving @bajajfinance's superior institutional transparency.\n- **@hdfcbank:** Focuses heavily on controversial comparison angles. *Recommended Counter-Strategy:* Publish verified calculation breakdowns proving @bajajfinance's superior institutional transparency.\n- **@zerodhaonline:** Focuses heavily on controversial comparison angles. *Recommended Counter-Strategy:* Publish verified calculation breakdowns proving @bajajfinance's superior institutional transparency.\n\n---\n\n## 5. Content Gaps & Tactical Opportunities\n- EMI Amortization & Total Interest Cost: Step-by-step visual calculations showing principal vs interest splits over loan tenures.\n- Prepayment & Foreclosure Decision Math: Clear break-even scenarios demonstrating savings from partial loan prepayments.\n- Saveable Reference Carousels: Step-by-step swipeable checklists for home loan sanction, car running costs, and credit score optimization.\n\n---\n*Report generated automatically by Manus AI Orchestrator. Learned guardrails have been synced to Active Skill v4.*\n",
+      "strengths": [
+        "High organic credibility in the Finance & NBFC domain with 428,500 engaged followers.",
+        "Content Pillars (Educational Financial Literacy & Product Transparency & How-Tos) demonstrate strong retention.",
+        "Bio clearly articulates niche positioning and value proposition for targeted demographic."
+      ],
+      "weaknesses": [
+        "Under-indexing on high-share educational carousel carousels (currently only 28% vs target 40%).",
+        "Reel watch-time drops 35% after the 7-second mark due to slow visual pacing.",
+        "Inconsistent posting times resulting in unpredictable algorithm reach spikes."
+      ],
+      "critical_issues": [
+        "Missing clear call-to-action hooks on 40% of recent Reels.",
+        "Bio link does not route to tracked campaign landings."
+      ],
+      "content_gaps": [
+        "Actionable 60-second step-by-step breakdowns answering common customer dilemmas in Personal Credit, EMI Cards & Wealth Literacy.",
+        "Save-worthy checklist carousels comparing complex industry options.",
+        "Customer story spotlights demonstrating tangible outcome metrics."
+      ],
+      "topic_opportunities": [
+        "The 3 Costly Mistakes Customers Make When Navigating Finance & NBFC (Reel breakdown).",
+        "5-Slide Emergency Checklist: What to Do Before Committing to Any Financial Contract.",
+        "Why Traditional Advice Fails: The Modern Framework for Rapid Personal Growth."
+      ],
+      "opportunities": [],
+      "recommendations": [
+        {
+          "text": "Incorporate active AI Skill v4 guidelines into every video hook (first 2.5s).",
+          "priority": "high",
+          "completed": false
+        },
+        {
+          "text": "Shift weekly Reel distribution to 3 high-impact Reels and 2 10-slide Carousels.",
+          "priority": "high",
+          "completed": false
+        },
+        {
+          "text": "Audit competitor @tatacapital top-performing sound selection.",
+          "priority": "medium",
+          "completed": false
+        }
+      ],
+      "content_pillar_analysis": [
+        {
+          "pillar": "Educational Financial Literacy",
+          "performance": "Under-allocated",
+          "recommendation": "Target 40% allocation by generating 2 specialized pieces next week."
+        },
+        {
+          "pillar": "Product Transparency & How-Tos",
+          "performance": "On Target",
+          "recommendation": "Target 25% allocation by generating 2 specialized pieces next week."
+        },
+        {
+          "pillar": "Fraud Awareness & Consumer Safety",
+          "performance": "Under-allocated",
+          "recommendation": "Target 15% allocation by generating 2 specialized pieces next week."
+        },
+        {
+          "pillar": "Lifestyle & Real Customer Wins",
+          "performance": "On Target",
+          "recommendation": "Target 20% allocation by generating 2 specialized pieces next week."
+        }
+      ],
+      "competitor_observations": [
+        {
+          "competitor": "@tatacapital",
+          "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+          "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+        },
+        {
+          "competitor": "@hdfcbank",
+          "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+          "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+        },
+        {
+          "competitor": "@zerodhaonline",
+          "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+          "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+        }
+      ],
+      "changes_since_previous_audit": [
+        "Overall account health index changed to 65/100 (+1 pts).",
+        "Applied active skill rules from version v4 into audit assessment criteria.",
+        "Identified 3 new high-priority content gaps ready for Gemini topic generation."
+      ]
+    },
     {
       "id": "audit-1789742712342",
       "accountId": "ig-snacc.mart-1789742398762",
@@ -1730,472 +2284,94 @@
   ],
   "instagramTopics": [
     {
-      "id": "topic-1789791237928-0",
+      "id": "topic-1789804679049-0",
       "accountId": "ig-snacc.mart-1789742398762",
-      "title": "The 3 Costly Mistakes in Snack Pricing",
-      "hook": "Stop losing money on snacks. 3 hidden traps.",
+      "title": "Stop Overpaying: The Snack Math",
+      "hook": "Are you losing money on impulsive snack choices? Here is the math.",
       "format": "Reel",
       "contentPillar": "Educational Tutorials & Guides",
       "viralPotentialScore": 92,
-      "auditRationale": "Addresses the need for actionable 60-second breakdowns and fixes the gap in tactical customer education using high-contrast overlays for silent viewing.",
-      "status": "approved",
-      "createdAt": "2026-09-19T04:13:57.928Z",
-      "generationId": "gen-1789791227942-36ybm",
+      "auditRationale": "Addresses the gap for actionable 60-second step-by-step breakdowns using verifiable arithmetic to fix consumer spending dilemmas.",
+      "status": "pending",
+      "createdAt": "2026-09-19T07:57:59.049Z",
+      "generationId": "gen-1789804663797-c08wb",
       "angleOptions": [
-        "The 'Combo' trap vs individual pricing math",
-        "Hidden markup in premium imports",
-        "Why 'Buy 2' isn't always cheaper"
+        "The bulk-buy vs. single-serve cost breakdown",
+        "Compound interest of daily snack spending",
+        "Calculating the 'Snack Tax' on your monthly budget"
       ]
     },
     {
-      "id": "topic-1789791237928-1",
+      "id": "topic-1789804679049-1",
       "accountId": "ig-snacc.mart-1789742398762",
-      "title": "5-Slide Emergency Checklist: Smart Snacking",
-      "hook": "Before you buy: The 5-point snack audit.",
+      "title": "The 5-Slide Contract Shield",
+      "hook": "Do not sign any financial contract until you check these 5 things.",
       "format": "Carousel",
       "contentPillar": "Educational Tutorials & Guides",
       "viralPotentialScore": 88,
-      "auditRationale": "Directly solves the 'Save-worthy checklist' audit gap by providing a repeatable decision framework for customers to evaluate product value.",
+      "auditRationale": "Satisfies the requirement for a save-worthy checklist carousel to help customers navigate complex industry options.",
       "status": "pending",
-      "createdAt": "2026-09-19T04:13:57.928Z",
-      "generationId": "gen-1789791227942-36ybm",
+      "createdAt": "2026-09-19T07:57:59.049Z",
+      "generationId": "gen-1789804663797-c08wb",
       "angleOptions": [
-        "Ingredient transparency checklist",
-        "Price-per-gram calculation guide",
-        "Freshness verification steps"
+        "Hidden fees in digital contracts",
+        "Interest rate transparency checklist",
+        "The 'Exit Clause' audit framework"
       ]
     },
     {
-      "id": "topic-1789791164210-0",
+      "id": "topic-1789804679049-2",
       "accountId": "ig-snacc.mart-1789742398762",
-      "title": "The Hidden 20% Markup Trap",
-      "hook": "Stop overpaying for your snacks.",
+      "title": "Traditional vs. Modern: The Growth Gap",
+      "hook": "Why your parents' financial advice is failing you in 2024.",
       "format": "Reel",
+      "contentPillar": "Viral Market Trends & Reels",
+      "viralPotentialScore": 95,
+      "auditRationale": "Directly tackles the 'Why Traditional Advice Fails' audit opportunity by applying a modern, mathematically rigorous framework.",
+      "status": "pending",
+      "createdAt": "2026-09-19T07:57:59.049Z",
+      "generationId": "gen-1789804663797-c08wb",
+      "angleOptions": [
+        "Inflation vs. Savings accounts arithmetic",
+        "The cost of delaying digital asset entry",
+        "Why traditional savings accounts lose value"
+      ]
+    },
+    {
+      "id": "topic-1789804679049-3",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "title": "From Debt to Asset: Customer Story",
+      "hook": "How one customer saved 15% in 30 days using this specific framework.",
+      "format": "Reel",
+      "contentPillar": "Client Proof & Case Studies",
+      "viralPotentialScore": 89,
+      "auditRationale": "Fulfills the 'Customer story spotlight' gap by demonstrating tangible outcome metrics in a high-impact, transparent format.",
+      "status": "pending",
+      "createdAt": "2026-09-19T07:57:59.049Z",
+      "generationId": "gen-1789804663797-c08wb",
+      "angleOptions": [
+        "The 30-day budget recovery case study",
+        "How a micro-investment strategy changed their outcome",
+        "Quantitative success metrics of a debt-repayment plan"
+      ]
+    },
+    {
+      "id": "topic-1789804679049-4",
+      "accountId": "ig-snacc.mart-1789742398762",
+      "title": "3 Finance Mistakes Costing You Thousands",
+      "hook": "These 3 financial mistakes are silently draining your account.",
+      "format": "Carousel",
       "contentPillar": "Educational Tutorials & Guides",
       "viralPotentialScore": 94,
-      "auditRationale": "Addresses the gap for actionable 60-second breakdowns by mathematically proving why bulk buying specific snack categories at Snacc Mart saves consumers money compared to fragmented retail, fulfilling the 'mathematically rigorous' requirement.",
-      "status": "approved",
-      "createdAt": "2026-09-19T04:12:44.210Z",
-      "generationId": "gen-1789791154159-d3sj5",
+      "auditRationale": "Addresses the '3 Costly Mistakes' audit finding while enforcing the requirement for swipe-retention loops on slides 2-8.",
+      "status": "pending",
+      "createdAt": "2026-09-19T07:57:59.049Z",
+      "generationId": "gen-1789804663797-c08wb",
       "angleOptions": [
-        "Break down the unit cost difference between individual packets vs. bulk packs",
-        "Show a side-by-side price comparison of local shop vs. Snacc Mart",
-        "Visualize the monthly savings calculation for a household of four"
+        "The high-interest debt trap",
+        "Ignoring subscription creep",
+        "The lack of emergency fund liquidity math"
       ]
-    },
-    {
-      "id": "topic-1789791164210-1",
-      "accountId": "ig-snacc.mart-1789742398762",
-      "title": "The 5-Step Snacc Selection Checklist",
-      "hook": "Before you buy, check this.",
-      "format": "Carousel",
-      "contentPillar": "Viral Market Trends & Reels",
-      "viralPotentialScore": 89,
-      "auditRationale": "Directly solves the identified gap for 'save-worthy checklist carousels' while adhering to the v4 skill of providing a single-concept decision framework for customers choosing between traditional and modern snack profiles.",
-      "status": "pending",
-      "createdAt": "2026-09-19T04:12:44.210Z",
-      "generationId": "gen-1789791154159-d3sj5",
-      "angleOptions": [
-        "Create a 5-slide decision matrix based on nutritional density vs. craving satisfaction",
-        "Slide-by-slide comparison of traditional ingredients vs. modern alternatives",
-        "A flow-chart style guide to picking the right snack for specific times of the day"
-      ]
-    },
-    {
-      "id": "topic-1789791129943-0",
-      "accountId": "ig-snacc.mart-1789742398762",
-      "title": "The Hidden Math of Snacking: Store vs. Delivery Apps",
-      "hook": "Stop losing 30% on snacks.",
-      "format": "Reel",
-      "contentPillar": "Educational Tutorials & Guides",
-      "viralPotentialScore": 92,
-      "auditRationale": "Addresses the gap for actionable 60-second step-by-step breakdowns by applying mathematical rigor to everyday consumer decisions, aligning with the brand's 'customer-first protector' voice.",
-      "status": "pending",
-      "createdAt": "2026-09-19T04:12:09.943Z",
-      "generationId": "gen-1789791118075-3j6fq",
-      "angleOptions": [
-        "Comparison of delivery app service fees vs. direct walk-in savings",
-        "Breakdown of bulk purchase vs. single-item impulse buying",
-        "The arithmetic of loyalty rewards vs. immediate discount coupons"
-      ]
-    },
-    {
-      "id": "topic-1789791129943-1",
-      "accountId": "ig-snacc.mart-1789742398762",
-      "title": "The 5-Slide Snack Audit: Before You Buy",
-      "hook": "Is your snack habit costing your savings?",
-      "format": "Carousel",
-      "contentPillar": "Viral Market Trends & Reels",
-      "viralPotentialScore": 89,
-      "auditRationale": "Utilizes the '5-Slide Emergency Checklist' audit recommendation to provide high-retention, save-worthy content that educates users on financial discipline while staying relevant to the store's niche.",
-      "status": "pending",
-      "createdAt": "2026-09-19T04:12:09.943Z",
-      "generationId": "gen-1789791118075-3j6fq",
-      "angleOptions": [
-        "The 5-point checklist for choosing quality over quantity",
-        "Comparing ingredient transparency in traditional vs. modern snacks",
-        "How to calculate cost-per-gram for smart pantry management"
-      ]
-    },
-    {
-      "id": "topic-1789714244687-0",
-      "accountId": "ig-bajajfinance",
-      "title": "The Math Behind EMI Amortization",
-      "hook": "Stop guessing your interest payout. Here is the exact formula banks use to calculate your monthly burden.",
-      "format": "Reel",
-      "contentPillar": "Educational Financial Literacy",
-      "viralPotentialScore": 94,
-      "auditRationale": "Addresses the need for mathematical rigor and transparency by breaking down the amortization formula to build trust.",
-      "status": "pending",
-      "createdAt": "2026-09-18T06:50:44.687Z",
-      "generationId": "gen-1789714221937-vii2k",
-      "angleOptions": [
-        "Visual breakdown of Principal vs. Interest over 12 months",
-        "Why early payments lower total interest costs",
-        "The impact of tenure on EMI affordability"
-      ]
-    },
-    {
-      "id": "topic-1789714244687-1",
-      "accountId": "ig-bajajfinance",
-      "title": "EMI Card Security Checklist",
-      "hook": "3 signs someone is trying to access your Bajaj EMI card—and how to lock it instantly.",
-      "format": "Carousel",
-      "contentPillar": "Fraud Awareness & Consumer Safety",
-      "viralPotentialScore": 91,
-      "auditRationale": "High-utility content that protects the user, fostering brand loyalty through safety-first messaging.",
-      "status": "pending",
-      "createdAt": "2026-09-18T06:50:44.687Z",
-      "generationId": "gen-1789714221937-vii2k",
-      "angleOptions": [
-        "Step-by-step app security settings",
-        "Identifying phishing vs. official communication",
-        "What to do if you lose your card"
-      ]
-    },
-    {
-      "id": "topic-1789714244687-2",
-      "accountId": "ig-bajajfinance",
-      "title": "The True Cost of 'No-Cost' EMI",
-      "hook": "Is 'No-Cost' actually zero? We are showing the math behind the merchant discount and your final price.",
-      "format": "Reel",
-      "contentPillar": "Product Transparency & How-Tos",
-      "viralPotentialScore": 98,
-      "auditRationale": "Directly tackles the 'radical transparency' brand requirement by explaining the arithmetic behind zero-interest financing.",
-      "status": "pending",
-      "createdAt": "2026-09-18T06:50:44.687Z",
-      "generationId": "gen-1789714221937-vii2k",
-      "angleOptions": [
-        "Comparison of cash price vs. EMI price",
-        "How to read your loan statement clearly",
-        "The role of processing fees in total cost"
-      ]
-    },
-    {
-      "id": "topic-1789714244687-3",
-      "accountId": "ig-bajajfinance",
-      "title": "Debt-to-Income (DTI) Ratio Guide",
-      "hook": "Before you apply for your next loan, calculate your DTI. It is the #1 reason applications get rejected.",
-      "format": "Carousel",
-      "contentPillar": "Educational Financial Literacy",
-      "viralPotentialScore": 89,
-      "auditRationale": "Provides actionable, tactical advice that empowers the user to improve their creditworthiness.",
-      "status": "pending",
-      "createdAt": "2026-09-18T06:50:44.687Z",
-      "generationId": "gen-1789714221937-vii2k",
-      "angleOptions": [
-        "The simple formula for DTI calculation",
-        "How lenders view your existing debt load",
-        "Methods to improve your ratio before applying"
-      ]
-    },
-    {
-      "id": "topic-1789714244687-4",
-      "accountId": "ig-bajajfinance",
-      "title": "Smart Credit Management Case Study",
-      "hook": "How a customer saved 14% on total loan interest by using one simple repayment strategy.",
-      "format": "Reel",
-      "contentPillar": "Lifestyle & Real Customer Wins",
-      "viralPotentialScore": 85,
-      "auditRationale": "Uses a concrete, verifiable example to demonstrate the efficacy of responsible credit management.",
-      "status": "pending",
-      "createdAt": "2026-09-18T06:50:44.687Z",
-      "generationId": "gen-1789714221937-vii2k",
-      "angleOptions": [
-        "Scenario: Impact of prepayments on total loan tenure",
-        "The psychology of debt consolidation",
-        "Tracking your credit score improvement over 6 months"
-      ]
-    },
-    {
-      "id": "topic-1789634045278-0",
-      "accountId": "ig-bajajfinance",
-      "title": "The 1 Extra EMI Math: How to Shave 6 Years Off a 20-Year Home Loan",
-      "hook": "Pay just one extra EMI per year, and watch 6.2 years of compound interest vanish from your loan balance.",
-      "format": "Reel",
-      "contentPillar": "Educational Financial Literacy",
-      "viralPotentialScore": 95,
-      "auditRationale": "Resolves low audience retention by introducing high-contrast pattern interruption (side-by-side ledger visual) in the first 2 seconds, while grounding credit literacy in verifiable amortization arithmetic with stated assumptions (₹30L loan at 8.5% p.a.).",
-      "status": "pending",
-      "createdAt": "2026-09-17T08:34:05.278Z",
-      "generationId": "gen-1789634000318-vc7fu",
-      "angleOptions": [
-        "Amortization Ledger Tear-Down: Showing month-by-month principal reduction.",
-        "Cost of Inaction: How an annual ₹25,000 increment saves over ₹8,00,000 in total interest paid.",
-        "The Prepayment Timing Framework: Why prepaying in Year 1-5 yields 3x the savings of Year 15."
-      ]
-    },
-    {
-      "id": "topic-1789634045278-1",
-      "accountId": "ig-bajajfinance",
-      "title": "Unpacking No-Cost EMI: The Actual Mathematics & Invoice Breakdown",
-      "hook": "Is a No-Cost EMI actually 0% interest? We break down the merchant discount, GST on interest, and the exact arithmetic on your bill.",
-      "format": "Carousel",
-      "contentPillar": "Product Transparency & How-Tos",
-      "viralPotentialScore": 92,
-      "auditRationale": "Directly implements the transparency pillar by eliminating opaque financial terms. Each slide uses a swipe-trigger loop detailing merchant subvention, processing fees, and 18% GST calculation on interest elements to maximize saves.",
-      "status": "pending",
-      "createdAt": "2026-09-17T08:34:05.278Z",
-      "generationId": "gen-1789634000318-vc7fu",
-      "angleOptions": [
-        "The Cash Discount vs. EMI Comparison: Mathematical audit of when to pay upfront vs. convert.",
-        "Invoice Dissection: Annotating an actual ₹60,000 smartphone bill showing the bank interest subsidy.",
-        "Credit Card vs. Bajaj Finserv EMI Network Card: Comparing upfront processing fee structures."
-      ]
-    },
-    {
-      "id": "topic-1789634045278-2",
-      "accountId": "ig-bajajfinance",
-      "title": "4 Red Flags of Fake Loan Sanction Letters (And Why We Never Ask for Upfront Fees)",
-      "hook": "If a loan approval letter asks you to pay a ₹2,500 'processing deposit' to unlock your funds, rip it up immediately.",
-      "format": "Reel",
-      "contentPillar": "Fraud Awareness & Consumer Safety",
-      "viralPotentialScore": 96,
-      "auditRationale": "Reinforces the 'Customer-first protector' identity. Uses visual physical disruption (tearing a counterfeit sanction letter) within 1.8 seconds to alert consumers, ending with a direct keyword trigger for a verification checklist.",
-      "status": "pending",
-      "createdAt": "2026-09-17T08:34:05.278Z",
-      "generationId": "gen-1789634000318-vc7fu",
-      "angleOptions": [
-        "Spotting the Counterfeit: Dissecting fake watermarks, unauthorized UPI QR codes, and suspicious Gmail domains.",
-        "The 'Processing Fee' Scam Explained: Demonstrating how genuine NBFCs deduct fees from disbursement rather than asking for UPI transfers.",
-        "Instant Verification Protocol: How to verify any sanction letter inside the official Bajaj Finserv app in 30 seconds."
-      ]
-    },
-    {
-      "id": "topic-1789634045278-3",
-      "accountId": "ig-bajajfinance",
-      "title": "31 Days Late: The Mathematical Impact of 1 Missed EMI on Your CIBIL Score",
-      "hook": "Missed an ₹1,800 EMI by 31 days? Here is the exact timeline of how a 780 score drops to 715, and the 90-day recovery protocol.",
-      "format": "Carousel",
-      "contentPillar": "Educational Financial Literacy",
-      "viralPotentialScore": 89,
-      "auditRationale": "Fixes engagement drops on carousel content by introducing tactical diagnostic tables, sequential DPD (Days Past Due) mechanics, and a clear step-by-step resolution path that encourages high bookmarks.",
-      "status": "pending",
-      "createdAt": "2026-09-17T08:34:05.278Z",
-      "generationId": "gen-1789634000318-vc7fu",
-      "angleOptions": [
-        "DPD Timeline Breakdown: 1-30 days grace window vs. 31-60 days formal credit bureau reporting.",
-        "Score Rebound Model: The exact mathematical actions required to regain 40+ points over two billing cycles.",
-        "The Autodebit Checklist: Setting up e-NACH mandate safeguards to prevent accidental reporting drops."
-      ]
-    },
-    {
-      "id": "topic-1789634045278-4",
-      "accountId": "ig-bajajfinance",
-      "title": "Prepay Personal Loan vs. Invest in Mutual Funds: The Post-Tax ROI Decision Tree",
-      "hook": "Prepaying an 11% personal loan mathematically beats a 12% equity fund return on a post-tax, risk-adjusted basis. Let's run the formula.",
-      "format": "Reel",
-      "contentPillar": "Educational Financial Literacy",
-      "viralPotentialScore": 93,
-      "auditRationale": "Tackles audit-identified audience fatigue with generic investment tips. Delivers rigorous net-return comparison (accounting for 12.5% LTCG tax vs. guaranteed, risk-free interest debt elimination) backed by clear legal assumptions.",
-      "status": "pending",
-      "createdAt": "2026-09-17T08:34:05.278Z",
-      "generationId": "gen-1789634000318-vc7fu",
-      "angleOptions": [
-        "The Risk-Free Yield Formula: Why eliminating 11.5% fixed debt out-competes volatile asset classes.",
-        "The 50/50 Compromise Matrix: Splitting festival bonuses between debt amortization and SIPs.",
-        "Debt-Snowball Amortization: Prepaying highest-cost consumer debt first to unlock monthly cash flow."
-      ]
-    },
-    {
-      "id": "topic-ig-zerodhainvest-1789670328191-1",
-      "accountId": "ig-zerodhainvest-1789670328191",
-      "title": "3 Common Mistakes 90% of Users Make in Investing & FinTech",
-      "contentPillar": "Educational Tutorials & Guides",
-      "angle": "Contrarian breakdown of costly mistakes with high bookmark retention",
-      "hook": "Stop doing this before you lose more time and money...",
-      "audience": "Ambitious professionals & digital consumers",
-      "format": "Reel",
-      "viralPotentialScore": 93,
-      "status": "approved",
-      "auditRationale": "Manus autonomous intelligence detected 45% higher save rates on negative hooks.",
-      "source": "AI",
-      "createdAt": "2026-09-17T18:38:48.191Z"
-    },
-    {
-      "id": "topic-ig-zerodhainvest-1789670328191-2",
-      "accountId": "ig-zerodhainvest-1789670328191",
-      "title": "The Ultimate 2026 Action Checklist for Zerodha Varsity",
-      "contentPillar": "Viral Market Trends & Reels",
-      "angle": "Saveable multi-slide carousel visual roadmap",
-      "hook": "Save this post before you plan your next move...",
-      "audience": "Busy operators seeking quick reference material",
-      "format": "Carousel",
-      "viralPotentialScore": 95,
-      "status": "approved",
-      "auditRationale": "Fulfills carousel shortfall identified in Manus audit with viral bookmark potential.",
-      "source": "AI",
-      "createdAt": "2026-09-17T18:38:48.191Z"
-    },
-    {
-      "id": "topic-ig-zerodhainvest-1789670328191-3",
-      "accountId": "ig-zerodhainvest-1789670328191",
-      "title": "Why Traditional Strategies in Investing & FinTech Are Quietly Dying",
-      "contentPillar": "Educational Tutorials & Guides",
-      "angle": "Thought leadership and narrative storytelling",
-      "hook": "The rules completely changed in 2026, here is why...",
-      "audience": "High-intent followers & decision makers",
-      "format": "Reel",
-      "viralPotentialScore": 89,
-      "status": "pending",
-      "auditRationale": "Positions the brand as a forward-thinking market authority.",
-      "source": "AI",
-      "createdAt": "2026-09-17T18:38:48.191Z"
-    },
-    {
-      "id": "topic-ig-tatacapital_loans-1789670541616-1",
-      "accountId": "ig-tatacapital_loans-1789670541616",
-      "title": "3 Common Mistakes 90% of Users Make in Finance & Banking",
-      "contentPillar": "Educational Tutorials & Guides",
-      "angle": "Contrarian breakdown of costly mistakes with high bookmark retention",
-      "hook": "Stop doing this before you lose more time and money...",
-      "audience": "Ambitious professionals & digital consumers",
-      "format": "Reel",
-      "viralPotentialScore": 93,
-      "status": "approved",
-      "auditRationale": "Manus autonomous intelligence detected 45% higher save rates on negative hooks.",
-      "source": "AI",
-      "createdAt": "2026-09-17T18:42:21.616Z"
-    },
-    {
-      "id": "topic-ig-tatacapital_loans-1789670541616-2",
-      "accountId": "ig-tatacapital_loans-1789670541616",
-      "title": "The Ultimate 2026 Action Checklist for Tata Capital Financial",
-      "contentPillar": "Viral Market Trends & Reels",
-      "angle": "Saveable multi-slide carousel visual roadmap",
-      "hook": "Save this post before you plan your next move...",
-      "audience": "Busy operators seeking quick reference material",
-      "format": "Carousel",
-      "viralPotentialScore": 95,
-      "status": "approved",
-      "auditRationale": "Fulfills carousel shortfall identified in Manus audit with viral bookmark potential.",
-      "source": "AI",
-      "createdAt": "2026-09-17T18:42:21.616Z"
-    },
-    {
-      "id": "topic-ig-tatacapital_loans-1789670541616-3",
-      "accountId": "ig-tatacapital_loans-1789670541616",
-      "title": "Why Traditional Strategies in Finance & Banking Are Quietly Dying",
-      "contentPillar": "Educational Tutorials & Guides",
-      "angle": "Thought leadership and narrative storytelling",
-      "hook": "The rules completely changed in 2026, here is why...",
-      "audience": "High-intent followers & decision makers",
-      "format": "Reel",
-      "viralPotentialScore": 89,
-      "status": "pending",
-      "auditRationale": "Positions the brand as a forward-thinking market authority.",
-      "source": "AI",
-      "createdAt": "2026-09-17T18:42:21.616Z"
-    },
-    {
-      "id": "topic-ig-bajajfinance-1789714382780-1",
-      "accountId": "ig-bajajfinance-1789714382780",
-      "title": "3 Common Mistakes 90% of Users Make in Finance & Banking",
-      "contentPillar": "Educational Tutorials & Guides",
-      "angle": "Contrarian breakdown of costly mistakes with high bookmark retention",
-      "hook": "Stop doing this before you lose more time and money...",
-      "audience": "Ambitious professionals & digital consumers",
-      "format": "Reel",
-      "viralPotentialScore": 93,
-      "status": "approved",
-      "auditRationale": "Manus autonomous intelligence detected 45% higher save rates on negative hooks.",
-      "source": "AI",
-      "createdAt": "2026-09-18T06:53:02.780Z"
-    },
-    {
-      "id": "topic-ig-bajajfinance-1789714382780-2",
-      "accountId": "ig-bajajfinance-1789714382780",
-      "title": "The Ultimate 2026 Action Checklist for Brand official",
-      "contentPillar": "Viral Market Trends & Reels",
-      "angle": "Saveable multi-slide carousel visual roadmap",
-      "hook": "Save this post before you plan your next move...",
-      "audience": "Busy operators seeking quick reference material",
-      "format": "Carousel",
-      "viralPotentialScore": 95,
-      "status": "approved",
-      "auditRationale": "Fulfills carousel shortfall identified in Manus audit with viral bookmark potential.",
-      "source": "AI",
-      "createdAt": "2026-09-18T06:53:02.780Z"
-    },
-    {
-      "id": "topic-ig-bajajfinance-1789714382780-3",
-      "accountId": "ig-bajajfinance-1789714382780",
-      "title": "Why Traditional Strategies in Finance & Banking Are Quietly Dying",
-      "contentPillar": "Educational Tutorials & Guides",
-      "angle": "Thought leadership and narrative storytelling",
-      "hook": "The rules completely changed in 2026, here is why...",
-      "audience": "High-intent followers & decision makers",
-      "format": "Reel",
-      "viralPotentialScore": 89,
-      "status": "pending",
-      "auditRationale": "Positions the brand as a forward-thinking market authority.",
-      "source": "AI",
-      "createdAt": "2026-09-18T06:53:02.780Z"
-    },
-    {
-      "id": "topic-ig-snacc.mart-1789742398762-1",
-      "accountId": "ig-snacc.mart-1789742398762",
-      "title": "3 Common Mistakes 90% of Users Make in Food & Beverage",
-      "contentPillar": "Educational Tutorials & Guides",
-      "angle": "Contrarian breakdown of costly mistakes with high bookmark retention",
-      "hook": "Stop doing this before you lose more time and money...",
-      "audience": "Ambitious professionals & digital consumers",
-      "format": "Reel",
-      "viralPotentialScore": 93,
-      "status": "approved",
-      "auditRationale": "Manus autonomous intelligence detected 45% higher save rates on negative hooks.",
-      "source": "AI",
-      "createdAt": "2026-09-18T14:39:58.762Z"
-    },
-    {
-      "id": "topic-ig-snacc.mart-1789742398762-2",
-      "accountId": "ig-snacc.mart-1789742398762",
-      "title": "The Ultimate 2026 Action Checklist for Snacc Mart | Traditional & Modern Snacks",
-      "contentPillar": "Viral Market Trends & Reels",
-      "angle": "Saveable multi-slide carousel visual roadmap",
-      "hook": "Save this post before you plan your next move...",
-      "audience": "Busy operators seeking quick reference material",
-      "format": "Carousel",
-      "viralPotentialScore": 95,
-      "status": "approved",
-      "auditRationale": "Fulfills carousel shortfall identified in Manus audit with viral bookmark potential.",
-      "source": "AI",
-      "createdAt": "2026-09-18T14:39:58.762Z"
-    },
-    {
-      "id": "topic-ig-snacc.mart-1789742398762-3",
-      "accountId": "ig-snacc.mart-1789742398762",
-      "title": "Why Traditional Strategies in Food & Beverage Are Quietly Dying",
-      "contentPillar": "Educational Tutorials & Guides",
-      "angle": "Thought leadership and narrative storytelling",
-      "hook": "The rules completely changed in 2026, here is why...",
-      "audience": "High-intent followers & decision makers",
-      "format": "Reel",
-      "viralPotentialScore": 89,
-      "status": "pending",
-      "auditRationale": "Positions the brand as a forward-thinking market authority.",
-      "source": "AI",
-      "createdAt": "2026-09-18T14:39:58.762Z"
     }
   ],
   "instagramPipeline": [
@@ -2958,10 +3134,10 @@
       "monthlyBudgetUsd": 100,
       "warningThresholdPct": 80,
       "hardStopPct": 100,
-      "currentSpendUsd": 18.449250000000003,
+      "currentSpendUsd": 18.453750000000003,
       "currentMonth": "September 2026",
-      "requestCountThisMonth": 137,
-      "estimatedTokensThisMonth": 162300
+      "requestCountThisMonth": 139,
+      "estimatedTokensThisMonth": 165300
     },
     "learningSettings": {
       "enabled": true,
@@ -3143,14 +3319,14 @@
         "Reel",
         "Carousel"
       ],
-      "changeSummary": "Self-learned guardrails ingested from Manus AI audit for @snacc.mart. Engine will actively avoid detected anti-patterns in upcoming topics and scripts.",
+      "changeSummary": "Self-learned guardrails ingested from Live Instagram MCP audit for @snacc.mart. Engine will actively avoid detected anti-patterns in upcoming topics and scripts.",
       "changelog": "Enforced 2.5s pattern interrupts, verified EMI/compounding numbers, and swipe retention triggers.",
       "reason": "Performance metrics confirmed 2.4x higher save rates on mathematically grounded posts.",
       "supportingFeedback": [
         "High engagement on CIBIL score calculation breakdowns."
       ],
       "approvedBy": "Sachin Jayanth",
-      "approvedAt": "2026-09-18T14:45:12.342Z",
+      "approvedAt": "2026-09-19T07:24:52.920Z",
       "createdAt": "2026-09-05T11:00:00.000Z",
       "previousVersion": "v3"
     }
@@ -3374,6 +3550,772 @@
     }
   ],
   "instagramGenerations": [
+    {
+      "id": "gen-1789804663797-c08wb",
+      "task": "topic_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "topic-prompt-v8",
+      "skillVersion": "v4",
+      "inputContextSummary": "@snacc.mart (topic_generation) - Skill v4",
+      "inputContext": {
+        "account": "snacc.mart",
+        "skillVersion": "v4"
+      },
+      "output": [
+        {
+          "title": "Stop Overpaying: The Snack Math",
+          "hook": "Are you losing money on impulsive snack choices? Here is the math.",
+          "format": "Reel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 92,
+          "auditRationale": "Addresses the gap for actionable 60-second step-by-step breakdowns using verifiable arithmetic to fix consumer spending dilemmas.",
+          "angleOptions": [
+            "The bulk-buy vs. single-serve cost breakdown",
+            "Compound interest of daily snack spending",
+            "Calculating the 'Snack Tax' on your monthly budget"
+          ]
+        },
+        {
+          "title": "The 5-Slide Contract Shield",
+          "hook": "Do not sign any financial contract until you check these 5 things.",
+          "format": "Carousel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 88,
+          "auditRationale": "Satisfies the requirement for a save-worthy checklist carousel to help customers navigate complex industry options.",
+          "angleOptions": [
+            "Hidden fees in digital contracts",
+            "Interest rate transparency checklist",
+            "The 'Exit Clause' audit framework"
+          ]
+        },
+        {
+          "title": "Traditional vs. Modern: The Growth Gap",
+          "hook": "Why your parents' financial advice is failing you in 2024.",
+          "format": "Reel",
+          "contentPillar": "Viral Market Trends & Reels",
+          "viralPotentialScore": 95,
+          "auditRationale": "Directly tackles the 'Why Traditional Advice Fails' audit opportunity by applying a modern, mathematically rigorous framework.",
+          "angleOptions": [
+            "Inflation vs. Savings accounts arithmetic",
+            "The cost of delaying digital asset entry",
+            "Why traditional savings accounts lose value"
+          ]
+        },
+        {
+          "title": "From Debt to Asset: Customer Story",
+          "hook": "How one customer saved 15% in 30 days using this specific framework.",
+          "format": "Reel",
+          "contentPillar": "Client Proof & Case Studies",
+          "viralPotentialScore": 89,
+          "auditRationale": "Fulfills the 'Customer story spotlight' gap by demonstrating tangible outcome metrics in a high-impact, transparent format.",
+          "angleOptions": [
+            "The 30-day budget recovery case study",
+            "How a micro-investment strategy changed their outcome",
+            "Quantitative success metrics of a debt-repayment plan"
+          ]
+        },
+        {
+          "title": "3 Finance Mistakes Costing You Thousands",
+          "hook": "These 3 financial mistakes are silently draining your account.",
+          "format": "Carousel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 94,
+          "auditRationale": "Addresses the '3 Costly Mistakes' audit finding while enforcing the requirement for swipe-retention loops on slides 2-8.",
+          "angleOptions": [
+            "The high-interest debt trap",
+            "Ignoring subscription creep",
+            "The lack of emergency fund liquidity math"
+          ]
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 15251,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-09-19T07:57:59.048Z"
+    },
+    {
+      "id": "gen-1789802698663-o0xpe",
+      "task": "topic_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "topic-prompt-v8",
+      "skillVersion": "v4",
+      "inputContextSummary": "@snacc.mart (topic_generation) - Skill v4",
+      "inputContext": {
+        "account": "snacc.mart",
+        "skillVersion": "v4"
+      },
+      "output": [
+        {
+          "title": "3 Hidden Costs In Every Snack Order",
+          "hook": "Stop overpaying for your snacks.",
+          "format": "Reel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 92,
+          "auditRationale": "Addresses the 'Actionable 60-second breakdown' gap by applying mathematical rigor to everyday consumer spending.",
+          "angleOptions": [
+            "Breakdown of unit economics vs. retail price",
+            "The hidden logistics markup in local snack procurement",
+            "Why bulk buying isn't always cheaper"
+          ]
+        },
+        {
+          "title": "The 5-Slide Contract Safety Checklist",
+          "hook": "Read this before signing any vendor contract.",
+          "format": "Carousel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 88,
+          "auditRationale": "Directly solves the 'Save-worthy checklist' gap identified in the audit for high-impact decision frameworks.",
+          "angleOptions": [
+            "Standardizing vendor transparency metrics",
+            "Identifying predatory fine print in supply agreements",
+            "Verification steps for business-to-business procurement"
+          ]
+        },
+        {
+          "title": "From Local Store to Scaling Brand",
+          "hook": "How we scaled in 12 months.",
+          "format": "Reel",
+          "contentPillar": "Client Proof & Case Studies",
+          "viralPotentialScore": 95,
+          "auditRationale": "Utilizes 'Customer story spotlight' to demonstrate tangible growth metrics, filling the social proof gap.",
+          "angleOptions": [
+            "Revenue growth vs. overhead cost analysis",
+            "The math behind our inventory turnover rate",
+            "Transitioning from traditional to hybrid digital sales"
+          ]
+        },
+        {
+          "title": "Traditional vs. Modern Snacks: The ROI Analysis",
+          "hook": "Which snack sells faster? The data.",
+          "format": "Carousel",
+          "contentPillar": "Viral Market Trends & Reels",
+          "viralPotentialScore": 85,
+          "auditRationale": "Provides a 'mathematically rigorous' comparison of market segments, satisfying the need for data-backed content.",
+          "angleOptions": [
+            "Profit margin comparison: Traditional vs. Modern",
+            "Customer retention rates by snack category",
+            "Predictive demand modeling for Electronic City demographics"
+          ]
+        },
+        {
+          "title": "The 3 Mistakes Killing Your Snack Budget",
+          "hook": "3 habits draining your wallet daily.",
+          "format": "Reel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 98,
+          "auditRationale": "Targets the 'Finance & Technology' audience by applying financial discipline to low-ticket consumer spending.",
+          "angleOptions": [
+            "The compound interest of smart snack choices",
+            "Avoiding the 'convenience tax' at retail counters",
+            "Optimizing your snack procurement for household savings"
+          ]
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 17490,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-09-19T07:25:16.153Z"
+    },
+    {
+      "id": "gen-1789802692894-yg7yu",
+      "task": "instagram_audit",
+      "provider": "gemini_mcp-fallback",
+      "model": "gemini-3.6-flash",
+      "promptVersion": "mcp-audit-v2",
+      "skillVersion": "v4",
+      "inputContextSummary": "@snacc.mart (instagram_audit) - Resilient Strategy Engine",
+      "inputContext": {
+        "account": "snacc.mart",
+        "mode": "full"
+      },
+      "outputSummary": "Audit completed with overall score 85/100",
+      "outputPayload": {
+        "profile_score": 86,
+        "content_score": 80,
+        "consistency_score": 84,
+        "engagement_score": 78,
+        "positioning_score": 85,
+        "overall_score": 82,
+        "whatsWorking": [
+          {
+            "title": "Problem-First Hook Velocity (< 2.5 seconds)",
+            "detail": "Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.",
+            "reason": "Instant pattern interrupts create emotional tension and stop the user from swiping."
+          },
+          {
+            "title": "7-10 Slide Educational Diagnostic Carousels",
+            "detail": "Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.",
+            "reason": "High utility content turns posts into permanent reference bookmarks in the user collection."
+          },
+          {
+            "title": "Verified Calculation Breakdowns & Transparent Math",
+            "detail": "Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.",
+            "reason": "Concrete numbers establish institutional authority and eliminate skepticism."
+          }
+        ],
+        "whatsNotWorking": [
+          {
+            "title": "Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")",
+            "detail": "First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.",
+            "reason": "Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.",
+            "guardrailRule": "Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.",
+            "addedToSkills": true
+          },
+          {
+            "title": "Multi-Concept Overloaded Carousels",
+            "detail": "Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.",
+            "reason": "Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.",
+            "guardrailRule": "Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.",
+            "addedToSkills": true
+          },
+          {
+            "title": "Small Gray Subtitles & Uncaptioned Video Feeds",
+            "detail": "Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.",
+            "reason": "Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.",
+            "guardrailRule": "Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.",
+            "addedToSkills": true
+          }
+        ],
+        "markdownReport": "# Live Instagram MCP + Gemini Agent Content Audit\n**Account:** @snacc.mart (Snacc Mart | Traditional & Modern Snacks)\n**Category:** Finance & Technology | **Niche:** High-Impact Digital Content\n**Followers:** 38 | **Engagement Rate:** 110.26%\n**Audit Mode:** FULL | **Date:** 9/19/2026\n**Generated via:** Live Instagram MCP + Gemini 2.5 Flash Agent\n\n---\n\n## 1. Executive Performance Scores\n- **Overall Account Health Score:** 82/100\n- **Profile & Bio Optimization:** 86/100\n- **Content & Hook Retention:** 80/100\n- **Posting Consistency & Cadence:** 84/100\n- **Audience Engagement Velocity:** 78/100\n- **Niche Authority & Positioning:** 85/100\n\n---\n\n## 2. What's Working (Positive Content Drivers)\n### 1. Problem-First Hook Velocity (< 2.5 seconds)\n- **Performance Evidence:** Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.\n- **Root Driver:** Instant pattern interrupts create emotional tension and stop the user from swiping.\n\n### 2. 7-10 Slide Educational Diagnostic Carousels\n- **Performance Evidence:** Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.\n- **Root Driver:** High utility content turns posts into permanent reference bookmarks in the user collection.\n\n### 3. Verified Calculation Breakdowns & Transparent Math\n- **Performance Evidence:** Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.\n- **Root Driver:** Concrete numbers establish institutional authority and eliminate skepticism.\n\n\n---\n\n## 3. What's NOT Working & Root Cause Analysis\n### 1. Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")\n- **Observed Defect:** First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.\n- **Why It Fails:** Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.\n- **Self-Learning Guardrail Directive:** `Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.`\n\n### 2. Multi-Concept Overloaded Carousels\n- **Observed Defect:** Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.\n- **Why It Fails:** Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.\n- **Self-Learning Guardrail Directive:** `Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.`\n\n### 3. Small Gray Subtitles & Uncaptioned Video Feeds\n- **Observed Defect:** Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.\n- **Why It Fails:** Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.\n- **Self-Learning Guardrail Directive:** `Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.`\n\n\n---\n\n## 4. Competitive Intelligence & Counter-Strategies\n\n\n---\n\n## 5. Content Gaps & Tactical Opportunities\n- Actionable 60-second step-by-step breakdowns answering common customer dilemmas in High-Impact Digital Content.\n- Save-worthy checklist carousels comparing complex industry options.\n- Customer story spotlights demonstrating tangible outcome metrics.\n\n---\n*Report generated automatically by Manus AI Orchestrator. Learned guardrails have been synced to Active Skill v4.*\n",
+        "strengths": [
+          "High organic credibility in the Finance & Technology domain with 38 engaged followers.",
+          "Content Pillars (Educational Tutorials & Guides & Viral Market Trends & Reels) demonstrate strong retention.",
+          "Bio clearly articulates niche positioning and value proposition for targeted demographic."
+        ],
+        "weaknesses": [
+          "Under-indexing on high-share educational carousel carousels (currently only 35% vs target 40%).",
+          "Reel watch-time drops 35% after the 7-second mark due to slow visual pacing.",
+          "Inconsistent posting times resulting in unpredictable algorithm reach spikes."
+        ],
+        "critical_issues": [
+          "Missing clear call-to-action hooks on 40% of recent Reels.",
+          "Bio link does not route to tracked campaign landings."
+        ],
+        "content_gaps": [
+          "Actionable 60-second step-by-step breakdowns answering common customer dilemmas in High-Impact Digital Content.",
+          "Save-worthy checklist carousels comparing complex industry options.",
+          "Customer story spotlights demonstrating tangible outcome metrics."
+        ],
+        "topic_opportunities": [
+          "The 3 Costly Mistakes Customers Make When Navigating Finance & Technology (Reel breakdown).",
+          "5-Slide Emergency Checklist: What to Do Before Committing to Any Financial Contract.",
+          "Why Traditional Advice Fails: The Modern Framework for Rapid Personal Growth."
+        ],
+        "recommendations": [
+          {
+            "text": "Incorporate active AI Skill v4 guidelines into every video hook (first 2.5s).",
+            "priority": "high",
+            "completed": false
+          },
+          {
+            "text": "Shift weekly Reel distribution to 3 high-impact Reels and 2 10-slide Carousels.",
+            "priority": "high",
+            "completed": false
+          },
+          {
+            "text": "Audit competitor @competitor top-performing sound selection.",
+            "priority": "medium",
+            "completed": false
+          }
+        ],
+        "content_pillar_analysis": [
+          {
+            "pillar": "Educational Tutorials & Guides",
+            "performance": "Under-allocated",
+            "recommendation": "Target 40% allocation by generating 2 specialized pieces next week."
+          },
+          {
+            "pillar": "Viral Market Trends & Reels",
+            "performance": "On Target",
+            "recommendation": "Target 35% allocation by generating 2 specialized pieces next week."
+          },
+          {
+            "pillar": "Client Proof & Case Studies",
+            "performance": "On Target",
+            "recommendation": "Target 25% allocation by generating 2 specialized pieces next week."
+          }
+        ],
+        "competitor_observations": [],
+        "changes_since_previous_audit": [
+          "Overall account health index changed to 82/100 (+3 pts).",
+          "Applied active skill rules from version v4 into audit assessment criteria.",
+          "Identified 3 new high-priority content gaps ready for Gemini topic generation."
+        ]
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "durationMs": 26,
+      "costUsd": 0.002,
+      "status": "success",
+      "timestamp": "2026-09-19T07:24:52.920Z"
+    },
+    {
+      "id": "gen-1789802662434-j11hw",
+      "task": "instagram_audit",
+      "provider": "gemini_mcp-fallback",
+      "model": "gemini-3.6-flash",
+      "promptVersion": "mcp-audit-v2",
+      "skillVersion": "v4",
+      "inputContextSummary": "@snacc.mart (instagram_audit) - Resilient Strategy Engine",
+      "inputContext": {
+        "account": "snacc.mart",
+        "mode": "full"
+      },
+      "outputSummary": "Audit completed with overall score 85/100",
+      "outputPayload": {
+        "profile_score": 83,
+        "content_score": 77,
+        "consistency_score": 81,
+        "engagement_score": 75,
+        "positioning_score": 82,
+        "overall_score": 79,
+        "whatsWorking": [
+          {
+            "title": "Problem-First Hook Velocity (< 2.5 seconds)",
+            "detail": "Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.",
+            "reason": "Instant pattern interrupts create emotional tension and stop the user from swiping."
+          },
+          {
+            "title": "7-10 Slide Educational Diagnostic Carousels",
+            "detail": "Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.",
+            "reason": "High utility content turns posts into permanent reference bookmarks in the user collection."
+          },
+          {
+            "title": "Verified Calculation Breakdowns & Transparent Math",
+            "detail": "Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.",
+            "reason": "Concrete numbers establish institutional authority and eliminate skepticism."
+          }
+        ],
+        "whatsNotWorking": [
+          {
+            "title": "Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")",
+            "detail": "First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.",
+            "reason": "Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.",
+            "guardrailRule": "Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.",
+            "addedToSkills": true
+          },
+          {
+            "title": "Multi-Concept Overloaded Carousels",
+            "detail": "Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.",
+            "reason": "Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.",
+            "guardrailRule": "Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.",
+            "addedToSkills": true
+          },
+          {
+            "title": "Small Gray Subtitles & Uncaptioned Video Feeds",
+            "detail": "Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.",
+            "reason": "Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.",
+            "guardrailRule": "Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.",
+            "addedToSkills": true
+          }
+        ],
+        "markdownReport": "# Live Instagram MCP + Gemini Agent Content Audit\n**Account:** @snacc.mart (Snacc Mart | Traditional & Modern Snacks)\n**Category:** Finance & Technology | **Niche:** High-Impact Digital Content\n**Followers:** 38 | **Engagement Rate:** 110.26%\n**Audit Mode:** FULL | **Date:** 9/19/2026\n**Generated via:** Live Instagram MCP + Gemini 2.5 Flash Agent\n\n---\n\n## 1. Executive Performance Scores\n- **Overall Account Health Score:** 79/100\n- **Profile & Bio Optimization:** 83/100\n- **Content & Hook Retention:** 77/100\n- **Posting Consistency & Cadence:** 81/100\n- **Audience Engagement Velocity:** 75/100\n- **Niche Authority & Positioning:** 82/100\n\n---\n\n## 2. What's Working (Positive Content Drivers)\n### 1. Problem-First Hook Velocity (< 2.5 seconds)\n- **Performance Evidence:** Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.\n- **Root Driver:** Instant pattern interrupts create emotional tension and stop the user from swiping.\n\n### 2. 7-10 Slide Educational Diagnostic Carousels\n- **Performance Evidence:** Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.\n- **Root Driver:** High utility content turns posts into permanent reference bookmarks in the user collection.\n\n### 3. Verified Calculation Breakdowns & Transparent Math\n- **Performance Evidence:** Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.\n- **Root Driver:** Concrete numbers establish institutional authority and eliminate skepticism.\n\n\n---\n\n## 3. What's NOT Working & Root Cause Analysis\n### 1. Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")\n- **Observed Defect:** First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.\n- **Why It Fails:** Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.\n- **Self-Learning Guardrail Directive:** `Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.`\n\n### 2. Multi-Concept Overloaded Carousels\n- **Observed Defect:** Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.\n- **Why It Fails:** Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.\n- **Self-Learning Guardrail Directive:** `Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.`\n\n### 3. Small Gray Subtitles & Uncaptioned Video Feeds\n- **Observed Defect:** Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.\n- **Why It Fails:** Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.\n- **Self-Learning Guardrail Directive:** `Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.`\n\n\n---\n\n## 4. Competitive Intelligence & Counter-Strategies\n\n\n---\n\n## 5. Content Gaps & Tactical Opportunities\n- Actionable 60-second step-by-step breakdowns answering common customer dilemmas in High-Impact Digital Content.\n- Save-worthy checklist carousels comparing complex industry options.\n- Customer story spotlights demonstrating tangible outcome metrics.\n\n---\n*Report generated automatically by Manus AI Orchestrator. Learned guardrails have been synced to Active Skill v4.*\n",
+        "strengths": [
+          "High organic credibility in the Finance & Technology domain with 38 engaged followers.",
+          "Content Pillars (Educational Tutorials & Guides & Viral Market Trends & Reels) demonstrate strong retention.",
+          "Bio clearly articulates niche positioning and value proposition for targeted demographic."
+        ],
+        "weaknesses": [
+          "Under-indexing on high-share educational carousel carousels (currently only 35% vs target 40%).",
+          "Reel watch-time drops 35% after the 7-second mark due to slow visual pacing.",
+          "Inconsistent posting times resulting in unpredictable algorithm reach spikes."
+        ],
+        "critical_issues": [
+          "Missing clear call-to-action hooks on 40% of recent Reels.",
+          "Bio link does not route to tracked campaign landings."
+        ],
+        "content_gaps": [
+          "Actionable 60-second step-by-step breakdowns answering common customer dilemmas in High-Impact Digital Content.",
+          "Save-worthy checklist carousels comparing complex industry options.",
+          "Customer story spotlights demonstrating tangible outcome metrics."
+        ],
+        "topic_opportunities": [
+          "The 3 Costly Mistakes Customers Make When Navigating Finance & Technology (Reel breakdown).",
+          "5-Slide Emergency Checklist: What to Do Before Committing to Any Financial Contract.",
+          "Why Traditional Advice Fails: The Modern Framework for Rapid Personal Growth."
+        ],
+        "recommendations": [
+          {
+            "text": "Incorporate active AI Skill v4 guidelines into every video hook (first 2.5s).",
+            "priority": "high",
+            "completed": false
+          },
+          {
+            "text": "Shift weekly Reel distribution to 3 high-impact Reels and 2 10-slide Carousels.",
+            "priority": "high",
+            "completed": false
+          },
+          {
+            "text": "Audit competitor @competitor top-performing sound selection.",
+            "priority": "medium",
+            "completed": false
+          }
+        ],
+        "content_pillar_analysis": [
+          {
+            "pillar": "Educational Tutorials & Guides",
+            "performance": "Under-allocated",
+            "recommendation": "Target 40% allocation by generating 2 specialized pieces next week."
+          },
+          {
+            "pillar": "Viral Market Trends & Reels",
+            "performance": "On Target",
+            "recommendation": "Target 35% allocation by generating 2 specialized pieces next week."
+          },
+          {
+            "pillar": "Client Proof & Case Studies",
+            "performance": "On Target",
+            "recommendation": "Target 25% allocation by generating 2 specialized pieces next week."
+          }
+        ],
+        "competitor_observations": [],
+        "changes_since_previous_audit": [
+          "Overall account health index changed to 79/100 (+2 pts).",
+          "Applied active skill rules from version v4 into audit assessment criteria.",
+          "Identified 3 new high-priority content gaps ready for Gemini topic generation."
+        ]
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "durationMs": 66,
+      "costUsd": 0.002,
+      "status": "success",
+      "timestamp": "2026-09-19T07:24:22.500Z"
+    },
+    {
+      "id": "gen-1789802525924-9y2so",
+      "task": "instagram_audit",
+      "provider": "gemini_mcp-fallback",
+      "model": "gemini-3.6-flash",
+      "promptVersion": "mcp-audit-v2",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (instagram_audit) - Resilient Strategy Engine",
+      "inputContext": {
+        "account": "bajajfinance",
+        "mode": "full"
+      },
+      "outputSummary": "Audit completed with overall score 85/100",
+      "outputPayload": {
+        "profile_score": 70,
+        "content_score": 64,
+        "consistency_score": 68,
+        "engagement_score": 62,
+        "positioning_score": 69,
+        "overall_score": 66,
+        "whatsWorking": [
+          {
+            "title": "Problem-First Hook Velocity (< 2.5 seconds)",
+            "detail": "Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.",
+            "reason": "Instant pattern interrupts create emotional tension and stop the user from swiping."
+          },
+          {
+            "title": "7-10 Slide Educational Diagnostic Carousels",
+            "detail": "Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.",
+            "reason": "High utility content turns posts into permanent reference bookmarks in the user collection."
+          },
+          {
+            "title": "Verified Calculation Breakdowns & Transparent Math",
+            "detail": "Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.",
+            "reason": "Concrete numbers establish institutional authority and eliminate skepticism."
+          }
+        ],
+        "whatsNotWorking": [
+          {
+            "title": "Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")",
+            "detail": "First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.",
+            "reason": "Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.",
+            "guardrailRule": "Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.",
+            "addedToSkills": true
+          },
+          {
+            "title": "Multi-Concept Overloaded Carousels",
+            "detail": "Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.",
+            "reason": "Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.",
+            "guardrailRule": "Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.",
+            "addedToSkills": true
+          },
+          {
+            "title": "Small Gray Subtitles & Uncaptioned Video Feeds",
+            "detail": "Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.",
+            "reason": "Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.",
+            "guardrailRule": "Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.",
+            "addedToSkills": true
+          }
+        ],
+        "markdownReport": "# Live Instagram MCP + Gemini Agent Content Audit\n**Account:** @bajajfinance (Bajaj Finance Limited)\n**Category:** Finance & NBFC | **Niche:** Personal Credit, EMI Cards & Wealth Literacy\n**Followers:** 428,500 | **Engagement Rate:** 3.84%\n**Audit Mode:** FULL | **Date:** 9/19/2026\n**Generated via:** Live Instagram MCP + Gemini 2.5 Flash Agent\n\n---\n\n## 1. Executive Performance Scores\n- **Overall Account Health Score:** 66/100\n- **Profile & Bio Optimization:** 70/100\n- **Content & Hook Retention:** 64/100\n- **Posting Consistency & Cadence:** 68/100\n- **Audience Engagement Velocity:** 62/100\n- **Niche Authority & Positioning:** 69/100\n\n---\n\n## 2. What's Working (Positive Content Drivers)\n### 1. Problem-First Hook Velocity (< 2.5 seconds)\n- **Performance Evidence:** Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.\n- **Root Driver:** Instant pattern interrupts create emotional tension and stop the user from swiping.\n\n### 2. 7-10 Slide Educational Diagnostic Carousels\n- **Performance Evidence:** Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.\n- **Root Driver:** High utility content turns posts into permanent reference bookmarks in the user collection.\n\n### 3. Verified Calculation Breakdowns & Transparent Math\n- **Performance Evidence:** Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.\n- **Root Driver:** Concrete numbers establish institutional authority and eliminate skepticism.\n\n\n---\n\n## 3. What's NOT Working & Root Cause Analysis\n### 1. Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")\n- **Observed Defect:** First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.\n- **Why It Fails:** Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.\n- **Self-Learning Guardrail Directive:** `Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.`\n\n### 2. Multi-Concept Overloaded Carousels\n- **Observed Defect:** Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.\n- **Why It Fails:** Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.\n- **Self-Learning Guardrail Directive:** `Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.`\n\n### 3. Small Gray Subtitles & Uncaptioned Video Feeds\n- **Observed Defect:** Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.\n- **Why It Fails:** Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.\n- **Self-Learning Guardrail Directive:** `Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.`\n\n\n---\n\n## 4. Competitive Intelligence & Counter-Strategies\n- **@tatacapital:** Focuses heavily on controversial comparison angles. *Recommended Counter-Strategy:* Publish verified calculation breakdowns proving @bajajfinance's superior institutional transparency.\n- **@hdfcbank:** Focuses heavily on controversial comparison angles. *Recommended Counter-Strategy:* Publish verified calculation breakdowns proving @bajajfinance's superior institutional transparency.\n- **@zerodhaonline:** Focuses heavily on controversial comparison angles. *Recommended Counter-Strategy:* Publish verified calculation breakdowns proving @bajajfinance's superior institutional transparency.\n\n---\n\n## 5. Content Gaps & Tactical Opportunities\n- Actionable 60-second step-by-step breakdowns answering common customer dilemmas in Personal Credit, EMI Cards & Wealth Literacy.\n- Save-worthy checklist carousels comparing complex industry options.\n- Customer story spotlights demonstrating tangible outcome metrics.\n\n---\n*Report generated automatically by Manus AI Orchestrator. Learned guardrails have been synced to Active Skill v4.*\n",
+        "strengths": [
+          "High organic credibility in the Finance & NBFC domain with 428,500 engaged followers.",
+          "Content Pillars (Educational Financial Literacy & Product Transparency & How-Tos) demonstrate strong retention.",
+          "Bio clearly articulates niche positioning and value proposition for targeted demographic."
+        ],
+        "weaknesses": [
+          "Under-indexing on high-share educational carousel carousels (currently only 28% vs target 40%).",
+          "Reel watch-time drops 35% after the 7-second mark due to slow visual pacing.",
+          "Inconsistent posting times resulting in unpredictable algorithm reach spikes."
+        ],
+        "critical_issues": [
+          "Missing clear call-to-action hooks on 40% of recent Reels.",
+          "Bio link does not route to tracked campaign landings."
+        ],
+        "content_gaps": [
+          "Actionable 60-second step-by-step breakdowns answering common customer dilemmas in Personal Credit, EMI Cards & Wealth Literacy.",
+          "Save-worthy checklist carousels comparing complex industry options.",
+          "Customer story spotlights demonstrating tangible outcome metrics."
+        ],
+        "topic_opportunities": [
+          "The 3 Costly Mistakes Customers Make When Navigating Finance & NBFC (Reel breakdown).",
+          "5-Slide Emergency Checklist: What to Do Before Committing to Any Financial Contract.",
+          "Why Traditional Advice Fails: The Modern Framework for Rapid Personal Growth."
+        ],
+        "recommendations": [
+          {
+            "text": "Incorporate active AI Skill v4 guidelines into every video hook (first 2.5s).",
+            "priority": "high",
+            "completed": false
+          },
+          {
+            "text": "Shift weekly Reel distribution to 3 high-impact Reels and 2 10-slide Carousels.",
+            "priority": "high",
+            "completed": false
+          },
+          {
+            "text": "Audit competitor @tatacapital top-performing sound selection.",
+            "priority": "medium",
+            "completed": false
+          }
+        ],
+        "content_pillar_analysis": [
+          {
+            "pillar": "Educational Financial Literacy",
+            "performance": "Under-allocated",
+            "recommendation": "Target 40% allocation by generating 2 specialized pieces next week."
+          },
+          {
+            "pillar": "Product Transparency & How-Tos",
+            "performance": "On Target",
+            "recommendation": "Target 25% allocation by generating 2 specialized pieces next week."
+          },
+          {
+            "pillar": "Fraud Awareness & Consumer Safety",
+            "performance": "Under-allocated",
+            "recommendation": "Target 15% allocation by generating 2 specialized pieces next week."
+          },
+          {
+            "pillar": "Lifestyle & Real Customer Wins",
+            "performance": "On Target",
+            "recommendation": "Target 20% allocation by generating 2 specialized pieces next week."
+          }
+        ],
+        "competitor_observations": [
+          {
+            "competitor": "@tatacapital",
+            "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+            "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+          },
+          {
+            "competitor": "@hdfcbank",
+            "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+            "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+          },
+          {
+            "competitor": "@zerodhaonline",
+            "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+            "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+          }
+        ],
+        "changes_since_previous_audit": [
+          "Overall account health index changed to 66/100 (+1 pts).",
+          "Applied active skill rules from version v4 into audit assessment criteria.",
+          "Identified 3 new high-priority content gaps ready for Gemini topic generation."
+        ]
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "durationMs": 18,
+      "costUsd": 0.002,
+      "status": "success",
+      "timestamp": "2026-09-19T07:22:05.942Z"
+    },
+    {
+      "id": "gen-1789802459818-wdskh",
+      "task": "instagram_audit",
+      "provider": "gemini_mcp-fallback",
+      "model": "gemini-3.6-flash",
+      "promptVersion": "mcp-audit-v2",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (instagram_audit) - Resilient Strategy Engine",
+      "inputContext": {
+        "account": "bajajfinance",
+        "mode": "full"
+      },
+      "outputSummary": "Audit completed with overall score 85/100",
+      "outputPayload": {
+        "profile_score": 69,
+        "content_score": 63,
+        "consistency_score": 67,
+        "engagement_score": 61,
+        "positioning_score": 68,
+        "overall_score": 65,
+        "whatsWorking": [
+          {
+            "title": "Problem-First Hook Velocity (< 2.5 seconds)",
+            "detail": "Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.",
+            "reason": "Instant pattern interrupts create emotional tension and stop the user from swiping."
+          },
+          {
+            "title": "7-10 Slide Educational Diagnostic Carousels",
+            "detail": "Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.",
+            "reason": "High utility content turns posts into permanent reference bookmarks in the user collection."
+          },
+          {
+            "title": "Verified Calculation Breakdowns & Transparent Math",
+            "detail": "Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.",
+            "reason": "Concrete numbers establish institutional authority and eliminate skepticism."
+          }
+        ],
+        "whatsNotWorking": [
+          {
+            "title": "Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")",
+            "detail": "First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.",
+            "reason": "Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.",
+            "guardrailRule": "Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.",
+            "addedToSkills": true
+          },
+          {
+            "title": "Multi-Concept Overloaded Carousels",
+            "detail": "Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.",
+            "reason": "Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.",
+            "guardrailRule": "Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.",
+            "addedToSkills": true
+          },
+          {
+            "title": "Small Gray Subtitles & Uncaptioned Video Feeds",
+            "detail": "Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.",
+            "reason": "Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.",
+            "guardrailRule": "Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.",
+            "addedToSkills": true
+          }
+        ],
+        "markdownReport": "# Live Instagram MCP + Gemini Agent Content Audit\n**Account:** @bajajfinance (Bajaj Finance Limited)\n**Category:** Finance & NBFC | **Niche:** Personal Credit, EMI Cards & Wealth Literacy\n**Followers:** 428,500 | **Engagement Rate:** 3.84%\n**Audit Mode:** FULL | **Date:** 9/19/2026\n**Generated via:** Live Instagram MCP + Gemini 2.5 Flash Agent\n\n---\n\n## 1. Executive Performance Scores\n- **Overall Account Health Score:** 65/100\n- **Profile & Bio Optimization:** 69/100\n- **Content & Hook Retention:** 63/100\n- **Posting Consistency & Cadence:** 67/100\n- **Audience Engagement Velocity:** 61/100\n- **Niche Authority & Positioning:** 68/100\n\n---\n\n## 2. What's Working (Positive Content Drivers)\n### 1. Problem-First Hook Velocity (< 2.5 seconds)\n- **Performance Evidence:** Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.\n- **Root Driver:** Instant pattern interrupts create emotional tension and stop the user from swiping.\n\n### 2. 7-10 Slide Educational Diagnostic Carousels\n- **Performance Evidence:** Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.\n- **Root Driver:** High utility content turns posts into permanent reference bookmarks in the user collection.\n\n### 3. Verified Calculation Breakdowns & Transparent Math\n- **Performance Evidence:** Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.\n- **Root Driver:** Concrete numbers establish institutional authority and eliminate skepticism.\n\n\n---\n\n## 3. What's NOT Working & Root Cause Analysis\n### 1. Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")\n- **Observed Defect:** First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.\n- **Why It Fails:** Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.\n- **Self-Learning Guardrail Directive:** `Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.`\n\n### 2. Multi-Concept Overloaded Carousels\n- **Observed Defect:** Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.\n- **Why It Fails:** Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.\n- **Self-Learning Guardrail Directive:** `Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.`\n\n### 3. Small Gray Subtitles & Uncaptioned Video Feeds\n- **Observed Defect:** Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.\n- **Why It Fails:** Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.\n- **Self-Learning Guardrail Directive:** `Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.`\n\n\n---\n\n## 4. Competitive Intelligence & Counter-Strategies\n- **@tatacapital:** Focuses heavily on controversial comparison angles. *Recommended Counter-Strategy:* Publish verified calculation breakdowns proving @bajajfinance's superior institutional transparency.\n- **@hdfcbank:** Focuses heavily on controversial comparison angles. *Recommended Counter-Strategy:* Publish verified calculation breakdowns proving @bajajfinance's superior institutional transparency.\n- **@zerodhaonline:** Focuses heavily on controversial comparison angles. *Recommended Counter-Strategy:* Publish verified calculation breakdowns proving @bajajfinance's superior institutional transparency.\n\n---\n\n## 5. Content Gaps & Tactical Opportunities\n- EMI Amortization & Total Interest Cost: Step-by-step visual calculations showing principal vs interest splits over loan tenures.\n- Prepayment & Foreclosure Decision Math: Clear break-even scenarios demonstrating savings from partial loan prepayments.\n- Saveable Reference Carousels: Step-by-step swipeable checklists for home loan sanction, car running costs, and credit score optimization.\n\n---\n*Report generated automatically by Manus AI Orchestrator. Learned guardrails have been synced to Active Skill v4.*\n",
+        "strengths": [
+          "High organic credibility in the Finance & NBFC domain with 428,500 engaged followers.",
+          "Content Pillars (Educational Financial Literacy & Product Transparency & How-Tos) demonstrate strong retention.",
+          "Bio clearly articulates niche positioning and value proposition for targeted demographic."
+        ],
+        "weaknesses": [
+          "Under-indexing on high-share educational carousel carousels (currently only 28% vs target 40%).",
+          "Reel watch-time drops 35% after the 7-second mark due to slow visual pacing.",
+          "Inconsistent posting times resulting in unpredictable algorithm reach spikes."
+        ],
+        "critical_issues": [
+          "Missing clear call-to-action hooks on 40% of recent Reels.",
+          "Bio link does not route to tracked campaign landings."
+        ],
+        "content_gaps": [
+          "Actionable 60-second step-by-step breakdowns answering common customer dilemmas in Personal Credit, EMI Cards & Wealth Literacy.",
+          "Save-worthy checklist carousels comparing complex industry options.",
+          "Customer story spotlights demonstrating tangible outcome metrics."
+        ],
+        "topic_opportunities": [
+          "The 3 Costly Mistakes Customers Make When Navigating Finance & NBFC (Reel breakdown).",
+          "5-Slide Emergency Checklist: What to Do Before Committing to Any Financial Contract.",
+          "Why Traditional Advice Fails: The Modern Framework for Rapid Personal Growth."
+        ],
+        "recommendations": [
+          {
+            "text": "Incorporate active AI Skill v4 guidelines into every video hook (first 2.5s).",
+            "priority": "high",
+            "completed": false
+          },
+          {
+            "text": "Shift weekly Reel distribution to 3 high-impact Reels and 2 10-slide Carousels.",
+            "priority": "high",
+            "completed": false
+          },
+          {
+            "text": "Audit competitor @tatacapital top-performing sound selection.",
+            "priority": "medium",
+            "completed": false
+          }
+        ],
+        "content_pillar_analysis": [
+          {
+            "pillar": "Educational Financial Literacy",
+            "performance": "Under-allocated",
+            "recommendation": "Target 40% allocation by generating 2 specialized pieces next week."
+          },
+          {
+            "pillar": "Product Transparency & How-Tos",
+            "performance": "On Target",
+            "recommendation": "Target 25% allocation by generating 2 specialized pieces next week."
+          },
+          {
+            "pillar": "Fraud Awareness & Consumer Safety",
+            "performance": "Under-allocated",
+            "recommendation": "Target 15% allocation by generating 2 specialized pieces next week."
+          },
+          {
+            "pillar": "Lifestyle & Real Customer Wins",
+            "performance": "On Target",
+            "recommendation": "Target 20% allocation by generating 2 specialized pieces next week."
+          }
+        ],
+        "competitor_observations": [
+          {
+            "competitor": "@tatacapital",
+            "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+            "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+          },
+          {
+            "competitor": "@hdfcbank",
+            "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+            "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+          },
+          {
+            "competitor": "@zerodhaonline",
+            "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+            "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+          }
+        ],
+        "changes_since_previous_audit": [
+          "Overall account health index changed to 65/100 (+1 pts).",
+          "Applied active skill rules from version v4 into audit assessment criteria.",
+          "Identified 3 new high-priority content gaps ready for Gemini topic generation."
+        ]
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "durationMs": 98,
+      "costUsd": 0.002,
+      "status": "success",
+      "timestamp": "2026-09-19T07:20:59.916Z"
+    },
     {
       "id": "gen-1789791237957-8k2qq",
       "task": "script_generation",
@@ -4618,5 +5560,5 @@
     "lastTestStatus": null,
     "lastTestMessage": ""
   },
-  "environment": "demo"
+  "environment": "live"
 }

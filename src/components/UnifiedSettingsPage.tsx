@@ -89,6 +89,7 @@ interface UnifiedSettingsPageProps {
   initialTab?: UnifiedSettingsTab;
   initialSubTab?: string;
   onOpenVault?: () => void;
+  onTabChange?: (tab: UnifiedSettingsTab) => void;
 }
 
 export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
@@ -96,11 +97,17 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
   previousViewName = 'Content & Audit',
   initialTab = 'general',
   initialSubTab,
-  onOpenVault
+  onOpenVault,
+  onTabChange
 }) => {
   const { isDark } = useTheme();
   const { environment, isLiveMode, isDemoMode, setEnvironment } = useEnvironment();
   const [activeTab, setActiveTab] = useState<UnifiedSettingsTab>(initialTab);
+
+  const handleTabChange = (tab: UnifiedSettingsTab) => {
+    setActiveTab(tab);
+    onTabChange?.(tab);
+  };
   const [selectedIntegrationId, setSelectedIntegrationId] = useState<IntegrationId | null>(
     initialSubTab && ALL_INTEGRATION_IDS.includes(initialSubTab as IntegrationId)
       ? (initialSubTab as IntegrationId)
@@ -543,7 +550,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
             <button
               type="button"
               id="tab-settings-general"
-              onClick={() => setActiveTab('general')}
+              onClick={() => handleTabChange('general')}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                 activeTab === 'general'
                   ? 'bg-[#EA580C] text-white font-semibold shadow-xs'
@@ -560,7 +567,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
             <button
               type="button"
               id="tab-settings-ai"
-              onClick={() => setActiveTab('ai')}
+              onClick={() => handleTabChange('ai')}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                 activeTab === 'ai'
                   ? 'bg-[#EA580C] text-white font-semibold shadow-xs'
@@ -577,7 +584,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
             <button
               type="button"
               id="tab-settings-integrations"
-              onClick={() => setActiveTab('integrations')}
+              onClick={() => handleTabChange('integrations')}
               className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                 activeTab === 'integrations'
                   ? 'bg-[#EA580C] text-white font-semibold shadow-xs'
@@ -596,7 +603,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
             <button
               type="button"
               id="tab-settings-mcp"
-              onClick={() => setActiveTab('mcp')}
+              onClick={() => handleTabChange('mcp')}
               className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                 activeTab === 'mcp'
                   ? 'bg-[#EA580C] text-white font-semibold shadow-xs'
@@ -616,7 +623,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
             <button
               type="button"
               id="tab-settings-notifications"
-              onClick={() => setActiveTab('notifications')}
+              onClick={() => handleTabChange('notifications')}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                 activeTab === 'notifications'
                   ? 'bg-[#EA580C] text-white font-semibold shadow-xs'
@@ -633,7 +640,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
             <button
               type="button"
               id="tab-settings-security"
-              onClick={() => setActiveTab('security')}
+              onClick={() => handleTabChange('security')}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                 activeTab === 'security'
                   ? 'bg-[#EA580C] text-white font-semibold shadow-xs'

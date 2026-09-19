@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Search,
   ShieldCheck,
@@ -26,7 +26,8 @@ import {
   Check,
   Radio,
   FileCode,
-  Calendar
+  Calendar,
+  Compass
 } from 'lucide-react';
 import {
   InstagramAccount,
@@ -38,11 +39,12 @@ import { instagramApi } from '../../services/instagramApi';
 import { useTheme } from '../../context/ThemeContext';
 
 interface InstagramAuditViewProps {
-  account: InstagramAccount;
+  account: InstagramAccount | null;
   audits: InstagramAuditRecord[];
-  activeSkill: AISkillRecord;
-  onRunAudit: (mode: InstagramAuditMode, targetHandle?: string) => Promise<void>;
-  onSendToTopics: (angleContext?: string) => void;
+  activeSkill?: AISkillRecord;
+  onRunAudit: (mode?: InstagramAuditMode, targetHandle?: string) => Promise<any> | any;
+  onSendToTopics?: (angleContext?: string) => void;
+  onGenerateTopicsFromAudit?: (params: { pillars: string[]; deficitNotes: string }) => void;
   onNavigateToTopics?: () => void;
   isRunningAudit: boolean;
   isGeneratingTopics?: boolean;
@@ -54,12 +56,12 @@ export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
   activeSkill,
   onRunAudit,
   onSendToTopics,
+  onGenerateTopicsFromAudit,
   onNavigateToTopics,
   isRunningAudit,
   isGeneratingTopics = false
 }) => {
   const { isDark } = useTheme();
-  const [handleInput, setHandleInput] = useState(`@${account.username}`);
   const [selectedMode, setSelectedMode] = useState<InstagramAuditMode>('full');
   const [showMarkdownModal, setShowMarkdownModal] = useState(false);
   const [activeStepIndex, setActiveStepIndex] = useState(0);
@@ -68,43 +70,21 @@ export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
   const [auditError, setAuditError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'gaps' | 'compare' | 'guardrails'>('overview');
 
-  // Progressive loading steps for Gemini topic generation
-  const [topicStepIndex, setTopicStepIndex] = useState(0);
-  const [topicProgressPct, setTopicProgressPct] = useState(25);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isGeneratingTopics) {
-      setTopicStepIndex(0);
-      setTopicProgressPct(25);
-      interval = setInterval(() => {
-        setTopicStepIndex((prev) => {
-          const next = prev < 2 ? prev + 1 : prev;
-          setTopicProgressPct(next === 1 ? 65 : 92);
-          return next;
-        });
-      }, 1500);
-    } else {
-      setTopicStepIndex(0);
-      setTopicProgressPct(25);
-    }
-    return () => clearInterval(interval);
-  }, [isGeneratingTopics]);
-
-  // Sync handleInput if account changes
-  useEffect(() => {
-    setHandleInput(`@${account.username}`);
-    setAuditError(null);
-  }, [account.username]);
-
   // Filter audits strictly for this account
-  const accountAudits = audits.filter(a => a.accountId === account.id || a.accountId === `ig-${account.username}`);
+  const accountAudits = audits.filter(a => account && (a.accountId === account.id || a.accountId === `ig-${account.username}`));
   const [selectedAuditId, setSelectedAuditId] = useState<string>(accountAudits[0]?.id || '');
 
   // Sync selected audit if audits update
+  const prevLatestAuditIdRef = useRef<string | undefined>(accountAudits[0]?.id);
   useEffect(() => {
-    if (accountAudits.length > 0 && (!selectedAuditId || !accountAudits.some(a => a.id === selectedAuditId))) {
-      setSelectedAuditId(accountAudits[0].id);
+    if (accountAudits.length > 0) {
+      const currentLatest = accountAudits[0]?.id;
+      if (currentLatest && currentLatest !== prevLatestAuditIdRef.current) {
+        setSelectedAuditId(currentLatest);
+        prevLatestAuditIdRef.current = currentLatest;
+      } else if (!selectedAuditId || !accountAudits.some(a => a.id === selectedAuditId)) {
+        setSelectedAuditId(accountAudits[0].id);
+      }
     }
   }, [accountAudits, selectedAuditId]);
 
@@ -118,7 +98,7 @@ export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
 
   // Live MCP + Gemini Agent execution stages during isRunningAudit
   const auditSteps = [
-    { title: 'Connecting to Instagram...', detail: `Authenticating live Meta Graph API connection for @${account.username}` },
+    { title: 'Connecting to Instagram...', detail: `Authenticating live Meta Graph API connection for @${account?.username || 'account'}` },
     { title: 'Retrieving account data...', detail: 'Fetching follower count, biography, media count, and profile metrics' },
     { title: 'Analysing recent content...', detail: 'Inspecting recent Reels, Carousels, captions, timestamps, and interaction velocity' },
     { title: 'Analysing performance...', detail: 'Calling Instagram MCP insights tools to isolate high vs low performing formats' },
@@ -141,17 +121,34 @@ export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
 
   const handleStartAudit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (!account) return;
     setAuditError(null);
-    const cleanHandle = handleInput.replace('@', '').trim() || account.username;
     try {
-      await onRunAudit(selectedMode, cleanHandle);
+      const createdAudit = await onRunAudit(selectedMode, account.username);
+      if (createdAudit && (createdAudit as any).id) {
+        setSelectedAuditId((createdAudit as any).id);
+        prevLatestAuditIdRef.current = (createdAudit as any).id;
+      }
+      setSyncToast(`Audit refreshed successfully for @${account.username} (${selectedMode.toUpperCase()} mode)`);
+      setTimeout(() => setSyncToast(null), 4000);
     } catch (err: any) {
       setAuditError(err.message || 'Instagram data could not be retrieved. Please reconnect the Instagram account or check the required permissions.');
     }
   };
 
+  const handleSendToTopics = (angleToUse?: string) => {
+    if (onSendToTopics) {
+      onSendToTopics(angleToUse);
+    } else if (onGenerateTopicsFromAudit) {
+      onGenerateTopicsFromAudit({
+        pillars: account?.contentPillars || [],
+        deficitNotes: angleToUse || ''
+      });
+    }
+  };
+
   const handleGenerateTopicsFromAudit = () => {
-    if (isGeneratingTopics) return;
+    if (isGeneratingTopics || !account) return;
     const underIndexed = (account.contentPillars || []).filter(
       p => (p.currentPercentage || 0) < (p.targetPercentage || 0)
     );
@@ -159,7 +156,7 @@ export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
     const angleToUse = underIndexed.length > 0
       ? `Strategic Pillar Deficit: ${underIndexed.map(p => p.name).join(', ')} (Target: ${underIndexed[0].targetPercentage}%, Current: ${underIndexed[0].currentPercentage}%) - Addressing: ${topGap}`
       : (currentAudit?.structuredAudit?.topicOpportunities?.[0] || currentAudit?.topic_opportunities?.[0] || `Audit Opportunity: ${topGap}`);
-    onSendToTopics(angleToUse);
+    handleSendToTopics(angleToUse);
   };
 
   const handleDownloadMarkdown = () => {
@@ -211,6 +208,18 @@ ${(audit.structuredAudit?.recommendations || audit.recommendations || []).map((r
 
   const structured = currentAudit?.structuredAudit;
 
+  if (!account) {
+    return (
+      <div className="p-12 text-center flex flex-col items-center justify-center min-h-[400px]">
+        <Compass className="w-12 h-12 text-orange-500 mb-3 opacity-50" />
+        <h3 className="text-base font-bold text-gray-900 dark:text-white">No Instagram Account Selected</h3>
+        <p className="text-xs text-gray-500 max-w-sm mt-1">
+          Please select or connect an Instagram account from the top bar to run and review live page audits.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Toast Notification */}
@@ -244,7 +253,7 @@ ${(audit.structuredAudit?.recommendations || audit.recommendations || []).map((r
               isDark ? 'text-white' : 'text-gray-900'
             }`}>
               Instagram Page Audit
-              <span className="text-sm font-normal text-gray-400 font-mono">@{account.username}</span>
+              <span className="text-sm font-normal text-gray-400 font-mono">@{account?.username || 'account'}</span>
             </h1>
             <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               Autonomous on-demand audit engine. Gemini actively queries the Instagram MCP to retrieve live Meta data before synthesizing content strategy and topic opportunities.
@@ -304,60 +313,77 @@ ${(audit.structuredAudit?.recommendations || audit.recommendations || []).map((r
           </div>
         </div>
 
-        {/* Input Bar: Page URL or Handle */}
-        <form onSubmit={handleStartAudit} className="mt-5 flex flex-col sm:flex-row items-center gap-3">
-          <div className="relative flex-1 w-full">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 font-mono text-xs">
-              @
-            </span>
-            <input
-              id="input-audit-handle"
-              type="text"
-              value={handleInput}
-              onChange={(e) => setHandleInput(e.target.value)}
-              placeholder="Enter Instagram handle (e.g. snacc.mart)"
-              className={`w-full pl-8 pr-4 py-2.5 rounded-xl text-xs transition-all font-medium border outline-none ${
-                isDark
-                  ? 'bg-[#121218] border-gray-700 text-white focus:border-orange-500 placeholder:text-gray-500'
-                  : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-orange-500 focus:bg-white'
-              }`}
-            />
+        {/* Dedicated Action Strip: Active Account Badge + Audit Mode Selector + Refresh/Start Button */}
+        <div className={`mt-5 p-3 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-3 ${
+          isDark ? 'bg-[#121218] border-[#262634]' : 'bg-gray-50/80 border-gray-200'
+        }`}>
+          {/* Active Account Indicator Badge */}
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-0.5 shrink-0">
+              <div className={`w-full h-full rounded-full flex items-center justify-center text-xs font-bold uppercase ${
+                isDark ? 'bg-[#121218] text-white' : 'bg-white text-gray-900'
+              }`}>
+                {account?.username ? account.username.charAt(0) : '?'}
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className={`text-xs font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  @{account?.username || 'No Account Selected'}
+                </span>
+                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
+                  account?.connectionStatus === 'connected'
+                    ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                    : 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+                }`}>
+                  {account?.connectionStatus === 'connected' ? 'Connected' : 'Active Account'}
+                </span>
+              </div>
+              <p className={`text-[11px] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                Target profile for live MCP data ingestion &amp; AI strategy synthesis
+              </p>
+            </div>
           </div>
 
-          <select
-            value={selectedMode}
-            onChange={(e) => setSelectedMode(e.target.value as InstagramAuditMode)}
-            className={`w-full sm:w-auto rounded-xl text-xs px-3.5 py-2.5 font-medium focus:outline-none focus:border-orange-500 border ${
-              isDark ? 'bg-[#121218] border-gray-700 text-white' : 'bg-gray-50 border-gray-300 text-gray-800'
-            }`}
-          >
-            <option value="full">Full 360° Audit</option>
-            <option value="change">Delta (Changes vs Last Audit)</option>
-            <option value="performance">Retention & Performance</option>
-            <option value="quick">Quick Health Scan</option>
-          </select>
+          {/* Controls: Mode Selector & Trigger Button */}
+          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+            <select
+              id="select-audit-mode"
+              value={selectedMode}
+              onChange={(e) => setSelectedMode(e.target.value as InstagramAuditMode)}
+              className={`rounded-xl text-xs px-3 py-2 font-medium focus:outline-none focus:border-orange-500 border ${
+                isDark ? 'bg-[#1a1a24] border-[#303042] text-white' : 'bg-white border-gray-300 text-gray-800'
+              }`}
+            >
+              <option value="full">Full 360° Audit</option>
+              <option value="change">Delta (Changes vs Last Audit)</option>
+              <option value="performance">Retention &amp; Performance</option>
+              <option value="quick">Quick Health Scan</option>
+            </select>
 
-          <button
-            id="btn-run-page-audit"
-            type="submit"
-            disabled={isRunningAudit}
-            className="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-semibold text-xs rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50 shrink-0 cursor-pointer"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isRunningAudit ? 'animate-spin' : ''}`} />
-            <span>
-              {isRunningAudit
-                ? 'Auditing with Gemini MCP...'
-                : (currentAudit ? 'Refresh Audit' : 'Start Page Audit')}
-            </span>
-          </button>
-        </form>
+            <button
+              id="btn-run-page-audit"
+              type="button"
+              disabled={isRunningAudit || !account}
+              onClick={() => handleStartAudit()}
+              className="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-semibold text-xs rounded-xl shadow-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 shrink-0 cursor-pointer active:scale-95"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isRunningAudit ? 'animate-spin' : ''}`} />
+              <span>
+                {isRunningAudit
+                  ? 'Auditing with Gemini MCP...'
+                  : (currentAudit ? 'Refresh Audit' : 'Start Page Audit')}
+              </span>
+            </button>
+          </div>
+        </div>
 
         {/* Data Freshness and Guardrail Banner */}
         <div className="mt-4 p-3 bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-200/80 dark:border-indigo-900/50 rounded-xl flex items-center justify-between text-xs text-indigo-900 dark:text-indigo-200">
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
             <span>
-              <strong>Data Source:</strong> Live Instagram data (Instagram MCP). Anti-patterns discovered during live audits automatically train active Skill v{activeSkill.version} guardrails.
+              <strong>Data Source:</strong> Live Instagram data (Instagram MCP). Anti-patterns discovered during live audits automatically train active Skill {String(activeSkill?.version || 'v1').startsWith('v') ? activeSkill?.version : `v${activeSkill?.version || 1}`} guardrails.
             </span>
           </div>
           <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-200/70 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-300 shrink-0">
@@ -927,7 +953,7 @@ ${(audit.structuredAudit?.recommendations || audit.recommendations || []).map((r
 
                       <button
                         type="button"
-                        onClick={() => onSendToTopics(`Audit Opportunity: ${topicTitle}`)}
+                        onClick={() => handleSendToTopics(`Audit Opportunity: ${topicTitle}`)}
                         className="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer w-full"
                       >
                         <Sparkles className="w-3.5 h-3.5" />
@@ -1235,18 +1261,19 @@ ${(audit.structuredAudit?.recommendations || audit.recommendations || []).map((r
             <Radio className="w-6 h-6" />
           </div>
           <div className="space-y-1 max-w-md mx-auto">
-            <h3 className="text-base font-bold">No Audit Found for @{account.username}</h3>
+            <h3 className="text-base font-bold">No Audit Found for @{account?.username || 'Selected Account'}</h3>
             <p className="text-xs text-gray-500 leading-relaxed">
-              Connect your account and click below to run an on-demand audit. Google Gemini will query the live Instagram MCP to inspect your recent posts, Reels, and engagement metrics.
+              Click below to run an on-demand audit. Google Gemini will query the live Instagram MCP to inspect recent posts, Reels, and engagement metrics for @{account?.username || 'this account'}.
             </p>
           </div>
           <button
             type="button"
+            disabled={!account}
             onClick={() => handleStartAudit()}
-            className="px-6 py-3 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer inline-flex items-center gap-2"
+            className="px-6 py-3 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer inline-flex items-center gap-2 disabled:opacity-50"
           >
             <Sparkles className="w-4 h-4" />
-            <span>Start Live Page Audit</span>
+            <span>Run Initial Audit for @{account?.username || 'Account'}</span>
           </button>
         </div>
       )}

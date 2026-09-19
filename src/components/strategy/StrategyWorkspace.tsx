@@ -1,6 +1,6 @@
 import React from 'react';
 import { StrategySubView } from '../../types/navigation';
-import { InstagramAccount, InstagramAuditRecord, TopicIdea } from '../../types/instagram';
+import { InstagramAccount, InstagramAuditRecord, TopicIdea, AISkillRecord, InstagramAuditMode } from '../../types/instagram';
 import { InstagramAuditView } from '../instagram/InstagramAuditView';
 import {
   Compass,
@@ -22,7 +22,8 @@ interface StrategyWorkspaceProps {
   onSubViewChange: (sub: StrategySubView) => void;
   account: InstagramAccount | null;
   audits: InstagramAuditRecord[];
-  onRunAudit: () => void;
+  activeSkill?: AISkillRecord;
+  onRunAudit: (mode?: InstagramAuditMode) => Promise<void> | void;
   isRunningAudit: boolean;
   onGenerateTopicsFromAudit: (params: { pillars: string[]; deficitNotes: string }) => void;
   onNavigateToContentTopics?: () => void;
@@ -33,6 +34,7 @@ export const StrategyWorkspace: React.FC<StrategyWorkspaceProps> = ({
   onSubViewChange,
   account,
   audits,
+  activeSkill,
   onRunAudit,
   isRunningAudit,
   onGenerateTopicsFromAudit,
@@ -110,9 +112,19 @@ export const StrategyWorkspace: React.FC<StrategyWorkspaceProps> = ({
           <InstagramAuditView
             account={account}
             audits={audits}
-            onRunAudit={onRunAudit}
+            activeSkill={activeSkill}
+            onRunAudit={(mode) => onRunAudit(mode)}
             isRunningAudit={isRunningAudit}
             onGenerateTopicsFromAudit={onGenerateTopicsFromAudit}
+            onSendToTopics={(angle) => {
+              if (onGenerateTopicsFromAudit) {
+                onGenerateTopicsFromAudit({
+                  pillars: account?.contentPillars || [],
+                  deficitNotes: angle || ''
+                });
+              }
+            }}
+            onNavigateToTopics={onNavigateToContentTopics}
           />
         )}
 

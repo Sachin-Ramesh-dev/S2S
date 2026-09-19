@@ -58,7 +58,7 @@ import { IntelligenceWorkspace } from './components/intelligence/IntelligenceWor
 import { CollaborationWorkspace } from './components/collaboration/CollaborationWorkspace';
 import { InstagramConnectModal } from './components/instagram/InstagramConnectModal';
 import { instagramApi } from './services/instagramApi';
-import { InstagramAccount, ScriptItem, CalendarPost, TopicIdea, ContentPipelineItem, InstagramAuditRecord, AISkillRecord } from './types/instagram';
+import { InstagramAccount, ScriptItem, CalendarPost, TopicIdea, ContentPipelineItem, InstagramAuditRecord, AISkillRecord, InstagramAuditMode } from './types/instagram';
 import {
   EditMetadataModal,
   WorkflowSettingsModal,
@@ -166,14 +166,16 @@ export default function App() {
     }
   };
 
-  const handleRunAudit = async () => {
+  const handleRunAudit = async (mode: InstagramAuditMode = 'full') => {
     if (!selectedAccount) return;
     setIsRunningAudit(true);
     try {
-      const newAudit = await instagramApi.runAudit(selectedAccount.id, 'full');
-      setAudits(prev => [newAudit, ...prev]);
-    } catch (e) {
+      const newAudit = await instagramApi.runAudit(selectedAccount.id, mode);
+      setAudits(prev => [newAudit, ...prev.filter(a => a.id !== newAudit.id)]);
+      return newAudit;
+    } catch (e: any) {
       console.error('Audit run error:', e);
+      throw e;
     } finally {
       setIsRunningAudit(false);
     }
@@ -890,6 +892,7 @@ export default function App() {
                 onSubViewChange={(sub) => setActiveSubView(sub)}
                 account={selectedAccount}
                 audits={audits}
+                activeSkill={skills[0]}
                 onRunAudit={handleRunAudit}
                 isRunningAudit={isRunningAudit}
                 onGenerateTopicsFromAudit={({ deficitNotes }) => {
@@ -956,6 +959,9 @@ export default function App() {
                 initialTab={settingsInitialTab}
                 initialSubTab={settingsInitialSubTab}
                 onOpenVault={() => setIsVaultOpen(true)}
+                onTabChange={(tab) => {
+                  setActiveSubView(tab as any);
+                }}
               />
             ) : activeDomain === 'workflows' ? (
               <WorkflowsWorkspace

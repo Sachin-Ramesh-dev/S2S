@@ -22,6 +22,7 @@ import {
   Layers,
   Lock,
   Search,
+  Bot,
   Workflow as WorkflowIcon
 } from 'lucide-react';
 import { SAMPLE_WORKFLOWS } from '../data/sampleWorkflows';
@@ -29,7 +30,7 @@ import { SAMPLE_WORKFLOWS } from '../data/sampleWorkflows';
 interface ConnectedClientSession {
   id: string;
   name: string;
-  clientType: 'Claude.ai' | 'Cursor' | 'VS Code' | 'Claude Code' | 'ChatGPT' | 'Windsurf';
+  clientType: 'Antigravity' | 'Claude.ai' | 'Cursor' | 'VS Code' | 'Claude Code' | 'ChatGPT' | 'Windsurf';
   transport: 'http' | 'sse' | 'stdio';
   connectedAt: string;
   lastPing: string;
@@ -46,7 +47,7 @@ interface McpToolDefinition {
 }
 
 export const McpConnectionsPage: React.FC = () => {
-  // 1. Instance MCP Server Status (Screenshots 2 & 3)
+  // 1. Connection & Server State (Screenshots 1 & 2)
   const [mcpEnabled, setMcpEnabled] = useState<boolean>(true);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
 
@@ -55,8 +56,8 @@ export const McpConnectionsPage: React.FC = () => {
   const [connectTab, setConnectTab] = useState<'oauth' | 'apikey'>('oauth');
   const [isClientDropdownOpen, setIsClientDropdownOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<
-    'Claude Code' | 'Codex' | 'Gemini CLI' | 'Claude.ai' | 'ChatGPT' | 'Cursor' | 'VS Code' | 'Windsurf'
-  >('Claude.ai');
+    'Antigravity' | 'Claude Code' | 'Codex' | 'Gemini CLI' | 'Claude.ai' | 'ChatGPT' | 'Cursor' | 'VS Code' | 'Windsurf'
+  >('Antigravity');
 
   // 3. Modals for Access & Governance (Screenshot 2)
   const [isExposedWorkflowsModalOpen, setIsExposedWorkflowsModalOpen] = useState(false);
@@ -124,7 +125,7 @@ export const McpConnectionsPage: React.FC = () => {
     },
     {
       name: 'instagram_audit_page',
-      description: 'Run deep Manus AI audit on an Instagram profile to detect content gaps and viral hooks.',
+      description: 'Run live Instagram MCP + Gemini audit on an Instagram profile to detect content gaps and viral hooks.',
       category: 'Instagram Intelligence',
       schema: { type: 'object', properties: { handle: { type: 'string' }, mode: { type: 'string' } } },
       enabled: true
@@ -575,11 +576,12 @@ export const McpConnectionsPage: React.FC = () => {
                         className="flex items-center justify-between gap-2.5 px-3 py-1.5 rounded-lg bg-[#1a1a24] hover:bg-[#222230] border border-[#343446] text-xs font-semibold text-white min-w-[130px] transition-colors"
                       >
                         <span className="flex items-center gap-1.5">
+                          {selectedClient === 'Antigravity' && <Bot className="w-3.5 h-3.5 text-[#EA580C]" />}
                           {selectedClient.includes('Claude') && <Sparkles className="w-3.5 h-3.5 text-[#EA580C]" />}
                           {selectedClient.includes('Cursor') && <Code className="w-3.5 h-3.5 text-indigo-400" />}
                           {selectedClient.includes('VS Code') && <Laptop className="w-3.5 h-3.5 text-blue-400" />}
                           {selectedClient.includes('ChatGPT') && <Globe className="w-3.5 h-3.5 text-emerald-400" />}
-                          {!['Claude', 'Cursor', 'VS Code', 'ChatGPT'].some((k) => selectedClient.includes(k)) && (
+                          {!['Antigravity', 'Claude', 'Cursor', 'VS Code', 'ChatGPT'].some((k) => selectedClient.includes(k)) && (
                             <Terminal className="w-3.5 h-3.5 text-amber-400" />
                           )}
                           <span>{selectedClient}</span>
@@ -591,6 +593,34 @@ export const McpConnectionsPage: React.FC = () => {
                       {isClientDropdownOpen && (
                         <div className="absolute right-0 mt-1.5 w-48 bg-[#1f1f2a] border border-[#343446] rounded-xl shadow-2xl p-1 z-40 animate-in fade-in zoom-in-95 duration-100 max-h-80 overflow-y-auto">
                           
+                          {/* AGENTS & IDE Category */}
+                          <div className="px-2.5 py-1 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                            Agents & IDE
+                          </div>
+                          {(['Antigravity', 'Cursor', 'VS Code', 'Windsurf'] as const).map((ide) => (
+                            <button
+                              key={ide}
+                              type="button"
+                              onClick={() => {
+                                setSelectedClient(ide);
+                                setIsClientDropdownOpen(false);
+                              }}
+                              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
+                                selectedClient === ide
+                                  ? 'bg-[#EA580C]/15 text-[#EA580C] font-semibold'
+                                  : 'text-zinc-300 hover:bg-[#272736] hover:text-white'
+                              }`}
+                            >
+                              <span className="flex items-center gap-1.5">
+                                {ide === 'Antigravity' && <Bot className="w-3.5 h-3.5 text-[#EA580C]" />}
+                                <span>{ide}</span>
+                              </span>
+                              {selectedClient === ide && <Check className="w-3.5 h-3.5 text-[#EA580C]" />}
+                            </button>
+                          ))}
+
+                          <div className="my-1 border-t border-[#2b2b3c]" />
+
                           {/* CLI Category */}
                           <div className="px-2.5 py-1 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
                             CLI
@@ -638,31 +668,6 @@ export const McpConnectionsPage: React.FC = () => {
                               {selectedClient === web && <Check className="w-3.5 h-3.5 text-[#EA580C]" />}
                             </button>
                           ))}
-
-                          <div className="my-1 border-t border-[#2b2b3c]" />
-
-                          {/* IDE Category */}
-                          <div className="px-2.5 py-1 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
-                            IDE
-                          </div>
-                          {(['Cursor', 'VS Code', 'Windsurf'] as const).map((ide) => (
-                            <button
-                              key={ide}
-                              type="button"
-                              onClick={() => {
-                                setSelectedClient(ide);
-                                setIsClientDropdownOpen(false);
-                              }}
-                              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
-                                selectedClient === ide
-                                  ? 'bg-[#EA580C]/15 text-[#EA580C] font-semibold'
-                                  : 'text-zinc-300 hover:bg-[#272736] hover:text-white'
-                              }`}
-                            >
-                              <span>{ide}</span>
-                              {selectedClient === ide && <Check className="w-3.5 h-3.5 text-[#EA580C]" />}
-                            </button>
-                          ))}
                         </div>
                       )}
                     </div>
@@ -687,6 +692,97 @@ export const McpConnectionsPage: React.FC = () => {
                         <Sparkles className="w-3.5 h-3.5" />
                         <span>Add to Claude.ai</span>
                       </a>
+                    </div>
+                  )}
+
+                  {/* Antigravity IDE & agy CLI Client Card */}
+                  {selectedClient === 'Antigravity' && (
+                    <div className="p-4 space-y-3 bg-[#0c0c10]">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Bot className="w-4 h-4 text-[#EA580C]" />
+                          <span className="text-xs font-semibold text-white">Antigravity IDE & agy CLI</span>
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#EA580C]/20 text-[#EA580C] font-semibold">
+                            Native
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-zinc-400">SSE / HTTP Transport</span>
+                      </div>
+
+                      {/* Option A: Workspace Config */}
+                      <div className="p-3 bg-[#14141d] rounded-lg border border-[#252533] space-y-2">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="font-semibold text-zinc-200">
+                            Workspace: <code className="text-[#EA580C] font-mono">.agents/mcp_config.json</code>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              copyToClipboard(
+                                JSON.stringify(
+                                  {
+                                    mcpServers: {
+                                      's2s-studio': {
+                                        serverUrl: serverUrl
+                                      }
+                                    }
+                                  },
+                                  null,
+                                  2
+                                ),
+                                'antigravity-workspace'
+                              )
+                            }
+                            className="text-[#EA580C] hover:underline flex items-center gap-1 font-semibold text-xs"
+                          >
+                            {copiedKey === 'antigravity-workspace' ? 'Copied Workspace Config!' : 'Copy Config'}
+                          </button>
+                        </div>
+                        <pre className="p-2.5 bg-[#0a0a0d] rounded border border-[#1e1e28] text-[11px] font-mono text-zinc-300 overflow-x-auto leading-relaxed">
+{`{
+  "mcpServers": {
+    "s2s-studio": {
+      "serverUrl": "${serverUrl}"
+    }
+  }
+}`}
+                        </pre>
+                      </div>
+
+                      {/* Option B: Global Config */}
+                      <div className="p-3 bg-[#14141d] rounded-lg border border-[#252533] space-y-2">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="font-semibold text-zinc-200">
+                            Global: <code className="text-zinc-400 font-mono">~/.gemini/config/mcp_config.json</code>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              copyToClipboard(
+                                JSON.stringify(
+                                  {
+                                    mcpServers: {
+                                      's2s-studio': {
+                                        serverUrl: serverUrl
+                                      }
+                                    }
+                                  },
+                                  null,
+                                  2
+                                ),
+                                'antigravity-global'
+                              )
+                            }
+                            className="text-[#EA580C] hover:underline flex items-center gap-1 font-semibold text-xs"
+                          >
+                            {copiedKey === 'antigravity-global' ? 'Copied Global Config!' : 'Copy Config'}
+                          </button>
+                        </div>
+                      </div>
+
+                      <p className="text-[11px] text-zinc-400 leading-relaxed">
+                        Antigravity auto-discovers tools at session start and injects them directly into the agent&apos;s active toolset. Works in both the Antigravity IDE and headless <code className="text-zinc-300 font-mono">agy</code> CLI.
+                      </p>
                     </div>
                   )}
 

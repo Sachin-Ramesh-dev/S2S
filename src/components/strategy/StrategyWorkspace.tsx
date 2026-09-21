@@ -160,13 +160,13 @@ export const StrategyWorkspace: React.FC<StrategyWorkspaceProps> = ({
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#EA580C] text-white">
                     Your Profile
                   </span>
-                  <span className="text-xs text-emerald-400 font-semibold">4.12% Eng.</span>
+                  <span className={`text-xs font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>4.12% Eng.</span>
                 </div>
                 <h3 className="font-bold text-base">@{account?.username || 'fintech_insider'}</h3>
-                <p className="text-xs text-zinc-400 mb-4">{account?.displayName || 'FinTech Insider Daily'}</p>
-                <div className="text-2xl font-black text-white">
+                <p className={`text-xs mb-4 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>{account?.displayName || 'FinTech Insider Daily'}</p>
+                <div className={`text-2xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {account ? (account.followersCount / 1000).toFixed(1) + 'k' : '185.2k'}
-                  <span className="text-xs font-normal text-zinc-400 ml-1.5">followers</span>
+                  <span className={`text-xs font-normal ml-1.5 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>followers</span>
                 </div>
               </div>
 
@@ -176,14 +176,14 @@ export const StrategyWorkspace: React.FC<StrategyWorkspaceProps> = ({
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300">
                     Competitor 1
                   </span>
-                  <span className="text-xs text-amber-400 font-semibold">1.80% Eng.</span>
+                  <span className={`text-xs font-semibold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>1.80% Eng.</span>
                 </div>
                 <h3 className="font-bold text-base">@techcrunch</h3>
-                <p className="text-xs text-zinc-400 mb-4">TechCrunch Global News</p>
-                <div className="text-2xl font-black text-white">
-                  1.5M <span className="text-xs font-normal text-zinc-400 ml-1.5">followers</span>
+                <p className={`text-xs mb-4 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>TechCrunch Global News</p>
+                <div className={`text-2xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  1.5M <span className={`text-xs font-normal ml-1.5 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>followers</span>
                 </div>
-                <p className="text-[11px] text-zinc-400 mt-3 pt-3 border-t border-zinc-800">
+                <p className={`text-[11px] mt-3 pt-3 border-t ${isDark ? 'text-zinc-400 border-zinc-800' : 'text-slate-500 border-slate-200'}`}>
                   Global benchmark for tech news &amp; startup founder rounds.
                 </p>
               </div>
@@ -194,14 +194,14 @@ export const StrategyWorkspace: React.FC<StrategyWorkspaceProps> = ({
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300">
                     Competitor 2
                   </span>
-                  <span className="text-xs text-emerald-400 font-semibold">3.65% Eng.</span>
+                  <span className={`text-xs font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>3.65% Eng.</span>
                 </div>
                 <h3 className="font-bold text-base">@inc42</h3>
-                <p className="text-xs text-zinc-400 mb-4">Inc42 Media</p>
-                <div className="text-2xl font-black text-white">
-                  340.0k <span className="text-xs font-normal text-zinc-400 ml-1.5">followers</span>
+                <p className={`text-xs mb-4 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>Inc42 Media</p>
+                <div className={`text-2xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  340.0k <span className={`text-xs font-normal ml-1.5 ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>followers</span>
                 </div>
-                <p className="text-[11px] text-zinc-400 mt-3 pt-3 border-t border-zinc-800">
+                <p className={`text-[11px] mt-3 pt-3 border-t ${isDark ? 'text-zinc-400 border-zinc-800' : 'text-slate-500 border-slate-200'}`}>
                   Dominates short-form founder reels and carousel teardowns.
                 </p>
               </div>
@@ -213,7 +213,7 @@ export const StrategyWorkspace: React.FC<StrategyWorkspaceProps> = ({
                 <Sparkles className="w-4 h-4 text-orange-400" />
                 <span>Competitor Format Gaps Spotted by Manus AI</span>
               </h3>
-              <p className="text-xs text-zinc-400 mb-4 leading-relaxed">
+              <p className={`text-xs mb-4 leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                 Competitors are over-indexing on basic news headlines, creating a major content gap for <strong>tactical breakdown reels</strong> with retention hooks.
               </p>
 
@@ -222,8 +222,8 @@ export const StrategyWorkspace: React.FC<StrategyWorkspaceProps> = ({
                   isDark ? 'bg-[#1c1c28] border-zinc-800' : 'bg-slate-50 border-slate-200'
                 }`}>
                   <div>
-                    <span className="text-xs font-bold text-white">Opportunity #1: "RBI Policy &amp; UPI 2.0 Behind the Scenes"</span>
-                    <p className="text-[11px] text-zinc-400">Competitors cover regulations as dry text. 4-act pattern interrupt reel will outperform by 3.2x.</p>
+                    <span className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Opportunity #1: "RBI Policy &amp; UPI 2.0 Behind the Scenes"</span>
+                    <p className={`text-[11px] ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>Competitors cover regulations as dry text. 4-act pattern interrupt reel will outperform by 3.2x.</p>
                   </div>
                   <button
                     type="button"
@@ -275,12 +275,12 @@ export const StrategyWorkspace: React.FC<StrategyWorkspaceProps> = ({
                   return (
                     <div key={pillar.name} className="space-y-1.5">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-white">{pillar.name}</span>
+                        <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{pillar.name}</span>
                         <div className="flex items-center gap-2">
                           <span className={isDeficit ? 'text-amber-400 font-bold' : 'text-emerald-400 font-bold'}>
                             {pillar.currentPercentage}% Current
                           </span>
-                          <span className="text-zinc-500">/ {pillar.targetPercentage}% Target</span>
+                          <span className={isDark ? 'text-zinc-500' : 'text-slate-400'}>/ {pillar.targetPercentage}% Target</span>
                           {isDeficit && (
                             <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30">
                               Deficit (-{pillar.targetPercentage - pillar.currentPercentage}%)
@@ -289,7 +289,7 @@ export const StrategyWorkspace: React.FC<StrategyWorkspaceProps> = ({
                         </div>
                       </div>
 
-                      <div className="w-full h-2.5 bg-zinc-800 rounded-full overflow-hidden relative">
+                      <div className={`w-full h-2.5 rounded-full overflow-hidden relative ${isDark ? 'bg-zinc-800' : 'bg-slate-200'}`}>
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${
                             isDeficit ? 'bg-amber-500' : 'bg-emerald-500'

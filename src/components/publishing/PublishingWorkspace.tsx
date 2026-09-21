@@ -15,9 +15,181 @@ import {
   Sparkles,
   CheckCircle2,
   AlertCircle,
-  ListFilter
+  ListFilter,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+
+/* ─── Empty Calendar Grid (no account connected) ─── */
+const PublishingCalendarEmptyState: React.FC<{ isDark: boolean }> = ({ isDark }) => {
+  const [currentDate, setCurrentDate] = React.useState(new Date());
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const monthYearStr = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDayOfWeek = new Date(year, month, 1).getDay();
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  // Build the grid cells
+  const cells: Array<{ dayNum: number; dateStr: string; isCurrentMonth: boolean }> = [];
+  const prevMonthDays = new Date(year, month, 0).getDate();
+  for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+    const d = prevMonthDays - i;
+    const m = month === 0 ? 12 : month;
+    const y = month === 0 ? year - 1 : year;
+    cells.push({ dayNum: d, dateStr: `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`, isCurrentMonth: false });
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    cells.push({ dayNum: d, dateStr, isCurrentMonth: true });
+  }
+  const remaining = (7 - (cells.length % 7)) % 7;
+  for (let d = 1; d <= remaining; d++) {
+    const m = month + 2 > 12 ? 1 : month + 2;
+    const y = month + 2 > 12 ? year + 1 : year;
+    cells.push({ dayNum: d, dateStr: `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`, isCurrentMonth: false });
+  }
+
+  return (
+    <div className="p-6 md:p-8 space-y-6 max-w-6xl mx-auto">
+      {/* Header Banner */}
+      <div className={`neo-card p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6`}>
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="neo-badge neo-badge-lavender flex items-center gap-1.5 font-black">
+              <CalendarIcon className="w-3.5 h-3.5" /> EDITORIAL DISPATCH CALENDAR
+            </span>
+          </div>
+          <h1 className={`text-3xl sm:text-4xl font-black uppercase tracking-tight font-display ${
+            isDark ? 'text-[#F5F3EC]' : 'text-[#111111]'
+          }`}>
+            PUBLISHING CALENDAR
+          </h1>
+          <p className={`text-xs sm:text-sm font-medium leading-relaxed ${
+            isDark ? 'text-[#A1A1AA]' : 'text-[#4B5563]'
+          }`}>
+            Plan publishing dates, optimize for algorithm drop-off windows, and inspect frozen publication snapshots.
+          </p>
+        </div>
+      </div>
+
+      {/* Month Navigation */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
+            className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
+              isDark
+                ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300'
+                : 'border-slate-300 hover:bg-slate-100 text-slate-600'
+            }`}
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <h2 className={`text-lg font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            {monthYearStr}
+          </h2>
+          <button
+            type="button"
+            onClick={() => setCurrentDate(new Date(year, month + 1, 1))}
+            className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
+              isDark
+                ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300'
+                : 'border-slate-300 hover:bg-slate-100 text-slate-600'
+            }`}
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setCurrentDate(new Date())}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
+              isDark
+                ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300'
+                : 'border-slate-300 hover:bg-slate-100 text-slate-600'
+            }`}
+          >
+            Today
+          </button>
+        </div>
+      </div>
+
+      {/* Calendar Grid */}
+      <div className={`rounded-2xl border overflow-hidden ${
+        isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'
+      }`}>
+        {/* Day Headers */}
+        <div className="grid grid-cols-7">
+          {dayHeaders.map((day) => (
+            <div
+              key={day}
+              className={`px-3 py-2.5 text-center text-[10px] font-bold uppercase tracking-wider border-b ${
+                isDark
+                  ? 'bg-[#14141c] text-zinc-400 border-[#2b2b3c]'
+                  : 'bg-slate-50 text-slate-500 border-slate-200'
+              }`}
+            >
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* Date Cells */}
+        <div className="grid grid-cols-7">
+          {cells.map((cell, idx) => {
+            const isToday = cell.dateStr === todayStr;
+            return (
+              <div
+                key={idx}
+                className={`min-h-[90px] px-2 py-1.5 border-b border-r transition-colors ${
+                  isDark ? 'border-[#2b2b3c]' : 'border-slate-100'
+                } ${
+                  !cell.isCurrentMonth
+                    ? (isDark ? 'bg-[#111118] opacity-40' : 'bg-slate-50/50 opacity-40')
+                    : (isDark ? 'bg-[#181824]' : 'bg-white')
+                }`}
+              >
+                <span className={`text-xs font-semibold inline-flex items-center justify-center w-6 h-6 rounded-full ${
+                  isToday
+                    ? 'bg-[#EA580C] text-white'
+                    : (isDark ? 'text-zinc-300' : 'text-slate-700')
+                }`}>
+                  {cell.dayNum}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Empty State Overlay */}
+      <div className={`-mt-2 rounded-2xl border p-8 text-center ${
+        isDark ? 'bg-[#14141c] border-[#2b2b3c]' : 'bg-slate-50 border-slate-200'
+      }`}>
+        <CalendarIcon className={`w-10 h-10 mx-auto mb-3 ${isDark ? 'text-zinc-600' : 'text-slate-300'}`} />
+        <h3 className={`text-sm font-bold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+          No Scheduled Content
+        </h3>
+        <p className={`text-xs mb-4 max-w-sm mx-auto ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+          Connect an Instagram account from the top bar to start scheduling and publishing content from your production pipeline.
+        </p>
+        <div className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border-2 ${
+          isDark
+            ? 'border-orange-500/40 text-orange-400 bg-orange-500/10'
+            : 'border-orange-300 text-orange-700 bg-orange-50'
+        }`}>
+          <Plus className="w-3.5 h-3.5" />
+          Schedule Content
+        </div>
+      </div>
+    </div>
+  );
+};
 
 interface PublishingWorkspaceProps {
   activeSubView: PublishingSubView;
@@ -226,6 +398,10 @@ export const PublishingWorkspace: React.FC<PublishingWorkspaceProps> = ({
               if (onPostUpdated) onPostUpdated();
             }}
           />
+        )}
+
+        {activeSubView === 'calendar' && !account && (
+          <PublishingCalendarEmptyState isDark={isDark} />
         )}
 
         {activeSubView === 'queue' && (

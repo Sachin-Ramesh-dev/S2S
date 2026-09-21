@@ -65,15 +65,15 @@ export const S2STopHeader: React.FC<S2STopHeaderProps> = ({
 
       {/* Center: S2S Brand Motif (visible on md+) */}
       <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full border-2 border-[#171717] dark:border-[#383844] bg-white dark:bg-[#1E1E24] shadow-[2px_2px_0_#111111] dark:shadow-[2px_2px_0_#0A0A0D] text-[10px] font-black uppercase tracking-wider font-heading">
-        <span className="text-[#FF4D5A]">SCROLL</span>
-        <span className="text-zinc-400">→</span>
-        <span className="text-[#FFD66B]">THINK</span>
-        <span className="text-zinc-400">→</span>
-        <span className="text-[#B9A7FF]">CREATE</span>
-        <span className="text-zinc-400">→</span>
-        <span className="text-[#45D9A6]">PUBLISH</span>
-        <span className="text-zinc-400">→</span>
-        <span className="text-[#7CC7FF]">LEARN</span>
+        <span className="px-1.5 py-0.5 rounded bg-[#FF4D5A]/15 text-[#C91A25] dark:text-[#FF7D87] font-black">SCROLL</span>
+        <span className="text-[#6B7280] dark:text-zinc-500 font-bold">→</span>
+        <span className="px-1.5 py-0.5 rounded bg-[#FFD66B]/30 text-[#8F5F00] dark:text-[#FFDF85] font-black">THINK</span>
+        <span className="text-[#6B7280] dark:text-zinc-500 font-bold">→</span>
+        <span className="px-1.5 py-0.5 rounded bg-[#B9A7FF]/25 text-[#522EB5] dark:text-[#CBBFFF] font-black">CREATE</span>
+        <span className="text-[#6B7280] dark:text-zinc-500 font-bold">→</span>
+        <span className="px-1.5 py-0.5 rounded bg-[#45D9A6]/25 text-[#0A6C48] dark:text-[#6EE7B7] font-black">PUBLISH</span>
+        <span className="text-[#6B7280] dark:text-zinc-500 font-bold">→</span>
+        <span className="px-1.5 py-0.5 rounded bg-[#7CC7FF]/25 text-[#0D5B9E] dark:text-[#93D5FF] font-black">LEARN</span>
       </div>
 
       {/* Right: Environment, Theme & Account Switcher */}

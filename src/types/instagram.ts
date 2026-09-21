@@ -312,12 +312,24 @@ export interface ContentPipelineItem {
   updatedAt: string;
 }
 
+export interface ReelActs {
+  act1_hook: string;
+  act2_agitation: string;
+  act3_solution: string;
+  act4_cta: string;
+}
+
 export interface ReelScene {
+  sceneNumber?: number;
   timeframe: string;
   visualCue: string;
   onScreenText: string;
   spokenAudio: string;
-  audioNote: string;
+  audioNote?: string;
+  cameraMovement?: string;
+  transition?: string;
+  mediaUrl?: string;
+  mediaType?: 'image' | 'video';
 }
 
 export interface CarouselSlide {
@@ -327,6 +339,10 @@ export interface CarouselSlide {
   headline: string;
   bodyText: string;
   swipeTrigger: string;
+  score?: number;
+  notes?: string;
+  mockImageUrl?: string;
+  finalImageUrl?: string;
 }
 
 export interface ScriptVersionRecord {
@@ -348,6 +364,37 @@ export interface ScriptScoreBreakdown {
   instagramFit: number;
 }
 
+export interface ImageConceptData {
+  headline: string;
+  visualPrompt: string;
+  textOverlay: string;
+  aspectRatio: '1:1' | '4:5' | '9:16';
+  mockImageUrl?: string;
+  finalImageUrl?: string;
+  score?: number;
+  stylePreset?: string;
+  lighting?: string;
+  colorPalette?: string;
+}
+
+export interface ArchivedFormatData {
+  format: TopicFormat;
+  savedAt: string;
+  stage?: string;
+  productionStage?: string;
+  acts?: ReelActs;
+  scenes?: ReelScene[];
+  timeline?: any[];
+  slides?: CarouselSlide[];
+  imageConcept?: ImageConceptData;
+  fullTextScript?: string;
+  caption?: string;
+  hashtags?: string[];
+  callToAction?: string;
+}
+
+export type ArchivedFormatsMap = Partial<Record<TopicFormat, ArchivedFormatData>>;
+
 export interface ScriptItem {
   id: string;
   pipelineItemId?: string;
@@ -358,13 +405,17 @@ export interface ScriptItem {
   objective?: string;
   accountId: string;
   title: string;
-  format: 'Reel' | 'Carousel';
+  format: TopicFormat;
   hook: string;
+  acts?: ReelActs;
   fullTextScript?: string;
   scenes?: ReelScene[];
   timeline?: any[];
   slides?: CarouselSlide[];
   carouselSlides?: any[];
+  imageConcept?: ImageConceptData;
+  archivedFormats?: ArchivedFormatsMap;
+  productionStage?: 'script' | 'storyboard' | 'mock' | 'final' | 'review' | 'video';
   estimatedDurationSeconds?: number;
   modelUsed?: string;
   caption: string;
@@ -395,6 +446,65 @@ export interface ScriptItem {
   updatedAt: string;
 }
 
+export interface PublicationSnapshot {
+  id: string;
+  snapshotVersion: number;
+  createdAt: string;
+  accountId: string;
+  sourceTopicId?: string;
+  sourceScriptId?: string;
+  contentId?: string;
+  title: string;
+  format: TopicFormat;
+  pillar: string;
+
+  // Frozen Copy & Metadata
+  caption: string;
+  hashtags: string[];
+  callToAction: string;
+
+  // Format-Specific Frozen Assets
+  aspectRatio: '1:1' | '4:5' | '9:16';
+  coverImageUrl?: string;
+  coverSlideIndex?: number;
+  mediaUrls: string[];
+  slideCount?: number;
+  carouselSlides?: CarouselSlide[];
+  reelScenes?: ReelScene[];
+  imageConcept?: ImageConceptData;
+
+  // Exact Schedule & Timezone
+  scheduledDate: string; // YYYY-MM-DD
+  scheduledTime: string; // HH:mm
+  timezone: string; // e.g. 'Asia/Kolkata' or 'UTC'
+
+  // Four Decoupled Lifecycle Dimensions
+  contentStatus: 'IDEA' | 'REVIEW' | 'APPROVED' | 'READY_FOR_PRODUCTION' | 'PRODUCTION_COMPLETE';
+  assetStatus: 'none' | 'generating' | 'ready' | 'failed';
+  scheduleStatus: 'unscheduled' | 'scheduled' | 'rescheduled' | 'cancelled';
+  executionStatus: 'idle' | 'queued' | 'publishing' | 'published' | 'failed' | 'retrying';
+
+  // Idempotency & Safety
+  idempotencyKey: string;
+}
+
+export interface ScheduleParams {
+  scheduledDate: string;
+  scheduledTime: string;
+  timezone?: string;
+  coverImageUrl?: string;
+  coverSlideIndex?: number;
+  mediaUrls?: string[];
+  aspectRatio?: '1:1' | '4:5' | '9:16';
+  slideCount?: number;
+  carouselSlides?: CarouselSlide[];
+  imageConcept?: ImageConceptData;
+  reelScenes?: ReelScene[];
+  caption?: string;
+  hashtags?: string[];
+  callToAction?: string;
+}
+
 export interface CalendarPost {
   id: string;
   accountId: string;
@@ -402,7 +512,7 @@ export interface CalendarPost {
   format: TopicFormat;
   scheduledDate: string; // YYYY-MM-DD
   scheduledTime: string; // HH:mm
-  status: 'draft' | 'scheduled' | 'published';
+  status: 'draft' | 'scheduled' | 'published' | 'cancelled';
   pillar: string;
   scriptId?: string;
   pipelineItemId?: string;
@@ -414,6 +524,61 @@ export interface CalendarPost {
     saves: number;
     retentionRatePct?: number;
   };
+  publicationSnapshotId?: string;
+  snapshot?: PublicationSnapshot;
+  timezone?: string;
+  publishedUrl?: string;
+  instagramMediaId?: string;
+  publishedAt?: string;
+}
+
+export interface PublishJobRecord {
+  id: string;
+  publicationSnapshotId: string;
+  calendarPostId: string;
+  accountId: string;
+  idempotencyKey: string;
+  format: TopicFormat;
+
+  // Decoupled Statuses
+  scheduleStatus: 'DRAFT' | 'SCHEDULED' | 'CANCELLED';
+  executionStatus:
+    | 'IDLE'
+    | 'QUEUED'
+    | 'VALIDATING'
+    | 'PUBLISHING'
+    | 'VERIFYING'
+    | 'PUBLISHED'
+    | 'FAILED'
+    | 'RETRY_PENDING'
+    | 'CANCELLED';
+
+  // Attempt & Timing
+  attemptCount: number;
+  maxAttempts: number;
+  nextAttemptAt?: string;
+  queuedAt?: string;
+  startedAt?: string;
+  finishedAt?: string;
+
+  // Meta Graph API Artifacts
+  metaContainerId?: string;
+  metaChildContainerIds?: string[];
+  metaMediaId?: string;
+  permalink?: string;
+  publishedAt?: string;
+
+  // Diagnostics & Errors
+  lastErrorCode?: string;
+  lastErrorMessage?: string;
+  errorCategory?: 'TRANSIENT' | 'PERMANENT' | 'RATE_LIMIT' | 'AUTH' | 'MEDIA';
+  executionLogs: Array<{
+    timestamp: string;
+    level: 'info' | 'warn' | 'error';
+    stage: string;
+    message: string;
+    metadata?: any;
+  }>;
 }
 
 export type AIConnectionStatus =

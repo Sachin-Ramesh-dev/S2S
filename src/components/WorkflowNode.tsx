@@ -108,46 +108,53 @@ export const WorkflowNode: React.FC<Props> = ({
 
   const catStyle = {
     trigger: {
-      border: 'border-emerald-500/50',
-      hoverBorder: 'hover:border-emerald-400',
-      accent: '#10B981',
-      glow: 'shadow-[0_0_12px_rgba(16,185,129,0.18)]'
+      border: 'border-[#171717] dark:border-[#383844]',
+      hoverBorder: 'hover:border-[#111111]',
+      accent: '#45D9A6',
+      badgeBg: 'bg-[#45D9A6] text-[#111111]',
+      badgeLabel: 'TRIGGER'
     },
     action: {
-      border: 'border-sky-500/50',
-      hoverBorder: 'hover:border-sky-400',
-      accent: '#0EA5E9',
-      glow: 'shadow-[0_0_12px_rgba(14,165,233,0.18)]'
+      border: 'border-[#171717] dark:border-[#383844]',
+      hoverBorder: 'hover:border-[#111111]',
+      accent: '#7CC7FF',
+      badgeBg: 'bg-[#7CC7FF] text-[#111111]',
+      badgeLabel: 'ACTION'
     },
     transform: {
-      border: 'border-amber-500/50',
-      hoverBorder: 'hover:border-amber-400',
-      accent: '#F59E0B',
-      glow: 'shadow-[0_0_12px_rgba(245,158,11,0.18)]'
+      border: 'border-[#171717] dark:border-[#383844]',
+      hoverBorder: 'hover:border-[#111111]',
+      accent: '#FFD66B',
+      badgeBg: 'bg-[#FFD66B] text-[#111111]',
+      badgeLabel: 'TRANSFORM'
     },
     logic: {
-      border: 'border-purple-500/50',
-      hoverBorder: 'hover:border-purple-400',
-      accent: '#A855F7',
-      glow: 'shadow-[0_0_12px_rgba(168,85,247,0.18)]'
+      border: 'border-[#171717] dark:border-[#383844]',
+      hoverBorder: 'hover:border-[#111111]',
+      accent: '#B9A7FF',
+      badgeBg: 'bg-[#B9A7FF] text-[#111111]',
+      badgeLabel: 'LOGIC'
     },
     security: {
-      border: 'border-rose-500/50',
-      hoverBorder: 'hover:border-rose-400',
-      accent: '#F43F5E',
-      glow: 'shadow-[0_0_12px_rgba(244,63,94,0.18)]'
+      border: 'border-[#171717] dark:border-[#383844]',
+      hoverBorder: 'hover:border-[#111111]',
+      accent: '#FF4D5A',
+      badgeBg: 'bg-[#FF4D5A] text-white',
+      badgeLabel: 'SECURITY'
     },
     plugin: {
-      border: 'border-teal-500/50',
-      hoverBorder: 'hover:border-teal-400',
-      accent: '#14B8A6',
-      glow: 'shadow-[0_0_12px_rgba(20,184,166,0.18)]'
+      border: 'border-[#171717] dark:border-[#383844]',
+      hoverBorder: 'hover:border-[#111111]',
+      accent: '#45D9A6',
+      badgeBg: 'bg-[#45D9A6] text-[#111111]',
+      badgeLabel: 'PLUGIN'
     }
   }[category] || {
-    border: 'border-sky-500/50',
-    hoverBorder: 'hover:border-sky-400',
-    accent: '#0EA5E9',
-    glow: 'shadow-[0_0_12px_rgba(14,165,233,0.18)]'
+    border: 'border-[#171717] dark:border-[#383844]',
+    hoverBorder: 'hover:border-[#111111]',
+    accent: '#7CC7FF',
+    badgeBg: 'bg-[#7CC7FF] text-[#111111]',
+    badgeLabel: 'ACTION'
   };
 
   // Special rendering for n8n iconic nodes (like Webhook, SQL query, Respond to Webhook)
@@ -167,7 +174,7 @@ export const WorkflowNode: React.FC<Props> = ({
       }}
       style={{
         transform: `translate3d(${node.position.x}px, ${node.position.y}px, 0)`,
-        width: 96
+        width: 104
       }}
       className={`absolute select-none group cursor-pointer ${
         isAnimatingLayout
@@ -179,11 +186,7 @@ export const WorkflowNode: React.FC<Props> = ({
     >
       {/* Quick Action Buttons (Floating above on hover) */}
       <div
-        className={`absolute -top-7 left-1/2 -translate-x-1/2 hidden group-hover:flex items-center gap-1 rounded-md px-1.5 py-0.5 shadow-lg z-30 transition-colors border ${
-          isDark
-            ? 'bg-[#1c1c20] border-[#2e2e34]'
-            : 'bg-white border-slate-200 shadow-md'
-        }`}
+        className="absolute -top-7 left-1/2 -translate-x-1/2 hidden group-hover:flex items-center gap-1 rounded-md px-1.5 py-0.5 z-30 transition-colors border-2 border-[#171717] bg-white dark:bg-[#1A1A22] shadow-[2px_2px_0_#111111]"
       >
         <button
           id={`btn-config-${node.id}`}
@@ -193,11 +196,7 @@ export const WorkflowNode: React.FC<Props> = ({
             e.stopPropagation();
             onOpenDrawer(node);
           }}
-          className={`p-1 rounded transition-colors ${
-            isDark
-              ? 'hover:bg-[#28282e] text-[#a1a1aa] hover:text-white'
-              : 'hover:bg-slate-100 text-slate-500 hover:text-slate-900'
-          }`}
+          className="p-1 rounded hover:bg-[#F8F5EE] dark:hover:bg-zinc-800 text-[#111111] dark:text-zinc-200"
         >
           <Settings className="w-3 h-3" />
         </button>
@@ -209,11 +208,7 @@ export const WorkflowNode: React.FC<Props> = ({
             e.stopPropagation();
             onDuplicate(node);
           }}
-          className={`p-1 rounded transition-colors ${
-            isDark
-              ? 'hover:bg-[#28282e] text-[#a1a1aa] hover:text-white'
-              : 'hover:bg-slate-100 text-slate-500 hover:text-slate-900'
-          }`}
+          className="p-1 rounded hover:bg-[#F8F5EE] dark:hover:bg-zinc-800 text-[#111111] dark:text-zinc-200"
         >
           <Copy className="w-3 h-3" />
         </button>
@@ -225,11 +220,7 @@ export const WorkflowNode: React.FC<Props> = ({
             e.stopPropagation();
             onDelete(node.id);
           }}
-          className={`p-1 rounded transition-colors ${
-            isDark
-              ? 'hover:bg-rose-950/60 text-[#a1a1aa] hover:text-rose-400'
-              : 'hover:bg-rose-50 text-slate-500 hover:text-rose-600'
-          }`}
+          className="p-1 rounded hover:bg-rose-100 dark:hover:bg-rose-950/60 text-rose-600"
         >
           <Trash2 className="w-3 h-3" />
         </button>
@@ -238,20 +229,21 @@ export const WorkflowNode: React.FC<Props> = ({
       {/* Main Node Card Body (Drag Handle) */}
       <div
         onMouseDown={(e) => onStartDrag(e, node.id)}
-        className={`relative w-24 h-21 rounded-2xl border flex flex-col items-center justify-center transition-all cursor-grab active:cursor-grabbing shadow-lg ${
-          isDark ? 'bg-[#18181c]' : 'bg-white'
+        className={`relative w-26 h-22 rounded-2xl border-2 border-[#171717] dark:border-[#383844] flex flex-col items-center justify-center transition-all cursor-grab active:cursor-grabbing shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#383844] ${
+          isDark ? 'bg-[#181820]' : 'bg-[#FFFDF9]'
         } ${
           isSelected
-            ? 'border-[#EA580C] ring-2 ring-[#EA580C]/40 shadow-[#EA580C]/25 shadow-lg'
-            : `${catStyle.border} ${catStyle.hoverBorder} ${catStyle.glow} shadow-md`
+            ? 'ring-2 ring-[#111111] dark:ring-white shadow-[4px_4px_0_#111111]'
+            : 'hover:translate-x-0.5 hover:translate-y-0.5'
         }`}
       >
-        {/* Category Color Indicator Pip */}
+        {/* Category Accent Badge */}
         <div
-          className="absolute top-1.5 left-2 w-1.5 h-1.5 rounded-full"
-          style={{ backgroundColor: catStyle.accent }}
+          className={`absolute -top-2.5 left-2 px-1.5 py-0.2 rounded text-[8px] font-black uppercase tracking-wider border border-[#171717] ${catStyle.badgeBg}`}
           title={`Category: ${category}`}
-        />
+        >
+          {catStyle.badgeLabel}
+        </div>
         {/* Node Icon Graphic */}
         {isN8nWebhook ? (
           // Distinct n8n 3-connected-nodes pink logo

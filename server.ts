@@ -33,6 +33,59 @@ if (!fs.existsSync(DATA_DIR)) {
 }
 
 const STORAGE_FILE = path.join(DATA_DIR, 'nodeflow_db.json');
+const LOCKFILE_PATH = path.join(DATA_DIR, 's2s_publishing.lock');
+
+// Enforce mandatory VAULT_MASTER_KEY on startup
+function getVaultMasterKey(): string {
+  const key = process.env.VAULT_MASTER_KEY;
+  if (!key || key.trim().length < 16) {
+    console.error('[FATAL SECURITY ERROR] VAULT_MASTER_KEY environment variable is mandatory and must be at least 16 characters long. Server cannot safely start.');
+    process.exit(1);
+  }
+  return key.trim();
+}
+
+// Single-process lockfile enforcement (Option A)
+function acquireSingleProcessLock() {
+  if (fs.existsSync(LOCKFILE_PATH)) {
+    try {
+      const lockData = JSON.parse(fs.readFileSync(LOCKFILE_PATH, 'utf8'));
+      const pid = lockData.pid;
+      if (pid && typeof pid === 'number') {
+        try {
+          process.kill(pid, 0);
+          console.error(`[FATAL] Another S2S publishing engine instance is already running (PID: ${pid}). Phase 5C enforces strictly single-process execution.`);
+          process.exit(1);
+        } catch {
+          console.warn(`[Lock] Found stale lockfile for PID ${pid}. Acquiring lock for current PID ${process.pid}.`);
+        }
+      }
+    } catch {
+      // Corrupt lockfile, proceed to overwrite
+    }
+  }
+  fs.writeFileSync(LOCKFILE_PATH, JSON.stringify({ pid: process.pid, acquiredAt: new Date().toISOString(), startedAt: new Date().toISOString() }), 'utf8');
+}
+
+function releaseSingleProcessLock() {
+  try {
+    if (fs.existsSync(LOCKFILE_PATH)) {
+      const lockData = JSON.parse(fs.readFileSync(LOCKFILE_PATH, 'utf8'));
+      if (lockData.pid === process.pid) {
+        fs.unlinkSync(LOCKFILE_PATH);
+      }
+    }
+  } catch {
+    // Ignore lock cleanup error
+  }
+}
+
+process.on('exit', releaseSingleProcessLock);
+process.on('SIGINT', () => { releaseSingleProcessLock(); process.exit(0); });
+process.on('SIGTERM', () => { releaseSingleProcessLock(); process.exit(0); });
+
+// Acquire lock immediately
+acquireSingleProcessLock();
 
 // Cryptographic helpers for local database & vault
 const MASTER_SALT = 'nodeflow-selfhosted-salt-2026';
@@ -40,8 +93,8 @@ function deriveEncryptionKey(passphrase: string): Buffer {
   return crypto.pbkdf2Sync(passphrase, MASTER_SALT, 100000, 32, 'sha256');
 }
 
-function encryptAES256GCM(text: string, passphrase = 'nodeflow-default-master-key'): { cipherText: string; iv: string; authTag: string } {
-  const key = deriveEncryptionKey(passphrase);
+function encryptAES256GCM(text: string, passphrase?: string): { cipherText: string; iv: string; authTag: string } {
+  const key = deriveEncryptionKey(passphrase || getVaultMasterKey());
   const iv = crypto.randomBytes(12);
   const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
   let encrypted = cipher.update(text, 'utf8', 'base64');
@@ -54,15 +107,78 @@ function encryptAES256GCM(text: string, passphrase = 'nodeflow-default-master-ke
   };
 }
 
-function decryptAES256GCM(cipherText: string, ivBase64: string, authTagBase64: string, passphrase = 'nodeflow-default-master-key'): string {
-  const key = deriveEncryptionKey(passphrase);
-  const iv = Buffer.from(ivBase64, 'base64');
-  const authTag = Buffer.from(authTagBase64, 'base64');
-  const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
-  decipher.setAuthTag(authTag);
-  let decrypted = decipher.update(cipherText, 'base64', 'utf8');
-  decrypted += decipher.final('utf8');
-  return decrypted;
+function decryptAES256GCM(cipherText: string, ivBase64: string, authTagBase64: string, passphrase?: string): string {
+  const activeKey = passphrase || getVaultMasterKey();
+  try {
+    const key = deriveEncryptionKey(activeKey);
+    const iv = Buffer.from(ivBase64, 'base64');
+    const authTag = Buffer.from(authTagBase64, 'base64');
+    const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+    decipher.setAuthTag(authTag);
+    let decrypted = decipher.update(cipherText, 'base64', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+  } catch (primaryErr) {
+    if (!passphrase || passphrase === getVaultMasterKey()) {
+      try {
+        const legacyKey = deriveEncryptionKey('nodeflow-default-master-key');
+        const iv = Buffer.from(ivBase64, 'base64');
+        const authTag = Buffer.from(authTagBase64, 'base64');
+        const decipher = crypto.createDecipheriv('aes-256-gcm', legacyKey, iv);
+        decipher.setAuthTag(authTag);
+        let decrypted = decipher.update(cipherText, 'base64', 'utf8');
+        decrypted += decipher.final('utf8');
+        return decrypted;
+      } catch {
+        // Rethrow original error if legacy fallback also fails
+      }
+    }
+    throw primaryErr;
+  }
+}
+
+function migrateVaultCredentials(db: DatabaseSchema) {
+  if (!db.vault || !Array.isArray(db.vault)) return;
+  let migrated = false;
+  for (const item of db.vault) {
+    if (item.cipherText && item.iv && item.authTag) {
+      try {
+        const testKey = deriveEncryptionKey(getVaultMasterKey());
+        const decipher = crypto.createDecipheriv('aes-256-gcm', testKey, Buffer.from(item.iv, 'base64'));
+        decipher.setAuthTag(Buffer.from(item.authTag, 'base64'));
+        decipher.update(item.cipherText, 'base64', 'utf8');
+        decipher.final('utf8');
+      } catch {
+        try {
+          const plaintext = decryptAES256GCM(item.cipherText, item.iv, item.authTag, 'nodeflow-default-master-key');
+          const reEncrypted = encryptAES256GCM(plaintext);
+          item.cipherText = reEncrypted.cipherText;
+          item.iv = reEncrypted.iv;
+          item.authTag = reEncrypted.authTag;
+          item.updatedAt = new Date().toISOString();
+          migrated = true;
+          console.log(`[Vault Migration] Re-encrypted credential ${item.id} with VAULT_MASTER_KEY.`);
+        } catch (migErr) {
+          console.warn(`[Vault Migration] Could not migrate credential ${item.id}:`, migErr);
+        }
+      }
+    }
+  }
+  if (migrated) {
+    saveDatabase(db);
+  }
+}
+
+// Centralized account sanitization helper
+function sanitizeAccountForResponse(a: any): any {
+  if (!a) return a;
+  const token = a.metaAccessToken || (instagramService as any).vaultSecretResolver?.(a.id) || (instagramService as any).vaultSecretResolver?.(`meta-${a.id}`) || (instagramService as any).vaultSecretResolver?.(`cred-meta-${a.id}`);
+  const { metaAccessToken, ...safe } = a;
+  return {
+    ...safe,
+    hasCredentials: !!token,
+    maskedToken: token ? `${token.slice(0, 4)}...${token.slice(-4)}` : undefined
+  };
 }
 
 async function callWithTimeout<T>(promise: Promise<T>, ms = 6000, errorMsg = 'Operation timed out'): Promise<T> {
@@ -95,6 +211,8 @@ interface DatabaseSchema {
   instagramPipeline?: any[];
   instagramScripts?: any[];
   instagramCalendar?: any[];
+  instagramPublicationSnapshots?: any[];
+  instagramPublishJobs?: any[];
   instagramAIConfig?: any;
   instagramSkills?: any[];
   instagramLearningProposals?: any[];
@@ -194,7 +312,7 @@ const instagramService = new InstagramService((provider: string) => {
       c.id.toLowerCase().includes(provider.toLowerCase())
     );
     if (cred && cred.cipherText && cred.iv && cred.authTag) {
-      return decryptAES256GCM(cred.cipherText, cred.iv, cred.authTag, 'nodeflow-default-master-key');
+      return decryptAES256GCM(cred.cipherText, cred.iv, cred.authTag);
     }
   } catch (err) {
     console.warn(`Could not resolve vault credential for ${provider}:`, err);
@@ -205,6 +323,7 @@ const instagramService = new InstagramService((provider: string) => {
 // Hydrate Instagram Service from persisted storage
 try {
   const currentDb = loadDatabase();
+  migrateVaultCredentials(currentDb);
   instagramService.hydrateFromDb(currentDb);
 } catch (err) {
   console.warn('Failed initial Instagram DB hydration:', err);
@@ -215,6 +334,9 @@ function persistInstagramState() {
   instagramService.serializeToDb(db);
   saveDatabase(db);
 }
+
+// Connect publishing engine state change callback directly to real persistence layer (P0)
+instagramService.setPersistenceCallback(persistInstagramState);
 
 // App Environment State (Demo Sandbox vs Live Production)
 let currentAppEnvironment: 'demo' | 'live' = 'demo';
@@ -292,7 +414,7 @@ app.post('/api/vault', (req, res) => {
     ? secretValue.slice(0, 3) + '-***-' + secretValue.slice(-4)
     : '***';
 
-  const encrypted = encryptAES256GCM(secretValue, passphrase || 'nodeflow-default-master-key');
+  const encrypted = encryptAES256GCM(secretValue, passphrase);
   const newCred = {
     id: 'cred-' + Date.now(),
     name,
@@ -1661,10 +1783,12 @@ app.post('/api/workflows/import', (req, res) => {
 // INSTAGRAM CONTENT INTELLIGENCE & AUDIT API
 // ==========================================
 
-// Accounts
+// Accounts (P0 Credential Security: Never expose raw Meta access tokens)
 app.get(['/api/instagram/accounts', '/api/instagram/account'], (req, res) => {
   const env = (req.query.environment as string) || currentAppEnvironment;
-  res.json({ success: true, accounts: instagramService.getAccounts(env) });
+  const accounts = instagramService.getAccounts(env);
+  const safeAccounts = accounts.map(sanitizeAccountForResponse);
+  res.json({ success: true, accounts: safeAccounts });
 });
 
 app.post(['/api/instagram/accounts', '/api/instagram/account'], (req, res) => {
@@ -1672,9 +1796,34 @@ app.post(['/api/instagram/accounts', '/api/instagram/account'], (req, res) => {
   if (!account || !account.username) {
     return res.status(400).json({ error: 'Username is required' });
   }
-  const saved = instagramService.saveAccount(account);
+
+  const token = account.metaAccessToken;
+  if (token) {
+    const db = loadDatabase();
+    const vaultId = `cred-meta-${account.id || 'ig-' + account.username}`;
+    const encrypted = encryptAES256GCM(token);
+    const existingIdx = db.vault.findIndex((v: any) => v.id === vaultId);
+    const vaultEntry = {
+      id: vaultId,
+      name: `Meta Access Token (@${account.username})`,
+      type: 'api_key',
+      maskedPreview: `${token.slice(0, 4)}...${token.slice(-4)}`,
+      ...encrypted,
+      createdAt: new Date().toISOString()
+    };
+    if (existingIdx >= 0) db.vault[existingIdx] = vaultEntry;
+    else db.vault.push(vaultEntry);
+    saveDatabase(db);
+  }
+
+  const { metaAccessToken, ...safePayload } = account;
+  const saved = instagramService.saveAccount(safePayload);
   persistInstagramState();
-  res.json({ success: true, account: saved });
+
+  res.json({
+    success: true,
+    account: sanitizeAccountForResponse(saved)
+  });
 });
 
 app.delete('/api/instagram/accounts/:id', (req, res) => {
@@ -1682,7 +1831,8 @@ app.delete('/api/instagram/accounts/:id', (req, res) => {
   const removed = instagramService.disconnectAccount(id);
   if (removed) {
     persistInstagramState();
-    return res.json({ success: true, message: `Account ${id} disconnected`, accounts: instagramService.getAccounts() });
+    const safeAccounts = instagramService.getAccounts().map(sanitizeAccountForResponse);
+    return res.json({ success: true, message: `Account ${id} disconnected`, accounts: safeAccounts });
   }
   return res.status(404).json({ error: 'Account not found or already disconnected' });
 });
@@ -1692,7 +1842,8 @@ app.post('/api/instagram/accounts/:id/disconnect', (req, res) => {
   const removed = instagramService.disconnectAccount(id);
   if (removed) {
     persistInstagramState();
-    return res.json({ success: true, message: `Account ${id} disconnected`, accounts: instagramService.getAccounts() });
+    const safeAccounts = instagramService.getAccounts().map(sanitizeAccountForResponse);
+    return res.json({ success: true, message: `Account ${id} disconnected`, accounts: safeAccounts });
   }
   return res.status(404).json({ error: 'Account not found or already disconnected' });
 });
@@ -1740,7 +1891,14 @@ app.post('/api/instagram/accounts/connect-manus', async (req, res) => {
           isDemo: true
         });
         persistInstagramState();
-        return res.json({ success: true, account: result.account });
+        const { metaAccessToken: _tok, ...safeAcc } = result.account;
+        return res.json({
+          success: true,
+          account: {
+            ...safeAcc,
+            hasCredentials: false
+          }
+        });
       }
 
       if (!trimmedToken) {
@@ -1761,7 +1919,9 @@ app.post('/api/instagram/accounts/connect-manus', async (req, res) => {
         // 1. Try querying targetId directly as an Instagram Business User
         if (igId && igId !== 'me') {
           try {
-            const igRes = await fetch(`https://graph.facebook.com/v20.0/${encodeURIComponent(igId)}?fields=id,name,username,biography,followers_count,follows_count,media_count,profile_picture_url&access_token=${encodeURIComponent(trimmedToken)}`);
+            const igRes = await fetch(`https://graph.facebook.com/v20.0/${encodeURIComponent(igId)}?fields=id,name,username,biography,followers_count,follows_count,media_count,profile_picture_url`, {
+              headers: { 'Authorization': `Bearer ${trimmedToken}` }
+            });
             const igJson: any = await igRes.json();
             if (igJson && igJson.username) {
               metaData = igJson;
@@ -1775,7 +1935,9 @@ app.post('/api/instagram/accounts/connect-manus', async (req, res) => {
         if (!metaData) {
           try {
             const pageId = metaPageId || 'me';
-            const pageRes = await fetch(`https://graph.facebook.com/v20.0/${encodeURIComponent(pageId)}?fields=id,name,instagram_business_account{id,name,username,biography,followers_count,follows_count,media_count,profile_picture_url}&access_token=${encodeURIComponent(trimmedToken)}`);
+            const pageRes = await fetch(`https://graph.facebook.com/v20.0/${encodeURIComponent(pageId)}?fields=id,name,instagram_business_account{id,name,username,biography,followers_count,follows_count,media_count,profile_picture_url}`, {
+              headers: { 'Authorization': `Bearer ${trimmedToken}` }
+            });
             const pageJson: any = await pageRes.json();
             if (pageJson && pageJson.instagram_business_account) {
               metaData = pageJson.instagram_business_account;
@@ -1792,7 +1954,9 @@ app.post('/api/instagram/accounts/connect-manus', async (req, res) => {
         // 3. Fallback to /me with instagram_business_account
         if (!metaData) {
           try {
-            const meRes = await fetch(`https://graph.facebook.com/v20.0/me?fields=id,name,instagram_business_account{id,name,username,biography,followers_count,follows_count,media_count,profile_picture_url}&access_token=${encodeURIComponent(trimmedToken)}`);
+            const meRes = await fetch(`https://graph.facebook.com/v20.0/me?fields=id,name,instagram_business_account{id,name,username,biography,followers_count,follows_count,media_count,profile_picture_url}`, {
+              headers: { 'Authorization': `Bearer ${trimmedToken}` }
+            });
             const meJson: any = await meRes.json();
             if (meJson && meJson.instagram_business_account) {
               metaData = meJson.instagram_business_account;
@@ -1813,8 +1977,10 @@ app.post('/api/instagram/accounts/connect-manus', async (req, res) => {
         let calculatedEngagement = 4.2;
         try {
           const mediaTarget = igId || metaData.id;
-          const mediaUrl = `https://graph.facebook.com/v20.0/${encodeURIComponent(mediaTarget)}/media?fields=id,like_count,comments_count&limit=10&access_token=${encodeURIComponent(trimmedToken)}`;
-          const mediaRes = await fetch(mediaUrl);
+          const mediaUrl = `https://graph.facebook.com/v20.0/${encodeURIComponent(mediaTarget)}/media?fields=id,like_count,comments_count&limit=10`;
+          const mediaRes = await fetch(mediaUrl, {
+            headers: { 'Authorization': `Bearer ${trimmedToken}` }
+          });
           const mediaJson: any = await mediaRes.json();
           if (mediaJson.data && Array.isArray(mediaJson.data) && mediaJson.data.length > 0 && metaData.followers_count) {
             const totalInteractions = mediaJson.data.reduce((sum: number, item: any) => sum + (item.like_count || 0) + (item.comments_count || 0), 0);
@@ -1837,8 +2003,36 @@ app.post('/api/instagram/accounts/connect-manus', async (req, res) => {
           metaAccessToken: trimmedToken,
           instagramBusinessId: metaData.id || metaPageId
         });
+
+        // Store credential in Vault securely
+        if (trimmedToken) {
+          const db = loadDatabase();
+          const vaultId = `cred-meta-${result.account.id}`;
+          const encrypted = encryptAES256GCM(trimmedToken);
+          const existingIdx = db.vault.findIndex((v: any) => v.id === vaultId);
+          const vaultEntry = {
+            id: vaultId,
+            name: `Meta Access Token (@${result.account.username})`,
+            type: 'api_key',
+            maskedPreview: `${trimmedToken.slice(0, 4)}...${trimmedToken.slice(-4)}`,
+            ...encrypted,
+            createdAt: new Date().toISOString()
+          };
+          if (existingIdx >= 0) db.vault[existingIdx] = vaultEntry;
+          else db.vault.push(vaultEntry);
+          saveDatabase(db);
+        }
+
         persistInstagramState();
-        return res.json({ success: true, account: result.account });
+        const { metaAccessToken: _tok, ...safeAcc } = result.account;
+        return res.json({
+          success: true,
+          account: {
+            ...safeAcc,
+            hasCredentials: !!trimmedToken,
+            maskedToken: trimmedToken ? `${trimmedToken.slice(0, 4)}...${trimmedToken.slice(-4)}` : undefined
+          }
+        });
       }
     }
 
@@ -1862,7 +2056,14 @@ app.post('/api/instagram/accounts/connect-manus', async (req, res) => {
       isDemo: true // ALWAYS enforce isDemo = true for simulated sandbox connections
     });
     persistInstagramState();
-    res.json({ success: true, account: result.account });
+    const { metaAccessToken: _tok, ...safeAcc } = result.account;
+    res.json({
+      success: true,
+      account: {
+        ...safeAcc,
+        hasCredentials: false
+      }
+    });
   } catch (err: any) {
     res.status(500).json({ error: err.message || 'Failed to connect Instagram page' });
   }
@@ -1909,8 +2110,10 @@ app.post('/api/instagram/accounts/inspect-token', async (req, res) => {
 
     // 1. Check if token is directly a Page Access Token (/me returns the Page with instagram_business_account)
     try {
-      const meUrl = `https://graph.facebook.com/v20.0/me?fields=id,name,instagram_business_account{id,username,name,biography,followers_count,follows_count,media_count,profile_picture_url}&access_token=${encodeURIComponent(trimmedToken)}`;
-      const meRes = await fetch(meUrl);
+      const meUrl = `https://graph.facebook.com/v20.0/me?fields=id,name,instagram_business_account{id,username,name,biography,followers_count,follows_count,media_count,profile_picture_url}`;
+      const meRes = await fetch(meUrl, {
+        headers: { 'Authorization': `Bearer ${trimmedToken}` }
+      });
       const meData: any = await meRes.json();
       if (meData && meData.instagram_business_account && !seenIds.has(meData.instagram_business_account.id)) {
         const ig = meData.instagram_business_account;
@@ -1934,8 +2137,10 @@ app.post('/api/instagram/accounts/inspect-token', async (req, res) => {
 
     // 2. Also check if token is a User Access Token (/me/accounts returns list of Pages)
     try {
-      const metaAccountsUrl = `https://graph.facebook.com/v20.0/me/accounts?fields=id,name,instagram_business_account{id,username,name,biography,followers_count,follows_count,media_count,profile_picture_url}&access_token=${encodeURIComponent(trimmedToken)}`;
-      const metaRes = await fetch(metaAccountsUrl);
+      const metaAccountsUrl = `https://graph.facebook.com/v20.0/me/accounts?fields=id,name,instagram_business_account{id,username,name,biography,followers_count,follows_count,media_count,profile_picture_url}`;
+      const metaRes = await fetch(metaAccountsUrl, {
+        headers: { 'Authorization': `Bearer ${trimmedToken}` }
+      });
       const metaData: any = await metaRes.json();
 
       if (metaData && Array.isArray(metaData.data)) {
@@ -1964,7 +2169,9 @@ app.post('/api/instagram/accounts/inspect-token', async (req, res) => {
 
     if (detectedAccounts.length === 0) {
       // Check if token was fundamentally rejected by Meta
-      const checkRes = await fetch(`https://graph.facebook.com/v20.0/me?access_token=${encodeURIComponent(trimmedToken)}`);
+      const checkRes = await fetch(`https://graph.facebook.com/v20.0/me`, {
+        headers: { 'Authorization': `Bearer ${trimmedToken}` }
+      });
       const checkData: any = await checkRes.json();
       if (checkData.error) {
         return res.status(400).json({
@@ -1988,7 +2195,7 @@ app.post('/api/instagram/accounts/inspect-token', async (req, res) => {
 app.get('/api/instagram/oauth/url', (req, res) => {
   const appId = process.env.META_APP_ID || '';
   const redirectUri = `${req.protocol}://${req.get('host')}/api/instagram/oauth/callback`;
-  const scope = 'instagram_basic,pages_show_list,instagram_manage_insights,pages_read_engagement';
+  const scope = 'instagram_basic,pages_show_list,instagram_manage_insights,pages_read_engagement,instagram_content_publish';
 
   const oauthUrl = appId
     ? `https://www.facebook.com/v20.0/dialog/oauth?client_id=${encodeURIComponent(appId)}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}&response_type=code`
@@ -2061,9 +2268,17 @@ app.post('/api/instagram/oauth/exchange', async (req, res) => {
   }
 
   try {
-    // 1. Exchange authorization code for user access token
-    const tokenUrl = `https://graph.facebook.com/v20.0/oauth/access_token?client_id=${encodeURIComponent(appId)}&redirect_uri=${encodeURIComponent(redirectUri)}&client_secret=${encodeURIComponent(appSecret)}&code=${encodeURIComponent(code)}`;
-    const tokenResp = await fetch(tokenUrl);
+    // 1. Exchange authorization code for user access token via POST body
+    const tokenResp = await fetch('https://graph.facebook.com/v20.0/oauth/access_token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: appId,
+        redirect_uri: redirectUri,
+        client_secret: appSecret,
+        code: code
+      }).toString()
+    });
     const tokenData = await tokenResp.json() as any;
 
     if (tokenData.error) {
@@ -2072,11 +2287,19 @@ app.post('/api/instagram/oauth/exchange', async (req, res) => {
 
     const shortLivedToken = tokenData.access_token;
 
-    // 2. Exchange for long-lived access token (60-day validity)
+    // 2. Exchange for long-lived access token (60-day validity) via POST body
     let finalToken = shortLivedToken;
     try {
-      const longLivedUrl = `https://graph.facebook.com/v20.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${encodeURIComponent(appId)}&client_secret=${encodeURIComponent(appSecret)}&fb_exchange_token=${encodeURIComponent(shortLivedToken)}`;
-      const longResp = await fetch(longLivedUrl);
+      const longResp = await fetch('https://graph.facebook.com/v20.0/oauth/access_token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'fb_exchange_token',
+          client_id: appId,
+          client_secret: appSecret,
+          fb_exchange_token: shortLivedToken
+        }).toString()
+      });
       const longData = await longResp.json() as any;
       if (longData.access_token) {
         finalToken = longData.access_token;
@@ -2085,9 +2308,11 @@ app.post('/api/instagram/oauth/exchange', async (req, res) => {
       console.warn('Long-lived token exchange warning, proceeding with primary token:', e);
     }
 
-    // 3. Inspect accounts linked to this token
-    const accountsUrl = `https://graph.facebook.com/v20.0/me/accounts?fields=id,name,category,access_token,instagram_business_account{id,username,name,profile_picture_url,followers_count,biography}&access_token=${encodeURIComponent(finalToken)}`;
-    const accResp = await fetch(accountsUrl);
+    // 3. Inspect accounts linked to this token via Authorization header
+    const accountsUrl = `https://graph.facebook.com/v20.0/me/accounts?fields=id,name,category,instagram_business_account{id,username,name,profile_picture_url,followers_count,biography}`;
+    const accResp = await fetch(accountsUrl, {
+      headers: { 'Authorization': `Bearer ${finalToken}` }
+    });
     const accData = await accResp.json() as any;
 
     const detectedAccounts: any[] = [];
@@ -2104,17 +2329,75 @@ app.post('/api/instagram/oauth/exchange', async (req, res) => {
             category: page.category || 'Creator',
             bio: ig.biography || '',
             followersCount: ig.followers_count || 0,
-            profilePictureUrl: ig.profile_picture_url || '',
-            pageAccessToken: page.access_token
+            profilePictureUrl: ig.profile_picture_url || ''
           });
         }
       }
     }
 
+    // Securely connect detected accounts and encrypt token into vault at rest - NEVER return plaintext token
+    const connectedAccounts: any[] = [];
+    if (finalToken && detectedAccounts.length > 0) {
+      const db = loadDatabase();
+      for (const detected of detectedAccounts) {
+        const result = instagramService.connectManusInstagramPage({
+          method: 'meta_graph_api',
+          username: detected.username,
+          loginIdentifier: detected.id,
+          displayName: detected.displayName,
+          bio: detected.bio,
+          category: detected.category,
+          followersCount: detected.followersCount,
+          isDemo: false,
+          instagramBusinessId: detected.id
+        });
+
+        const vaultId = `cred-meta-${result.account.id}`;
+        const encrypted = encryptAES256GCM(finalToken);
+        const existingIdx = db.vault.findIndex((v: any) => v.id === vaultId);
+        const vaultEntry = {
+          id: vaultId,
+          name: `Meta Access Token (@${result.account.username})`,
+          type: 'api_key',
+          maskedPreview: `${finalToken.slice(0, 4)}...${finalToken.slice(-4)}`,
+          ...encrypted,
+          createdAt: new Date().toISOString()
+        };
+        if (existingIdx >= 0) db.vault[existingIdx] = vaultEntry;
+        else db.vault.push(vaultEntry);
+
+        const { metaAccessToken: _tok, ...safeAcc } = result.account;
+        connectedAccounts.push({
+          ...safeAcc,
+          hasCredentials: true,
+          maskedToken: `${finalToken.slice(0, 4)}...${finalToken.slice(-4)}`
+        });
+      }
+      saveDatabase(db);
+      persistInstagramState();
+    } else if (finalToken) {
+      // If no Instagram account was found, still store the user token in vault
+      const db = loadDatabase();
+      const vaultId = `cred-meta-oauth-${Date.now()}`;
+      const encrypted = encryptAES256GCM(finalToken);
+      db.vault.push({
+        id: vaultId,
+        name: 'Meta OAuth User Token',
+        type: 'api_key',
+        maskedPreview: `${finalToken.slice(0, 4)}...${finalToken.slice(-4)}`,
+        ...encrypted,
+        createdAt: new Date().toISOString()
+      });
+      saveDatabase(db);
+    }
+
+    // Return safe metadata ONLY - NEVER return accessToken or pageAccessToken
     res.json({
       success: true,
-      accessToken: finalToken,
-      detectedAccounts
+      hasCredentials: true,
+      detectedAccounts,
+      connectedAccounts,
+      account: connectedAccounts[0] || null
     });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message || 'Failed to exchange Meta authorization code.' });
@@ -2610,6 +2893,87 @@ app.put('/api/instagram/calendar/:id', (req, res) => {
     }
     persistInstagramState();
     res.json({ success: true, post });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Publication Snapshots (Phase 5A)
+app.get('/api/instagram/publication-snapshots', (req, res) => {
+  const accountId = req.query.accountId as string | undefined;
+  res.json({ success: true, snapshots: instagramService.getPublicationSnapshots(accountId) });
+});
+
+app.get('/api/instagram/publication-snapshots/:id', (req, res) => {
+  const snapshot = instagramService.getPublicationSnapshotById(req.params.id);
+  if (!snapshot) {
+    return res.status(404).json({ error: 'Snapshot not found' });
+  }
+  res.json({ success: true, snapshot });
+});
+
+app.post('/api/instagram/publication-snapshots', (req, res) => {
+  try {
+    const snapshot = instagramService.createPublicationSnapshot(req.body);
+    persistInstagramState();
+    res.json({ success: true, snapshot });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Publishing Engine & Queue (Phase 5C)
+app.get('/api/instagram/publishing/jobs', (req, res) => {
+  const accountId = req.query.accountId as string | undefined;
+  res.json({ success: true, jobs: instagramService.getPublishJobs(accountId) });
+});
+
+app.get('/api/instagram/publishing/jobs/:id', (req, res) => {
+  const job = instagramService.getPublishJobById(req.params.id);
+  if (!job) {
+    return res.status(404).json({ error: 'Publish job not found' });
+  }
+  res.json({ success: true, job });
+});
+
+app.post('/api/instagram/publishing/jobs/:id/publish-now', async (req, res) => {
+  try {
+    const job = await instagramService.publishNowJob(req.params.id);
+    persistInstagramState();
+    res.json({ success: true, job });
+  } catch (err: any) {
+    const isClientErr = err.message.includes('already been published') || err.message.includes('not found') || err.message.includes('failed');
+    res.status(isClientErr ? 400 : 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/instagram/publishing/jobs/:id/cancel', (req, res) => {
+  try {
+    const job = instagramService.cancelPublishJob(req.params.id);
+    persistInstagramState();
+    res.json({ success: true, job });
+  } catch (err: any) {
+    const isClientErr = err.message.includes('already been published') || err.message.includes('not found');
+    res.status(isClientErr ? 400 : 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/instagram/publishing/jobs/:id/retry', async (req, res) => {
+  try {
+    const job = await instagramService.retryPublishJob(req.params.id);
+    persistInstagramState();
+    res.json({ success: true, job });
+  } catch (err: any) {
+    const isClientErr = err.message.includes('already been published') || err.message.includes('not found') || err.message.includes('failed');
+    res.status(isClientErr ? 400 : 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/instagram/publishing/rate-limit', async (req, res) => {
+  try {
+    const accountId = (req.query.accountId as string) || 'ig-bajajfinance';
+    const limit = await instagramService.checkPublishingLimit(accountId);
+    res.json({ success: true, limit });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }

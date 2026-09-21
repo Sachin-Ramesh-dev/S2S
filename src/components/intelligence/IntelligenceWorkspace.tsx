@@ -70,30 +70,23 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
   return (
     <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
       {/* Intelligence Sub-Navigation Bar */}
-      <div
-        className={`px-6 py-3 border-b flex items-center justify-between shrink-0 select-none transition-colors ${
-          isDark ? 'bg-[#14141c] border-[#252534]' : 'bg-white border-slate-200'
-        }`}
-      >
+      <div className="px-6 py-3 border-b-2 border-[#171717] dark:border-[#383844] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0 select-none bg-[#F8F5EE] dark:bg-[#131316] transition-colors">
         <div className="flex items-center gap-2">
-          <span className="text-lg">📊</span>
-          <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-white">Intelligence Domain</span>
-          <span className={`text-xs px-2 py-0.5 rounded-md font-mono ${
-            isDark ? 'bg-[#20202e] text-zinc-400' : 'bg-slate-100 text-slate-600'
-          }`}>
-            {activeSubView.toUpperCase()}
+          <span className="neo-badge neo-badge-lavender text-[10px] font-black">INTELLIGENCE &amp; LEARNING</span>
+          <span className="text-xs font-mono font-bold text-[#4B5563] dark:text-[#A1A1AA]">
+            @{account?.username || 'instagram_account'}
           </span>
         </div>
 
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-black/10 dark:bg-black/30 border border-zinc-700/30">
+        <div className="flex items-center gap-1 p-1 rounded-xl border-2 border-[#171717] bg-[#F8F5EE] dark:bg-[#1A1A22] shadow-[2px_2px_0_#111111]">
           <button
             id="subnav-intelligence-analytics"
             type="button"
             onClick={() => onSubViewChange('analytics')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-1 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
               activeSubView === 'analytics'
-                ? 'bg-[#EA580C] text-white shadow-xs'
-                : 'text-zinc-400 hover:text-zinc-200'
+                ? 'bg-[#111111] text-white dark:bg-white dark:text-[#111111]'
+                : 'text-[#4B5563] dark:text-[#A1A1AA] hover:text-[#111111]'
             }`}
           >
             <BarChart3 className="w-3.5 h-3.5" />
@@ -104,10 +97,10 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
             id="subnav-intelligence-performance"
             type="button"
             onClick={() => onSubViewChange('performance')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-1 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
               activeSubView === 'performance'
-                ? 'bg-[#EA580C] text-white shadow-xs'
-                : 'text-zinc-400 hover:text-zinc-200'
+                ? 'bg-[#111111] text-white dark:bg-white dark:text-[#111111]'
+                : 'text-[#4B5563] dark:text-[#A1A1AA] hover:text-[#111111]'
             }`}
           >
             <TrendingUp className="w-3.5 h-3.5" />
@@ -118,10 +111,10 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
             id="subnav-intelligence-content-intelligence"
             type="button"
             onClick={() => onSubViewChange('content_intelligence')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-1 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
               activeSubView === 'content_intelligence'
-                ? 'bg-[#EA580C] text-white shadow-xs'
-                : 'text-zinc-400 hover:text-zinc-200'
+                ? 'bg-[#111111] text-white dark:bg-white dark:text-[#111111]'
+                : 'text-[#4B5563] dark:text-[#A1A1AA] hover:text-[#111111]'
             }`}
           >
             <BrainCircuit className="w-3.5 h-3.5" />
@@ -132,10 +125,10 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
             id="subnav-intelligence-reports"
             type="button"
             onClick={() => onSubViewChange('reports')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-1 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
               activeSubView === 'reports'
-                ? 'bg-[#EA580C] text-white shadow-xs'
-                : 'text-zinc-400 hover:text-zinc-200'
+                ? 'bg-[#111111] text-white dark:bg-white dark:text-[#111111]'
+                : 'text-[#4B5563] dark:text-[#A1A1AA] hover:text-[#111111]'
             }`}
           >
             <FileSpreadsheet className="w-3.5 h-3.5" />
@@ -148,37 +141,51 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
       <div className="flex-1 overflow-y-auto">
         {activeSubView === 'analytics' && (
           <div className="p-6 md:p-8 space-y-6 max-w-6xl mx-auto">
-            <div>
-              <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Account Analytics &amp; Velocity</h2>
-              <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
-                30-day velocity benchmarks, follower growth rate, and impressions breakdown.
-              </p>
+            <div className="neo-card p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div>
+                <span className="neo-badge neo-badge-sky mb-2 inline-block">PERFORMANCE METRICS</span>
+                <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-[#111111] dark:text-[#F5F3EC] font-display">
+                  ACCOUNT VELOCITY
+                </h1>
+                <p className="text-xs sm:text-sm font-medium text-[#4B5563] dark:text-[#A1A1AA] mt-1">
+                  30-day velocity benchmarks, follower growth rate, and impressions breakdown.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="neo-btn neo-btn-lavender py-2.5 px-5 text-xs font-black uppercase tracking-wider flex items-center gap-2 shrink-0"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Update Guardrails from Data</span>
+              </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <div className={`p-5 rounded-2xl border ${isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <div className="text-xs text-slate-500 dark:text-zinc-400 mb-1">Average Reel Reach</div>
-                <div className="text-2xl font-black text-slate-900 dark:text-white">32,400</div>
-                <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-2 flex items-center gap-1">
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                  <span>+18.4% vs last month</span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="neo-card p-6">
+                <div className="text-xs font-black uppercase text-[#4B5563] dark:text-[#A1A1AA] tracking-wider mb-2">Average Reel Reach</div>
+                <div className="text-3xl font-black text-[#111111] dark:text-white font-display">32,400</div>
+                <div className="mt-3 flex items-center gap-1.5">
+                  <span className="neo-badge neo-badge-mint text-[10px] font-black">+18.4% MOM</span>
+                  <span className="text-xs font-bold text-[#4B5563] dark:text-[#A1A1AA]">vs last month</span>
                 </div>
               </div>
 
-              <div className={`p-5 rounded-2xl border ${isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <div className="text-xs text-slate-500 dark:text-zinc-400 mb-1">Engagement Rate</div>
-                <div className="text-2xl font-black text-slate-900 dark:text-white">4.12%</div>
-                <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-2 flex items-center gap-1">
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                  <span>Top 5% in Fintech niche</span>
+              <div className="neo-card p-6">
+                <div className="text-xs font-black uppercase text-[#4B5563] dark:text-[#A1A1AA] tracking-wider mb-2">Engagement Rate</div>
+                <div className="text-3xl font-black text-[#111111] dark:text-white font-display">4.12%</div>
+                <div className="mt-3 flex items-center gap-1.5">
+                  <span className="neo-badge neo-badge-yellow text-[10px] font-black">TOP 5%</span>
+                  <span className="text-xs font-bold text-[#4B5563] dark:text-[#A1A1AA]">in Fintech niche</span>
                 </div>
               </div>
 
-              <div className={`p-5 rounded-2xl border ${isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <div className="text-xs text-slate-500 dark:text-zinc-400 mb-1">Comment-to-DM Ratio</div>
-                <div className="text-2xl font-black text-slate-900 dark:text-white">14.2%</div>
-                <div className="text-[11px] text-orange-600 dark:text-orange-400 font-semibold mt-2 flex items-center gap-1">
-                  <span>High conversion intent</span>
+              <div className="neo-card p-6">
+                <div className="text-xs font-black uppercase text-[#4B5563] dark:text-[#A1A1AA] tracking-wider mb-2">Comment-to-DM Ratio</div>
+                <div className="text-3xl font-black text-[#111111] dark:text-white font-display">14.2%</div>
+                <div className="mt-3 flex items-center gap-1.5">
+                  <span className="neo-badge neo-badge-coral text-[10px] font-black">HIGH CONV</span>
+                  <span className="text-xs font-bold text-[#4B5563] dark:text-[#A1A1AA]">high conversion intent</span>
                 </div>
               </div>
             </div>
@@ -187,35 +194,105 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
 
         {activeSubView === 'performance' && (
           <div className="p-6 md:p-8 space-y-6 max-w-6xl mx-auto">
-            <div>
-              <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">4-Act Hook Retention Diagnostics</h2>
-              <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
-                Analysis of audience retention across the 4 acts: 0–3s hook, 3–15s agitation, 15–45s solution, and 45–60s CTA.
-              </p>
+            <div className="neo-card p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div>
+                <span className="neo-badge neo-badge-lavender mb-2 inline-block">LEARNING ENGINE</span>
+                <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-[#111111] dark:text-[#F5F3EC] font-display">
+                  PERFORMANCE &amp; RETENTION
+                </h1>
+                <p className="text-xs sm:text-sm font-medium text-[#4B5563] dark:text-[#A1A1AA] mt-1">
+                  Analysis of audience retention curves, carousel completion, and optimal publishing windows.
+                </p>
+              </div>
+
+              {/* Distinct Action: Update Guardrails from Data */}
+              <button
+                type="button"
+                id="btn-update-guardrails-data"
+                className="neo-btn neo-btn-lavender py-3 px-5 text-xs font-black uppercase tracking-wider flex items-center gap-2 shrink-0 shadow-[4px_4px_0_#111111]"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Update Guardrails from Data</span>
+              </button>
             </div>
 
-            <div className={`p-6 rounded-2xl border space-y-4 ${
-              isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'
-            }`}>
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white">Audience Retention Curve (0s – 60s)</h3>
+            {/* High-Impact KPI Blocks: Hook Retention, Carousel Completion, Best Posting Times */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Hook Retention Block */}
+              <div className="neo-card p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-black uppercase text-[#4B5563] dark:text-[#A1A1AA] tracking-wider">Hook Retention (0–3s)</span>
+                  <span className="neo-badge neo-badge-mint">98%</span>
+                </div>
+                <div className="text-2xl font-black text-[#111111] dark:text-white mb-2 font-display">Pattern Interrupt</div>
+                <p className="text-xs text-[#4B5563] dark:text-[#A1A1AA] leading-relaxed">
+                  First 3 seconds retain 98% of viewers when question or contrast pattern interrupt is used.
+                </p>
+              </div>
 
-              <div className="space-y-3">
+              {/* Carousel Completion Block */}
+              <div className="neo-card p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-black uppercase text-[#4B5563] dark:text-[#A1A1AA] tracking-wider">Carousel Completion</span>
+                  <span className="neo-badge neo-badge-yellow">78.4%</span>
+                </div>
+                <div className="text-2xl font-black text-[#111111] dark:text-white mb-2 font-display">5+ Slides Read</div>
+                <p className="text-xs text-[#4B5563] dark:text-[#A1A1AA] leading-relaxed">
+                  Slides with swipe indicator pills retain 24% more readers through slide 5.
+                </p>
+              </div>
+
+              {/* Best Posting Times Block */}
+              <div className="neo-card p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-black uppercase text-[#4B5563] dark:text-[#A1A1AA] tracking-wider">Best Posting Times</span>
+                  <span className="neo-badge neo-badge-sky">18:30 IST</span>
+                </div>
+                <div className="text-2xl font-black text-[#111111] dark:text-white mb-2 font-display">Wed, Fri &amp; Sun</div>
+                <p className="text-xs text-[#4B5563] dark:text-[#A1A1AA] leading-relaxed">
+                  Evenings produce 2.8x higher immediate comment velocity in first 30 minutes.
+                </p>
+              </div>
+            </div>
+
+            {/* Detailed 4-Act Retention Breakdown */}
+            <div className="neo-card p-6 space-y-4">
+              <h3 className="font-black text-base uppercase tracking-tight text-[#111111] dark:text-white font-display">
+                4-Act Retention Diagnostics
+              </h3>
+
+              <div className="space-y-4">
                 {[
-                  { act: 'Act 1 (0–3s)', title: 'Pattern Interrupt Hook', retention: 98, color: 'bg-emerald-500' },
-                  { act: 'Act 2 (3–15s)', title: 'Conflict & Agitation', retention: 91, color: 'bg-teal-500' },
-                  { act: 'Act 3 (15–45s)', title: 'Tactical Solution', retention: 86, color: 'bg-blue-500' },
-                  { act: 'Act 4 (45–60s)', title: 'High-Conversion CTA', retention: 74, color: 'bg-purple-500' }
+                  { act: 'Act 1 (0–3s)', title: 'Pattern Interrupt Hook', retention: 98, color: 'bg-[#45D9A6]' },
+                  { act: 'Act 2 (3–15s)', title: 'Conflict & Agitation', retention: 91, color: 'bg-[#7CC7FF]' },
+                  { act: 'Act 3 (15–45s)', title: 'Tactical Solution', retention: 86, color: 'bg-[#FFD66B]' },
+                  { act: 'Act 4 (45–60s)', title: 'High-Conversion CTA', retention: 74, color: 'bg-[#B9A7FF]' }
                 ].map((a) => (
-                  <div key={a.act} className="space-y-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-slate-900 dark:text-white">{a.act}: {a.title}</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">{a.retention}% Retained</span>
+                  <div key={a.act} className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs font-black">
+                      <span className="text-[#111111] dark:text-white">{a.act}: {a.title}</span>
+                      <span className="font-mono text-[#111111] dark:text-[#45D9A6]">{a.retention}% Retained</span>
                     </div>
-                    <div className="w-full h-2 bg-slate-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                      <div className={`h-full ${a.color} rounded-full`} style={{ width: `${a.retention}%` }} />
+                    <div className="w-full h-3 bg-[#F8F5EE] dark:bg-[#1A1A22] rounded-full border-2 border-[#171717] overflow-hidden">
+                      <div className={`h-full ${a.color}`} style={{ width: `${a.retention}%` }} />
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Clear Takeaways */}
+            <div className="neo-card p-6 space-y-3">
+              <h3 className="font-black text-base uppercase tracking-tight text-[#111111] dark:text-white font-display">
+                Strategic Takeaways
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-bold">
+                <div className="p-3 rounded-xl border-2 border-[#171717] bg-[#45D9A6]/15 text-[#111111] dark:text-white">
+                  ✓ <strong>Hook Framing:</strong> Questions with specific numbers outperform vague statements by 34%.
+                </div>
+                <div className="p-3 rounded-xl border-2 border-[#171717] bg-[#FFD66B]/15 text-[#111111] dark:text-white">
+                  ⚡ <strong>CTA Placement:</strong> Direct comment-to-DM triggers at second 48 yield 14.2% higher lead conversion.
+                </div>
               </div>
             </div>
           </div>
@@ -223,38 +300,40 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
 
         {activeSubView === 'content_intelligence' && (
           <div className="p-6 md:p-8 space-y-6 max-w-6xl mx-auto">
-            <div>
-              <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Content Pillar ROI &amp; Audience Sentiment</h2>
-              <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+            <div className="neo-card p-6 sm:p-8">
+              <span className="neo-badge neo-badge-lavender mb-2 inline-block">PILLAR ROI</span>
+              <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-[#111111] dark:text-[#F5F3EC] font-display">
+                CONTENT PILLARS &amp; SENTIMENT
+              </h1>
+              <p className="text-xs sm:text-sm font-medium text-[#4B5563] dark:text-[#A1A1AA] mt-1">
                 AI models evaluate sentiment, comment keywords, and business lead conversions per pillar.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
-                { pillar: 'Tech Deep Dives', roi: '3.8x', sentiment: '94% Positive', leads: '142 DMs' },
-                { pillar: 'Founder Stories & Case Studies', roi: '2.4x', sentiment: '88% Positive', leads: '86 DMs' },
-                { pillar: 'Regulatory Updates & RBI Watch', roi: '4.5x', sentiment: '96% Positive', leads: '210 DMs' }
+                { pillar: 'Tech Deep Dives', roi: '3.8x', sentiment: '94% Positive', leads: '142 DMs', badge: 'neo-badge-mint' },
+                { pillar: 'Founder Stories & Case Studies', roi: '2.4x', sentiment: '88% Positive', leads: '86 DMs', badge: 'neo-badge-sky' },
+                { pillar: 'Regulatory Updates & RBI Watch', roi: '4.5x', sentiment: '96% Positive', leads: '210 DMs', badge: 'neo-badge-yellow' }
               ].map((p, idx) => (
                 <div
                   key={idx}
-                  className={`p-5 rounded-2xl border transition-all ${
-                    isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'
-                  }`}
+                  className="neo-card p-6 space-y-4"
                 >
-                  <h4 className="font-bold text-sm text-slate-900 dark:text-white mb-3">{p.pillar}</h4>
-                  <div className="space-y-2 text-xs">
-                    <div className="flex justify-between text-slate-500 dark:text-zinc-400">
+                  <span className={`neo-badge ${p.badge} text-[10px]`}>PILLAR {idx + 1}</span>
+                  <h4 className="font-black text-base text-[#111111] dark:text-white font-display">{p.pillar}</h4>
+                  <div className="space-y-2 text-xs font-bold">
+                    <div className="flex justify-between text-[#4B5563] dark:text-[#A1A1AA]">
                       <span>Conversion Multiplier</span>
-                      <span className="font-bold text-orange-600 dark:text-orange-400">{p.roi}</span>
+                      <span className="text-[#111111] dark:text-white font-black">{p.roi}</span>
                     </div>
-                    <div className="flex justify-between text-slate-500 dark:text-zinc-400">
+                    <div className="flex justify-between text-[#4B5563] dark:text-[#A1A1AA]">
                       <span>Sentiment Score</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">{p.sentiment}</span>
+                      <span className="text-[#45D9A6] font-black">{p.sentiment}</span>
                     </div>
-                    <div className="flex justify-between text-slate-500 dark:text-zinc-400">
+                    <div className="flex justify-between text-[#4B5563] dark:text-[#A1A1AA]">
                       <span>Inbound Leads</span>
-                      <span className="font-bold text-slate-900 dark:text-white">{p.leads}</span>
+                      <span className="text-[#111111] dark:text-white font-black">{p.leads}</span>
                     </div>
                   </div>
                 </div>
@@ -265,10 +344,13 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
 
         {activeSubView === 'reports' && (
           <div className="p-6 md:p-8 space-y-6 max-w-6xl mx-auto">
-            <div className="flex items-center justify-between">
+            <div className="neo-card p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
               <div>
-                <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Executive Audit &amp; Performance Reports</h2>
-                <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                <span className="neo-badge neo-badge-lavender mb-2 inline-block">EXECUTIVE DOSSIERS</span>
+                <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-[#111111] dark:text-[#F5F3EC] font-display">
+                  AUDIT &amp; PERFORMANCE REPORTS
+                </h1>
+                <p className="text-xs sm:text-sm font-medium text-[#4B5563] dark:text-[#A1A1AA] mt-1">
                   Export formatted audit dossiers, viral retention timelines, and weekly executive summaries.
                 </p>
               </div>
@@ -277,24 +359,24 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
                 id="btn-export-executive-brief"
                 type="button"
                 onClick={handleExportBrief}
-                className="px-3.5 py-2 bg-[#EA580C] hover:bg-orange-500 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+                className="neo-btn neo-btn-primary py-2.5 px-4 text-xs font-black flex items-center gap-2 shrink-0"
               >
-                <Download className="w-3.5 h-3.5" />
-                <span>Export Executive Brief (.md)</span>
+                <Download className="w-4 h-4" />
+                <span>Export Brief (.md)</span>
               </button>
             </div>
 
-            <div className={`p-5 rounded-2xl border ${isDark ? 'bg-[#181824] border-[#2b2b3c]' : 'bg-white border-slate-200 shadow-sm'}`}>
-              <div className="flex items-center justify-between">
+            <div className="neo-card p-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <h4 className="font-bold text-sm text-slate-900 dark:text-white">Latest Full Audit Report: @{account?.username || 'fintech_insider'}</h4>
-                  <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">Generated via Live Instagram MCP + Gemini Strategy Engine • Health Score: {audits[0]?.scores?.overall_score || 88} / 100</p>
+                  <h4 className="font-black text-base text-[#111111] dark:text-white font-display">Latest Full Audit Report: @{account?.username || 'fintech_insider'}</h4>
+                  <p className="text-xs text-[#4B5563] dark:text-[#A1A1AA] mt-1 font-medium">Generated via Live Instagram MCP + Gemini Strategy Engine • Health Score: {audits[0]?.scores?.overall_score || 88} / 100</p>
                 </div>
                 <button
                   id="btn-download-dossier"
                   type="button"
                   onClick={handleExportBrief}
-                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-xs font-semibold text-slate-800 dark:text-white transition-colors cursor-pointer border border-slate-200 dark:border-transparent"
+                  className="neo-btn neo-btn-secondary py-2 px-3 text-xs font-black shrink-0"
                 >
                   Download Dossier
                 </button>
@@ -306,4 +388,3 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
     </div>
   );
 };
-

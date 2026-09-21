@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PublishingSubView } from '../../types/navigation';
-import { InstagramAccount, CalendarPost, ScriptItem, ContentPipelineItem, TeamMember } from '../../types/instagram';
-import { InstagramCalendarView } from '../instagram/InstagramCalendarView';
+import { InstagramAccount, CalendarPost, ScriptItem, ContentPipelineItem, TeamMember, PublicationSnapshot, PublishJobRecord } from '../../types/instagram';
+import { PublishingCalendarView } from './PublishingCalendarView';
+import { PublishingQueueView } from './PublishingQueueView';
+import { PublicationRecordModal } from './PublicationRecordModal';
 import { InstagramSwimlaneView } from '../instagram/InstagramSwimlaneView';
 import { instagramApi } from '../../services/instagramApi';
 import {
@@ -12,7 +14,8 @@ import {
   Plus,
   Sparkles,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  ListFilter
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -43,12 +46,81 @@ export const PublishingWorkspace: React.FC<PublishingWorkspaceProps> = ({
 }) => {
   const { isDark } = useTheme();
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [snapshots, setSnapshots] = useState<PublicationSnapshot[]>([]);
+  const [publishJobs, setPublishJobs] = useState<PublishJobRecord[]>([]);
+
+  // Publication Record Detail Modal State
+  const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
+  const [selectedRecordPost, setSelectedRecordPost] = useState<CalendarPost | null>(null);
+  const [selectedRecordSnapshot, setSelectedRecordSnapshot] = useState<PublicationSnapshot | null>(null);
+  const [selectedRecordJob, setSelectedRecordJob] = useState<PublishJobRecord | null>(null);
+
+  // Load publication snapshots
+  const loadSnapshots = useCallback(async () => {
+    try {
+      const res = await instagramApi.getPublicationSnapshots(account?.id);
+      if (Array.isArray(res)) {
+        setSnapshots(res);
+      }
+    } catch (e) {
+      console.warn('Could not load publication snapshots:', e);
+    }
+  }, [account?.id]);
+
+  // Load publish jobs (Phase 5C)
+  const loadPublishJobs = useCallback(async () => {
+    try {
+      const jobs = await instagramApi.getPublishJobs(account?.id);
+      if (Array.isArray(jobs)) {
+        setPublishJobs(jobs);
+      }
+    } catch (e) {
+      console.warn('Could not load publish jobs:', e);
+    }
+  }, [account?.id]);
 
   useEffect(() => {
+    loadSnapshots();
+    loadPublishJobs();
     instagramApi.getTeamMembers().then((members) => {
       if (Array.isArray(members)) setTeamMembers(members);
     }).catch((err) => console.warn('Could not load team members:', err));
-  }, []);
+  }, [loadSnapshots, loadPublishJobs]);
+
+  const handleOpenRecord = (post: CalendarPost, snapshot: PublicationSnapshot | null) => {
+    const snap = snapshot || snapshots.find(s => s.id === post.publicationSnapshotId) || post.snapshot || null;
+    setSelectedRecordPost(post);
+    setSelectedRecordSnapshot(snap);
+    const job = publishJobs.find(j => j.calendarPostId === post.id || (snap && j.publicationSnapshotId === snap.id)) || null;
+    setSelectedRecordJob(job);
+    setIsRecordModalOpen(true);
+  };
+
+  const handleCloseRecord = () => {
+    setIsRecordModalOpen(false);
+    setSelectedRecordPost(null);
+    setSelectedRecordSnapshot(null);
+    setSelectedRecordJob(null);
+  };
+
+  // Phase 5C Action Handlers
+  const handlePublishNow = async (jobId: string) => {
+    await instagramApi.publishNowJob(jobId);
+    await Promise.all([loadSnapshots(), loadPublishJobs()]);
+    if (onPostUpdated) onPostUpdated();
+  };
+
+  const handleCancelJob = async (jobId: string) => {
+    await instagramApi.cancelPublishJob(jobId);
+    await Promise.all([loadSnapshots(), loadPublishJobs()]);
+    if (onPostUpdated) onPostUpdated();
+  };
+
+  const handleRetryJob = async (jobId: string) => {
+    await instagramApi.retryPublishJob(jobId);
+    await Promise.all([loadSnapshots(), loadPublishJobs()]);
+    if (onPostUpdated) onPostUpdated();
+  };
 
   return (
     <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
@@ -81,6 +153,20 @@ export const PublishingWorkspace: React.FC<PublishingWorkspaceProps> = ({
           >
             <CalendarIcon className="w-3.5 h-3.5" />
             <span>Calendar</span>
+          </button>
+
+          <button
+            id="subnav-publishing-queue"
+            type="button"
+            onClick={() => onSubViewChange('queue')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+              activeSubView === 'queue'
+                ? 'bg-[#EA580C] text-white shadow-xs'
+                : 'text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            <ListFilter className="w-3.5 h-3.5" />
+            <span>Queue &amp; Monitor</span>
           </button>
 
           <button
@@ -129,14 +215,37 @@ export const PublishingWorkspace: React.FC<PublishingWorkspaceProps> = ({
 
       {/* Main Sub-View Content */}
       <div className="flex-1 overflow-y-auto">
-        {activeSubView === 'calendar' && (
-          <InstagramCalendarView
+        {activeSubView === 'calendar' && account && (
+          <PublishingCalendarView
             account={account}
             calendar={calendar}
-            scripts={scripts}
-            onOpenScript={onOpenScript}
-            onNavigateToScripts={onNavigateToScripts}
-            onPostUpdated={onPostUpdated}
+            snapshots={snapshots}
+            onOpenRecord={handleOpenRecord}
+            onPostUpdated={() => {
+              loadSnapshots();
+              if (onPostUpdated) onPostUpdated();
+            }}
+          />
+        )}
+
+        {activeSubView === 'queue' && (
+          <PublishingQueueView
+            account={account}
+            calendar={calendar}
+            snapshots={snapshots}
+            publishJobs={publishJobs}
+            onOpenRecord={handleOpenRecord}
+            onOpenReschedule={(post) => {
+              handleOpenRecord(post, null);
+            }}
+            onPublishNow={handlePublishNow}
+            onCancelJob={handleCancelJob}
+            onRetryJob={handleRetryJob}
+            onRefresh={() => {
+              loadSnapshots();
+              loadPublishJobs();
+              if (onPostUpdated) onPostUpdated();
+            }}
           />
         )}
 
@@ -251,6 +360,23 @@ export const PublishingWorkspace: React.FC<PublishingWorkspaceProps> = ({
           </div>
         )}
       </div>
+
+      {/* Publication Record Detail Modal */}
+      <PublicationRecordModal
+        isOpen={isRecordModalOpen}
+        onClose={handleCloseRecord}
+        post={selectedRecordPost}
+        snapshot={selectedRecordSnapshot}
+        account={account}
+        publishJob={selectedRecordJob}
+        onPublishNow={handlePublishNow}
+        onCancelJob={handleCancelJob}
+        onRetryJob={handleRetryJob}
+        onRescheduleClick={(post) => {
+          // Open calendar view and trigger reschedule
+          onSubViewChange('calendar');
+        }}
+      />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   Workflow,
   WorkflowNode as IWorkflowNode,
@@ -57,8 +57,24 @@ import { PublishingWorkspace } from './components/publishing/PublishingWorkspace
 import { IntelligenceWorkspace } from './components/intelligence/IntelligenceWorkspace';
 import { CollaborationWorkspace } from './components/collaboration/CollaborationWorkspace';
 import { InstagramConnectModal } from './components/instagram/InstagramConnectModal';
+import { InstagramAiSkillsView } from './components/instagram/InstagramAiSkillsView';
 import { instagramApi } from './services/instagramApi';
-import { InstagramAccount, ScriptItem, CalendarPost, TopicIdea, ContentPipelineItem, InstagramAuditRecord, AISkillRecord, InstagramAuditMode } from './types/instagram';
+import {
+  InstagramAccount,
+  ScriptItem,
+  CalendarPost,
+  TopicIdea,
+  ContentPipelineItem,
+  InstagramAuditRecord,
+  AISkillRecord,
+  InstagramAuditMode,
+  PublicationSnapshot,
+  ScheduleParams,
+  CarouselSlide,
+  ReelScene,
+  ImageConceptData,
+  TopicFormat
+} from './types/instagram';
 import {
   EditMetadataModal,
   WorkflowSettingsModal,
@@ -230,30 +246,121 @@ export default function App() {
     }
   };
 
-  const handleApproveAndScheduleScript = async (script: ScriptItem) => {
+  const handleApproveAndScheduleScript = async (script: ScriptItem, scheduleParams?: ScheduleParams) => {
+    console.log('DEBUG: handleApproveAndScheduleScript entered. selectedAccount:', !!selectedAccount, 'script:', script?.id, 'scheduleParams:', scheduleParams);
     if (!selectedAccount) return;
     try {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const scheduledDate = tomorrow.toISOString().split('T')[0];
+      // User-selected date and time must be preserved unchanged!
+      const scheduledDate = scheduleParams?.scheduledDate || (() => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return tomorrow.toISOString().split('T')[0];
+      })();
+      const scheduledTime = scheduleParams?.scheduledTime || '18:30';
+      const timezone = scheduleParams?.timezone || 'Asia/Kolkata';
 
       const pillar = script.contentPillar || (topics.find((t) => t.id === script.topicId)?.pillar) || 'Educational Financial Literacy';
 
+      // 1. Build the immutable PublicationSnapshot
+      const snapshotId = `pub-snap-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+      const idempotencyKey = `idem-${script.id}-${Date.now()}`;
+
+      // Extract format-specific frozen assets
+      let mediaUrls: string[] = scheduleParams?.mediaUrls || [];
+      let coverImageUrl: string | undefined = scheduleParams?.coverImageUrl;
+      let coverSlideIndex: number | undefined = scheduleParams?.coverSlideIndex;
+      let aspectRatio: '1:1' | '4:5' | '9:16' = scheduleParams?.aspectRatio || (script.format === 'Reel' ? '9:16' : '1:1');
+      let slideCount: number | undefined = scheduleParams?.slideCount;
+      let carouselSlides: CarouselSlide[] | undefined = scheduleParams?.carouselSlides 
+        ? JSON.parse(JSON.stringify(scheduleParams.carouselSlides)) 
+        : (script.slides ? JSON.parse(JSON.stringify(script.slides)) : undefined);
+      let reelScenes: ReelScene[] | undefined = scheduleParams?.reelScenes 
+        ? JSON.parse(JSON.stringify(scheduleParams.reelScenes)) 
+        : (script.scenes ? JSON.parse(JSON.stringify(script.scenes)) : undefined);
+      let imageConcept: ImageConceptData | undefined = scheduleParams?.imageConcept 
+        ? JSON.parse(JSON.stringify(scheduleParams.imageConcept)) 
+        : (script.imageConcept ? JSON.parse(JSON.stringify(script.imageConcept)) : undefined);
+
+      if (script.format === 'Carousel') {
+        slideCount = slideCount || carouselSlides?.length || 5;
+        if (mediaUrls.length === 0 || !mediaUrls[0]) {
+          mediaUrls = (carouselSlides || []).map(s => s.finalImageUrl || s.mockImageUrl || `https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1080&fit=crop&q=80`);
+        }
+        if (!coverImageUrl && carouselSlides && carouselSlides.length > 0) {
+          coverImageUrl = carouselSlides[coverSlideIndex || 0]?.finalImageUrl || carouselSlides[coverSlideIndex || 0]?.mockImageUrl || mediaUrls[0];
+        }
+      } else if (script.format === 'Image') {
+        aspectRatio = imageConcept?.aspectRatio || '1:1';
+        if (mediaUrls.length === 0 || !mediaUrls[0]) {
+          mediaUrls = [imageConcept?.finalImageUrl || imageConcept?.mockImageUrl || `https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1080&fit=crop&q=80`];
+        }
+        coverImageUrl = coverImageUrl || imageConcept?.finalImageUrl || imageConcept?.mockImageUrl || mediaUrls[0];
+      } else { // Reel
+        aspectRatio = '9:16';
+        if (mediaUrls.length === 0 || !mediaUrls[0]) {
+          mediaUrls = [reelScenes?.[0]?.mediaUrl || `https://assets.mixkit.co/videos/preview/mixkit-financial-analyst-working-with-graphs-and-charts-40342-large.mp4`];
+        }
+        coverImageUrl = coverImageUrl || reelScenes?.[0]?.mediaUrl || mediaUrls[0];
+      }
+
+      const publicationSnapshot: PublicationSnapshot = {
+        id: snapshotId,
+        snapshotVersion: 1,
+        createdAt: new Date().toISOString(),
+        accountId: selectedAccount.id,
+        sourceTopicId: script.topicId,
+        sourceScriptId: script.id,
+        contentId: script.id,
+        title: script.title,
+        format: script.format,
+        pillar,
+        caption: scheduleParams?.caption || script.caption || '',
+        hashtags: scheduleParams?.hashtags ? [...scheduleParams.hashtags] : [...(script.hashtags || [])],
+        callToAction: scheduleParams?.callToAction || script.callToAction || '',
+        aspectRatio,
+        coverImageUrl,
+        coverSlideIndex,
+        mediaUrls,
+        slideCount,
+        carouselSlides,
+        reelScenes,
+        imageConcept,
+        scheduledDate,
+        scheduledTime,
+        timezone,
+        contentStatus: 'PRODUCTION_COMPLETE',
+        assetStatus: 'ready',
+        scheduleStatus: 'scheduled',
+        executionStatus: 'idle',
+        idempotencyKey
+      };
+
+      // 2. Persist snapshot
+      await instagramApi.createPublicationSnapshot(publicationSnapshot);
+
+      // 3. Schedule Calendar Post linked to snapshot
       const scheduledPost = await instagramApi.scheduleScript({
         scriptId: script.id,
         title: script.title,
         format: script.format,
         scheduledDate,
-        scheduledTime: '18:30',
+        scheduledTime,
+        timezone,
         status: 'scheduled',
         accountId: selectedAccount.id,
-        pillar
+        pillar,
+        publicationSnapshotId: snapshotId,
+        snapshot: publicationSnapshot
       });
 
       setCalendar(prev => [...prev, scheduledPost]);
       if (script.status !== 'approved') {
-        const updated = await instagramApi.updateScript(script.id, { status: 'approved' });
-        setScripts(prev => prev.map(s => s.id === script.id ? updated : s));
+        try {
+          const updated = await instagramApi.updateScript(script.id, { status: 'approved' });
+          setScripts(prev => prev.map(s => s.id === script.id ? updated : s));
+        } catch {
+          // Ignore transient script update error
+        }
       }
       handleDomainNavigate('publishing', 'calendar');
     } catch (e) {
@@ -268,6 +375,164 @@ export default function App() {
       showToast('success', 'Topic approved and sent to scriptwriter pipeline!');
     } catch (err: any) {
       showToast('error', err.message || 'Failed to approve topic');
+    }
+  };
+
+  const handleUpdateScript = (scriptId: string, updates: Partial<ScriptItem>) => {
+    setScripts(prev => prev.map(s => s.id === scriptId ? { ...s, ...updates, updatedAt: new Date().toISOString() } : s));
+  };
+
+  const handleApproveTopicWithFormat = async (topicId: string, format: TopicFormat) => {
+    try {
+      clearToast();
+      const topic = topics.find(t => t.id === topicId);
+      
+      // 1. Update topic status and format in state
+      setTopics(prev => prev.map(t => t.id === topicId ? { ...t, status: 'approved', format } : t));
+      
+      // 2. Initialize or update production item without triggering expensive AI generation
+      const existingIndex = scripts.findIndex(s => s.topicId === topicId);
+      let productionItem: ScriptItem;
+      
+      // 5 Slides default for Carousel
+      const defaultSlides: CarouselSlide[] = (format === 'Carousel') ? [
+        {
+          slideNumber: 1,
+          slideType: 'hook',
+          visualLayout: 'Bold Typography with Brand Accent',
+          headline: topic?.hook || topic?.title || 'Stop scrolling: The Hidden Insight',
+          bodyText: 'Here is what many creators miss about this strategy.',
+          swipeTrigger: 'Swipe to see the breakdown 👉'
+        },
+        {
+          slideNumber: 2,
+          slideType: 'content',
+          visualLayout: 'Agitation Card with Stat Metric',
+          headline: 'The Hidden Trap',
+          bodyText: 'Most accounts burn out trying to produce without strategic deficits.',
+          swipeTrigger: 'Next: The solution ➔'
+        },
+        {
+          slideNumber: 3,
+          slideType: 'content',
+          visualLayout: 'Step-by-Step Blueprint',
+          headline: 'The 3-Step Fix',
+          bodyText: '1. Identify content deficit\n2. Approve high-leverage format\n3. Execute modular copy',
+          swipeTrigger: 'Keep swiping 👉'
+        },
+        {
+          slideNumber: 4,
+          slideType: 'content',
+          visualLayout: 'Pro Tip Highlight Card',
+          headline: 'Key Rule to Remember',
+          bodyText: 'Format dictates retention: 0-60s for video, 5-10 slides for carousels.',
+          swipeTrigger: 'Final slide ➔'
+        },
+        {
+          slideNumber: 5,
+          slideType: 'cta',
+          visualLayout: 'High-Contrast Action Card',
+          headline: 'Ready to Scale?',
+          bodyText: 'Save this carousel for reference & share with your team.',
+          swipeTrigger: 'Save & Share 📌'
+        }
+      ] : [];
+
+      // Default Image Concept
+      const defaultImageConcept: ImageConceptData | undefined = (format === 'Image' || format === 'Static') ? {
+        headline: topic?.hook || topic?.title || 'Core Strategic Principle',
+        visualPrompt: `Minimalist graphic layout for ${topic?.title || 'strategic insight'}. Clean typography, high contrast, brand accent.`,
+        textOverlay: topic?.hook || topic?.title || 'Core Strategic Principle',
+        aspectRatio: '1:1',
+        mockImageUrl: undefined,
+        finalImageUrl: undefined
+      } : undefined;
+
+      // Default Reel Scenes
+      const defaultScenes: ReelScene[] = (format === 'Reel' || format === 'Story') ? [
+        {
+          timeframe: '0:00 - 0:03',
+          visualCue: 'Fast push-in on camera, hand gesture pattern interrupt',
+          onScreenText: topic?.hook || topic?.title || 'Watch this before posting',
+          spokenAudio: topic?.hook || topic?.title || 'Stop doing this immediately.',
+          audioNote: 'Trending high-tempo audio bed'
+        },
+        {
+          timeframe: '0:03 - 0:15',
+          visualCue: 'Screen recording showing the actual deficit problem',
+          onScreenText: 'The common mistake',
+          spokenAudio: 'Here is why most creators fail to get retention in the first 5 seconds.',
+          audioNote: 'SFX: Whoosh transition'
+        },
+        {
+          timeframe: '0:15 - 0:40',
+          visualCue: 'Split screen with concrete framework demonstration',
+          onScreenText: 'The 3-step solution',
+          spokenAudio: 'Follow this exact 3-step blueprint to fix your distribution.',
+          audioNote: 'Upbeat rhythm build'
+        },
+        {
+          timeframe: '0:40 - 0:55',
+          visualCue: 'Direct eye contact to camera with bookmark gesture',
+          onScreenText: 'Save this Reel for later',
+          spokenAudio: 'Comment BLUEPRINT and I will send you the full guide.',
+          audioNote: 'Outro audio swell'
+        }
+      ] : [];
+
+      if (existingIndex >= 0) {
+        const existing = scripts[existingIndex];
+        const needsSlides = format === 'Carousel' && (!existing.slides || existing.slides.length === 0 || existing.format !== 'Carousel');
+        const needsImage = (format === 'Image' || format === 'Static') && (!existing.imageConcept || existing.format !== 'Image');
+        const needsScenes = (format === 'Reel' || format === 'Story') && (!existing.scenes || existing.scenes.length === 0 || existing.format !== 'Reel');
+
+        productionItem = {
+          ...existing,
+          format,
+          slides: needsSlides ? defaultSlides : existing.slides,
+          imageConcept: needsImage ? defaultImageConcept : existing.imageConcept,
+          scenes: needsScenes ? defaultScenes : existing.scenes,
+          status: 'draft',
+          productionStage: 'script',
+          updatedAt: new Date().toISOString()
+        };
+        setScripts(prev => prev.map((s, idx) => idx === existingIndex ? productionItem : s));
+      } else {
+        const newId = `prod_${Date.now()}`;
+
+        productionItem = {
+          id: newId,
+          accountId: selectedAccount?.id || 'default',
+          topicId: topic?.id,
+          topicTitle: topic?.title,
+          topicHook: topic?.hook,
+          contentPillar: topic?.pillar || topic?.contentPillar || 'Strategic Growth',
+          title: topic?.title || 'Untitled Production',
+          format,
+          hook: topic?.hook || '',
+          scenes: defaultScenes,
+          slides: defaultSlides,
+          imageConcept: defaultImageConcept,
+          archivedFormats: {},
+          productionStage: 'script',
+          caption: `${topic?.title || ''}\n\n${topic?.hook || ''}\n\n#contentcreation #creatorgrowth #instagramtips`,
+          hashtags: ['contentstrategy', 'instagramgrowth', 'contentcreation'],
+          callToAction: format === 'Carousel' ? 'Save this carousel for reference' : 'Comment below to get the link',
+          status: 'draft',
+          generationId: `gen_${Date.now()}`,
+          skillVersion: 'v4',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        
+        setScripts(prev => [productionItem, ...prev]);
+      }
+
+      setSelectedScriptId(productionItem.id);
+      showToast('success', `Topic approved as ${format}`);
+      handleDomainNavigate('production', 'scripts');
+    } catch (err: any) {
+      showToast('error', err.message || 'Failed to approve topic with format');
     }
   };
 
@@ -517,12 +782,26 @@ export default function App() {
     return nodeDefinitions[selectedNode.type] || nodeDefinitions[selectedNode.pluginId || ''];
   }, [selectedNode, nodeDefinitions]);
 
-  const showToast = (type: 'success' | 'error' | 'info', message: string) => {
+  const toastTimeoutRef = useRef<any>(null);
+  const showToast = useCallback((type: 'success' | 'error' | 'info', message: string) => {
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+      toastTimeoutRef.current = null;
+    }
     setNotification({ type, message });
-    setTimeout(() => {
+    toastTimeoutRef.current = setTimeout(() => {
       setNotification(null);
+      toastTimeoutRef.current = null;
     }, 4000);
-  };
+  }, []);
+
+  const clearToast = useCallback(() => {
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+      toastTimeoutRef.current = null;
+    }
+    setNotification(null);
+  }, []);
 
   const [isTakingSnapshot, setIsTakingSnapshot] = useState(false);
   const handleTakeSnapshot = useCallback(async () => {
@@ -966,15 +1245,18 @@ export default function App() {
             {activeDomain === 'home' ? (
               <S2SHomeHub
                 account={selectedAccount}
+                topics={topics}
                 scripts={scripts}
+                pipeline={pipeline}
                 calendar={calendar}
+                audits={audits}
                 onNavigate={handleDomainNavigate}
                 onOpenConnectModal={() => setIsConnectModalOpen(true)}
                 onQuickRunAudit={handleRunAudit}
               />
-            ) : activeDomain === 'strategy' ? (
+            ) : activeDomain === 'audit' || activeDomain === 'strategy' ? (
               <StrategyWorkspace
-                activeSubView={activeSubView as any}
+                activeSubView={(activeDomain === 'strategy' ? activeSubView : 'audit') as any}
                 onSubViewChange={(sub) => setActiveSubView(sub)}
                 account={selectedAccount}
                 audits={audits}
@@ -983,14 +1265,14 @@ export default function App() {
                 isRunningAudit={isRunningAudit}
                 onGenerateTopicsFromAudit={({ deficitNotes }) => {
                   handleGenerateTopics(deficitNotes, 5);
-                  handleDomainNavigate('content', 'topics');
+                  handleDomainNavigate('topics');
                 }}
-                onNavigateToContentTopics={() => handleDomainNavigate('content', 'topics')}
+                onNavigateToContentTopics={() => handleDomainNavigate('topics')}
                 onAuditsUpdated={loadInstagramData}
               />
-            ) : activeDomain === 'content' ? (
+            ) : activeDomain === 'topics' ? (
               <ContentWorkspace
-                activeSubView={activeSubView as any}
+                activeSubView="topics"
                 onSubViewChange={(sub) => setActiveSubView(sub)}
                 account={selectedAccount}
                 topics={topics}
@@ -1003,6 +1285,32 @@ export default function App() {
                 onApproveAndScheduleScript={handleApproveAndScheduleScript}
                 onCreateScript={handleCreateScriptFromTopic}
                 onApproveTopic={handleApproveTopic}
+                onApproveTopicWithFormat={handleApproveTopicWithFormat}
+                onUpdateScript={handleUpdateScript}
+                onClearToast={clearToast}
+                onRejectTopic={handleRejectTopic}
+                onMoveSelectedToScripts={handleMoveSelectedToScripts}
+                onTopicUpdated={loadInstagramData}
+                skills={skills}
+              />
+            ) : activeDomain === 'production' || activeDomain === 'content' ? (
+              <ContentWorkspace
+                activeSubView={(activeDomain === 'production' ? (activeSubView === 'creative' ? 'creative' : 'scripts') : activeSubView) as any}
+                onSubViewChange={(sub) => setActiveSubView(sub)}
+                account={selectedAccount}
+                topics={topics}
+                scripts={scripts}
+                selectedScriptId={selectedScriptId}
+                onSelectScript={(id) => setSelectedScriptId(id)}
+                onGenerateTopics={(prompt, count) => handleGenerateTopics(prompt, count)}
+                isGeneratingTopics={isGeneratingTopics}
+                onApproveTopicAndGenerateScript={handleApproveTopicAndGenerateScript}
+                onApproveAndScheduleScript={handleApproveAndScheduleScript}
+                onCreateScript={handleCreateScriptFromTopic}
+                onApproveTopic={handleApproveTopic}
+                onApproveTopicWithFormat={handleApproveTopicWithFormat}
+                onUpdateScript={handleUpdateScript}
+                onClearToast={clearToast}
                 onRejectTopic={handleRejectTopic}
                 onMoveSelectedToScripts={handleMoveSelectedToScripts}
                 onTopicUpdated={loadInstagramData}
@@ -1018,20 +1326,49 @@ export default function App() {
                 pipeline={pipeline}
                 onOpenScript={(scriptId) => {
                   setSelectedScriptId(scriptId);
-                  handleDomainNavigate('content', 'scripts');
+                  handleDomainNavigate('production', 'scripts');
                 }}
-                onNavigateToScripts={() => handleDomainNavigate('content', 'scripts')}
+                onNavigateToScripts={() => handleDomainNavigate('production', 'scripts')}
                 onPostUpdated={loadInstagramData}
                 onSaveScript={handleSaveScript}
               />
-            ) : activeDomain === 'intelligence' ? (
+            ) : activeDomain === 'performance' || activeDomain === 'intelligence' ? (
               <IntelligenceWorkspace
-                activeSubView={activeSubView as any}
+                activeSubView={(activeDomain === 'performance' ? (activeSubView === 'analytics' ? 'analytics' : 'performance') : activeSubView) as any}
                 onSubViewChange={(sub) => setActiveSubView(sub)}
                 account={selectedAccount}
                 scripts={scripts}
                 audits={audits}
               />
+            ) : activeDomain === 'competitors' ? (
+              <StrategyWorkspace
+                activeSubView="competitors"
+                onSubViewChange={(sub) => setActiveSubView(sub)}
+                account={selectedAccount}
+                audits={audits}
+                activeSkill={skills[0]}
+                onRunAudit={handleRunAudit}
+                isRunningAudit={isRunningAudit}
+                onGenerateTopicsFromAudit={({ deficitNotes }) => {
+                  handleGenerateTopics(deficitNotes, 5);
+                  handleDomainNavigate('topics');
+                }}
+                onNavigateToContentTopics={() => handleDomainNavigate('topics')}
+                onAuditsUpdated={loadInstagramData}
+              />
+            ) : activeDomain === 'guardrails' ? (
+              <div className="flex-1 overflow-y-auto p-6 md:p-8">
+                <InstagramAiSkillsView
+                  skills={skills}
+                  activeSkill={skills[0]}
+                  proposals={[]}
+                  onRollbackSkill={async (ver) => {
+                    await instagramApi.rollbackSkill(ver);
+                    loadInstagramData();
+                  }}
+                  onActionProposal={async () => {}}
+                />
+              </div>
             ) : activeDomain === 'collaboration' ? (
               <CollaborationWorkspace
                 activeSubView={activeSubView as any}
@@ -1041,9 +1378,25 @@ export default function App() {
                 topics={topics}
                 onOpenScript={(scriptId) => {
                   setSelectedScriptId(scriptId);
-                  handleDomainNavigate('content', 'scripts');
+                  handleDomainNavigate('production', 'scripts');
                 }}
                 onApproveScript={(scriptId) => handleSaveScript(scriptId, { status: 'approved' })}
+              />
+            ) : activeDomain === 'audit_history' ? (
+              <StrategyWorkspace
+                activeSubView="audit"
+                onSubViewChange={(sub) => setActiveSubView(sub)}
+                account={selectedAccount}
+                audits={audits}
+                activeSkill={skills[0]}
+                onRunAudit={handleRunAudit}
+                isRunningAudit={isRunningAudit}
+                onGenerateTopicsFromAudit={({ deficitNotes }) => {
+                  handleGenerateTopics(deficitNotes, 5);
+                  handleDomainNavigate('topics');
+                }}
+                onNavigateToContentTopics={() => handleDomainNavigate('topics')}
+                onAuditsUpdated={loadInstagramData}
               />
             ) : activeDomain === 'settings' ? (
               <UnifiedSettingsPage

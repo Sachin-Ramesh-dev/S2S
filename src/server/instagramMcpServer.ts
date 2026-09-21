@@ -96,6 +96,8 @@ export const INSTAGRAM_MCP_FUNCTION_DECLARATIONS = [
   }
 ];
 
+import { sanitizeErrorMessage } from './instagramPublishingEngine';
+
 const GRAPH_BASE = 'https://graph.facebook.com/v20.0';
 
 /**
@@ -108,7 +110,9 @@ async function resolveIgBusinessId(accessToken: string, targetId?: string): Prom
 
   // 1. Try querying /me/accounts to find connected pages and their instagram_business_account
   try {
-    const pagesRes = await fetch(`${GRAPH_BASE}/me/accounts?fields=id,name,access_token,instagram_business_account{id,username}&access_token=${encodeURIComponent(accessToken)}`);
+    const pagesRes = await fetch(`${GRAPH_BASE}/me/accounts?fields=id,name,instagram_business_account{id,username}`, {
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
     const pagesJson: any = await pagesRes.json();
     if (pagesJson?.data && Array.isArray(pagesJson.data)) {
       for (const page of pagesJson.data) {
@@ -117,19 +121,21 @@ async function resolveIgBusinessId(accessToken: string, targetId?: string): Prom
         }
       }
     }
-  } catch (err) {
-    console.warn('[Instagram MCP] Failed to resolve via /me/accounts:', err);
+  } catch (err: any) {
+    console.warn('[Instagram MCP] Failed to resolve via /me/accounts:', sanitizeErrorMessage(err?.message || ''));
   }
 
   // 2. Direct /me with instagram_business_account
   try {
-    const meRes = await fetch(`${GRAPH_BASE}/me?fields=id,name,instagram_business_account{id,username}&access_token=${encodeURIComponent(accessToken)}`);
+    const meRes = await fetch(`${GRAPH_BASE}/me?fields=id,name,instagram_business_account{id,username}`, {
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
     const meJson: any = await meRes.json();
     if (meJson?.instagram_business_account?.id) {
       return meJson.instagram_business_account.id;
     }
-  } catch (err) {
-    console.warn('[Instagram MCP] Failed to resolve via /me:', err);
+  } catch (err: any) {
+    console.warn('[Instagram MCP] Failed to resolve via /me:', sanitizeErrorMessage(err?.message || ''));
   }
 
   return targetId || 'me';
@@ -158,8 +164,10 @@ export async function executeInstagramMcpTool(
   try {
     switch (toolName) {
       case 'get_account_profile': {
-        const url = `${GRAPH_BASE}/${encodeURIComponent(igId)}?fields=id,name,username,biography,followers_count,follows_count,media_count,profile_picture_url,website&access_token=${encodeURIComponent(cleanToken)}`;
-        const res = await fetch(url);
+        const url = `${GRAPH_BASE}/${encodeURIComponent(igId)}?fields=id,name,username,biography,followers_count,follows_count,media_count,profile_picture_url,website`;
+        const res = await fetch(url, {
+          headers: { 'Authorization': `Bearer ${cleanToken}` }
+        });
         const data: any = await res.json();
 
         if (data.error) {
@@ -192,8 +200,10 @@ export async function executeInstagramMcpTool(
       case 'get_recent_media': {
         const limit = Math.min(Math.max(Number(toolArgs?.limit) || 20, 5), 35);
         const fields = 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count';
-        const url = `${GRAPH_BASE}/${encodeURIComponent(igId)}/media?fields=${fields}&limit=${limit}&access_token=${encodeURIComponent(cleanToken)}`;
-        const res = await fetch(url);
+        const url = `${GRAPH_BASE}/${encodeURIComponent(igId)}/media?fields=${fields}&limit=${limit}`;
+        const res = await fetch(url, {
+          headers: { 'Authorization': `Bearer ${cleanToken}` }
+        });
         const data: any = await res.json();
 
         if (data.error) {
@@ -235,18 +245,19 @@ export async function executeInstagramMcpTool(
           return { success: false, error: 'media_id is required' };
         }
 
-        // Try querying standard insights metrics
-        // Depending on media type (Reel vs Image vs Carousel), metrics vary in Meta Graph API
         const metrics = 'reach,impressions,saved,shares,total_interactions';
-        const url = `${GRAPH_BASE}/${encodeURIComponent(mediaId)}/insights?metric=${metrics}&access_token=${encodeURIComponent(cleanToken)}`;
-        const res = await fetch(url);
+        const url = `${GRAPH_BASE}/${encodeURIComponent(mediaId)}/insights?metric=${metrics}`;
+        const res = await fetch(url, {
+          headers: { 'Authorization': `Bearer ${cleanToken}` }
+        });
         const data: any = await res.json();
 
         if (data.error) {
-          // If specific metric failed (e.g. Carousel album doesn't support impressions), try fallback to basic interactions
           try {
-            const fallbackUrl = `${GRAPH_BASE}/${encodeURIComponent(mediaId)}/insights?metric=reach,saved,total_interactions&access_token=${encodeURIComponent(cleanToken)}`;
-            const fbRes = await fetch(fallbackUrl);
+            const fallbackUrl = `${GRAPH_BASE}/${encodeURIComponent(mediaId)}/insights?metric=reach,saved,total_interactions`;
+            const fbRes = await fetch(fallbackUrl, {
+              headers: { 'Authorization': `Bearer ${cleanToken}` }
+            });
             const fbData: any = await fbRes.json();
             if (fbData.data) {
               const metricsMap: Record<string, number> = {};
@@ -288,8 +299,10 @@ export async function executeInstagramMcpTool(
       case 'get_account_insights': {
         const period = toolArgs?.period || 'day';
         const metrics = 'impressions,reach,profile_views';
-        const url = `${GRAPH_BASE}/${encodeURIComponent(igId)}/insights?metric=${metrics}&period=${period}&access_token=${encodeURIComponent(cleanToken)}`;
-        const res = await fetch(url);
+        const url = `${GRAPH_BASE}/${encodeURIComponent(igId)}/insights?metric=${metrics}&period=${period}`;
+        const res = await fetch(url, {
+          headers: { 'Authorization': `Bearer ${cleanToken}` }
+        });
         const data: any = await res.json();
 
         if (data.error) {
@@ -324,8 +337,10 @@ export async function executeInstagramMcpTool(
           return { success: false, error: 'media_id is required' };
         }
         const limit = Math.min(Math.max(Number(toolArgs?.limit) || 10, 1), 25);
-        const url = `${GRAPH_BASE}/${encodeURIComponent(mediaId)}/comments?fields=id,text,timestamp,like_count,username&limit=${limit}&access_token=${encodeURIComponent(cleanToken)}`;
-        const res = await fetch(url);
+        const url = `${GRAPH_BASE}/${encodeURIComponent(mediaId)}/comments?fields=id,text,timestamp,like_count,username&limit=${limit}`;
+        const res = await fetch(url, {
+          headers: { 'Authorization': `Bearer ${cleanToken}` }
+        });
         const data: any = await res.json();
 
         if (data.error) {
@@ -358,11 +373,11 @@ export async function executeInstagramMcpTool(
         return { success: false, error: `Unknown tool: ${toolName}` };
     }
   } catch (err: any) {
-    console.error(`[Instagram MCP Execution Error - ${toolName}]:`, err);
+    console.error(`[Instagram MCP Execution Error - ${toolName}]:`, sanitizeErrorMessage(err?.message || String(err)));
     return {
       success: false,
       error: 'MCP_EXECUTION_EXCEPTION',
-      details: err?.message || String(err)
+      details: sanitizeErrorMessage(err?.message || String(err))
     };
   }
 }

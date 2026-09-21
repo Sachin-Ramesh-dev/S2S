@@ -2,30 +2,43 @@ import React from 'react';
 import {
   Sparkles,
   ArrowRight,
-  TrendingUp,
   Calendar,
-  Workflow,
-  ShieldCheck,
-  CheckCircle2,
   Clock,
   Instagram,
   Plus,
   Compass,
-  FileText,
-  Activity,
+  ListFilter,
   Layers,
+  BarChart3,
+  CheckCircle2,
+  AlertTriangle,
+  Lightbulb,
+  FileText,
   ChevronRight,
-  Bot
+  ShieldCheck,
+  Film,
+  Zap,
+  Star
 } from 'lucide-react';
-import { DomainId, SubViewId, S2S_DOMAINS } from '../types/navigation';
-import { InstagramAccount, ScriptItem, CalendarPost } from '../types/instagram';
+import { DomainId, SubViewId } from '../types/navigation';
+import {
+  InstagramAccount,
+  ScriptItem,
+  CalendarPost,
+  TopicIdea,
+  ContentPipelineItem,
+  InstagramAuditRecord
+} from '../types/instagram';
 import { useTheme } from '../context/ThemeContext';
 import { useEnvironment } from '../context/EnvironmentContext';
 
 interface S2SHomeHubProps {
   account: InstagramAccount | null;
+  topics?: TopicIdea[];
   scripts: ScriptItem[];
+  pipeline?: ContentPipelineItem[];
   calendar: CalendarPost[];
+  audits?: InstagramAuditRecord[];
   onNavigate: (domain: DomainId, subView?: SubViewId) => void;
   onOpenConnectModal: () => void;
   onQuickRunAudit?: () => void;
@@ -33,353 +46,570 @@ interface S2SHomeHubProps {
 
 export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
   account,
-  scripts,
-  calendar,
+  topics = [],
+  scripts = [],
+  pipeline = [],
+  calendar = [],
+  audits = [],
   onNavigate,
   onOpenConnectModal,
   onQuickRunAudit
 }) => {
   const { isDark } = useTheme();
-  const { isLiveMode, isDemoMode } = useEnvironment();
+  const { isLiveMode } = useEnvironment();
 
-  // Metrics
+  // 1. Derive actionable queues from live state
+  const pendingTopics = topics.filter(
+    (t) => t.status === 'pending' || !t.status || (t.status as string) === 'suggested'
+  );
+
+  const inProductionScripts = scripts.filter(
+    (s) => s.status === 'draft' || s.status === 'generating'
+  );
+
+  const approvedNotScheduled = scripts.filter(
+    (s) => (s.status === 'approved' || s.status === 'completed') && !calendar.some((c) => c.scriptId === s.id)
+  );
+
+  const scheduledPosts = calendar.filter((c) => c.status === 'scheduled');
+
+  const latestAudit = audits.length > 0 ? audits[0] : null;
+
+  // Formatted followers
   const followersFormatted = account
-    ? (account.followersCount >= 1000000
-        ? (account.followersCount / 1000000).toFixed(2) + 'M'
-        : (account.followersCount / 1000).toFixed(1) + 'k')
+    ? account.followersCount >= 1000000
+      ? (account.followersCount / 1000000).toFixed(2) + 'M'
+      : (account.followersCount / 1000).toFixed(1) + 'k'
     : '0';
-
-  const scheduledCount = calendar.filter(c => c.status === 'scheduled').length;
-  const approvedScripts = scripts.filter(s => s.status === 'approved' || s.status === 'completed').length;
-  const draftsCount = scripts.filter(s => s.status === 'draft' || s.status === 'generating').length;
 
   return (
     <div
-      id="s2s-home-hub"
-      className={`flex-1 overflow-y-auto p-6 md:p-8 space-y-8 ${
-        isDark ? 'bg-[#0f0f13] text-white' : 'bg-slate-50 text-slate-900'
+      id="s2s-home-action-center"
+      className={`flex-1 overflow-y-auto p-6 md:p-10 space-y-8 ${
+        isDark ? 'bg-[#131316] text-[#F5F3EC]' : 'bg-[#F8F5EE] text-[#111111]'
       }`}
     >
-      {/* 1. HERO HEADER: Account Status & Environment Banner */}
+      {/* 1. HERO HEADER: Creative Command Center */}
       <div
-        className={`relative p-6 sm:p-8 rounded-3xl border shadow-xl overflow-hidden transition-all ${
-          isDark
-            ? 'bg-gradient-to-br from-[#181824] via-[#14141e] to-[#101016] border-[#2b2b3c]'
-            : 'bg-gradient-to-br from-white via-orange-50/40 to-slate-100 border-slate-200'
+        className={`relative p-8 sm:p-10 rounded-2xl border-[2.5px] border-[#171717] dark:border-[#383844] shadow-[6px_6px_0_#111111] dark:shadow-[6px_6px_0_#0A0A0D] overflow-hidden transition-all ${
+          isDark ? 'bg-[#1E1E24]' : 'bg-white'
         }`}
       >
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-orange-500/10 via-pink-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+        {/* Playful Neo-Brutalist decorative stamp */}
+        <div className="absolute top-4 right-4 hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-md border-2 border-[#171717] dark:border-[#383844] bg-[#FFD66B] text-[#111111] text-[10px] font-black uppercase font-heading shadow-[2px_2px_0_#111111] rotate-2 select-none">
+          <Star className="w-3 h-3 fill-current" />
+          <span>AUTONOMOUS CREATOR OS</span>
+        </div>
 
-        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="space-y-3">
+        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+          <div className="space-y-4 max-w-2xl">
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#EA580C]/15 text-[#EA580C] border border-[#EA580C]/30 flex items-center gap-1.5">
+              <span className="neo-badge neo-badge-coral">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>S2S Platform Hub</span>
+                <span>ACTION CENTER</span>
               </span>
 
               <span
                 id="home-env-badge"
-                className={`px-3 py-1 rounded-full text-xs font-semibold border flex items-center gap-1.5 ${
-                  isLiveMode
-                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                    : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                }`}
+                className={`neo-badge ${isLiveMode ? 'neo-badge-mint' : 'neo-badge-yellow'}`}
               >
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    isLiveMode ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
-                  }`}
-                />
-                <span>{isLiveMode ? 'Live Production Mode' : 'Demo Sandbox Mode'}</span>
+                <span className={`w-2 h-2 rounded-full border border-[#171717] ${isLiveMode ? 'bg-[#111111]' : 'bg-[#111111]'}`} />
+                <span>{isLiveMode ? 'LIVE PRODUCTION' : 'DEMO SANDBOX'}</span>
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
-              Enterprise Social Intelligence &amp; Autonomous Workflows
+            {/* Editorial Hero Title with Hand-Drawn Underline Motif */}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight font-heading leading-[1.05] uppercase">
+              GOOD MORNING.<br />
+              YOUR CONTENT ENGINE<br />
+              <span className="relative inline-block text-[#FF4D5A]">
+                IS READY.
+                <svg className="absolute -bottom-2 left-0 w-full h-3 text-[#FFD66B]" viewBox="0 0 100 12" preserveAspectRatio="none">
+                  <path d="M0,8 Q50,0 100,6" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" />
+                </svg>
+              </span>
             </h1>
 
-            <p className={`text-xs sm:text-sm max-w-2xl leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
-              Manage your closed-loop content engine: from diagnostic profile audits and competitor benchmarking to 4-act viral retention scripting, visual workflow automations, and peak-hour publishing.
+            <p className={`text-sm sm:text-base leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
+              Clear strategic decisions, active multi-format drafts, and verified publication slots waiting in your pipeline.
             </p>
+
+            {/* Quick-Action Command Bar (Immediate Next Actions) */}
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => onNavigate('production')}
+                className="neo-btn neo-btn-lavender"
+              >
+                <Film className="w-4 h-4" />
+                <span>Continue Production</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onNavigate('topics')}
+                className="neo-btn neo-btn-yellow"
+              >
+                <Lightbulb className="w-4 h-4" />
+                <span>Review {pendingTopics.length > 0 ? `${pendingTopics.length} ` : ''}Topics</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onNavigate('audit')}
+                className="neo-btn neo-btn-mint"
+              >
+                <Compass className="w-4 h-4" />
+                <span>Review Page Audit</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
-          {/* Account Profile Card */}
+          {/* Account Profile Card: Physical Credential Panel */}
           <div
-            className={`w-full md:w-auto shrink-0 p-4 sm:p-5 rounded-2xl border shadow-md flex items-center justify-between md:justify-start gap-4 ${
-              isDark ? 'bg-[#1b1b26] border-[#323246]' : 'bg-white border-slate-200'
+            className={`w-full lg:w-80 shrink-0 p-5 rounded-xl border-2 border-[#171717] dark:border-[#383844] shadow-[4px_4px_0_#111111] dark:shadow-[4px_4px_0_#0A0A0D] ${
+              isDark ? 'bg-[#25252E]' : 'bg-[#FBF9F4]'
             }`}
           >
+            <div className="text-[10px] font-black uppercase tracking-wider text-[#4B5563] dark:text-[#9CA3AF] mb-3 flex items-center justify-between font-heading">
+              <span>CONNECTED TARGET</span>
+              <span className="neo-badge neo-badge-mint text-[9px] py-0.5">ACTIVE</span>
+            </div>
+
             {account ? (
-              <>
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-0.5 shadow-md shrink-0">
-                  <div className={`w-full h-full rounded-[14px] flex items-center justify-center font-bold text-base ${
-                    isDark ? 'bg-[#121218] text-white' : 'bg-white text-slate-900'
-                  }`}>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-lg border-2 border-[#171717] bg-[#B9A7FF] flex items-center justify-center font-black text-lg text-[#111111] shrink-0 shadow-[2px_2px_0_#111111]">
                     {account.username.charAt(0).toUpperCase()}
+                  </div>
+
+                  <div className="truncate">
+                    <div className="font-black text-base tracking-tight font-heading truncate">
+                      @{account.username}
+                    </div>
+                    <div className="text-xs text-[#4B5563] dark:text-[#9CA3AF] truncate font-medium">
+                      {account.displayName || 'Instagram Creator'}
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-0.5 text-left">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-sm tracking-tight">@{account.username}</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/15 text-orange-400 font-semibold border border-orange-500/30">
-                      {followersFormatted}
-                    </span>
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t-2 border-[#171717] dark:border-[#383844] text-xs">
+                  <div className="p-2 rounded-lg border border-[#171717] dark:border-[#383844] bg-white dark:bg-[#1E1E24]">
+                    <div className="text-[10px] text-[#4B5563] dark:text-[#9CA3AF] font-bold uppercase">Followers</div>
+                    <div className="font-black text-sm font-heading">{followersFormatted}</div>
                   </div>
-                  <div className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-                    {account.displayName || 'Instagram Account'}
-                  </div>
-                  <div className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    <span>Active Profile Synchronized</span>
+                  <div className="p-2 rounded-lg border border-[#171717] dark:border-[#383844] bg-white dark:bg-[#1E1E24]">
+                    <div className="text-[10px] text-[#4B5563] dark:text-[#9CA3AF] font-bold uppercase">Engagement</div>
+                    <div className="font-black text-sm font-heading text-[#45D9A6]">{account.engagementRate || 3.8}%</div>
                   </div>
                 </div>
-              </>
+              </div>
             ) : (
-              <div className="space-y-2 text-left">
-                <div className="text-xs font-semibold text-zinc-400">No Instagram Profile Connected</div>
+              <div className="space-y-3 text-left">
+                <div className="text-xs font-bold text-[#4B5563] dark:text-[#9CA3AF]">No Account Connected</div>
                 <button
                   type="button"
                   onClick={onOpenConnectModal}
-                  className="px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold transition-colors flex items-center gap-1.5"
+                  className="neo-btn neo-btn-coral neo-btn-sm w-full"
                 >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Connect Account</span>
+                  <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                  <span>Connect Instagram Account</span>
                 </button>
               </div>
             )}
           </div>
         </div>
 
-        {/* Action Toolbar */}
-        <div className="mt-6 pt-5 border-t border-zinc-800/80 flex flex-wrap items-center gap-3">
-          <button
-            id="btn-home-quick-audit"
-            type="button"
-            onClick={() => {
-              if (onQuickRunAudit) onQuickRunAudit();
-              onNavigate('strategy', 'audit');
-            }}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer"
-          >
-            <Compass className="w-3.5 h-3.5" />
-            <span>Launch Strategy Audit</span>
-          </button>
-
-          <button
-            id="btn-home-quick-scripts"
-            type="button"
-            onClick={() => onNavigate('content', 'scripts')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-2 cursor-pointer ${
-              isDark
-                ? 'bg-[#222230] hover:bg-[#2a2a3c] text-zinc-200 border-zinc-700'
-                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300 shadow-2xs'
-            }`}
-          >
-            <FileText className="w-3.5 h-3.5 text-orange-500" />
-            <span>Open 4-Act Script Studio</span>
-          </button>
-
-          <button
-            id="btn-home-quick-builder"
-            type="button"
-            onClick={() => onNavigate('workflows', 'builder')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-2 cursor-pointer ${
-              isDark
-                ? 'bg-[#222230] hover:bg-[#2a2a3c] text-zinc-200 border-zinc-700'
-                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300 shadow-2xs'
-            }`}
-          >
-            <Workflow className="w-3.5 h-3.5 text-blue-400" />
-            <span>Workflow Node Canvas</span>
-          </button>
-
-          <button
-            id="btn-home-quick-calendar"
-            type="button"
-            onClick={() => onNavigate('publishing', 'calendar')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-2 cursor-pointer ${
-              isDark
-                ? 'bg-[#222230] hover:bg-[#2a2a3c] text-zinc-200 border-zinc-700'
-                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300 shadow-2xs'
-            }`}
-          >
-            <Calendar className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Content Calendar (18:30 Slots)</span>
-          </button>
-
-          <button
-            id="btn-home-connect-meta"
-            type="button"
-            onClick={onOpenConnectModal}
-            className={`ml-auto px-4 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-2 cursor-pointer ${
-              isDark
-                ? 'bg-[#181824] hover:bg-[#202030] text-emerald-300 border-emerald-600/40'
-                : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300'
-            }`}
-          >
-            <Instagram className="w-3.5 h-3.5 text-emerald-500" />
-            <span>Connect Instagram (OAuth / Key)</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 2. TOP METRICS & KPIS */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {/* KPI 1 */}
-        <div className={`p-4 sm:p-5 rounded-2xl border transition-all ${
-          isDark ? 'bg-[#161620] border-[#282836]' : 'bg-white border-slate-200 shadow-2xs'
-        }`}>
-          <div className="flex items-center justify-between mb-2">
-            <span className={`text-xs font-semibold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-              Account Health Score
+        {/* 2. PRIMARY JOURNEY PIPELINE BAR */}
+        <div className="mt-8 pt-6 border-t-2 border-[#171717] dark:border-[#383844]">
+          <div className="text-xs font-black uppercase tracking-wider text-[#111111] dark:text-[#F5F3EC] mb-3 flex items-center justify-between font-heading">
+            <span className="flex items-center gap-2">
+              <span>PRIMARY JOURNEY PIPELINE</span>
+              <span className="text-xs font-normal text-zinc-400">|</span>
+              <span className="text-[10px] text-[#FF4D5A]">SCROLL → THINK → CREATE → PUBLISH → LEARN</span>
             </span>
-            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-400">
-              <ShieldCheck className="w-4 h-4" />
-            </div>
+            <span className="neo-badge neo-badge-yellow text-[9px] py-0.5">6 STAGES</span>
           </div>
-          <div className="text-2xl sm:text-3xl font-black tracking-tight text-emerald-400">
-            88 <span className="text-xs font-normal opacity-70">/ 100</span>
-          </div>
-          <div className="text-[11px] text-zinc-400 mt-1 flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-            <span>Pillar distribution balanced</span>
-          </div>
-        </div>
 
-        {/* KPI 2 */}
-        <div className={`p-4 sm:p-5 rounded-2xl border transition-all ${
-          isDark ? 'bg-[#161620] border-[#282836]' : 'bg-white border-slate-200 shadow-2xs'
-        }`}>
-          <div className="flex items-center justify-between mb-2">
-            <span className={`text-xs font-semibold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-              Audience Reach
-            </span>
-            <div className="w-7 h-7 rounded-lg bg-orange-500/15 flex items-center justify-center text-orange-400">
-              <TrendingUp className="w-4 h-4" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {/* Step 1: Home */}
+            <div
+              onClick={() => onNavigate('home')}
+              className="p-3.5 rounded-xl border-2 border-[#171717] dark:border-[#383844] bg-[#FFD66B] text-[#111111] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#0A0A0D] cursor-pointer"
+            >
+              <div className="text-[10px] font-black uppercase opacity-75 font-heading">01 STAGE</div>
+              <div className="font-black text-sm flex items-center gap-1 font-heading">
+                <span>🏠</span> Home
+              </div>
+              <div className="text-[10px] font-bold mt-1">Action Center</div>
             </div>
-          </div>
-          <div className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-            {followersFormatted}
-          </div>
-          <div className="text-[11px] text-zinc-400 mt-1 flex items-center gap-1">
-            <span className="text-orange-400 font-semibold">+4.2%</span>
-            <span>engagement rate benchmark</span>
-          </div>
-        </div>
 
-        {/* KPI 3 */}
-        <div className={`p-4 sm:p-5 rounded-2xl border transition-all ${
-          isDark ? 'bg-[#161620] border-[#282836]' : 'bg-white border-slate-200 shadow-2xs'
-        }`}>
-          <div className="flex items-center justify-between mb-2">
-            <span className={`text-xs font-semibold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-              4-Act Viral Scripts
-            </span>
-            <div className="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400">
-              <FileText className="w-4 h-4" />
+            {/* Step 2: Page Audit */}
+            <div
+              onClick={() => onNavigate('audit')}
+              className={`p-3.5 rounded-xl border-2 border-[#171717] dark:border-[#383844] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#111111] transition-all cursor-pointer ${
+                isDark ? 'bg-[#1E1E24]' : 'bg-white'
+              }`}
+            >
+              <div className="text-[10px] font-black uppercase text-[#4B5563] dark:text-[#9CA3AF] font-heading">02 STAGE</div>
+              <div className="font-black text-sm flex items-center gap-1 font-heading">
+                <span>🔍</span> Audit
+              </div>
+              <div className="text-[10px] font-bold text-[#FF4D5A] mt-1">
+                {latestAudit ? `${latestAudit.scores?.overall_score || 88}/100 Health` : 'Run Diagnostic'}
+              </div>
             </div>
-          </div>
-          <div className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-            {scripts.length}
-          </div>
-          <div className="text-[11px] text-zinc-400 mt-1 flex items-center gap-1">
-            <span className="text-emerald-400 font-semibold">{approvedScripts} approved</span>
-            <span>• {draftsCount} in creation</span>
-          </div>
-        </div>
 
-        {/* KPI 4 */}
-        <div className={`p-4 sm:p-5 rounded-2xl border transition-all ${
-          isDark ? 'bg-[#161620] border-[#282836]' : 'bg-white border-slate-200 shadow-2xs'
-        }`}>
-          <div className="flex items-center justify-between mb-2">
-            <span className={`text-xs font-semibold ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-              Scheduled at 18:30
-            </span>
-            <div className="w-7 h-7 rounded-lg bg-blue-500/15 flex items-center justify-center text-blue-400">
-              <Clock className="w-4 h-4" />
+            {/* Step 3: Topics */}
+            <div
+              onClick={() => onNavigate('topics')}
+              className={`p-3.5 rounded-xl border-2 border-[#171717] dark:border-[#383844] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#111111] transition-all cursor-pointer ${
+                isDark ? 'bg-[#1E1E24]' : 'bg-white'
+              }`}
+            >
+              <div className="text-[10px] font-black uppercase text-[#4B5563] dark:text-[#9CA3AF] font-heading">03 STAGE</div>
+              <div className="font-black text-sm flex items-center gap-1 font-heading">
+                <span>💡</span> Topics
+              </div>
+              <div className="text-[10px] font-bold mt-1">
+                {pendingTopics.length > 0 ? (
+                  <span className="text-[#FF4D5A] font-black">{pendingTopics.length} Pending</span>
+                ) : (
+                  <span className="text-[#45D9A6] font-bold">All Approved</span>
+                )}
+              </div>
             </div>
-          </div>
-          <div className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-            {scheduledCount}
-          </div>
-          <div className="text-[11px] text-zinc-400 mt-1 flex items-center gap-1">
-            <span className="text-blue-400 font-semibold">Peak Window</span>
-            <span>booked for upcoming days</span>
+
+            {/* Step 4: Content Production */}
+            <div
+              onClick={() => onNavigate('production', 'scripts')}
+              className={`p-3.5 rounded-xl border-2 border-[#171717] dark:border-[#383844] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#111111] transition-all cursor-pointer ${
+                isDark ? 'bg-[#1E1E24]' : 'bg-white'
+              }`}
+            >
+              <div className="text-[10px] font-black uppercase text-[#4B5563] dark:text-[#9CA3AF] font-heading">04 STAGE</div>
+              <div className="font-black text-sm flex items-center gap-1 font-heading">
+                <span>🎬</span> Studio
+              </div>
+              <div className="text-[10px] font-bold mt-1 text-[#B9A7FF]">
+                {inProductionScripts.length > 0 ? (
+                  <span>{inProductionScripts.length} Active Drafts</span>
+                ) : (
+                  <span>{scripts.length} Total</span>
+                )}
+              </div>
+            </div>
+
+            {/* Step 5: Publishing */}
+            <div
+              onClick={() => onNavigate('publishing', 'calendar')}
+              className={`p-3.5 rounded-xl border-2 border-[#171717] dark:border-[#383844] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#111111] transition-all cursor-pointer ${
+                isDark ? 'bg-[#1E1E24]' : 'bg-white'
+              }`}
+            >
+              <div className="text-[10px] font-black uppercase text-[#4B5563] dark:text-[#9CA3AF] font-heading">05 STAGE</div>
+              <div className="font-black text-sm flex items-center gap-1 font-heading">
+                <span>📅</span> Dispatch
+              </div>
+              <div className="text-[10px] font-bold mt-1 text-[#45D9A6]">
+                {scheduledPosts.length > 0 ? (
+                  <span>{scheduledPosts.length} Scheduled</span>
+                ) : (
+                  <span>Open Slots</span>
+                )}
+              </div>
+            </div>
+
+            {/* Step 6: Performance */}
+            <div
+              onClick={() => onNavigate('performance')}
+              className={`p-3.5 rounded-xl border-2 border-[#171717] dark:border-[#383844] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#111111] transition-all cursor-pointer ${
+                isDark ? 'bg-[#1E1E24]' : 'bg-white'
+              }`}
+            >
+              <div className="text-[10px] font-black uppercase text-[#4B5563] dark:text-[#9CA3AF] font-heading">06 STAGE</div>
+              <div className="font-black text-sm flex items-center gap-1 font-heading">
+                <span>📊</span> Analytics
+              </div>
+              <div className="text-[10px] font-bold text-[#7CC7FF] mt-1">Hook Retention</div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 3. 7 DOMAIN EXPLORER CARDS */}
+      {/* 3. ACTION CARDS: Priority Work Queue */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold tracking-tight">Platform Core Domains</h2>
-            <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-              Select any workspace to begin deep work in strategy, content creation, automations, or publishing.
+            <h2 className="text-2xl font-black uppercase tracking-tight font-heading">Priority Work Queue</h2>
+            <p className={`text-xs font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
+              High-impact decisions and active production tasks waiting for your review.
             </p>
           </div>
-          <span className="text-xs font-mono text-zinc-500">7 Domains Active</span>
+          <span className="neo-badge neo-badge-mint">LIVE STATE DRIVEN</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {S2S_DOMAINS.map((domain) => (
-            <div
-              key={domain.id}
-              id={`card-domain-${domain.id}`}
-              onClick={() => onNavigate(domain.id, domain.defaultSubView)}
-              className={`group p-5 rounded-2xl border transition-all cursor-pointer hover:shadow-xl hover:-translate-y-0.5 flex flex-col justify-between ${
-                isDark
-                  ? 'bg-[#15151e] hover:bg-[#1c1c28] border-[#262636] hover:border-[#EA580C]/50'
-                  : 'bg-white hover:bg-orange-50/30 border-slate-200 hover:border-orange-300 shadow-2xs'
-              }`}
-            >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-2xl group-hover:scale-110 transition-transform">{domain.icon}</span>
-                    <h3 className="font-bold text-base tracking-tight group-hover:text-[#EA580C] transition-colors">
-                      {domain.label}
-                    </h3>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-[#EA580C] group-hover:translate-x-1 transition-all" />
-                </div>
-
-                <p className={`text-xs mb-4 leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
-                  {domain.description}
-                </p>
-
-                {/* Sub-item Pills */}
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                  {domain.subItems.map((sub) => (
-                    <span
-                      key={sub.id}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onNavigate(domain.id, sub.id);
-                      }}
-                      className={`text-[11px] px-2.5 py-1 rounded-lg border transition-colors cursor-pointer ${
-                        isDark
-                          ? 'bg-[#1e1e2c] hover:bg-[#28283c] text-zinc-300 border-zinc-700/60 hover:text-white hover:border-[#EA580C]'
-                          : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200 hover:border-orange-400'
-                      }`}
-                    >
-                      {sub.label}
-                    </span>
-                  ))}
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* ACTION 1: Topics Waiting for Approval */}
+          <div
+            className={`p-6 rounded-2xl border-2 border-[#171717] dark:border-[#383844] shadow-[4px_4px_0_#111111] dark:shadow-[4px_4px_0_#0A0A0D] flex flex-col justify-between ${
+              pendingTopics.length > 0
+                ? isDark ? 'bg-[#25252E]' : 'bg-[#FBF9F4]'
+                : isDark ? 'bg-[#1E1E24]' : 'bg-white'
+            }`}
+          >
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="neo-badge neo-badge-yellow">
+                  <Lightbulb className="w-3.5 h-3.5" />
+                  <span>TOPIC APPROVAL QUEUE</span>
+                </span>
+                <span className="neo-badge neo-badge-dark text-[10px]">
+                  {pendingTopics.length > 0 ? `${pendingTopics.length} PENDING` : 'UP TO DATE'}
+                </span>
               </div>
 
-              <div className={`pt-3 border-t flex items-center justify-between text-xs font-semibold ${
-                isDark ? 'border-zinc-800/80 text-[#EA580C]' : 'border-slate-100 text-[#EA580C]'
-              }`}>
-                <span>Open {domain.label}</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              {pendingTopics.length > 0 ? (
+                <div className="space-y-2 mb-6">
+                  <h3 className="font-black text-lg tracking-tight font-heading">
+                    {pendingTopics.length} Topic Ideas Waiting for Decision
+                  </h3>
+                  <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
+                    Up next: <span className="font-bold text-[#111111] dark:text-white underline decoration-2 decoration-[#FFD66B]">"{pendingTopics[0].title}"</span>
+                    {pendingTopics[0].pillar && ` (${pendingTopics[0].pillar})`}. Review strategic alignment before sending to studio production.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2 mb-6">
+                  <h3 className="font-black text-lg tracking-tight font-heading">
+                    All Topic Ideas Reviewed
+                  </h3>
+                  <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
+                    No topics currently waiting for approval. Generate new AI topic angles from your latest audit or content gaps.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-4 border-t-2 border-[#171717] dark:border-[#383844] flex items-center justify-between">
+              {pendingTopics.length > 0 ? (
+                <button
+                  id="cta-review-topics"
+                  type="button"
+                  onClick={() => onNavigate('topics')}
+                  className="neo-btn neo-btn-yellow"
+                >
+                  <span>Review Topics</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              ) : (
+                <button
+                  id="cta-generate-topics"
+                  type="button"
+                  onClick={() => onNavigate('topics')}
+                  className="neo-btn neo-btn-secondary"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Generate Topics</span>
+                </button>
+              )}
+              <span className="text-xs font-black uppercase tracking-wider text-[#4B5563] dark:text-[#9CA3AF] font-heading">
+                STAGE 03
+              </span>
+            </div>
+          </div>
+
+          {/* ACTION 2: Content Currently in Production */}
+          <div
+            className={`p-6 rounded-2xl border-2 border-[#171717] dark:border-[#383844] shadow-[4px_4px_0_#111111] dark:shadow-[4px_4px_0_#0A0A0D] flex flex-col justify-between ${
+              inProductionScripts.length > 0
+                ? isDark ? 'bg-[#25252E]' : 'bg-[#FBF9F4]'
+                : isDark ? 'bg-[#1E1E24]' : 'bg-white'
+            }`}
+          >
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="neo-badge neo-badge-lavender">
+                  <Film className="w-3.5 h-3.5" />
+                  <span>STUDIO PRODUCTION</span>
+                </span>
+                <span className="neo-badge neo-badge-dark text-[10px]">
+                  {inProductionScripts.length > 0 ? `${inProductionScripts.length} DRAFTS` : 'CLEAR'}
+                </span>
+              </div>
+
+              {inProductionScripts.length > 0 ? (
+                <div className="space-y-2 mb-6">
+                  <h3 className="font-black text-lg tracking-tight font-heading">
+                    {inProductionScripts.length} Item{inProductionScripts.length > 1 ? 's' : ''} in Active Studio Work
+                  </h3>
+                  <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
+                    Active draft: <span className="font-bold text-[#111111] dark:text-white underline decoration-2 decoration-[#B9A7FF]">"{inProductionScripts[0].title}"</span>
+                    {inProductionScripts[0].format && ` (${inProductionScripts[0].format})`}.{' '}
+                    {inProductionScripts[0].format === 'Carousel'
+                      ? 'Review 5-slide breakdown and generate slide mockups.'
+                      : inProductionScripts[0].format === 'Image' || inProductionScripts[0].format === 'Static'
+                      ? 'Refine concept prompt and generate mock image.'
+                      : 'Complete the 4-act viral retention script and hook.'}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2 mb-6">
+                  <h3 className="font-black text-lg tracking-tight font-heading">
+                    No Active Drafts in Progress
+                  </h3>
+                  <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
+                    Ready to start production on an approved topic across Reel, Carousel, or Image formats.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-4 border-t-2 border-[#171717] dark:border-[#383844] flex items-center justify-between">
+              <button
+                id="cta-continue-production"
+                type="button"
+                onClick={() => {
+                  const active = inProductionScripts[0];
+                  if (!active) {
+                    onNavigate('production', 'scripts');
+                    return;
+                  }
+                  if (active.format === 'Carousel' || active.format === 'Image' || active.format === 'Static') {
+                    onNavigate('production', 'creative');
+                  } else {
+                    onNavigate('production', active.productionStage === 'storyboard' ? 'creative' : 'scripts');
+                  }
+                }}
+                className="neo-btn neo-btn-lavender"
+              >
+                <span>Continue Studio Work</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+              <span className="text-xs font-black uppercase tracking-wider text-[#4B5563] dark:text-[#9CA3AF] font-heading">
+                STAGE 04
+              </span>
+            </div>
+          </div>
+
+          {/* ACTION 3: Posts Ready to Schedule / Peak Window */}
+          <div
+            className={`p-6 rounded-2xl border-2 border-[#171717] dark:border-[#383844] shadow-[4px_4px_0_#111111] dark:shadow-[4px_4px_0_#0A0A0D] flex flex-col justify-between ${
+              scheduledPosts.length === 0
+                ? isDark ? 'bg-[#25252E]' : 'bg-[#FBF9F4]'
+                : isDark ? 'bg-[#1E1E24]' : 'bg-white'
+            }`}
+          >
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="neo-badge neo-badge-mint">
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>DISPATCH &amp; PEAK WINDOW</span>
+                </span>
+                <span className="neo-badge neo-badge-dark text-[10px]">
+                  {scheduledPosts.length > 0 ? `${scheduledPosts.length} SCHEDULED` : 'SLOT OPEN'}
+                </span>
+              </div>
+
+              {scheduledPosts.length > 0 ? (
+                <div className="space-y-2 mb-6">
+                  <h3 className="font-black text-lg tracking-tight font-heading">
+                    Next Post: {scheduledPosts[0].title}
+                  </h3>
+                  <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
+                    Scheduled for <span className="font-bold text-[#111111] dark:text-white underline decoration-2 decoration-[#45D9A6]">{scheduledPosts[0].scheduledDate} at {scheduledPosts[0].scheduledTime || '18:30'}</span>. Peak engagement window secured.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2 mb-6">
+                  <h3 className="font-black text-lg tracking-tight font-heading">
+                    No Posts Scheduled for Peak Window
+                  </h3>
+                  <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
+                    Your upcoming 18:30 peak engagement slot is empty. Schedule an approved draft to maintain publishing consistency.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-4 border-t-2 border-[#171717] dark:border-[#383844] flex items-center justify-between">
+              <button
+                id="cta-schedule-post"
+                type="button"
+                onClick={() => onNavigate('publishing', 'calendar')}
+                className="neo-btn neo-btn-mint"
+              >
+                <span>{scheduledPosts.length > 0 ? 'View Calendar' : 'Schedule Post'}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+              <span className="text-xs font-black uppercase tracking-wider text-[#4B5563] dark:text-[#9CA3AF] font-heading">
+                STAGE 05
+              </span>
+            </div>
+          </div>
+
+          {/* ACTION 4: Diagnostic Page Audit Banner */}
+          <div
+            className={`p-6 rounded-2xl border-2 border-[#171717] dark:border-[#383844] shadow-[4px_4px_0_#111111] dark:shadow-[4px_4px_0_#0A0A0D] flex flex-col justify-between ${
+              !latestAudit
+                ? isDark ? 'bg-[#25252E]' : 'bg-[#FBF9F4]'
+                : isDark ? 'bg-[#1E1E24]' : 'bg-white'
+            }`}
+          >
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="neo-badge neo-badge-coral">
+                  <Compass className="w-3.5 h-3.5" />
+                  <span>DIAGNOSTIC AUDIT</span>
+                </span>
+                {latestAudit && (
+                  <span className="neo-badge neo-badge-dark text-[10px]">
+                    SCORE: {latestAudit.scores?.overall_score || 88}/100
+                  </span>
+                )}
+              </div>
+
+              <div className="space-y-2 mb-6">
+                <h3 className="font-black text-lg tracking-tight font-heading">
+                  {!latestAudit
+                    ? 'Initial Diagnostic Page Audit Required'
+                    : latestAudit.content_gaps && latestAudit.content_gaps.length > 0
+                    ? `${latestAudit.content_gaps.length} Content Gaps Detected in Latest Audit`
+                    : `Account Diagnostic Health Score: ${latestAudit.scores?.overall_score || 88}/100`}
+                </h3>
+                <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
+                  {!latestAudit
+                    ? 'Run a profile audit to diagnose your content pillar distribution, competitor hooks, and viral gaps.'
+                    : latestAudit.content_gaps && latestAudit.content_gaps.length > 0
+                    ? `Critical gap: "${latestAudit.content_gaps[0]}". Generate targeted topic ideas to close this deficit.`
+                    : 'Your content pillar distribution is healthy and aligned with audience demand.'}
+                </p>
               </div>
             </div>
-          ))}
+
+            <div className="pt-4 border-t-2 border-[#171717] dark:border-[#383844] flex items-center justify-between">
+              <button
+                id="cta-review-audit"
+                type="button"
+                onClick={() => {
+                  if (!latestAudit && onQuickRunAudit) {
+                    onQuickRunAudit();
+                  }
+                  onNavigate('audit');
+                }}
+                className="neo-btn neo-btn-coral"
+              >
+                <span>{!latestAudit ? 'Run Diagnostic Audit' : 'Review Audit'}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+              <span className="text-xs font-black uppercase tracking-wider text-[#4B5563] dark:text-[#9CA3AF] font-heading">
+                STAGE 02
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

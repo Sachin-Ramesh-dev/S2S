@@ -1234,7 +1234,7 @@ Here is why that approach is quietly slowing down your progress—and the exact 
             visualLayout: 'Bold high-contrast background with oversized typography and vibrant accent badge.',
             headline: title,
             bodyText: hook,
-            swipeTrigger: '👉 Swipe to see why 90% get this wrong'
+            swipeTrigger: '👉 Swipe to see the breakdown'
           },
           {
             slideNumber: 2,
@@ -1256,39 +1256,15 @@ Here is why that approach is quietly slowing down your progress—and the exact 
             slideNumber: 4,
             slideType: 'content',
             visualLayout: 'Numbered card 01 with diagram illustrating step one.',
-            headline: 'Step 1: Baseline Verification',
-            bodyText: 'Never begin without a quantitative audit. Benchmark where you stand relative to top 5% performers in your category.',
-            swipeTrigger: '👉 Slide 5 for Step 2'
-          },
-          {
-            slideNumber: 5,
-            slideType: 'content',
-            visualLayout: 'Numbered card 02 with flowchart elements.',
-            headline: 'Step 2: Streamline The Friction',
-            bodyText: 'Eliminate every single step that does not directly contribute to retention or trust. Simplicity scales; complexity stalls.',
-            swipeTrigger: '👉 Slide 6 for Step 3'
-          },
-          {
-            slideNumber: 6,
-            slideType: 'content',
-            visualLayout: 'Numbered card 03 with verified checkmark graphic.',
-            headline: 'Step 3: Systematic Execution',
-            bodyText: 'Lock in your cadence and execute consistently. High performers win through disciplined repeatability, not random spikes.',
-            swipeTrigger: '👉 Slide 7: Complete Summary'
-          },
-          {
-            slideNumber: 7,
-            slideType: 'summary',
-            visualLayout: 'Neat 3-box summary cheatsheet with bullet takeaways.',
-            headline: 'Quick Reference Cheat Sheet',
-            bodyText: '• 1. Audit baseline before acting\n• 2. Eliminate unnecessary friction\n• 3. Lock in consistent execution cadence.',
+            headline: 'The High-Impact Solution',
+            bodyText: 'Never begin without a quantitative audit. Eliminate friction and execute with disciplined repeatability.',
             swipeTrigger: '👉 Final slide for next steps'
           },
           {
-            slideNumber: 8,
+            slideNumber: 5,
             slideType: 'cta',
             visualLayout: 'Prominent bookmark badge with glowing neon frame and clear arrow pointing down.',
-            headline: 'Keep This Cheat Sheet Handy',
+            headline: 'Ready to Implement?',
             bodyText: `Save this post 📌 right now so you can refer back to it during your weekly planning.\nShare with a colleague in ${account.niche}!`,
             swipeTrigger: '📌 Bookmark to save'
           }

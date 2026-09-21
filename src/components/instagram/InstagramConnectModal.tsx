@@ -101,13 +101,20 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
                 setIsConnecting(false);
                 return;
               }
-              if (!exchangeRes.success || !exchangeRes.accessToken) {
+              if (!exchangeRes.success) {
                 setOauthError(exchangeRes.error || 'Failed to exchange authorization code with Meta.');
                 setIsConnecting(false);
                 return;
               }
 
-              if (exchangeRes.detectedAccounts && exchangeRes.detectedAccounts.length > 0) {
+              const connectedAccount = exchangeRes.account || (exchangeRes.connectedAccounts && exchangeRes.connectedAccounts[0]);
+              if (connectedAccount) {
+                setOauthSuccess(true);
+                setTimeout(() => {
+                  onConnected(connectedAccount);
+                  onClose();
+                }, 1200);
+              } else if (exchangeRes.detectedAccounts && exchangeRes.detectedAccounts.length > 0) {
                 const detected = exchangeRes.detectedAccounts[0];
                 const newAcc = await instagramApi.connectManusAccount({
                   method: 'meta_graph_api',
@@ -116,7 +123,6 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
                   category: detected.category,
                   bio: detected.bio || `Connected via Meta OAuth 2.0 (ID: ${detected.id})`,
                   followersCount: detected.followersCount,
-                  metaAccessToken: exchangeRes.accessToken,
                   metaPageId: detected.id,
                   isDemo: false
                 });
@@ -155,7 +161,7 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
     setIsConnecting(true);
 
     const effectiveAppId = appIdInput.trim() || '178414009281740';
-    const scope = 'instagram_basic,pages_show_list,instagram_manage_insights,pages_read_engagement';
+    const scope = 'instagram_basic,pages_show_list,instagram_manage_insights,pages_read_engagement,instagram_content_publish';
     const oauthUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${encodeURIComponent(effectiveAppId)}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}&response_type=code`;
 
     const width = 600;

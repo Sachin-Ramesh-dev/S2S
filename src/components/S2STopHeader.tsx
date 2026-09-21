@@ -38,29 +38,42 @@ export const S2STopHeader: React.FC<S2STopHeaderProps> = ({
   }, []);
 
   const currentDomainConfig = S2S_DOMAINS.find(d => d.id === activeDomain);
-  const currentSubItem = currentDomainConfig?.subItems.find(s => s.id === activeSubView);
+  const currentSubItem = currentDomainConfig?.subItems?.find(s => s.id === activeSubView);
 
   return (
     <header
       id="s2s-top-header"
-      className={`h-14 px-6 border-b flex items-center justify-between shrink-0 select-none z-20 transition-colors ${
-        isDark ? 'bg-[#121218] border-[#22222c]' : 'bg-white border-slate-200'
+      className={`h-14 px-6 border-b-2 flex items-center justify-between shrink-0 select-none z-20 transition-colors ${
+        isDark ? 'bg-[#131316] border-[#383844]' : 'bg-[#F8F5EE] border-[#171717]'
       }`}
     >
       {/* Left: Domain Breadcrumb */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2.5">
         <span className="text-base">{activeDomain === 'home' ? '🏠' : (currentDomainConfig?.icon || '⚡')}</span>
-        <span className={`text-xs font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
-          {activeDomain === 'home' ? 'Home Hub' : currentDomainConfig?.label}
+        <span className={`text-xs font-black uppercase tracking-tight font-heading ${isDark ? 'text-[#F5F3EC]' : 'text-[#111111]'}`}>
+          {activeDomain === 'home' ? 'HOME / ACTION CENTER' : (currentDomainConfig?.label?.toUpperCase() || activeDomain.toUpperCase())}
         </span>
         {currentSubItem && (
           <>
-            <span className="text-zinc-500 text-xs">/</span>
-            <span className="text-xs font-semibold text-orange-500">
+            <span className="text-[#171717] dark:text-[#9CA3AF] text-xs font-black">/</span>
+            <span className="text-xs font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#FFD66B] text-[#111111] border border-[#171717] shadow-[1.5px_1.5px_0_#111111]">
               {currentSubItem.label}
             </span>
           </>
         )}
+      </div>
+
+      {/* Center: S2S Brand Motif (visible on md+) */}
+      <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full border-2 border-[#171717] dark:border-[#383844] bg-white dark:bg-[#1E1E24] shadow-[2px_2px_0_#111111] dark:shadow-[2px_2px_0_#0A0A0D] text-[10px] font-black uppercase tracking-wider font-heading">
+        <span className="text-[#FF4D5A]">SCROLL</span>
+        <span className="text-zinc-400">→</span>
+        <span className="text-[#FFD66B]">THINK</span>
+        <span className="text-zinc-400">→</span>
+        <span className="text-[#B9A7FF]">CREATE</span>
+        <span className="text-zinc-400">→</span>
+        <span className="text-[#45D9A6]">PUBLISH</span>
+        <span className="text-zinc-400">→</span>
+        <span className="text-[#7CC7FF]">LEARN</span>
       </div>
 
       {/* Right: Environment, Theme & Account Switcher */}
@@ -74,38 +87,34 @@ export const S2STopHeader: React.FC<S2STopHeaderProps> = ({
             id="btn-instagram-page-switcher"
             type="button"
             onClick={() => setIsAccountDropdownOpen(!isAccountDropdownOpen)}
-            className={`flex items-center gap-2 px-3 py-1.5 border rounded-xl text-xs transition-all cursor-pointer shadow-xs ${
+            className={`flex items-center gap-2 px-3 py-1.5 border-2 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-[2.5px_2.5px_0_#111111] dark:shadow-[2.5px_2.5px_0_#0A0A0D] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none ${
               isDark
-                ? 'bg-[#1a1a24] hover:bg-[#222230] border-[#303042] text-white'
-                : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-800'
+                ? 'bg-[#1E1E24] hover:bg-[#25252E] border-[#383844] text-[#F5F3EC]'
+                : 'bg-white hover:bg-[#FBF9F4] border-[#171717] text-[#111111]'
             }`}
           >
             {selectedAccount ? (
               <>
-                <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-0.5 shrink-0">
-                  <div className={`w-full h-full rounded-full flex items-center justify-center text-[9px] font-bold uppercase ${
-                    isDark ? 'bg-[#11121c] text-white' : 'bg-white text-slate-900'
-                  }`}>
-                    {selectedAccount.username.charAt(0)}
-                  </div>
+                <div className="w-5 h-5 rounded-md border border-[#171717] bg-[#FFD66B] flex items-center justify-center text-[10px] font-black uppercase text-[#111111] shrink-0">
+                  {selectedAccount.username.charAt(0)}
                 </div>
                 <span className="font-bold truncate max-w-[110px]">@{selectedAccount.username}</span>
               </>
             ) : (
-              <span className="text-zinc-400">No Account</span>
+              <span className="text-zinc-400 font-medium">No Account</span>
             )}
-            <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform ${isAccountDropdownOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-3.5 h-3.5 text-zinc-500 transition-transform ${isAccountDropdownOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {isAccountDropdownOpen && (
             <div
-              className={`absolute right-0 mt-2 w-72 border rounded-2xl shadow-2xl p-2 z-50 text-xs animate-in fade-in slide-in-from-top-2 ${
-                isDark ? 'bg-[#181824] border-[#303044]' : 'bg-white border-slate-200'
+              className={`absolute right-0 mt-2 w-72 border-2 rounded-xl shadow-[5px_5px_0_#111111] dark:shadow-[5px_5px_0_#0A0A0D] p-2 z-50 text-xs animate-in fade-in slide-in-from-top-2 ${
+                isDark ? 'bg-[#1E1E24] border-[#383844]' : 'bg-white border-[#171717]'
               }`}
             >
-              <div className="px-3 py-2 border-b border-zinc-800 text-[11px] font-bold text-zinc-400 flex items-center justify-between">
+              <div className="px-3 py-2 border-b-2 border-[#171717] dark:border-[#383844] text-[11px] font-black uppercase tracking-wider text-zinc-400 flex items-center justify-between font-heading">
                 <span>CONNECTED ACCOUNTS</span>
-                <span className="font-mono">{accounts.length} Active</span>
+                <span className="px-1.5 py-0.5 bg-[#45D9A6] text-[#111111] rounded font-bold">{accounts.length} Active</span>
               </div>
 
               <div className="py-1.5 space-y-1 max-h-56 overflow-y-auto">
@@ -119,36 +128,32 @@ export const S2STopHeader: React.FC<S2STopHeaderProps> = ({
                         onSelectAccount(acc);
                         setIsAccountDropdownOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-colors cursor-pointer ${
+                      className={`w-full flex items-center justify-between p-2 rounded-lg text-left transition-colors cursor-pointer border-2 ${
                         isCurrent
                           ? isDark
-                            ? 'bg-[#252536] text-white border border-[#3e3e56]'
-                            : 'bg-orange-50 text-slate-900 border border-orange-200'
+                            ? 'bg-[#2B2B36] text-[#F5F3EC] border-[#B9A7FF]'
+                            : 'bg-[#FFD66B]/20 text-[#111111] border-[#171717]'
                           : isDark
-                          ? 'hover:bg-[#1f1f2c] text-zinc-300'
-                          : 'hover:bg-slate-50 text-slate-700'
+                          ? 'hover:bg-[#25252E] text-zinc-300 border-transparent'
+                          : 'hover:bg-[#F8F5EE] text-[#111111] border-transparent'
                       }`}
                     >
                       <div className="flex items-center gap-2.5 truncate">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-0.5 shrink-0">
-                          <div className={`w-full h-full rounded-full flex items-center justify-center text-[9px] font-bold uppercase ${
-                            isDark ? 'bg-[#121218] text-white' : 'bg-white text-slate-900'
-                          }`}>
-                            {acc.username.charAt(0)}
-                          </div>
+                        <div className="w-6 h-6 rounded-md border border-[#171717] bg-[#B9A7FF] flex items-center justify-center text-[10px] font-black uppercase text-[#111111] shrink-0">
+                          {acc.username.charAt(0)}
                         </div>
                         <div className="truncate">
                           <div className="font-bold truncate">@{acc.username}</div>
                           <div className="text-[10px] text-zinc-400 truncate">{acc.displayName}</div>
                         </div>
                       </div>
-                      {isCurrent && <Check className="w-4 h-4 text-orange-400 shrink-0" />}
+                      {isCurrent && <Check className="w-4 h-4 text-[#111111] dark:text-[#45D9A6] shrink-0 font-black" />}
                     </button>
                   );
                 })}
               </div>
 
-              <div className="pt-2 border-t border-zinc-800">
+              <div className="pt-2 border-t-2 border-[#171717] dark:border-[#383844]">
                 <button
                   type="button"
                   id="btn-dropdown-connect-page"
@@ -156,9 +161,9 @@ export const S2STopHeader: React.FC<S2STopHeaderProps> = ({
                     setIsAccountDropdownOpen(false);
                     onOpenConnectModal();
                   }}
-                  className="w-full py-2 px-3 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                  className="w-full py-2 px-3 bg-[#45D9A6] hover:bg-[#34c391] text-[#111111] rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer border-2 border-[#171717] shadow-[2.5px_2.5px_0_#111111] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none font-heading"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3.5 h-3.5 stroke-[3]" />
                   <span>Connect Instagram Page</span>
                 </button>
               </div>

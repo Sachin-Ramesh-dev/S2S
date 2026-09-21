@@ -169,26 +169,18 @@ export const MiniMap: React.FC<MiniMapProps> = ({
   return (
     <div
       id="canvas-minimap"
-      className={`relative z-40 rounded-xl shadow-2xl backdrop-blur-md overflow-hidden flex flex-col select-none transition-all duration-200 pointer-events-auto border ${
-        isDark
-          ? 'bg-[#18181c]/95 border-[#28282e] text-[#a1a1aa]'
-          : 'bg-white/95 border-slate-200 text-slate-700'
-      }`}
-      style={{ width: mapWidth + 2 }}
+      className="relative z-40 rounded-xl overflow-hidden flex flex-col select-none transition-all duration-200 pointer-events-auto border-2 border-[#171717] dark:border-[#383844] bg-white dark:bg-[#181820] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#383844]"
+      style={{ width: mapWidth + 4 }}
     >
       {/* MiniMap Header */}
       <div
-        className={`px-2.5 py-1.5 border-b flex items-center justify-between text-[11px] font-semibold ${
-          isDark
-            ? 'bg-[#141418] border-[#28282e] text-[#a1a1aa]'
-            : 'bg-slate-50 border-slate-200 text-slate-700'
-        }`}
+        className="px-2.5 py-1.5 border-b-2 border-[#171717] dark:border-[#383844] flex items-center justify-between text-[10px] font-black uppercase tracking-wider bg-[#F8F5EE] dark:bg-[#1A1A22] text-[#111111] dark:text-white"
       >
         <div className="flex items-center gap-1.5">
-          <Compass className="w-3.5 h-3.5 text-indigo-500" />
-          <span>Mini-map</span>
-          <span className={`text-[10px] font-normal ${isDark ? 'text-[#71717a]' : 'text-slate-400'}`}>
-            ({nodes.length} {nodes.length === 1 ? 'node' : 'nodes'})
+          <Compass className="w-3.5 h-3.5 text-[#111111] dark:text-white" />
+          <span>MINI-MAP</span>
+          <span className="text-[9px] font-mono font-bold px-1 rounded bg-[#FFD66B] text-[#111111] border border-[#171717]">
+            {nodes.length}
           </span>
         </div>
 
@@ -198,9 +190,7 @@ export const MiniMap: React.FC<MiniMapProps> = ({
             type="button"
             onClick={onFitToScreen}
             title="Fit to Screen"
-            className={`p-1 rounded transition-colors cursor-pointer ${
-              isDark ? 'hover:bg-[#26262c] text-[#a1a1aa] hover:text-white' : 'hover:bg-slate-200 text-slate-500 hover:text-slate-900'
-            }`}
+            className="p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 text-[#111111] dark:text-white cursor-pointer"
           >
             <Maximize2 className="w-3 h-3" />
           </button>
@@ -209,9 +199,7 @@ export const MiniMap: React.FC<MiniMapProps> = ({
             type="button"
             onClick={toggleCollapse}
             title={isCollapsed ? 'Expand Mini-map' : 'Collapse Mini-map'}
-            className={`p-1 rounded transition-colors cursor-pointer ${
-              isDark ? 'hover:bg-[#26262c] text-[#a1a1aa] hover:text-white' : 'hover:bg-slate-200 text-slate-500 hover:text-slate-900'
-            }`}
+            className="p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 text-[#111111] dark:text-white cursor-pointer"
           >
             {isCollapsed ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
           </button>

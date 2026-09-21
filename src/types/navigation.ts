@@ -1,20 +1,39 @@
-export type DomainId =
+export type PrimaryJourneyId =
   | 'home'
+  | 'audit'
+  | 'topics'
+  | 'production'
+  | 'publishing'
+  | 'performance';
+
+export type AutomationDomainId = 'workflows';
+
+export type SupportingToolId =
+  | 'competitors'
+  | 'guardrails'
+  | 'collaboration'
+  | 'settings'
+  | 'audit_history';
+
+export type LegacyDomainId =
   | 'strategy'
   | 'content'
-  | 'workflows'
-  | 'publishing'
-  | 'intelligence'
-  | 'collaboration'
-  | 'settings';
+  | 'intelligence';
+
+export type DomainId =
+  | PrimaryJourneyId
+  | AutomationDomainId
+  | SupportingToolId
+  | LegacyDomainId;
 
 export type StrategySubView = 'audit' | 'competitors' | 'opportunities';
 export type ContentSubView = 'topics' | 'scripts' | 'creative' | 'repurpose' | 'media';
 export type WorkflowsSubView = 'builder' | 'templates' | 'active' | 'runs' | 'automations';
-export type PublishingSubView = 'calendar' | 'swimlane' | 'campaigns' | 'scheduler';
+export type PublishingSubView = 'calendar' | 'queue' | 'swimlane' | 'campaigns' | 'scheduler';
 export type IntelligenceSubView = 'analytics' | 'performance' | 'content_intelligence' | 'reports';
 export type CollaborationSubView = 'approvals' | 'comments' | 'team' | 'client_portal';
 export type SettingsSubView = 'integrations' | 'mcp' | 'ai' | 'security' | 'existing';
+export type ProductionSubView = 'scripts' | 'creative' | 'storyboard' | 'overview';
 
 export type SubViewId =
   | StrategySubView
@@ -24,6 +43,7 @@ export type SubViewId =
   | IntelligenceSubView
   | CollaborationSubView
   | SettingsSubView
+  | ProductionSubView
   | 'overview';
 
 export interface DomainNavigationConfig {
@@ -32,7 +52,8 @@ export interface DomainNavigationConfig {
   icon: string;
   description: string;
   defaultSubView: SubViewId;
-  subItems: {
+  category?: 'primary' | 'automation' | 'supporting' | 'legacy';
+  subItems?: {
     id: SubViewId;
     label: string;
     description: string;
@@ -40,13 +61,155 @@ export interface DomainNavigationConfig {
   }[];
 }
 
-export const S2S_DOMAINS: DomainNavigationConfig[] = [
+// 1. PRIMARY JOURNEY (Visually dominant core content engine)
+export const PRIMARY_JOURNEY_DOMAINS: DomainNavigationConfig[] = [
+  {
+    id: 'home',
+    label: 'Home',
+    icon: '🏠',
+    description: 'Action Center: What should I work on now?',
+    defaultSubView: 'overview',
+    category: 'primary'
+  },
+  {
+    id: 'audit',
+    label: 'Page Audit',
+    icon: '🔍',
+    description: 'Diagnostic profile audit, health score, and content pillar breakdown',
+    defaultSubView: 'overview',
+    category: 'primary'
+  },
+  {
+    id: 'topics',
+    label: 'Topics',
+    icon: '💡',
+    description: 'AI topic generation, pillar deficit alignment, and approval queue',
+    defaultSubView: 'overview',
+    category: 'primary'
+  },
+  {
+    id: 'production',
+    label: 'Content Production',
+    icon: '🎬',
+    description: '4-Act viral script studio and slide storyboard production',
+    defaultSubView: 'scripts',
+    category: 'primary',
+    subItems: [
+      { id: 'scripts', label: 'Script Studio', description: '4-Act retention timeline and hook builder' },
+      { id: 'creative', label: 'Slide Storyboard', description: 'Carousel and visual slide storyboard' }
+    ]
+  },
+  {
+    id: 'publishing',
+    label: 'Publishing',
+    icon: '📅',
+    description: 'Content calendar, Kanban pipeline, and 18:30 peak slot scheduling',
+    defaultSubView: 'calendar',
+    category: 'primary',
+    subItems: [
+      { id: 'calendar', label: 'Calendar', description: 'Monthly schedule and 18:30 peak slots' },
+      { id: 'queue', label: 'Queue & Monitor', description: 'Live publishing queue, delivery states & snapshot inspector' },
+      { id: 'swimlane', label: 'Swimlane', description: 'Kanban pipeline across stages' }
+    ]
+  },
+  {
+    id: 'performance',
+    label: 'Performance',
+    icon: '📊',
+    description: 'Reel 3s hook retention, audience growth, and pillar ROI intelligence',
+    defaultSubView: 'performance',
+    category: 'primary',
+    subItems: [
+      { id: 'performance', label: 'Performance', description: 'Hook retention and completion rates' },
+      { id: 'analytics', label: 'Analytics', description: 'Growth curves and engagement' }
+    ]
+  }
+];
+
+// 2. AUTOMATION DOMAIN (n8n-style visual workflow system)
+export const AUTOMATION_DOMAINS: DomainNavigationConfig[] = [
+  {
+    id: 'workflows',
+    label: 'Workflows',
+    icon: '⚡',
+    description: 'Visual n8n-style node canvas for automated data sync, auditing, and AI pipelines',
+    defaultSubView: 'builder',
+    category: 'automation',
+    subItems: [
+      { id: 'builder', label: 'Workflow Builder', description: 'Visual drag-and-drop node graph canvas' },
+      { id: 'templates', label: 'Templates', description: 'Pre-built automation blueprints' },
+      { id: 'active', label: 'Active Workflows', description: 'Running background monitors and scheduled triggers' },
+      { id: 'runs', label: 'Workflow Runs', description: 'Execution history, node payload inspection, and logs' },
+      { id: 'automations', label: 'Automations', description: 'Event-driven triggers (auto-audit, auto-script)' }
+    ]
+  }
+];
+
+// 3. SUPPORTING TOOLS (Visually secondary tools)
+export const SUPPORTING_TOOL_DOMAINS: DomainNavigationConfig[] = [
+  {
+    id: 'competitors',
+    label: 'Competitor Benchmarks',
+    icon: '🎯',
+    description: 'Track competitor handles, follower velocity, and winning hooks',
+    defaultSubView: 'overview',
+    category: 'supporting'
+  },
+  {
+    id: 'guardrails',
+    label: 'Self-Learning Guardrails',
+    icon: '🛡️',
+    description: 'AI skill versions, performance learnings, and safety guardrails',
+    defaultSubView: 'overview',
+    category: 'supporting'
+  },
+  {
+    id: 'collaboration',
+    label: 'Collaboration',
+    icon: '👥',
+    description: 'Editorial sign-offs, timestamped script notes, and review portal',
+    defaultSubView: 'approvals',
+    category: 'supporting',
+    subItems: [
+      { id: 'approvals', label: 'Approvals', description: 'Editorial sign-off queue' },
+      { id: 'comments', label: 'Comments', description: 'Threaded feedback on active drafts' },
+      { id: 'team', label: 'Team', description: 'Member roles and permissions' }
+    ]
+  },
+  {
+    id: 'settings',
+    label: 'AI Models & Settings',
+    icon: '⚙️',
+    description: 'Meta OAuth, MCP servers, Gemini model parameters, and credentials',
+    defaultSubView: 'integrations',
+    category: 'supporting',
+    subItems: [
+      { id: 'integrations', label: 'Integrations', description: 'Meta OAuth 2.0 popup and Token Auto-Discovery' },
+      { id: 'mcp', label: 'MCP', description: 'Model Context Protocol connections and server tools' },
+      { id: 'ai', label: 'AI Models', description: 'Gemini model parameters and system instructions' },
+      { id: 'security', label: 'Security & Vault', description: 'Live vs. Demo Sandbox mode, token encryption, and vaults' },
+      { id: 'existing', label: 'General Settings', description: 'Workspace preferences and themes' }
+    ]
+  },
+  {
+    id: 'audit_history',
+    label: 'Audit History',
+    icon: '📜',
+    description: 'Historical diagnostic profile audits, version comparisons, and logs',
+    defaultSubView: 'overview',
+    category: 'supporting'
+  }
+];
+
+// 4. LEGACY ALIASES (For backward compatibility with existing links/handlers)
+export const LEGACY_DOMAINS: DomainNavigationConfig[] = [
   {
     id: 'strategy',
     label: 'Strategy',
     icon: '🧠',
     description: 'Diagnose account health, benchmark competitors, and detect viral content gaps.',
     defaultSubView: 'audit',
+    category: 'legacy',
     subItems: [
       { id: 'audit', label: 'Page Audit', description: 'Comprehensive diagnostic profile audit and pillar breakdown' },
       { id: 'competitors', label: 'Competitors', description: 'Benchmark competitor follower counts, hooks, and formats' },
@@ -59,6 +222,7 @@ export const S2S_DOMAINS: DomainNavigationConfig[] = [
     icon: '✍️',
     description: 'Ideate topics, author 4-act viral retention scripts, design slides, and repurpose assets.',
     defaultSubView: 'topics',
+    category: 'legacy',
     subItems: [
       { id: 'topics', label: 'Topics', description: 'AI topic generation, pillar tagging, and approval queue' },
       { id: 'scripts', label: 'Scripts', description: '4-Act viral retention timeline (0-60s) with real-time scoring' },
@@ -68,70 +232,26 @@ export const S2S_DOMAINS: DomainNavigationConfig[] = [
     ]
   },
   {
-    id: 'workflows',
-    label: 'Workflows',
-    icon: '⚡',
-    description: 'Visual n8n-style node canvas for automated data sync, auditing, and AI script generation.',
-    defaultSubView: 'builder',
-    subItems: [
-      { id: 'builder', label: 'Workflow Builder', description: 'Visual drag-and-drop node graph canvas with live debugging' },
-      { id: 'templates', label: 'Templates', description: 'Pre-built automation workflows and social pipeline blueprints' },
-      { id: 'active', label: 'Active Workflows', description: 'Running background monitors and scheduled triggers' },
-      { id: 'runs', label: 'Workflow Runs', description: 'Execution history, node payload inspection, and logs' },
-      { id: 'automations', label: 'Automations', description: 'Event-driven triggers (auto-audit, auto-script on approval)' }
-    ]
-  },
-  {
-    id: 'publishing',
-    label: 'Publishing',
-    icon: '📅',
-    description: 'Plan peak-hour publication slots, monitor Kanban pipeline progress, and organize campaigns.',
-    defaultSubView: 'calendar',
-    subItems: [
-      { id: 'calendar', label: 'Calendar', description: 'Monthly and weekly schedule with 18:30 peak engagement slots' },
-      { id: 'swimlane', label: 'Swimlane', description: 'Kanban content pipeline across 5 production stages' },
-      { id: 'campaigns', label: 'Campaigns', description: 'Multi-post initiative tracking and promotional sprints' },
-      { id: 'scheduler', label: 'Scheduler', description: 'Queue configuration and auto-publishing rules' }
-    ]
-  },
-  {
     id: 'intelligence',
     label: 'Intelligence',
     icon: '📊',
     description: 'Deep audience metrics, reel retention drop-off analytics, and content ROI intelligence.',
     defaultSubView: 'analytics',
+    category: 'legacy',
     subItems: [
       { id: 'analytics', label: 'Analytics', description: 'Follower growth curves, reach breakdown, and engagement' },
       { id: 'performance', label: 'Performance', description: 'Reel 3-second hook retention vs 60-second completion rates' },
       { id: 'content_intelligence', label: 'Content Intelligence', description: 'Audience sentiment analysis and pillar ROI breakdown' },
       { id: 'reports', label: 'Reports', description: 'Exportable executive PDF/Markdown audit briefs and digests' }
     ]
-  },
-  {
-    id: 'collaboration',
-    label: 'Collaboration',
-    icon: '👥',
-    description: 'Editorial sign-offs, timestamped script revision notes, and client review portals.',
-    defaultSubView: 'approvals',
-    subItems: [
-      { id: 'approvals', label: 'Approvals', description: 'Editorial sign-off queue for topics and scripts' },
-      { id: 'comments', label: 'Comments', description: 'Threaded feedback notes on active script drafts' },
-      { id: 'team', label: 'Team', description: 'Member roles, permissions, and audit log tracking' },
-      { id: 'client_portal', label: 'Client Portal', description: 'External stakeholder presentation and approval view' }
-    ]
-  },
-  {
-    id: 'settings',
-    label: 'Settings',
-    icon: '⚙️',
-    description: 'Meta Graph API OAuth connectors, MCP server configurations, AI models, and credentials.',
-    defaultSubView: 'integrations',
-    subItems: [
-      { id: 'integrations', label: 'Integrations', description: 'Meta OAuth 2.0 popup and Token Auto-Discovery' },
-      { id: 'mcp', label: 'MCP', description: 'Model Context Protocol connections and server tools' },
-      { id: 'ai', label: 'AI', description: 'Gemini model parameters, system instructions, and skills' },
-      { id: 'security', label: 'Security', description: 'Live vs. Demo Sandbox mode, token encryption, and vaults' },
-      { id: 'existing', label: 'Existing Settings', description: 'Workspace preferences, themes, notifications, and export' }
-    ]
   }
 ];
+
+// Unified catalog combining all domains for lookup utilities
+export const S2S_DOMAINS: DomainNavigationConfig[] = [
+  ...PRIMARY_JOURNEY_DOMAINS,
+  ...AUTOMATION_DOMAINS,
+  ...SUPPORTING_TOOL_DOMAINS,
+  ...LEGACY_DOMAINS
+];
+

@@ -36,7 +36,7 @@ import {
   ChevronDown,
   Share2
 } from 'lucide-react';
-import { ScriptItem, AISkillRecord, TeamMember } from '../../types/instagram';
+import { ScriptItem, AISkillRecord, TeamMember, ReelActs } from '../../types/instagram';
 import { instagramApi } from '../../services/instagramApi';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -172,6 +172,22 @@ export const InstagramScriptsView: React.FC<InstagramScriptsViewProps> = ({
   // Active Script
   const activeScript = scripts.find((s) => s.id === selectedScriptId) || scripts[0];
 
+  // Helper to initialize or derive 4 Acts from script data
+  const getInitialActs = (script: ScriptItem | undefined): ReelActs => {
+    if (script?.acts) return script.acts;
+    const hook = script?.hook || 'Stop scrolling: The Hidden Insight';
+    const cta = script?.callToAction || "Comment 'BLUEPRINT' below and I'll DM you the complete framework.";
+    const captionParts = script?.caption ? script.caption.split('\n\n') : [];
+    const agitation = captionParts[0] || 'Most creators burn out trying to produce without strategic deficits. They post 3x a day and wonder why their reach flatlines.';
+    const solution = captionParts.slice(1).join('\n\n') || 'Follow this exact 3-step blueprint: 1. Identify content deficit from page audit. 2. Choose format before scripting. 3. Execute modular 4-act copy.';
+    return {
+      act1_hook: hook,
+      act2_agitation: agitation,
+      act3_solution: solution,
+      act4_cta: cta
+    };
+  };
+
   // Editor states synced with activeScript
   const [editorStyle, setEditorStyle] = useState<'freeform' | 'scenes'>('freeform');
   const [editTitle, setEditTitle] = useState(activeScript?.title || '');
@@ -182,6 +198,74 @@ export const InstagramScriptsView: React.FC<InstagramScriptsViewProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  // 4-Act and Full Script state
+  const [editActs, setEditActs] = useState<ReelActs>(getInitialActs(activeScript));
+  const [activeActTab, setActiveActTab] = useState<'all' | 'act1' | 'act2' | 'act3' | 'act4'>('all');
+  const [isEditingFullScript, setIsEditingFullScript] = useState(false);
+  const [fullScriptText, setFullScriptText] = useState('');
+  const [actDiffModal, setActDiffModal] = useState<{
+    targetAct: 'act1' | 'act2' | 'act3' | 'act4' | 'all';
+    title: string;
+    original: string;
+    proposed: string;
+    proposedActs?: ReelActs;
+    diffNotes: string;
+  } | null>(null);
+
+  // Dynamic retention scoring calculator
+  const calculateRetentionScore = (acts: ReelActs) => {
+    let hookScore = 82;
+    let clarityScore = 84;
+    let engagementScore = 80;
+    let ctaScore = 82;
+    const suggestions: string[] = [];
+
+    const hookWords = acts.act1_hook.trim().split(/\s+/).filter(Boolean).length;
+    if (hookWords <= 10 && hookWords >= 3) {
+      hookScore = 96;
+    } else if (hookWords > 15) {
+      hookScore = 72;
+      suggestions.push('Hook is too long (>15 words). Trim to under 10 words for 3-second drop-off defense.');
+    } else {
+      hookScore = 88;
+    }
+
+    const agitationLower = acts.act2_agitation.toLowerCase();
+    const painWords = ['mistake', 'fail', 'trap', 'stop', 'problem', 'burn out', 'waste', 'lose', 'wrong', 'miss', 'broke', 'struggle'];
+    const hasPainWord = painWords.some(w => agitationLower.includes(w));
+    if (hasPainWord) {
+      engagementScore = 93;
+    } else {
+      engagementScore = 75;
+      suggestions.push('Add an agitation tension word (e.g. "trap", "mistake", "burn out") in Act 2.');
+    }
+
+    const solutionLower = acts.act3_solution.toLowerCase();
+    if (acts.act3_solution.includes('1.') || solutionLower.includes('step') || solutionLower.includes('blueprint') || solutionLower.includes('framework') || solutionLower.includes('fix')) {
+      clarityScore = 95;
+    } else {
+      clarityScore = 78;
+      suggestions.push('Structure Act 3 with concrete numbered steps or a named framework.');
+    }
+
+    const ctaLower = acts.act4_cta.toLowerCase();
+    if (ctaLower.includes('comment') || ctaLower.includes('save') || ctaLower.includes('share') || ctaLower.includes('dm')) {
+      ctaScore = 96;
+    } else {
+      ctaScore = 74;
+      suggestions.push('Include a single explicit CTA trigger word (Comment, Save, or DM) in Act 4.');
+    }
+
+    const totalScore = Math.min(100, Math.round((hookScore * 0.35) + (clarityScore * 0.25) + (engagementScore * 0.25) + (ctaScore * 0.15)));
+    return {
+      score: totalScore,
+      breakdown: { hookStrength: hookScore, clarity: clarityScore, engagementPotential: engagementScore, ctaQuality: ctaScore },
+      suggestions: suggestions.length > 0 ? suggestions : ['Viral retention structure is highly optimized across all 4 Acts.']
+    };
+  };
+
+  const calculatedRetention = calculateRetentionScore(editActs);
+
   // Synchronize when selectedScriptId changes
   React.useEffect(() => {
     if (activeScript) {
@@ -190,7 +274,13 @@ export const InstagramScriptsView: React.FC<InstagramScriptsViewProps> = ({
       setEditBody(activeScript.caption || '');
       setEditCta(activeScript.callToAction || '');
       setEditScenes(activeScript.scenes || []);
-      setEditorStyle(activeScript.scenes && activeScript.scenes.length > 0 ? 'scenes' : 'freeform');
+      const initialActs = getInitialActs(activeScript);
+      setEditActs(initialActs);
+      setFullScriptText(
+        activeScript.fullTextScript ||
+        `[ACT 1: HOOK (0-3s)]\n${initialActs.act1_hook}\n\n[ACT 2: AGITATION (3-15s)]\n${initialActs.act2_agitation}\n\n[ACT 3: SOLUTION (15-45s)]\n${initialActs.act3_solution}\n\n[ACT 4: CTA (45-60s)]\n${initialActs.act4_cta}`
+      );
+      setEditorStyle(activeScript.format === 'Reel' ? 'freeform' : (activeScript.scenes && activeScript.scenes.length > 0 ? 'scenes' : 'freeform'));
       setScoreResult(
         activeScript.score
           ? {
@@ -274,18 +364,171 @@ export const InstagramScriptsView: React.FC<InstagramScriptsViewProps> = ({
     }
   };
 
+  // 4 Acts update handler (strictly isolates changes to one Act)
+  const handleUpdateAct = (actKey: keyof ReelActs, value: string) => {
+    setEditActs((prev) => {
+      const updated = { ...prev, [actKey]: value };
+      if (actKey === 'act1_hook') setEditHook(value);
+      if (actKey === 'act4_cta') setEditCta(value);
+      if (actKey === 'act2_agitation' || actKey === 'act3_solution') {
+        setEditBody(`${updated.act2_agitation}\n\n${updated.act3_solution}`);
+      }
+      setFullScriptText(
+        `[ACT 1: HOOK (0-3s)]\n${updated.act1_hook}\n\n[ACT 2: AGITATION (3-15s)]\n${updated.act2_agitation}\n\n[ACT 3: SOLUTION (15-45s)]\n${updated.act3_solution}\n\n[ACT 4: CTA (45-60s)]\n${updated.act4_cta}`
+      );
+      return updated;
+    });
+  };
+
+  // Act-specific AI actions with Accept / Discard preview
+  const handleAiImproveAct = (actKey: keyof ReelActs) => {
+    let title = '';
+    const original = editActs[actKey];
+    let proposed = '';
+    let diffNotes = '';
+
+    if (actKey === 'act1_hook') {
+      title = 'Act 1: Pattern Interrupt Hook';
+      proposed = `Stop scrolling: ${editActs.act1_hook.replace(/^[Ss]top scrolling:?\s*/, '').replace(/\.$/, '')} (and why 95% do it wrong).`;
+      diffNotes = 'Boosted curiosity gap and negative frame for maximum 0-3s retention defense.';
+    } else if (actKey === 'act2_agitation') {
+      title = 'Act 2: Conflict & Agitation';
+      proposed = `${editActs.act2_agitation.replace(/\.$/, '')}. If you keep making this common mistake, your algorithm reach will completely stall.`;
+      diffNotes = 'Heightened the emotional tension and algorithm consequences.';
+    } else if (actKey === 'act3_solution') {
+      title = 'Act 3: Tactical Solution';
+      proposed = `Here is the verified 3-step fix:\n1. Audit your deficit before ideating.\n2. Pick Reel, Carousel, or Image based on retention goal.\n3. Execute modular 4-act copy with no fluff.`;
+      diffNotes = 'Replaced narrative with high-retention numbered action items.';
+    } else if (actKey === 'act4_cta') {
+      title = 'Act 4: High-Conversion CTA';
+      proposed = `Comment 'BLUEPRINT' right now and my automation will send you the full breakdown instantly.`;
+      diffNotes = 'Added single explicit keyword trigger for automated DM fulfillment.';
+    }
+
+    setActDiffModal({
+      targetAct: actKey,
+      title,
+      original,
+      proposed,
+      diffNotes
+    });
+  };
+
+  const handleRegenerateAct = (actKey: keyof ReelActs) => {
+    let title = '';
+    const original = editActs[actKey];
+    let proposed = '';
+    let diffNotes = '';
+
+    if (actKey === 'act1_hook') {
+      title = 'Act 1: Pattern Interrupt Hook';
+      proposed = `Wait—before you post another Reel, watch this 10-second audit fix.`;
+      diffNotes = 'Generated alternative pattern interrupt hook with immediate command.';
+    } else if (actKey === 'act2_agitation') {
+      title = 'Act 2: Conflict & Agitation';
+      proposed = `The trap is thinking more volume equals more followers. The reality? Unfocused content trains the algorithm to ignore you.`;
+      diffNotes = 'Generated myth-busting agitation framing.';
+    } else if (actKey === 'act3_solution') {
+      title = 'Act 3: Tactical Solution';
+      proposed = `Step 1: Benchmark top 10% competitors.\nStep 2: Fill content pillar gaps.\nStep 3: Test hooks in the first 3 seconds with pattern breaks.`;
+      diffNotes = 'Generated alternative step-by-step framework.';
+    } else if (actKey === 'act4_cta') {
+      title = 'Act 4: High-Conversion CTA';
+      proposed = `Save this Reel so you don't lose the blueprint, and share it with your team.`;
+      diffNotes = 'Generated high-save CTA for algorithm bookmark velocity.';
+    }
+
+    setActDiffModal({
+      targetAct: actKey,
+      title,
+      original,
+      proposed,
+      diffNotes
+    });
+  };
+
+  const handleRegenerateEntireScript = () => {
+    const proposedActs: ReelActs = {
+      act1_hook: `Stop scrolling: What top creators never tell you about Reel retention.`,
+      act2_agitation: `Most accounts lose 60% of viewers by second 4 because they bury the value under long intros and generic advice.`,
+      act3_solution: `Here is the 3-step retention protocol:\n1. Interrupt scroll in 0-3s.\n2. State the exact deficit in 3-15s.\n3. Deliver 3 rapid-fire actionable takeaways in 15-45s.`,
+      act4_cta: `Comment 'PROTOCOL' below and I will DM you the template immediately.`
+    };
+    setActDiffModal({
+      targetAct: 'all',
+      title: 'Regenerate Entire 4-Act Script',
+      original: `[Act 1: Hook]\n${editActs.act1_hook}\n\n[Act 2: Agitation]\n${editActs.act2_agitation}\n\n[Act 3: Solution]\n${editActs.act3_solution}\n\n[Act 4: CTA]\n${editActs.act4_cta}`,
+      proposed: `[Act 1: Hook]\n${proposedActs.act1_hook}\n\n[Act 2: Agitation]\n${proposedActs.act2_agitation}\n\n[Act 3: Solution]\n${proposedActs.act3_solution}\n\n[Act 4: CTA]\n${proposedActs.act4_cta}`,
+      proposedActs,
+      diffNotes: 'Complete end-to-end rewrite optimized for >90% viral retention score.'
+    });
+  };
+
+  const handleAcceptActDiff = async () => {
+    if (!actDiffModal || !activeScript) return;
+    if (actDiffModal.targetAct === 'all' && actDiffModal.proposedActs) {
+      const newActs = actDiffModal.proposedActs;
+      setEditActs(newActs);
+      setEditHook(newActs.act1_hook);
+      setEditBody(`${newActs.act2_agitation}\n\n${newActs.act3_solution}`);
+      setEditCta(newActs.act4_cta);
+      const newFull = `[ACT 1: HOOK (0-3s)]\n${newActs.act1_hook}\n\n[ACT 2: AGITATION (3-15s)]\n${newActs.act2_agitation}\n\n[ACT 3: SOLUTION (15-45s)]\n${newActs.act3_solution}\n\n[ACT 4: CTA (45-60s)]\n${newActs.act4_cta}`;
+      setFullScriptText(newFull);
+      const score = calculateRetentionScore(newActs);
+      await onSaveScript(activeScript.id, {
+        acts: newActs,
+        hook: newActs.act1_hook,
+        callToAction: newActs.act4_cta,
+        caption: `${newActs.act2_agitation}\n\n${newActs.act3_solution}`,
+        fullTextScript: newFull,
+        score: score.score,
+        scoreBreakdown: score.breakdown as any,
+        scoreSuggestions: score.suggestions
+      });
+    } else if (actDiffModal.targetAct !== 'all') {
+      const actKey = actDiffModal.targetAct as keyof ReelActs;
+      const updatedActs = { ...editActs, [actKey]: actDiffModal.proposed };
+      setEditActs(updatedActs);
+      if (actKey === 'act1_hook') setEditHook(actDiffModal.proposed);
+      if (actKey === 'act4_cta') setEditCta(actDiffModal.proposed);
+      if (actKey === 'act2_agitation' || actKey === 'act3_solution') {
+        setEditBody(`${updatedActs.act2_agitation}\n\n${updatedActs.act3_solution}`);
+      }
+      const newFull = `[ACT 1: HOOK (0-3s)]\n${updatedActs.act1_hook}\n\n[ACT 2: AGITATION (3-15s)]\n${updatedActs.act2_agitation}\n\n[ACT 3: SOLUTION (15-45s)]\n${updatedActs.act3_solution}\n\n[ACT 4: CTA (45-60s)]\n${updatedActs.act4_cta}`;
+      setFullScriptText(newFull);
+      const score = calculateRetentionScore(updatedActs);
+      await onSaveScript(activeScript.id, {
+        acts: updatedActs,
+        hook: updatedActs.act1_hook,
+        callToAction: updatedActs.act4_cta,
+        caption: `${updatedActs.act2_agitation}\n\n${updatedActs.act3_solution}`,
+        fullTextScript: newFull,
+        score: score.score,
+        scoreBreakdown: score.breakdown as any,
+        scoreSuggestions: score.suggestions
+      });
+    }
+    setActDiffModal(null);
+  };
+
   // Save changes to current script
   const handleSave = async () => {
     if (!activeScript) return;
     setIsSaving(true);
     try {
+      const score = calculateRetentionScore(editActs);
       await onSaveScript(activeScript.id, {
         title: editTitle,
-        hook: editHook,
-        caption: editBody,
-        callToAction: editCta,
+        hook: editActs.act1_hook,
+        caption: `${editActs.act2_agitation}\n\n${editActs.act3_solution}`,
+        callToAction: editActs.act4_cta,
+        acts: editActs,
+        fullTextScript: fullScriptText,
         scenes: editScenes,
-        timeline: editScenes
+        timeline: editScenes,
+        score: score.score,
+        scoreBreakdown: score.breakdown as any,
+        scoreSuggestions: score.suggestions
       });
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2000);
@@ -794,6 +1037,7 @@ export const InstagramScriptsView: React.FC<InstagramScriptsViewProps> = ({
               }`}>
                 <div className="flex items-center gap-2 flex-wrap">
                   <button
+                    id="btn-save-script-changes"
                     type="button"
                     onClick={handleSave}
                     disabled={isSaving}
@@ -1029,8 +1273,10 @@ export const InstagramScriptsView: React.FC<InstagramScriptsViewProps> = ({
                   </span>
                   <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold text-xs">
                     <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                    <span id="retention-score-badge">92 / 100</span>
-                    <span className="text-[10px] text-emerald-500/80 font-normal">(Optimal)</span>
+                    <span id="retention-score-badge">{calculatedRetention.score} / 100</span>
+                    <span className="text-[10px] text-emerald-500/80 font-normal">
+                      {calculatedRetention.score >= 90 ? '(Optimal)' : calculatedRetention.score >= 80 ? '(Good)' : '(Needs Polish)'}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -1167,70 +1413,318 @@ export const InstagramScriptsView: React.FC<InstagramScriptsViewProps> = ({
 
             {/* Writing Area */}
             {editorStyle === 'freeform' ? (
-              /* Freeform Text Mode */
               <div className="space-y-4">
-                {/* Hook */}
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
-                      1. The Hook (0-3 Seconds)
-                    </label>
-                    <span className={`text-[11px] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Critical for 3s drop-off defense</span>
+                {/* 4 Acts vs Full Script Mode Toggle */}
+                <div className={`p-2.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 ${
+                  isDark ? 'bg-[#181820] border-gray-800' : 'bg-orange-50/40 border-orange-200'
+                }`}>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <button
+                      id="btn-mode-4acts"
+                      type="button"
+                      onClick={() => setIsEditingFullScript(false)}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        !isEditingFullScript
+                          ? 'bg-orange-600 text-white shadow-xs'
+                          : isDark ? 'text-zinc-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      4 Acts (Independent Breakdown)
+                    </button>
+                    <button
+                      id="btn-mode-fullscript"
+                      type="button"
+                      onClick={() => setIsEditingFullScript(true)}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        isEditingFullScript
+                          ? 'bg-orange-600 text-white shadow-xs'
+                          : isDark ? 'text-zinc-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      Full Script (Manual Text)
+                    </button>
                   </div>
-                  <input
-                    type="text"
-                    value={editHook}
-                    onChange={(e) => setEditHook(e.target.value)}
-                    className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold focus:outline-none focus:border-orange-500 transition-colors ${
-                      isDark
-                        ? 'bg-[#121217] border-gray-700 text-white placeholder-gray-500'
-                        : 'bg-orange-50/20 border-gray-300 text-gray-900 placeholder-gray-400'
-                    }`}
-                    placeholder="Punchy statement, negative frame, or question..."
-                  />
+
+                  {!isEditingFullScript && (
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {(['all', 'act1', 'act2', 'act3', 'act4'] as const).map((tab) => (
+                        <button
+                          key={tab}
+                          id={`tab-act-${tab}`}
+                          type="button"
+                          onClick={() => setActiveActTab(tab)}
+                          className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold transition-colors cursor-pointer ${
+                            activeActTab === tab
+                              ? 'bg-orange-500/20 text-orange-400 border border-orange-500/40 font-bold'
+                              : isDark ? 'text-zinc-400 hover:text-zinc-200' : 'text-slate-600 hover:text-slate-900'
+                          }`}
+                        >
+                          {tab === 'all' ? 'All 4 Acts' : tab === 'act1' ? 'Act 1' : tab === 'act2' ? 'Act 2' : tab === 'act3' ? 'Act 3' : 'Act 4'}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {/* Body / Script */}
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
-                      2. Script Body & Narration
-                    </label>
-                    <span className={`text-[11px] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Fast value delivery, bullet points, proof</span>
+                {isEditingFullScript ? (
+                  /* Full Script Manual Editor */
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                        Full Script Text (All Acts Compiled)
+                      </label>
+                      <span className={`text-[11px] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {fullScriptText.split(/\s+/).filter(Boolean).length} words · ~{Math.round(fullScriptText.split(/\s+/).filter(Boolean).length / 2.5)}s estimated
+                      </span>
+                    </div>
+                    <textarea
+                      id="full-script-textarea"
+                      rows={14}
+                      value={fullScriptText}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFullScriptText(val);
+                        setEditBody(val);
+                      }}
+                      className={`w-full p-4 rounded-xl border text-xs leading-relaxed font-mono focus:outline-none focus:border-orange-500 transition-colors ${
+                        isDark ? 'bg-[#121217] border-gray-700 text-gray-100 placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                      placeholder="Write or edit the complete script..."
+                    />
                   </div>
-                  <textarea
-                    rows={8}
-                    value={editBody}
-                    onChange={(e) => setEditBody(e.target.value)}
-                    className={`w-full px-3.5 py-3 rounded-xl border text-xs leading-relaxed focus:outline-none focus:border-orange-500 transition-colors ${
-                      isDark
-                        ? 'bg-[#121217] border-gray-700 text-gray-100 placeholder-gray-500'
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    }`}
-                    placeholder="Write the full script text here..."
-                  />
-                </div>
+                ) : (
+                  /* 4 Acts Independent Editors */
+                  <div className="space-y-4">
+                    {/* ACT 1: Hook */}
+                    {(activeActTab === 'all' || activeActTab === 'act1') && (
+                      <div className={`p-4 rounded-xl border space-y-2 transition-all ${
+                        isDark ? 'bg-[#161622] border-orange-900/40' : 'bg-white border-orange-200 shadow-xs'
+                      }`}>
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                              Act 1: Hook (0–3s)
+                            </span>
+                            <span className={`text-xs font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Pattern Interrupt</span>
+                            <span className="text-[10px] font-mono text-zinc-500">
+                              {editActs.act1_hook.trim().split(/\s+/).filter(Boolean).length} words
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              id="btn-ai-improve-act1"
+                              type="button"
+                              onClick={() => handleAiImproveAct('act1_hook')}
+                              className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-orange-600 hover:bg-orange-500 text-white flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+                            >
+                              <Sparkles className="w-3 h-3" />
+                              <span>AI Improve</span>
+                            </button>
+                            <button
+                              id="btn-regenerate-act1"
+                              type="button"
+                              onClick={() => handleRegenerateAct('act1_hook')}
+                              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border flex items-center gap-1 cursor-pointer transition-colors ${
+                                isDark ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300' : 'border-slate-300 hover:bg-slate-100 text-slate-700'
+                              }`}
+                            >
+                              <RefreshCw className="w-3 h-3" />
+                              <span>Regenerate</span>
+                            </button>
+                          </div>
+                        </div>
+                        <input
+                          id="act-input-1"
+                          type="text"
+                          value={editActs.act1_hook}
+                          onChange={(e) => handleUpdateAct('act1_hook', e.target.value)}
+                          className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold focus:outline-none focus:border-orange-500 transition-colors ${
+                            isDark
+                              ? 'bg-[#121217] border-gray-700 text-white placeholder-gray-500'
+                              : 'bg-orange-50/20 border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
+                          placeholder="Pattern interrupt statement, tension hook, or bold question..."
+                        />
+                      </div>
+                    )}
 
-                {/* Call to Action */}
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
-                      3. Call to Action (CTA)
-                    </label>
-                    <span className={`text-[11px] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Single clear prompt (Comment, Save, Share)</span>
+                    {/* ACT 2: Agitation */}
+                    {(activeActTab === 'all' || activeActTab === 'act2') && (
+                      <div className={`p-4 rounded-xl border space-y-2 transition-all ${
+                        isDark ? 'bg-[#161622] border-amber-900/40' : 'bg-white border-amber-200 shadow-xs'
+                      }`}>
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                              Act 2: Agitation (3–15s)
+                            </span>
+                            <span className={`text-xs font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Conflict & Industry Myth</span>
+                            <span className="text-[10px] font-mono text-zinc-500">
+                              {editActs.act2_agitation.trim().split(/\s+/).filter(Boolean).length} words
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              id="btn-ai-improve-act2"
+                              type="button"
+                              onClick={() => handleAiImproveAct('act2_agitation')}
+                              className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-orange-600 hover:bg-orange-500 text-white flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+                            >
+                              <Sparkles className="w-3 h-3" />
+                              <span>AI Improve</span>
+                            </button>
+                            <button
+                              id="btn-regenerate-act2"
+                              type="button"
+                              onClick={() => handleRegenerateAct('act2_agitation')}
+                              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border flex items-center gap-1 cursor-pointer transition-colors ${
+                                isDark ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300' : 'border-slate-300 hover:bg-slate-100 text-slate-700'
+                              }`}
+                            >
+                              <RefreshCw className="w-3 h-3" />
+                              <span>Regenerate</span>
+                            </button>
+                          </div>
+                        </div>
+                        <textarea
+                          id="act-input-2"
+                          rows={3}
+                          value={editActs.act2_agitation}
+                          onChange={(e) => handleUpdateAct('act2_agitation', e.target.value)}
+                          className={`w-full px-3.5 py-2.5 rounded-xl border text-xs leading-relaxed focus:outline-none focus:border-orange-500 transition-colors ${
+                            isDark
+                              ? 'bg-[#121217] border-gray-700 text-gray-100 placeholder-gray-500'
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
+                          placeholder="Agitate audience pain points, common misconceptions, and stakes..."
+                        />
+                      </div>
+                    )}
+
+                    {/* ACT 3: Solution */}
+                    {(activeActTab === 'all' || activeActTab === 'act3') && (
+                      <div className={`p-4 rounded-xl border space-y-2 transition-all ${
+                        isDark ? 'bg-[#161622] border-blue-900/40' : 'bg-white border-blue-200 shadow-xs'
+                      }`}>
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                              Act 3: Solution (15–45s)
+                            </span>
+                            <span className={`text-xs font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Tactical 3-Step Blueprint</span>
+                            <span className="text-[10px] font-mono text-zinc-500">
+                              {editActs.act3_solution.trim().split(/\s+/).filter(Boolean).length} words
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              id="btn-ai-improve-act3"
+                              type="button"
+                              onClick={() => handleAiImproveAct('act3_solution')}
+                              className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-orange-600 hover:bg-orange-500 text-white flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+                            >
+                              <Sparkles className="w-3 h-3" />
+                              <span>AI Improve</span>
+                            </button>
+                            <button
+                              id="btn-regenerate-act3"
+                              type="button"
+                              onClick={() => handleRegenerateAct('act3_solution')}
+                              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border flex items-center gap-1 cursor-pointer transition-colors ${
+                                isDark ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300' : 'border-slate-300 hover:bg-slate-100 text-slate-700'
+                              }`}
+                            >
+                              <RefreshCw className="w-3 h-3" />
+                              <span>Regenerate</span>
+                            </button>
+                          </div>
+                        </div>
+                        <textarea
+                          id="act-input-3"
+                          rows={4}
+                          value={editActs.act3_solution}
+                          onChange={(e) => handleUpdateAct('act3_solution', e.target.value)}
+                          className={`w-full px-3.5 py-2.5 rounded-xl border text-xs leading-relaxed focus:outline-none focus:border-orange-500 transition-colors ${
+                            isDark
+                              ? 'bg-[#121217] border-gray-700 text-gray-100 placeholder-gray-500'
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
+                          placeholder="Deliver concrete steps, proof points, and tactical guidance..."
+                        />
+                      </div>
+                    )}
+
+                    {/* ACT 4: Call to Action */}
+                    {(activeActTab === 'all' || activeActTab === 'act4') && (
+                      <div className={`p-4 rounded-xl border space-y-2 transition-all ${
+                        isDark ? 'bg-[#161622] border-emerald-900/40' : 'bg-white border-emerald-200 shadow-xs'
+                      }`}>
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                              Act 4: CTA (45–60s)
+                            </span>
+                            <span className={`text-xs font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>High-Conversion Trigger</span>
+                            <span className="text-[10px] font-mono text-zinc-500">
+                              {editActs.act4_cta.trim().split(/\s+/).filter(Boolean).length} words
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              id="btn-ai-improve-act4"
+                              type="button"
+                              onClick={() => handleAiImproveAct('act4_cta')}
+                              className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-orange-600 hover:bg-orange-500 text-white flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+                            >
+                              <Sparkles className="w-3 h-3" />
+                              <span>AI Improve</span>
+                            </button>
+                            <button
+                              id="btn-regenerate-act4"
+                              type="button"
+                              onClick={() => handleRegenerateAct('act4_cta')}
+                              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border flex items-center gap-1 cursor-pointer transition-colors ${
+                                isDark ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300' : 'border-slate-300 hover:bg-slate-100 text-slate-700'
+                              }`}
+                            >
+                              <RefreshCw className="w-3 h-3" />
+                              <span>Regenerate</span>
+                            </button>
+                          </div>
+                        </div>
+                        <input
+                          id="act-input-4"
+                          type="text"
+                          value={editActs.act4_cta}
+                          onChange={(e) => handleUpdateAct('act4_cta', e.target.value)}
+                          className={`w-full px-3.5 py-2.5 rounded-xl border text-xs focus:outline-none focus:border-orange-500 transition-colors ${
+                            isDark
+                              ? 'bg-[#121217] border-gray-700 text-white placeholder-gray-500'
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
+                          placeholder="Comment 'KEYWORD', Save this Reel, or DM for the guide..."
+                        />
+                      </div>
+                    )}
+
+                    {/* Regenerate Entire Script CTA */}
+                    <div className="pt-2 flex items-center justify-end">
+                      <button
+                        id="btn-regenerate-entire-script"
+                        type="button"
+                        onClick={handleRegenerateEntireScript}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold border flex items-center gap-2 cursor-pointer transition-all shadow-xs ${
+                          isDark
+                            ? 'bg-[#1f1f2e] border-orange-500/40 text-orange-400 hover:bg-[#252538]'
+                            : 'bg-white border-orange-300 text-orange-600 hover:bg-orange-50'
+                        }`}
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        <span>Regenerate Entire 4-Act Script</span>
+                      </button>
+                    </div>
                   </div>
-                  <input
-                    type="text"
-                    value={editCta}
-                    onChange={(e) => setEditCta(e.target.value)}
-                    className={`w-full px-3.5 py-2 rounded-xl border text-xs focus:outline-none focus:border-orange-500 transition-colors ${
-                      isDark
-                        ? 'bg-[#121217] border-gray-700 text-white placeholder-gray-500'
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    }`}
-                    placeholder="e.g. Comment 'CALC' and I will DM you the free debt snowball template..."
-                  />
-                </div>
+                )}
               </div>
             ) : (
               /* Scene-by-Scene Mode */
@@ -1931,6 +2425,70 @@ export const InstagramScriptsView: React.FC<InstagramScriptsViewProps> = ({
                   <span>{isBulkProcessing ? 'Dispatching Batch...' : `Send ${selectedScriptIds.length} Scripts via SMTP`}</span>
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Interactive AI Diff Modal (Section 24: Accept / Discard) */}
+      {actDiffModal && (
+        <div id="act-diff-modal" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className={`w-full max-w-xl rounded-2xl border shadow-2xl p-6 space-y-4 ${
+            isDark ? 'bg-[#171722] border-[#2e2e42] text-white' : 'bg-white border-slate-200 text-slate-900'
+          }`}>
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-orange-500" />
+                <h3 className="font-bold text-sm">{actDiffModal.title}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActDiffModal(null)}
+                className="text-zinc-400 hover:text-white cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="p-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50 space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Current (Original):</span>
+                <p className="line-through text-zinc-400 font-mono text-[11px] whitespace-pre-wrap">{actDiffModal.original}</p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Proposed (AI Improvement):</span>
+                <p className="font-semibold text-emerald-400 font-mono text-[11px] whitespace-pre-wrap">{actDiffModal.proposed}</p>
+              </div>
+
+              {actDiffModal.diffNotes && (
+                <div className="p-2.5 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                  <span>{actDiffModal.diffNotes}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-zinc-800">
+              <button
+                id="btn-diff-discard"
+                type="button"
+                onClick={() => setActDiffModal(null)}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer border transition-colors ${
+                  isDark ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300' : 'border-slate-300 hover:bg-slate-100 text-slate-700'
+                }`}
+              >
+                Cancel / Discard
+              </button>
+              <button
+                id="btn-diff-accept"
+                type="button"
+                onClick={handleAcceptActDiff}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5 cursor-pointer transition-all"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>Accept Changes</span>
+              </button>
             </div>
           </div>
         </div>

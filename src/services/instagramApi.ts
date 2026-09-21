@@ -8,6 +8,8 @@ import {
   PipelineStage,
   ScriptItem,
   CalendarPost,
+  PublicationSnapshot,
+  PublishJobRecord,
   AIConfiguration,
   AISkillRecord,
   LearningProposal,
@@ -97,8 +99,26 @@ export const instagramApi = {
     return await safeFetchJson<{ success: boolean; appId: string; redirectUri: string; oauthUrl: string; hasAppId: boolean }>(`${BASE_URL}/oauth/url`);
   },
 
-  async exchangeOAuthCode(code: string): Promise<{ success: boolean; accessToken?: string; detectedAccounts?: any[]; error?: string; requiresConfig?: boolean }> {
-    return await safeFetchJson<{ success: boolean; accessToken?: string; detectedAccounts?: any[]; error?: string; requiresConfig?: boolean }>(`${BASE_URL}/oauth/exchange`, {
+  async exchangeOAuthCode(code: string): Promise<{
+    success: boolean;
+    accessToken?: string;
+    hasCredentials?: boolean;
+    detectedAccounts?: any[];
+    connectedAccounts?: any[];
+    account?: any;
+    error?: string;
+    requiresConfig?: boolean;
+  }> {
+    return await safeFetchJson<{
+      success: boolean;
+      accessToken?: string;
+      hasCredentials?: boolean;
+      detectedAccounts?: any[];
+      connectedAccounts?: any[];
+      account?: any;
+      error?: string;
+      requiresConfig?: boolean;
+    }>(`${BASE_URL}/oauth/exchange`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code })
@@ -408,6 +428,9 @@ export const instagramApi = {
     accountId?: string;
     pillar?: string;
     pipelineItemId?: string;
+    publicationSnapshotId?: string;
+    snapshot?: PublicationSnapshot;
+    timezone?: string;
   }): Promise<CalendarPost> {
     const res = await safeFetchJson<{ post: CalendarPost }>(`${BASE_URL}/calendar`, {
       method: 'POST',
@@ -415,6 +438,27 @@ export const instagramApi = {
       body: JSON.stringify(data)
     });
     return res.post;
+  },
+
+  // Publication Snapshots (Phase 5A)
+  async getPublicationSnapshots(accountId?: string): Promise<PublicationSnapshot[]> {
+    const url = accountId ? `${BASE_URL}/publication-snapshots?accountId=${accountId}` : `${BASE_URL}/publication-snapshots`;
+    const data = await safeFetchJson<{ snapshots: PublicationSnapshot[] }>(url);
+    return data.snapshots || [];
+  },
+
+  async getPublicationSnapshotById(id: string): Promise<PublicationSnapshot | null> {
+    const data = await safeFetchJson<{ snapshot: PublicationSnapshot }>(`${BASE_URL}/publication-snapshots/${id}`);
+    return data.snapshot || null;
+  },
+
+  async createPublicationSnapshot(snapshot: PublicationSnapshot): Promise<PublicationSnapshot> {
+    const data = await safeFetchJson<{ snapshot: PublicationSnapshot }>(`${BASE_URL}/publication-snapshots`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(snapshot)
+    });
+    return data.snapshot;
   },
 
   // AI Config
@@ -786,5 +830,44 @@ export const instagramApi = {
 
   async saveScript(script: ScriptItem): Promise<ScriptItem> {
     return this.updateScript(script.id, script);
+  },
+
+  // Publishing Engine & Queue (Phase 5C)
+  async getPublishJobs(accountId?: string): Promise<PublishJobRecord[]> {
+    const url = accountId ? `${BASE_URL}/publishing/jobs?accountId=${accountId}` : `${BASE_URL}/publishing/jobs`;
+    const data = await safeFetchJson<{ jobs: PublishJobRecord[] }>(url);
+    return data.jobs || [];
+  },
+
+  async getPublishJobById(id: string): Promise<PublishJobRecord> {
+    const data = await safeFetchJson<{ job: PublishJobRecord }>(`${BASE_URL}/publishing/jobs/${id}`);
+    return data.job;
+  },
+
+  async publishNowJob(id: string): Promise<PublishJobRecord> {
+    const data = await safeFetchJson<{ job: PublishJobRecord }>(`${BASE_URL}/publishing/jobs/${id}/publish-now`, {
+      method: 'POST'
+    });
+    return data.job;
+  },
+
+  async cancelPublishJob(id: string): Promise<PublishJobRecord> {
+    const data = await safeFetchJson<{ job: PublishJobRecord }>(`${BASE_URL}/publishing/jobs/${id}/cancel`, {
+      method: 'POST'
+    });
+    return data.job;
+  },
+
+  async retryPublishJob(id: string): Promise<PublishJobRecord> {
+    const data = await safeFetchJson<{ job: PublishJobRecord }>(`${BASE_URL}/publishing/jobs/${id}/retry`, {
+      method: 'POST'
+    });
+    return data.job;
+  },
+
+  async getPublishingRateLimit(accountId?: string): Promise<{ quotaTotal: number; quotaUsage: number }> {
+    const url = accountId ? `${BASE_URL}/publishing/rate-limit?accountId=${accountId}` : `${BASE_URL}/publishing/rate-limit`;
+    const data = await safeFetchJson<{ limit: { quotaTotal: number; quotaUsage: number } }>(url);
+    return data.limit;
   }
 };

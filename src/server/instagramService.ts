@@ -9,6 +9,8 @@ import {
   PipelineStage,
   ScriptItem,
   CalendarPost,
+  PublicationSnapshot,
+  PublishJobRecord,
   AIConfiguration,
   AISkillRecord,
   LearningProposal,
@@ -24,6 +26,7 @@ import {
   TeamsIntegrationConfig
 } from '../types/instagram';
 import { InstagramAiOrchestrator } from './instagramAiOrchestrator';
+import { InstagramPublishingEngine } from './instagramPublishingEngine';
 
 export const DEFAULT_TEAMS_CONFIG: TeamsIntegrationConfig = {
   webhookUrl: '',
@@ -1063,53 +1066,21 @@ Tag a friend who is paying an EMI right now. Bookmark this 📌 for your next lo
       {
         slideNumber: 3,
         slideType: 'content',
-        visualLayout: 'Checkmark box: Keep zero balance, put one auto-debit utility bill.',
-        headline: 'The Fix: The "Drawer Strategy"',
-        bodyText: 'Keep the card open with zero balance. Put a ₹199 streaming subscription on auto-pay to keep it active without spending.',
-        swipeTrigger: '👉 Slide 4: The 30% utilization trap'
+        visualLayout: 'Battery bar meter showing 30% vs 70% threshold.',
+        headline: 'Mistake 2: Maxing Out Even If You Pay in Full',
+        bodyText: 'Bureaus take snapshots of your balance before your due date. Spending over 30% of your limit flags you as credit-hungry.',
+        swipeTrigger: '👉 Slide 4: Multiple loan portals'
       },
       {
         slideNumber: 4,
         slideType: 'content',
-        visualLayout: 'Battery bar meter showing 30% vs 70% threshold.',
-        headline: 'Mistake 2: Maxing Out Even If You Pay in Full',
-        bodyText: 'Bureaus take snapshots of your balance before your due date. Spending over 30% of your limit flags you as credit-hungry.',
-        swipeTrigger: '👉 Slide 5 explains the mid-cycle repayment'
-      },
-      {
-        slideNumber: 5,
-        slideType: 'content',
-        visualLayout: 'Calendar showing statement date vs payment date.',
-        headline: 'The Fix: Mid-Cycle Payments',
-        bodyText: 'Pay 50% of your bill 3 days BEFORE the statement generation date. Your reported utilization drops to under 15%.',
-        swipeTrigger: '👉 Slide 6: Hard inquiries'
-      },
-      {
-        slideNumber: 6,
-        slideType: 'content',
         visualLayout: 'Warning sign on multi-app loan portals.',
         headline: 'Mistake 3: Shopping on Multiple Loan Portals at Once',
         bodyText: 'Applying to 4 banks in 48 hours generates 4 hard inquiries. Each hard inquiry can ding your score by 5 to 10 points.',
-        swipeTrigger: '👉 Slide 7: The single soft-check approach'
+        swipeTrigger: '👉 Final slide for next steps'
       },
       {
-        slideNumber: 7,
-        slideType: 'content',
-        visualLayout: 'Single verified dashboard verification badge.',
-        headline: 'Mistake 4: Ignoring Credit Report Errors',
-        bodyText: '1 in 5 reports have incorrect loan closures or typo clerical errors. Always check your CIBIL statement quarterly.',
-        swipeTrigger: '👉 Slide 8: The quick recovery checklist'
-      },
-      {
-        slideNumber: 8,
-        slideType: 'summary',
-        visualLayout: 'Summary cheat-sheet box with 4 bullet summaries.',
-        headline: 'The 4 Golden Rules Summary',
-        bodyText: '1. Keep oldest card open\n2. Keep utilization under 30%\n3. Pay mid-cycle\n4. Dispute erroneous reporting immediately.',
-        swipeTrigger: '👉 Slide 9 for actionable next steps'
-      },
-      {
-        slideNumber: 9,
+        slideNumber: 5,
         slideType: 'cta',
         visualLayout: 'High-contrast bookmark badge with glowing neon outline.',
         headline: 'Never Get Rejected for a Loan',
@@ -1333,6 +1304,7 @@ export class InstagramService {
   private pipeline: ContentPipelineItem[] = [...DEFAULT_PIPELINE];
   private scripts: ScriptItem[] = [...DEFAULT_SCRIPTS];
   private calendar: CalendarPost[] = [...DEFAULT_CALENDAR];
+  private publicationSnapshots: PublicationSnapshot[] = [];
   private aiConfig: AIConfiguration = { ...DEFAULT_AI_CONFIG };
   private skills: AISkillRecord[] = [...DEFAULT_SKILLS];
   private learningProposals: LearningProposal[] = [...DEFAULT_LEARNING_PROPOSALS];
@@ -1342,11 +1314,13 @@ export class InstagramService {
   private teamsConfig: TeamsIntegrationConfig = { ...DEFAULT_TEAMS_CONFIG };
   private generations: GenerationRecord[] = [];
   private orchestrator: InstagramAiOrchestrator;
+  private publishingEngine: InstagramPublishingEngine;
   private vaultSecretResolver: (provider: string) => string | undefined;
 
   constructor(vaultSecretResolver: (provider: string) => string | undefined) {
     this.vaultSecretResolver = vaultSecretResolver;
     this.orchestrator = new InstagramAiOrchestrator(this.aiConfig, vaultSecretResolver);
+    this.publishingEngine = new InstagramPublishingEngine();
   }
 
   // Load state from DB parsed object
@@ -1368,6 +1342,9 @@ export class InstagramService {
     }
     if (db.instagramCalendar && Array.isArray(db.instagramCalendar) && db.instagramCalendar.length > 0) {
       this.calendar = db.instagramCalendar;
+    }
+    if (db.instagramPublicationSnapshots && Array.isArray(db.instagramPublicationSnapshots)) {
+      this.publicationSnapshots = db.instagramPublicationSnapshots;
     }
     if (db.instagramAIConfig) {
       this.aiConfig = { ...DEFAULT_AI_CONFIG, ...db.instagramAIConfig };
@@ -1398,16 +1375,65 @@ export class InstagramService {
     if (db.teamsConfig) {
       this.teamsConfig = { ...DEFAULT_TEAMS_CONFIG, ...db.teamsConfig };
     }
+    if (db.instagramPublishJobs && Array.isArray(db.instagramPublishJobs)) {
+      this.publishingEngine.setJobs(db.instagramPublishJobs);
+    }
+
+    // Auto-create PublishJobRecord for any scheduled posts that have snapshots but no job
+    for (const post of this.calendar) {
+      if (post.snapshot && !this.publishingEngine.getJobBySnapshotId(post.snapshot.id)) {
+        this.publishingEngine.createJob(post.snapshot, post);
+      }
+    }
+
+    // Connect resolvers to publishing engine for queue drain & recovery
+    this.publishingEngine.setResolvers(
+      (id) => this.getPublicationSnapshotById(id),
+      (id) => this.getAccountWithCredentials(id) || null,
+      (calendarPostId, permalink, mediaId) => {
+        const post = this.calendar.find(c => c.id === calendarPostId);
+        if (post) {
+          post.status = 'published';
+          post.instagramMediaId = mediaId;
+          post.publishedUrl = permalink;
+          post.publishedAt = new Date().toISOString();
+        }
+      }
+    );
+
+    // Run crash/restart recovery on pending or in-flight jobs
+    this.publishingEngine.recoverPendingJobs(
+      (id) => this.getPublicationSnapshotById(id),
+      (id) => this.getAccountWithCredentials(id) || null,
+      (calendarPostId, permalink, mediaId) => {
+        const post = this.calendar.find(c => c.id === calendarPostId);
+        if (post) {
+          post.status = 'published';
+          post.instagramMediaId = mediaId;
+          post.publishedUrl = permalink;
+          post.publishedAt = new Date().toISOString();
+        }
+      }
+    );
   }
 
-  // Serialize to DB object
+  public setPersistenceCallback(cb: () => void) {
+    (this.publishingEngine as any).onStateChangeCallback = cb;
+  }
+
+  // Serialize to DB object (stripping plaintext Meta access tokens for security)
   public serializeToDb(db: any) {
-    db.instagramAccounts = this.accounts;
+    db.instagramAccounts = this.accounts.map(a => {
+      const { metaAccessToken, ...rest } = a;
+      return rest;
+    });
     db.instagramAudits = this.audits;
     db.instagramTopics = this.topics;
     db.instagramPipeline = this.pipeline;
     db.instagramScripts = this.scripts;
     db.instagramCalendar = this.calendar;
+    db.instagramPublicationSnapshots = this.publicationSnapshots;
+    db.instagramPublishJobs = this.publishingEngine.getJobs();
     db.instagramAIConfig = this.aiConfig;
     db.instagramSkills = this.skills;
     db.instagramLearningProposals = this.learningProposals;
@@ -1428,6 +1454,18 @@ export class InstagramService {
   public getAccount(id: string, environment?: string): InstagramAccount | undefined {
     const list = this.getAccounts(environment);
     return list.find(a => a.id === id) || (list.length > 0 ? list[0] : undefined);
+  }
+
+  // Resolves account with decrypted credentials from Credential Vault
+  public getAccountWithCredentials(id: string): InstagramAccount | undefined {
+    const acc = this.getAccount(id);
+    if (!acc) return undefined;
+    const token =
+      acc.metaAccessToken ||
+      this.vaultSecretResolver(acc.id) ||
+      this.vaultSecretResolver(`meta-${acc.id}`) ||
+      this.vaultSecretResolver(`cred-meta-${acc.id}`);
+    return { ...acc, metaAccessToken: token };
   }
 
   public saveAccount(acc: InstagramAccount): InstagramAccount {
@@ -1477,6 +1515,13 @@ export class InstagramService {
   }
 
   public schedulePost(data: Partial<CalendarPost>): CalendarPost {
+    let snapshot = data.snapshot;
+    if (snapshot) {
+      snapshot = this.createPublicationSnapshot(snapshot);
+    } else if (data.publicationSnapshotId) {
+      snapshot = this.getPublicationSnapshotById(data.publicationSnapshotId) || undefined;
+    }
+
     const post: CalendarPost = {
       id: data.id || `cal-${Date.now()}`,
       accountId: data.accountId || this.accounts[0]?.id || 'ig-bajajfinance',
@@ -1487,9 +1532,17 @@ export class InstagramService {
       status: (data.status as any) || 'scheduled',
       pillar: data.pillar || 'Educational Financial Literacy',
       scriptId: data.scriptId,
-      pipelineItemId: data.pipelineItemId
+      pipelineItemId: data.pipelineItemId,
+      publicationSnapshotId: snapshot?.id || data.publicationSnapshotId,
+      snapshot: snapshot,
+      timezone: data.timezone || snapshot?.timezone || 'Asia/Kolkata'
     };
     this.calendar.unshift(post);
+
+    if (snapshot) {
+      this.publishingEngine.createJob(snapshot, post);
+    }
+
     return post;
   }
 
@@ -1500,6 +1553,104 @@ export class InstagramService {
       return this.calendar[idx];
     }
     return null;
+  }
+
+  public getPublicationSnapshots(accountId?: string): PublicationSnapshot[] {
+    if (!accountId) return this.publicationSnapshots;
+    return this.publicationSnapshots.filter(s => s.accountId === accountId);
+  }
+
+  public getPublicationSnapshotById(id: string): PublicationSnapshot | null {
+    return this.publicationSnapshots.find(s => s.id === id) || null;
+  }
+
+  public createPublicationSnapshot(snapshot: PublicationSnapshot): PublicationSnapshot {
+    const existingIdx = this.publicationSnapshots.findIndex(s => s.id === snapshot.id);
+    const frozen: PublicationSnapshot = JSON.parse(JSON.stringify(snapshot));
+    if (existingIdx >= 0) {
+      return this.publicationSnapshots[existingIdx];
+    }
+    this.publicationSnapshots.unshift(frozen);
+    return frozen;
+  }
+
+  // =============================================================================
+  // PUBLISHING ENGINE INTEGRATION METHODS
+  // =============================================================================
+
+  public getPublishJobs(accountId?: string): PublishJobRecord[] {
+    return this.publishingEngine.getJobs(accountId);
+  }
+
+  public getPublishJobById(id: string): PublishJobRecord | null {
+    return this.publishingEngine.getJobById(id);
+  }
+
+  public async publishNowJob(jobId: string): Promise<PublishJobRecord> {
+    const job = this.publishingEngine.getJobById(jobId);
+    if (!job) throw new Error(`Publish job ${jobId} not found`);
+
+    const snapshot = this.getPublicationSnapshotById(job.publicationSnapshotId);
+    if (!snapshot) throw new Error(`Publication snapshot ${job.publicationSnapshotId} not found`);
+
+    const account = this.getAccountWithCredentials(job.accountId);
+    if (!account) throw new Error(`Instagram account ${job.accountId} not found`);
+
+    return this.publishingEngine.publishNow(
+      jobId,
+      snapshot,
+      account,
+      (calendarPostId, permalink, mediaId) => {
+        const post = this.calendar.find(c => c.id === calendarPostId);
+        if (post) {
+          post.status = 'published';
+          post.instagramMediaId = mediaId;
+          post.publishedUrl = permalink;
+          post.publishedAt = new Date().toISOString();
+        }
+      }
+    );
+  }
+
+  public cancelPublishJob(jobId: string): PublishJobRecord {
+    const job = this.publishingEngine.cancelJob(jobId);
+    const post = this.calendar.find(c => c.id === job.calendarPostId);
+    if (post) {
+      post.status = 'cancelled';
+    }
+    return job;
+  }
+
+  public async retryPublishJob(jobId: string): Promise<PublishJobRecord> {
+    const job = this.publishingEngine.getJobById(jobId);
+    if (!job) throw new Error(`Publish job ${jobId} not found`);
+
+    const snapshot = this.getPublicationSnapshotById(job.publicationSnapshotId);
+    if (!snapshot) throw new Error(`Publication snapshot ${job.publicationSnapshotId} not found`);
+
+    const account = this.getAccountWithCredentials(job.accountId);
+    if (!account) throw new Error(`Instagram account ${job.accountId} not found`);
+
+    return this.publishingEngine.retryJob(
+      jobId,
+      snapshot,
+      account,
+      (calendarPostId, permalink, mediaId) => {
+        const post = this.calendar.find(c => c.id === calendarPostId);
+        if (post) {
+          post.status = 'published';
+          post.instagramMediaId = mediaId;
+          post.publishedUrl = permalink;
+          post.publishedAt = new Date().toISOString();
+        }
+      }
+    );
+  }
+
+  public async checkPublishingLimit(accountId: string) {
+    const account = this.getAccountWithCredentials(accountId);
+    if (!account) throw new Error(`Instagram account ${accountId} not found`);
+    return (this.publishingEngine as any).metaClient.checkPublishingLimit(account);
   }
 
   public getAiConfig(): AIConfiguration {

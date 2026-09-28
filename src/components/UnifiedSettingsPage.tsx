@@ -188,7 +188,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
         loginIdentifier: instagramConfig.metaPageId || cleanUser,
         displayName: instagramConfig.displayName || cleanUser.replace(/[-_.]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
         category: 'Finance & Enterprise',
-        bio: `Connected via Meta Graph API v20.0. Account ID: ${instagramConfig.metaPageId || 'unknown'}`,
+        bio: `Connected via Meta Graph API v20.0.${instagramConfig.metaPageId ? ` Account ID: ${instagramConfig.metaPageId}` : ''}`,
         followersCount: isDemoMode ? 1710000 : undefined,
         metaAccessToken: instagramConfig.metaAccessToken.trim(),
         metaPageId: instagramConfig.metaPageId.trim() || undefined,

@@ -56,20 +56,18 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
   const [isConnecting, setIsConnecting] = useState(false);
   const [oauthError, setOauthError] = useState<string | null>(null);
   const [oauthSuccess, setOauthSuccess] = useState(false);
+  const [appIdLoaded, setAppIdLoaded] = useState(false);
 
   // Fetch initial OAuth info from backend
   useEffect(() => {
     if (isOpen) {
+      setAppIdLoaded(false);
       instagramApi.getOAuthUrl().then(res => {
         if (res.redirectUri) setRedirectUri(res.redirectUri);
-        if (res.appId) {
-          setAppIdInput(res.appId);
-          setOauthError(null);
-        } else {
-          setOauthError('META_APP_ID is not configured on the server. Set META_APP_ID in .env and restart the server.');
-        }
+        if (res.appId) setAppIdInput(res.appId);
+        setAppIdLoaded(true);
       }).catch(() => {
-        setOauthError('Could not reach the backend to retrieve Meta App ID. Ensure the server is running.');
+        setAppIdLoaded(true);
       });
     }
   }, [isOpen]);
@@ -168,7 +166,11 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
 
     const effectiveAppId = appIdInput.trim();
     if (!effectiveAppId) {
-      setOauthError('Meta App ID is not available. Ensure META_APP_ID is set in .env and the server is running.');
+      setOauthError('Meta App ID is not configured. Ensure META_APP_ID is set in your server .env file and the backend is running. Restart the server if you just added it.');
+      return;
+    }
+    if (!/^\d+$/.test(effectiveAppId)) {
+      setOauthError('Meta App ID appears malformed (must be numeric). Check META_APP_ID in your .env file.');
       return;
     }
 
@@ -266,7 +268,7 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
         username: cleanUser,
         displayName: customDisplayName || cleanUser.replace(/[-_.]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
         category: 'Finance & Technology',
-        bio: `Connected via Meta Graph API v20.0. Account ID: ${metaPageId || 'unknown'}`,
+        bio: `Connected via Meta Graph API v20.0.${metaPageId ? ` Account ID: ${metaPageId}` : ''}`,
         metaAccessToken: metaAccessToken.trim(),
         metaPageId: metaPageId.trim() || undefined,
         isDemo: isDemoMode

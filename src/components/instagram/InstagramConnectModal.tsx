@@ -62,8 +62,15 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
     if (isOpen) {
       instagramApi.getOAuthUrl().then(res => {
         if (res.redirectUri) setRedirectUri(res.redirectUri);
-        if (res.appId) setAppIdInput(res.appId);
-      }).catch(() => {});
+        if (res.appId) {
+          setAppIdInput(res.appId);
+          setOauthError(null);
+        } else {
+          setOauthError('META_APP_ID is not configured on the server. Set META_APP_ID in .env and restart the server.');
+        }
+      }).catch(() => {
+        setOauthError('Could not reach the backend to retrieve Meta App ID. Ensure the server is running.');
+      });
     }
   }, [isOpen]);
 
@@ -158,9 +165,14 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
 
   const handleLaunchOAuthPopup = () => {
     setOauthError(null);
-    setIsConnecting(true);
 
-    const effectiveAppId = appIdInput.trim() || '178414009281740';
+    const effectiveAppId = appIdInput.trim();
+    if (!effectiveAppId) {
+      setOauthError('Meta App ID is not available. Ensure META_APP_ID is set in .env and the server is running.');
+      return;
+    }
+
+    setIsConnecting(true);
     const scope = 'instagram_basic,pages_show_list,instagram_manage_insights,pages_read_engagement,instagram_content_publish';
     const oauthUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${encodeURIComponent(effectiveAppId)}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}&response_type=code`;
 
@@ -254,7 +266,7 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
         username: cleanUser,
         displayName: customDisplayName || cleanUser.replace(/[-_.]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
         category: 'Finance & Technology',
-        bio: `Connected via Meta Graph API v20.0. Account ID: ${metaPageId || '178414009281740'}`,
+        bio: `Connected via Meta Graph API v20.0. Account ID: ${metaPageId || 'unknown'}`,
         metaAccessToken: metaAccessToken.trim(),
         metaPageId: metaPageId.trim() || undefined,
         isDemo: isDemoMode

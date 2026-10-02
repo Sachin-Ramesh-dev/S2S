@@ -1338,12 +1338,11 @@
       "id": "cred-meta-ig-snacc.mart-1789832445989",
       "name": "Meta Access Token (@snacc.mart)",
       "type": "api_key",
-      "maskedPreview": "EAAV...ckZD",
-      "cipherText": "mxjsg8NWq8u3mjd+pN7rKxAN3Qrh+nTLs4jeOyr4r98AmZAynOsuLPXdvw37RwKYvVHq2+8/1LQodeXVHPkn9C+qEFQ9KjUfWMTqVm5+nvPuN5IYhXmEPa1qpiHkjrPHPtLynQKFxG+uN9LFWAHTAK5oLqo2ZOc/fo8ux61Lkf7RgVHPId2q/IziCTngn6GmRucapK1uYwkNc7YFVYNltW7YHoxLxXiqpknDP6ZEUoV8uZ6FyEM0a2NcvS30p5rMwyBf7TbkbI1YYlFiDJaAVehPVeTBA5lknZqpKzdk3GGhSnWjRMxr19LcTFqImYOtlR1uDya/8+MRVUWljriyVMmqA5GpEHwkPkdO2NNV8k6JCPi4Hc9FJimjSYe32Z0gibXadU+YicY9p/I3mmeddI0oKOrhjkzhbHmR5b34R9S4FMq6X5T2lQ==",
-      "iv": "c2Y3H6ck0GqMfzwN",
-      "authTag": "Nxcz7GG6mwFSV7XrBpcSRA==",
-      "createdAt": "2026-09-20T10:42:52.147Z",
-      "updatedAt": "2026-09-20T17:38:07.873Z"
+      "maskedPreview": "EAAV...ClHT",
+      "cipherText": "w+SIUR5vWszQTGV6p8Pr6w1xeMlku2xtDdUvZ4DCer1L6cE2zdc00Jwqph82DkdZPiMqKOTo0KSbO7M0wLeMuAdr568kLIPzDmPWcnO7uytO4qbZSGA8zrSxzrhuyYyhzNmTpYbq8ZSQVpPLUMG/6FDpmp5aBPk7/957BgVbR3jImtcElaGE2uAlu4n6H2UZQAmlJ2HqFP45pZ9OIq7A4TIfvubhj5FhSdC5oMtrftp4JheoaUv6WfbJlBosIvSqPXg=",
+      "iv": "di/6kCkbq7F/2mlU",
+      "authTag": "ygmBSvi3qvZBl7etchebNQ==",
+      "createdAt": "2026-09-30T16:33:57.163Z"
     }
   ],
   "securitySettings": {
@@ -1431,13 +1430,13 @@
       "mediaCount": 119,
       "engagementRate": 110.26,
       "averageReelViews": 27,
-      "category": "Finance & Technology",
+      "category": "Bakery",
       "niche": "High-Impact Digital Content",
       "avatarUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80",
-      "connectedAt": "2026-09-19T15:40:45.990Z",
-      "lastSyncAt": "2026-09-20T18:26:49.046Z",
+      "connectedAt": "2026-09-30T16:33:57.141Z",
+      "lastSyncAt": "2026-09-30T16:33:57.141Z",
       "connectionMethod": "meta_graph_api",
-      "manusSessionId": "manus-sess-okutrqj",
+      "manusSessionId": "manus-sess-xjbkze",
       "isVerified": true,
       "metaPageId": "page_91726444",
       "loginEmailOrUser": "17841474637676103",
@@ -12827,7 +12826,7 @@
     "lastTestStatus": null,
     "lastTestMessage": ""
   },
-  "environment": "demo",
+  "environment": "live",
   "instagramPublicationSnapshots": [
     {
       "id": "pub-snap-1789926087485-k8pjf",

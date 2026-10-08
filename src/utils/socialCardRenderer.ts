@@ -22,6 +22,7 @@ export interface RenderCardOptions {
   totalSlides?: number;
   swipeTrigger?: string;
   watermarkText?: string;
+  backgroundImageUrl?: string;
 }
 
 interface ThemeConfig {
@@ -184,12 +185,51 @@ export async function renderSocialCard(options: RenderCardOptions): Promise<{ da
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Failed to get 2d canvas context');
 
-  // 1. BACKGROUND GRADIENT
-  const bgGradient = ctx.createLinearGradient(0, 0, width, height);
-  bgGradient.addColorStop(0, theme.bgColor);
-  bgGradient.addColorStop(1, theme.bgGradientEnd || theme.bgColor);
-  ctx.fillStyle = bgGradient;
-  ctx.fillRect(0, 0, width, height);
+  // 1. BACKGROUND (Real Image or Gradient)
+  if (options.backgroundImageUrl && options.backgroundImageUrl.trim().length > 0) {
+    try {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error('Failed to load background image'));
+        img.src = options.backgroundImageUrl!;
+      });
+
+      // Cover canvas maintaining aspect ratio
+      const imgAspect = img.width / img.height;
+      const canvasAspect = width / height;
+      let drawW = width;
+      let drawH = height;
+      let drawX = 0;
+      let drawY = 0;
+      if (imgAspect > canvasAspect) {
+        drawW = height * imgAspect;
+        drawX = (width - drawW) / 2;
+      } else {
+        drawH = width / imgAspect;
+        drawY = (height - drawH) / 2;
+      }
+      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+
+      // Contrast scrim for readability
+      ctx.fillStyle = 'rgba(10, 12, 18, 0.65)';
+      ctx.fillRect(0, 0, width, height);
+    } catch {
+      // Fallback to gradient if loading fails
+      const bgGradient = ctx.createLinearGradient(0, 0, width, height);
+      bgGradient.addColorStop(0, theme.bgColor);
+      bgGradient.addColorStop(1, theme.bgGradientEnd || theme.bgColor);
+      ctx.fillStyle = bgGradient;
+      ctx.fillRect(0, 0, width, height);
+    }
+  } else {
+    const bgGradient = ctx.createLinearGradient(0, 0, width, height);
+    bgGradient.addColorStop(0, theme.bgColor);
+    bgGradient.addColorStop(1, theme.bgGradientEnd || theme.bgColor);
+    ctx.fillStyle = bgGradient;
+    ctx.fillRect(0, 0, width, height);
+  }
 
   // 2. AMBIENT GLOW ACCENT
   const radialGlow = ctx.createRadialGradient(

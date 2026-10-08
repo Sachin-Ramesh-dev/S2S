@@ -2878,6 +2878,42 @@
   ],
   "instagramTopics": [
     {
+      "id": "topic-1791472879084-0",
+      "accountId": "ig-bajajfinance",
+      "title": "The 3 Hidden Costs of EMI Schemes",
+      "hook": "Stop paying 20% extra on your '0% interest' purchase.",
+      "format": "Reel",
+      "contentPillar": "Educational Financial Literacy",
+      "viralPotentialScore": 94,
+      "auditRationale": "Addresses the gap in actionable 60-second breakdowns by providing a mathematically rigorous look at processing fees and GST, aligning with the skill v4 requirement for verifiable arithmetic.",
+      "status": "pending",
+      "createdAt": "2026-10-08T15:21:19.084Z",
+      "generationId": "gen-1791472856632-cpdy3",
+      "angleOptions": [
+        "Breakdown of Processing Fees vs. Interest",
+        "The 'Hidden' GST calculation on EMI",
+        "Comparison: Cash discount vs. EMI convenience"
+      ]
+    },
+    {
+      "id": "topic-1791472879084-1",
+      "accountId": "ig-bajajfinance",
+      "title": "Loan Contract Red Flags: A 60s Audit",
+      "hook": "3 lines in your loan contract that cost you thousands.",
+      "format": "Reel",
+      "contentPillar": "Fraud Awareness & Consumer Safety",
+      "viralPotentialScore": 91,
+      "auditRationale": "Directly fills the audit gap for customer safety and transparent wealth insights by providing a tactical checklist for users before they sign any financial agreement.",
+      "status": "pending",
+      "createdAt": "2026-10-08T15:21:19.084Z",
+      "generationId": "gen-1791472856632-cpdy3",
+      "angleOptions": [
+        "The Prepayment Penalty Trap",
+        "Identifying Variable Interest Rate Clauses",
+        "Insurance bundling: Mandatory or Optional?"
+      ]
+    },
+    {
       "id": "topic-1791439652850-0",
       "accountId": "ig-bajajfinance",
       "title": "The EMI Amortization Trap",
@@ -3266,6 +3302,349 @@
     }
   ],
   "instagramScripts": [
+    {
+      "id": "script-1791473958031",
+      "accountId": "ig-bajajfinance",
+      "topicId": "topic-1791472879084-0",
+      "title": "The 3 Hidden Costs of EMI Schemes",
+      "format": "Image",
+      "hook": "Stop paying 20% extra on your '0% interest' purchase.",
+      "imageConcept": {
+        "headline": "The 3 Hidden Costs of EMI Schemes",
+        "visualPrompt": "Editorial Swiss Graphic poster on a deep matte graphite background with high-contrast international typographic style. Bold structured grid featuring crisp white and safety amber pill badges displaying: '0% EMI = HIDDEN +20%'. Minimalist geometric breakdown of an audit receipt showing subtotal lines for Processing Fee, Lost Cash Discount, and GST. Razor-sharp sans-serif typography, ultra-clean negative space, fine alignment rules, and micro-print statutory disclaimer at the footer.",
+        "textOverlay": "0% EMI: 3 Hidden Fees Adding +20%",
+        "aspectRatio": "1:1",
+        "stylePreset": "Editorial Swiss Graphic"
+      },
+      "caption": "Your 'Zero-Cost' EMI is rarely zero cost.\n\nHere is the verifiable arithmetic on a ₹50,000 appliance:\n\n1. Forgone Cash Discount (5%–10%)\nRetailers bake financing margins into the sticker price. Paying upfront with debit/UPI often unlocks an instant ₹2,500 to ₹5,000 rebate. Choosing EMI waives this outright.\n\n2. Mandatory Processing Fees + 18% GST\nA standard processing fee of ₹199 to ₹999 plus GST adds an immediate unrecoverable overhead before month one.\n\n3. GST on the Imputed Interest Component\nPer RBI mandate, even when interest is subsidized by merchant subvention, the bank bills nominal interest and discounts the principal. The catch? You pay 18% GST every single month on that underlying interest component.\n\nTHE MATH:\n• Cash Purchase: ₹45,000 (after instant discount)\n• '0% EMI' Payout: ₹50,000 + ₹352 (Processing + GST) + ₹486 (GST on monthly interest) = ₹50,838\n• Real Financial Premium: +₹5,838 (+12.97% effective surcharge)\n\n*Assumptions: 6-month tenure, 14% annual merchant subvention interest rate, standard processing fee baseline. Actual terms vary across lenders and categories.\n\nAre you tracking the real purchase cost before hitting checkout?",
+      "hashtags": [
+        "#FinancialLiteracy",
+        "#SmartFinancing",
+        "#PersonalFinanceIndia",
+        "#EMIFacts",
+        "#ZeroCostEMI",
+        "#MoneyManagement",
+        "#ConsumerProtection",
+        "#FinancialDiscipline",
+        "#BudgetingTips",
+        "#HiddenCosts",
+        "#FinancialAwareness",
+        "#RetailFinance",
+        "#SmartMoneyDecisions",
+        "#DebtFreeIndia"
+      ],
+      "callToAction": "Comment 'EMI' to receive the True-Cost EMI Calculator spreadsheet in your DMs.",
+      "status": "draft",
+      "modelUsed": "gemini-3.8-flash",
+      "generationId": "gen-1791473902751-czunh",
+      "skillVersion": "v4",
+      "createdAt": "2026-10-08T15:39:18.031Z",
+      "updatedAt": "2026-10-08T15:39:18.031Z"
+    },
+    {
+      "id": "script-1791473891434",
+      "accountId": "ig-bajajfinance",
+      "topicId": "topic-1791472879084-0",
+      "title": "The 3 Hidden Costs of EMI Schemes",
+      "format": "Image",
+      "hook": "Stop paying 20% extra on your '0% interest' purchase.",
+      "imageConcept": {
+        "headline": "The 3 Hidden Costs of EMI Schemes",
+        "visualPrompt": "Editorial Swiss Graphic style, dark charcoal background with bold, high-contrast typography in white and vibrant amber. A central geometric infographic showing a price tag being sliced by a hidden cost percentage icon. Clean, sharp lines, professional financial aesthetic, studio lighting.",
+        "textOverlay": "Stop paying 20% extra on your '0% interest' purchase. Swipe for the breakdown.",
+        "aspectRatio": "1:1",
+        "stylePreset": "Editorial Swiss Graphic"
+      },
+      "caption": "0% interest doesn't mean 0% cost. Before you swipe, identify the three variables hiding in your EMI agreement:\n\n1. Processing Fees: Often 1-3% of the total loan amount, deducted upfront.\n2. Documentation Charges: Flat fees hidden in the fine print that inflate the effective APR.\n3. Insurance Add-ons: Mandatory 'protection plans' that often cost more than the interest saved.\n\nMathematically, a ₹50,000 purchase at 0% interest with a ₹1,500 processing fee and ₹1,000 in insurance premiums results in an effective interest rate of ~5% annualized, despite the marketing claims.\n\nAlways calculate the 'Total Outgo' rather than the 'Monthly EMI'.\n\nComment 'CHECKLIST' and I will DM you our EMI Truth Calculator to verify your next purchase.",
+      "hashtags": [
+        "#BajajFinance",
+        "#FinancialLiteracy",
+        "#SmartInvesting",
+        "#MoneyManagement",
+        "#EMI",
+        "#PersonalFinanceIndia",
+        "#FinancialFreedom",
+        "#CreditScore",
+        "#DebtManagement",
+        "#FinancialEducation",
+        "#TransparentFinance",
+        "#BudgetingTips"
+      ],
+      "callToAction": "Comment 'CHECKLIST' for the EMI calculator.",
+      "status": "draft",
+      "modelUsed": "gemini-3.8-flash",
+      "generationId": "gen-1791473791862-6ecst",
+      "skillVersion": "v4",
+      "createdAt": "2026-10-08T15:38:11.434Z",
+      "updatedAt": "2026-10-08T15:38:11.434Z"
+    },
+    {
+      "id": "script-1791473029270",
+      "accountId": "ig-bajajfinance",
+      "topicId": "topic-1791472879084-0",
+      "title": "The 3 Hidden Costs of EMI Schemes",
+      "format": "Image",
+      "hook": "Stop paying 20% extra on your '0% interest' purchase.",
+      "slides": [
+        {
+          "slideNumber": 1,
+          "slideType": "hook",
+          "visualLayout": "High-contrast black background with bold yellow typography",
+          "headline": "Stop paying 20% extra",
+          "bodyText": "The 3 hidden costs of your '0% interest' EMI.",
+          "swipeTrigger": "👉 Audit your EMI"
+        },
+        {
+          "slideNumber": 2,
+          "slideType": "content",
+          "visualLayout": "Split screen with math formula overlay",
+          "headline": "Hidden Cost 1: Processing Fees",
+          "bodyText": "Banks often charge 1-3% as a 'processing fee' upfront. On a ₹50,000 product, that's ₹1,500 gone before you start.",
+          "swipeTrigger": "Next: The Documentation Trap"
+        },
+        {
+          "slideNumber": 3,
+          "slideType": "content",
+          "visualLayout": "Minimalist icon-based layout",
+          "headline": "Hidden Cost 2: Documentation Charges",
+          "bodyText": "Often labeled as 'administrative costs'. These are non-refundable fees added to your principal balance.",
+          "swipeTrigger": "Next: The Interest Illusion"
+        },
+        {
+          "slideNumber": 4,
+          "slideText": "Hidden Cost 3: Subvention Fees",
+          "visualLayout": "Bar chart visualization of price markup",
+          "headline": "The 'Zero' Interest Myth",
+          "bodyText": "Retailers bake the interest cost into the MRP. If the cash price is ₹10k but EMI price is ₹12k, you aren't paying 0% interest; you are paying a 20% markup.",
+          "swipeTrigger": "Check the math on slide 5"
+        },
+        {
+          "slideNumber": 5,
+          "slideType": "educational",
+          "visualLayout": "Table format",
+          "headline": "The True Cost Formula",
+          "bodyText": "Total Cost = (EMI Amount x Tenure) + Processing Fee + Hidden Charges. Always compare this against the Cash Discount price.",
+          "swipeTrigger": "See the checklist"
+        },
+        {
+          "slideNumber": 6,
+          "slideType": "checklist",
+          "visualLayout": "Checklist graphic",
+          "headline": "Pre-Loan Checklist",
+          "bodyText": "1. Ask for the 'Effective Rate of Interest'. 2. Confirm total upfront fees. 3. Check for mandatory insurance add-ons.",
+          "swipeTrigger": "Don't miss slide 7"
+        },
+        {
+          "slideNumber": 7,
+          "slideType": "educational",
+          "visualLayout": "Alert box design",
+          "headline": "Legal Disclaimer",
+          "bodyText": "Terms and conditions apply. Fees vary by lender and product category. Always review your Loan Agreement (LA) before signing.",
+          "swipeTrigger": "Final Summary"
+        },
+        {
+          "slideNumber": 8,
+          "slideType": "summary",
+          "visualLayout": "Clean summary card",
+          "headline": "The Framework",
+          "bodyText": "If the '0% EMI' price is higher than the cash price, you are paying interest. Do the math before you swipe.",
+          "swipeTrigger": "Save this post"
+        },
+        {
+          "slideNumber": 9,
+          "slideType": "cta",
+          "visualLayout": "Centered bold text",
+          "headline": "Audit your next loan",
+          "bodyText": "Don't sign until you calculate the true cost.",
+          "swipeTrigger": "Save for later"
+        }
+      ],
+      "caption": "Your '0% interest' EMI might be costing you more than a standard loan. When retailers offer interest-free schemes, they often inflate the product price or add non-refundable processing fees. Before you commit to your next purchase, follow this 3-point audit to ensure you aren't overpaying. \n\nMathematical sanity check: If the cash price is ₹10,000 and the EMI price is ₹12,000, your 'interest' is the ₹2,000 difference. \n\nComment 'CHECKLIST' for our EMI calculator link to verify your next purchase. \n\n#FinancialLiteracy #SmartSpending #BajajFinance #EMI #PersonalFinance #Budgeting",
+      "hashtags": [
+        "#FinancialLiteracy",
+        "#SmartSpending",
+        "#BajajFinance"
+      ],
+      "callToAction": "Comment 'CHECKLIST' for the EMI calculator or SAVE this post for your next loan review.",
+      "status": "draft",
+      "modelUsed": "gemini-3.8-flash",
+      "generationId": "gen-1791472996412-sh5cz",
+      "skillVersion": "v4",
+      "createdAt": "2026-10-08T15:23:49.270Z",
+      "updatedAt": "2026-10-08T15:23:49.270Z"
+    },
+    {
+      "id": "script-1791472989948",
+      "accountId": "ig-bajajfinance",
+      "topicId": "topic-1791472879084-0",
+      "title": "The 3 Hidden Costs of EMI Schemes",
+      "format": "Carousel",
+      "hook": "Stop paying 20% extra on your '0% interest' purchase.",
+      "slides": [
+        {
+          "slideNumber": 1,
+          "slideType": "hook",
+          "visualLayout": "High-contrast black background with bold yellow neon text overlay",
+          "headline": "Stop paying 20% extra on '0% interest'.",
+          "bodyText": "The 3 hidden costs of your EMI.",
+          "swipeTrigger": "Swipe to audit your purchase 👉"
+        },
+        {
+          "slideNumber": 2,
+          "slideType": "educational",
+          "visualLayout": "Split screen: Price vs. Total Outflow",
+          "headline": "1. The Processing Fee Trap",
+          "bodyText": "Banks often charge 1-3% as a 'processing fee' upfront. On a ₹50,000 purchase, that's ₹1,500 gone before you start.",
+          "swipeTrigger": "See the math on slide 3 👉"
+        },
+        {
+          "slideNumber": 3,
+          "slideType": "educational",
+          "visualLayout": "Calculation table",
+          "headline": "The Math Check",
+          "bodyText": "Asset Price: ₹50,000 | Fee: 3% (₹1,500) | Effective Price: ₹51,500. You aren't paying 0% interest; you are paying a 3% flat entry tax.",
+          "swipeTrigger": "Next: The hidden tax 👉"
+        },
+        {
+          "slideNumber": 4,
+          "slideType": "educational",
+          "visualLayout": "Iconography highlighting GST",
+          "headline": "2. GST on Interest",
+          "bodyText": "Even if the interest is 'zero', banks charge 18% GST on the processing fee. It’s a hidden layer added to every transaction.",
+          "swipeTrigger": "The final hidden cost 👉"
+        },
+        {
+          "slideNumber": 5,
+          "slideType": "educational",
+          "visualLayout": "High-contrast infographic",
+          "headline": "3. The 'No Discount' Penalty",
+          "bodyText": "Retailers often inflate prices for EMI customers. If you pay cash, you might get a 5-10% discount. EMI customers lose this 'cash-discount' opportunity cost.",
+          "swipeTrigger": "The total impact 👉"
+        },
+        {
+          "slideNumber": 6,
+          "slideType": "educational",
+          "visualLayout": "Summary table",
+          "headline": "Total Cost Breakdown",
+          "bodyText": "Processing Fee + GST + Lost Cash Discount = Real Cost of EMI. You could be paying up to 15% more than the sticker price.",
+          "swipeTrigger": "Audit your plan 👉"
+        },
+        {
+          "slideNumber": 7,
+          "slideType": "educational",
+          "visualLayout": "Checklist format",
+          "headline": "Audit Your EMI",
+          "bodyText": "1. Ask for the 'Total Payable Amount'. 2. Compare with the 'Cash Discounted Price'. 3. Calculate the difference as your true interest rate.",
+          "swipeTrigger": "Save this guide 👉"
+        },
+        {
+          "slideNumber": 8,
+          "slideType": "educational",
+          "visualLayout": "Legal disclaimer focus",
+          "headline": "Disclaimer",
+          "bodyText": "Calculations assume standard market processing fees of 1-3% and GST at 18%. Offers vary by retailer. Always verify your loan agreement.",
+          "swipeTrigger": "Final takeaway 👉"
+        },
+        {
+          "slideNumber": 9,
+          "slideType": "summary",
+          "visualLayout": "Bold, clean typography",
+          "headline": "The EMI Decision Framework",
+          "bodyText": "If the (Processing Fee + Lost Discount) > 5% of product value, consider paying in full. Math beats marketing every time.",
+          "swipeTrigger": "Action step 👉"
+        },
+        {
+          "slideNumber": 10,
+          "slideType": "cta",
+          "visualLayout": "Minimalist card with bookmark icon",
+          "headline": "Don't overpay.",
+          "bodyText": "Save this post to audit your next purchase.",
+          "swipeTrigger": "Comment 'CHECKLIST' for our EMI calculator link."
+        }
+      ],
+      "caption": "0% interest is rarely 0% cost. Before you swipe your card, look at the processing fees, the GST, and the lost cash discount. Most consumers pay 10-15% more than the sticker price without realizing it. \n\nStop guessing your costs. Calculate the true impact of your EMI before you sign the agreement. \n\nSave this post for your next big-ticket purchase. \n\nComment 'CHECKLIST' and I'll DM you our EMI impact calculator to see exactly how much you're really paying.",
+      "hashtags": [
+        "#BajajFinance",
+        "#FinancialLiteracy",
+        "#SmartSpending",
+        "#EMI",
+        "#PersonalFinanceIndia"
+      ],
+      "callToAction": "Comment 'CHECKLIST' for the EMI calculator",
+      "status": "draft",
+      "modelUsed": "gemini-3.8-flash",
+      "generationId": "gen-1791472956289-4m96r",
+      "skillVersion": "v4",
+      "createdAt": "2026-10-08T15:23:09.948Z",
+      "updatedAt": "2026-10-08T15:23:09.948Z"
+    },
+    {
+      "id": "script-1791472947804",
+      "accountId": "ig-bajajfinance",
+      "topicId": "topic-1791472879084-0",
+      "title": "The 3 Hidden Costs of EMI Schemes",
+      "format": "Reel",
+      "hook": "Stop paying 20% extra on your '0% interest' purchase.",
+      "scenes": [
+        {
+          "timeframe": "0:00 - 0:03",
+          "visualCue": "Fast zoom on presenter face, holding a price tag showing '0% Interest' with a big red cross over it.",
+          "onScreenText": "0% INTEREST IS A LIE",
+          "spokenAudio": "Stop paying 20% extra on your '0% interest' purchase. You're missing the hidden costs.",
+          "audioNote": "High-tension, rhythmic pulse beat"
+        },
+        {
+          "timeframe": "0:03 - 0:15",
+          "visualCue": "Split screen: Processing fee invoice on left, '0% interest' marketing banner on right.",
+          "onScreenText": "1. PROCESSING FEES (1-3%)",
+          "spokenAudio": "First, processing fees. They add 1 to 3 percent upfront. That's cash out of your pocket before the first EMI even hits.",
+          "audioNote": "Sharp 'ding' sound effect on text appearance"
+        },
+        {
+          "timeframe": "0:15 - 0:30",
+          "visualCue": "Animated graphic showing a loan calculator with 'Documentation Charges' and 'Insurance Premiums' popping up.",
+          "onScreenText": "2. HIDDEN CHARGES & INSURANCE",
+          "spokenAudio": "Second, mandatory insurance and documentation charges. They inflate your loan amount by 5 percent instantly. Check your loan statement.",
+          "audioNote": "Mechanical ticking sound in background"
+        },
+        {
+          "timeframe": "0:30 - 0:45",
+          "visualCue": "Presenter pointing to a chart showing the difference between a cash discount and an EMI offer.",
+          "onScreenText": "3. LOST CASH DISCOUNT",
+          "spokenAudio": "Third, the lost cash discount. Retailers often drop the price for cash buyers. By choosing EMI, you lose that 10 percent discount. That’s your real interest rate.",
+          "audioNote": "Volume swell"
+        },
+        {
+          "timeframe": "0:45 - 0:55",
+          "visualCue": "Presenter looking directly at camera, serious tone. Text overlay appears with legal disclaimer.",
+          "onScreenText": "SAVE THIS FOR YOUR NEXT PURCHASE. *T&C Apply. Calculations based on standard market processing fees.",
+          "spokenAudio": "Don't sign until you calculate the total outflow, not just the monthly EMI. Save this for your next loan review.",
+          "audioNote": "Music fades to a clean finish"
+        }
+      ],
+      "caption": "0% interest doesn't mean 0% cost. \n\nBefore you swipe your card for that next big purchase, look beyond the monthly EMI. Retailers and lenders bake costs into the fine print that can hike your price by up to 20%.\n\nHere is what to watch for:\n1️⃣ Processing Fees (1-3% of loan value)\n2️⃣ Mandatory Insurance/Documentation (Often bundled without notice)\n3️⃣ The 'Cash Discount' Opportunity Cost (Choosing EMI often disqualifies you from instant cash discounts)\n\nAlways calculate the 'Total Cost of Ownership' before finalizing your loan agreement.\n\nComment 'CHECKLIST' for our EMI calculator tool to see what you're actually paying.\n\n#BajajFinance #FinancialLiteracy #SmartSpending #EMITips #MoneyManagement #DebtFreeJourney #PersonalFinance #CreditScore #ConsumerRights #SmartShopping #FinancialPlanning #BudgetingTips",
+      "hashtags": [
+        "#BajajFinance",
+        "#FinancialLiteracy",
+        "#SmartSpending",
+        "#EMITips",
+        "#MoneyManagement",
+        "#DebtFreeJourney",
+        "#PersonalFinance",
+        "#CreditScore",
+        "#ConsumerRights",
+        "#SmartShopping",
+        "#FinancialPlanning",
+        "#BudgetingTips"
+      ],
+      "callToAction": "Comment 'CHECKLIST' for the calculator",
+      "status": "draft",
+      "modelUsed": "gemini-3.8-flash",
+      "generationId": "gen-1791472890317-ty4xw",
+      "skillVersion": "v4",
+      "createdAt": "2026-10-08T15:22:27.804Z",
+      "updatedAt": "2026-10-08T15:22:27.804Z"
+    },
     {
       "id": "script-1791439780808",
       "accountId": "ig-bajajfinance",
@@ -9019,10 +9398,10 @@
       "monthlyBudgetUsd": 100,
       "warningThresholdPct": 80,
       "hardStopPct": 100,
-      "currentSpendUsd": 18.487500000000004,
+      "currentSpendUsd": 18.501000000000005,
       "currentMonth": "September 2026",
-      "requestCountThisMonth": 154,
-      "estimatedTokensThisMonth": 187800
+      "requestCountThisMonth": 160,
+      "estimatedTokensThisMonth": 196800
     },
     "learningSettings": {
       "enabled": true,
@@ -9439,6 +9818,470 @@
     }
   ],
   "instagramGenerations": [
+    {
+      "id": "gen-1791473902751-czunh",
+      "task": "script_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "script-prompt-v4",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (script_generation) - Skill v4",
+      "inputContext": {
+        "account": "bajajfinance",
+        "skillVersion": "v4"
+      },
+      "output": {
+        "title": "The 3 Hidden Costs of EMI Schemes",
+        "format": "Image",
+        "hook": "Stop paying 20% extra on your '0% interest' purchase.",
+        "imageConcept": {
+          "headline": "The 3 Hidden Costs of EMI Schemes",
+          "visualPrompt": "Editorial Swiss Graphic poster on a deep matte graphite background with high-contrast international typographic style. Bold structured grid featuring crisp white and safety amber pill badges displaying: '0% EMI = HIDDEN +20%'. Minimalist geometric breakdown of an audit receipt showing subtotal lines for Processing Fee, Lost Cash Discount, and GST. Razor-sharp sans-serif typography, ultra-clean negative space, fine alignment rules, and micro-print statutory disclaimer at the footer.",
+          "textOverlay": "0% EMI: 3 Hidden Fees Adding +20%",
+          "aspectRatio": "1:1",
+          "stylePreset": "Editorial Swiss Graphic"
+        },
+        "caption": "Your 'Zero-Cost' EMI is rarely zero cost.\n\nHere is the verifiable arithmetic on a ₹50,000 appliance:\n\n1. Forgone Cash Discount (5%–10%)\nRetailers bake financing margins into the sticker price. Paying upfront with debit/UPI often unlocks an instant ₹2,500 to ₹5,000 rebate. Choosing EMI waives this outright.\n\n2. Mandatory Processing Fees + 18% GST\nA standard processing fee of ₹199 to ₹999 plus GST adds an immediate unrecoverable overhead before month one.\n\n3. GST on the Imputed Interest Component\nPer RBI mandate, even when interest is subsidized by merchant subvention, the bank bills nominal interest and discounts the principal. The catch? You pay 18% GST every single month on that underlying interest component.\n\nTHE MATH:\n• Cash Purchase: ₹45,000 (after instant discount)\n• '0% EMI' Payout: ₹50,000 + ₹352 (Processing + GST) + ₹486 (GST on monthly interest) = ₹50,838\n• Real Financial Premium: +₹5,838 (+12.97% effective surcharge)\n\n*Assumptions: 6-month tenure, 14% annual merchant subvention interest rate, standard processing fee baseline. Actual terms vary across lenders and categories.\n\nAre you tracking the real purchase cost before hitting checkout?",
+        "hashtags": [
+          "#FinancialLiteracy",
+          "#SmartFinancing",
+          "#PersonalFinanceIndia",
+          "#EMIFacts",
+          "#ZeroCostEMI",
+          "#MoneyManagement",
+          "#ConsumerProtection",
+          "#FinancialDiscipline",
+          "#BudgetingTips",
+          "#HiddenCosts",
+          "#FinancialAwareness",
+          "#RetailFinance",
+          "#SmartMoneyDecisions",
+          "#DebtFreeIndia"
+        ],
+        "callToAction": "Comment 'EMI' to receive the True-Cost EMI Calculator spreadsheet in your DMs."
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 55279,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-10-08T15:39:18.030Z"
+    },
+    {
+      "id": "gen-1791473791862-6ecst",
+      "task": "script_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "script-prompt-v4",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (script_generation) - Skill v4",
+      "inputContext": {
+        "account": "bajajfinance",
+        "skillVersion": "v4"
+      },
+      "output": {
+        "title": "The 3 Hidden Costs of EMI Schemes",
+        "format": "Image",
+        "hook": "Stop paying 20% extra on your '0% interest' purchase.",
+        "imageConcept": {
+          "headline": "The 3 Hidden Costs of EMI Schemes",
+          "visualPrompt": "Editorial Swiss Graphic style, dark charcoal background with bold, high-contrast typography in white and vibrant amber. A central geometric infographic showing a price tag being sliced by a hidden cost percentage icon. Clean, sharp lines, professional financial aesthetic, studio lighting.",
+          "textOverlay": "Stop paying 20% extra on your '0% interest' purchase. Swipe for the breakdown.",
+          "aspectRatio": "1:1",
+          "stylePreset": "Editorial Swiss Graphic"
+        },
+        "caption": "0% interest doesn't mean 0% cost. Before you swipe, identify the three variables hiding in your EMI agreement:\n\n1. Processing Fees: Often 1-3% of the total loan amount, deducted upfront.\n2. Documentation Charges: Flat fees hidden in the fine print that inflate the effective APR.\n3. Insurance Add-ons: Mandatory 'protection plans' that often cost more than the interest saved.\n\nMathematically, a ₹50,000 purchase at 0% interest with a ₹1,500 processing fee and ₹1,000 in insurance premiums results in an effective interest rate of ~5% annualized, despite the marketing claims.\n\nAlways calculate the 'Total Outgo' rather than the 'Monthly EMI'.\n\nComment 'CHECKLIST' and I will DM you our EMI Truth Calculator to verify your next purchase.",
+        "hashtags": [
+          "#BajajFinance",
+          "#FinancialLiteracy",
+          "#SmartInvesting",
+          "#MoneyManagement",
+          "#EMI",
+          "#PersonalFinanceIndia",
+          "#FinancialFreedom",
+          "#CreditScore",
+          "#DebtManagement",
+          "#FinancialEducation",
+          "#TransparentFinance",
+          "#BudgetingTips"
+        ],
+        "callToAction": "Comment 'CHECKLIST' for the EMI calculator."
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 99572,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-10-08T15:38:11.434Z"
+    },
+    {
+      "id": "gen-1791472996412-sh5cz",
+      "task": "script_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "script-prompt-v4",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (script_generation) - Skill v4",
+      "inputContext": {
+        "account": "bajajfinance",
+        "skillVersion": "v4"
+      },
+      "output": {
+        "title": "The 3 Hidden Costs of EMI Schemes",
+        "format": "Carousel",
+        "hook": "Stop paying 20% extra on your '0% interest' purchase.",
+        "slides": [
+          {
+            "slideNumber": 1,
+            "slideType": "hook",
+            "visualLayout": "High-contrast black background with bold yellow typography",
+            "headline": "Stop paying 20% extra",
+            "bodyText": "The 3 hidden costs of your '0% interest' EMI.",
+            "swipeTrigger": "👉 Audit your EMI"
+          },
+          {
+            "slideNumber": 2,
+            "slideType": "content",
+            "visualLayout": "Split screen with math formula overlay",
+            "headline": "Hidden Cost 1: Processing Fees",
+            "bodyText": "Banks often charge 1-3% as a 'processing fee' upfront. On a ₹50,000 product, that's ₹1,500 gone before you start.",
+            "swipeTrigger": "Next: The Documentation Trap"
+          },
+          {
+            "slideNumber": 3,
+            "slideType": "content",
+            "visualLayout": "Minimalist icon-based layout",
+            "headline": "Hidden Cost 2: Documentation Charges",
+            "bodyText": "Often labeled as 'administrative costs'. These are non-refundable fees added to your principal balance.",
+            "swipeTrigger": "Next: The Interest Illusion"
+          },
+          {
+            "slideNumber": 4,
+            "slideText": "Hidden Cost 3: Subvention Fees",
+            "visualLayout": "Bar chart visualization of price markup",
+            "headline": "The 'Zero' Interest Myth",
+            "bodyText": "Retailers bake the interest cost into the MRP. If the cash price is ₹10k but EMI price is ₹12k, you aren't paying 0% interest; you are paying a 20% markup.",
+            "swipeTrigger": "Check the math on slide 5"
+          },
+          {
+            "slideNumber": 5,
+            "slideType": "educational",
+            "visualLayout": "Table format",
+            "headline": "The True Cost Formula",
+            "bodyText": "Total Cost = (EMI Amount x Tenure) + Processing Fee + Hidden Charges. Always compare this against the Cash Discount price.",
+            "swipeTrigger": "See the checklist"
+          },
+          {
+            "slideNumber": 6,
+            "slideType": "checklist",
+            "visualLayout": "Checklist graphic",
+            "headline": "Pre-Loan Checklist",
+            "bodyText": "1. Ask for the 'Effective Rate of Interest'. 2. Confirm total upfront fees. 3. Check for mandatory insurance add-ons.",
+            "swipeTrigger": "Don't miss slide 7"
+          },
+          {
+            "slideNumber": 7,
+            "slideType": "educational",
+            "visualLayout": "Alert box design",
+            "headline": "Legal Disclaimer",
+            "bodyText": "Terms and conditions apply. Fees vary by lender and product category. Always review your Loan Agreement (LA) before signing.",
+            "swipeTrigger": "Final Summary"
+          },
+          {
+            "slideNumber": 8,
+            "slideType": "summary",
+            "visualLayout": "Clean summary card",
+            "headline": "The Framework",
+            "bodyText": "If the '0% EMI' price is higher than the cash price, you are paying interest. Do the math before you swipe.",
+            "swipeTrigger": "Save this post"
+          },
+          {
+            "slideNumber": 9,
+            "slideType": "cta",
+            "visualLayout": "Centered bold text",
+            "headline": "Audit your next loan",
+            "bodyText": "Don't sign until you calculate the true cost.",
+            "swipeTrigger": "Save for later"
+          }
+        ],
+        "caption": "Your '0% interest' EMI might be costing you more than a standard loan. When retailers offer interest-free schemes, they often inflate the product price or add non-refundable processing fees. Before you commit to your next purchase, follow this 3-point audit to ensure you aren't overpaying. \n\nMathematical sanity check: If the cash price is ₹10,000 and the EMI price is ₹12,000, your 'interest' is the ₹2,000 difference. \n\nComment 'CHECKLIST' for our EMI calculator link to verify your next purchase. \n\n#FinancialLiteracy #SmartSpending #BajajFinance #EMI #PersonalFinance #Budgeting",
+        "hashtags": [
+          "#FinancialLiteracy",
+          "#SmartSpending",
+          "#BajajFinance"
+        ],
+        "callToAction": "Comment 'CHECKLIST' for the EMI calculator or SAVE this post for your next loan review."
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 32857,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-10-08T15:23:49.270Z"
+    },
+    {
+      "id": "gen-1791472956289-4m96r",
+      "task": "script_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "script-prompt-v4",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (script_generation) - Skill v4",
+      "inputContext": {
+        "account": "bajajfinance",
+        "skillVersion": "v4"
+      },
+      "output": {
+        "title": "The 3 Hidden Costs of EMI Schemes",
+        "format": "Carousel",
+        "hook": "Stop paying 20% extra on your '0% interest' purchase.",
+        "slides": [
+          {
+            "slideNumber": 1,
+            "slideType": "hook",
+            "visualLayout": "High-contrast black background with bold yellow neon text overlay",
+            "headline": "Stop paying 20% extra on '0% interest'.",
+            "bodyText": "The 3 hidden costs of your EMI.",
+            "swipeTrigger": "Swipe to audit your purchase 👉"
+          },
+          {
+            "slideNumber": 2,
+            "slideType": "educational",
+            "visualLayout": "Split screen: Price vs. Total Outflow",
+            "headline": "1. The Processing Fee Trap",
+            "bodyText": "Banks often charge 1-3% as a 'processing fee' upfront. On a ₹50,000 purchase, that's ₹1,500 gone before you start.",
+            "swipeTrigger": "See the math on slide 3 👉"
+          },
+          {
+            "slideNumber": 3,
+            "slideType": "educational",
+            "visualLayout": "Calculation table",
+            "headline": "The Math Check",
+            "bodyText": "Asset Price: ₹50,000 | Fee: 3% (₹1,500) | Effective Price: ₹51,500. You aren't paying 0% interest; you are paying a 3% flat entry tax.",
+            "swipeTrigger": "Next: The hidden tax 👉"
+          },
+          {
+            "slideNumber": 4,
+            "slideType": "educational",
+            "visualLayout": "Iconography highlighting GST",
+            "headline": "2. GST on Interest",
+            "bodyText": "Even if the interest is 'zero', banks charge 18% GST on the processing fee. It’s a hidden layer added to every transaction.",
+            "swipeTrigger": "The final hidden cost 👉"
+          },
+          {
+            "slideNumber": 5,
+            "slideType": "educational",
+            "visualLayout": "High-contrast infographic",
+            "headline": "3. The 'No Discount' Penalty",
+            "bodyText": "Retailers often inflate prices for EMI customers. If you pay cash, you might get a 5-10% discount. EMI customers lose this 'cash-discount' opportunity cost.",
+            "swipeTrigger": "The total impact 👉"
+          },
+          {
+            "slideNumber": 6,
+            "slideType": "educational",
+            "visualLayout": "Summary table",
+            "headline": "Total Cost Breakdown",
+            "bodyText": "Processing Fee + GST + Lost Cash Discount = Real Cost of EMI. You could be paying up to 15% more than the sticker price.",
+            "swipeTrigger": "Audit your plan 👉"
+          },
+          {
+            "slideNumber": 7,
+            "slideType": "educational",
+            "visualLayout": "Checklist format",
+            "headline": "Audit Your EMI",
+            "bodyText": "1. Ask for the 'Total Payable Amount'. 2. Compare with the 'Cash Discounted Price'. 3. Calculate the difference as your true interest rate.",
+            "swipeTrigger": "Save this guide 👉"
+          },
+          {
+            "slideNumber": 8,
+            "slideType": "educational",
+            "visualLayout": "Legal disclaimer focus",
+            "headline": "Disclaimer",
+            "bodyText": "Calculations assume standard market processing fees of 1-3% and GST at 18%. Offers vary by retailer. Always verify your loan agreement.",
+            "swipeTrigger": "Final takeaway 👉"
+          },
+          {
+            "slideNumber": 9,
+            "slideType": "summary",
+            "visualLayout": "Bold, clean typography",
+            "headline": "The EMI Decision Framework",
+            "bodyText": "If the (Processing Fee + Lost Discount) > 5% of product value, consider paying in full. Math beats marketing every time.",
+            "swipeTrigger": "Action step 👉"
+          },
+          {
+            "slideNumber": 10,
+            "slideType": "cta",
+            "visualLayout": "Minimalist card with bookmark icon",
+            "headline": "Don't overpay.",
+            "bodyText": "Save this post to audit your next purchase.",
+            "swipeTrigger": "Comment 'CHECKLIST' for our EMI calculator link."
+          }
+        ],
+        "caption": "0% interest is rarely 0% cost. Before you swipe your card, look at the processing fees, the GST, and the lost cash discount. Most consumers pay 10-15% more than the sticker price without realizing it. \n\nStop guessing your costs. Calculate the true impact of your EMI before you sign the agreement. \n\nSave this post for your next big-ticket purchase. \n\nComment 'CHECKLIST' and I'll DM you our EMI impact calculator to see exactly how much you're really paying.",
+        "hashtags": [
+          "#BajajFinance",
+          "#FinancialLiteracy",
+          "#SmartSpending",
+          "#EMI",
+          "#PersonalFinanceIndia"
+        ],
+        "callToAction": "Comment 'CHECKLIST' for the EMI calculator"
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 33655,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-10-08T15:23:09.944Z"
+    },
+    {
+      "id": "gen-1791472890317-ty4xw",
+      "task": "script_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "script-prompt-v4",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (script_generation) - Skill v4",
+      "inputContext": {
+        "account": "bajajfinance",
+        "skillVersion": "v4"
+      },
+      "output": {
+        "title": "The 3 Hidden Costs of EMI Schemes",
+        "format": "Reel",
+        "hook": "Stop paying 20% extra on your '0% interest' purchase.",
+        "scenes": [
+          {
+            "timeframe": "0:00 - 0:03",
+            "visualCue": "Fast zoom on presenter face, holding a price tag showing '0% Interest' with a big red cross over it.",
+            "onScreenText": "0% INTEREST IS A LIE",
+            "spokenAudio": "Stop paying 20% extra on your '0% interest' purchase. You're missing the hidden costs.",
+            "audioNote": "High-tension, rhythmic pulse beat"
+          },
+          {
+            "timeframe": "0:03 - 0:15",
+            "visualCue": "Split screen: Processing fee invoice on left, '0% interest' marketing banner on right.",
+            "onScreenText": "1. PROCESSING FEES (1-3%)",
+            "spokenAudio": "First, processing fees. They add 1 to 3 percent upfront. That's cash out of your pocket before the first EMI even hits.",
+            "audioNote": "Sharp 'ding' sound effect on text appearance"
+          },
+          {
+            "timeframe": "0:15 - 0:30",
+            "visualCue": "Animated graphic showing a loan calculator with 'Documentation Charges' and 'Insurance Premiums' popping up.",
+            "onScreenText": "2. HIDDEN CHARGES & INSURANCE",
+            "spokenAudio": "Second, mandatory insurance and documentation charges. They inflate your loan amount by 5 percent instantly. Check your loan statement.",
+            "audioNote": "Mechanical ticking sound in background"
+          },
+          {
+            "timeframe": "0:30 - 0:45",
+            "visualCue": "Presenter pointing to a chart showing the difference between a cash discount and an EMI offer.",
+            "onScreenText": "3. LOST CASH DISCOUNT",
+            "spokenAudio": "Third, the lost cash discount. Retailers often drop the price for cash buyers. By choosing EMI, you lose that 10 percent discount. That’s your real interest rate.",
+            "audioNote": "Volume swell"
+          },
+          {
+            "timeframe": "0:45 - 0:55",
+            "visualCue": "Presenter looking directly at camera, serious tone. Text overlay appears with legal disclaimer.",
+            "onScreenText": "SAVE THIS FOR YOUR NEXT PURCHASE. *T&C Apply. Calculations based on standard market processing fees.",
+            "spokenAudio": "Don't sign until you calculate the total outflow, not just the monthly EMI. Save this for your next loan review.",
+            "audioNote": "Music fades to a clean finish"
+          }
+        ],
+        "caption": "0% interest doesn't mean 0% cost. \n\nBefore you swipe your card for that next big purchase, look beyond the monthly EMI. Retailers and lenders bake costs into the fine print that can hike your price by up to 20%.\n\nHere is what to watch for:\n1️⃣ Processing Fees (1-3% of loan value)\n2️⃣ Mandatory Insurance/Documentation (Often bundled without notice)\n3️⃣ The 'Cash Discount' Opportunity Cost (Choosing EMI often disqualifies you from instant cash discounts)\n\nAlways calculate the 'Total Cost of Ownership' before finalizing your loan agreement.\n\nComment 'CHECKLIST' for our EMI calculator tool to see what you're actually paying.\n\n#BajajFinance #FinancialLiteracy #SmartSpending #EMITips #MoneyManagement #DebtFreeJourney #PersonalFinance #CreditScore #ConsumerRights #SmartShopping #FinancialPlanning #BudgetingTips",
+        "hashtags": [
+          "#BajajFinance",
+          "#FinancialLiteracy",
+          "#SmartSpending",
+          "#EMITips",
+          "#MoneyManagement",
+          "#DebtFreeJourney",
+          "#PersonalFinance",
+          "#CreditScore",
+          "#ConsumerRights",
+          "#SmartShopping",
+          "#FinancialPlanning",
+          "#BudgetingTips"
+        ],
+        "callToAction": "Comment 'CHECKLIST' for the calculator"
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 57483,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-10-08T15:22:27.801Z"
+    },
+    {
+      "id": "gen-1791472856632-cpdy3",
+      "task": "topic_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "topic-prompt-v8",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (topic_generation) - Skill v4",
+      "inputContext": {
+        "account": "bajajfinance",
+        "skillVersion": "v4"
+      },
+      "output": [
+        {
+          "title": "The 3 Hidden Costs of EMI Schemes",
+          "hook": "Stop paying 20% extra on your '0% interest' purchase.",
+          "format": "Reel",
+          "contentPillar": "Educational Financial Literacy",
+          "viralPotentialScore": 94,
+          "auditRationale": "Addresses the gap in actionable 60-second breakdowns by providing a mathematically rigorous look at processing fees and GST, aligning with the skill v4 requirement for verifiable arithmetic.",
+          "angleOptions": [
+            "Breakdown of Processing Fees vs. Interest",
+            "The 'Hidden' GST calculation on EMI",
+            "Comparison: Cash discount vs. EMI convenience"
+          ]
+        },
+        {
+          "title": "Loan Contract Red Flags: A 60s Audit",
+          "hook": "3 lines in your loan contract that cost you thousands.",
+          "format": "Reel",
+          "contentPillar": "Fraud Awareness & Consumer Safety",
+          "viralPotentialScore": 91,
+          "auditRationale": "Directly fills the audit gap for customer safety and transparent wealth insights by providing a tactical checklist for users before they sign any financial agreement.",
+          "angleOptions": [
+            "The Prepayment Penalty Trap",
+            "Identifying Variable Interest Rate Clauses",
+            "Insurance bundling: Mandatory or Optional?"
+          ]
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 22449,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-10-08T15:21:19.081Z"
+    },
     {
       "id": "gen-1791439768651-i0pko",
       "task": "script_generation",

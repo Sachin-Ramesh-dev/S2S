@@ -2635,6 +2635,29 @@ app.post('/api/instagram/scripts/generate', async (req, res) => {
   }
 });
 
+// Real AI Image Generation Route
+app.post('/api/instagram/images/generate', async (req, res) => {
+  try {
+    const { scriptId, prompt, aspectRatio, stylePreset } = req.body;
+    if (!scriptId) {
+      return res.status(400).json({ error: 'scriptId is required' });
+    }
+    const result = await instagramService.generateImageForScript(scriptId, prompt, aspectRatio, stylePreset);
+    persistInstagramState();
+    if (result.error) {
+      return res.status(result.quotaExceeded ? 429 : 500).json({
+        success: false,
+        error: result.error,
+        quotaExceeded: result.quotaExceeded,
+        script: result.script
+      });
+    }
+    res.json({ success: true, ...result });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.put('/api/instagram/scripts/:id', (req, res) => {
   try {
     const { id } = req.params;

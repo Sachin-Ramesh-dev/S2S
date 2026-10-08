@@ -4,6 +4,7 @@ import {
   InstagramAuditMode,
   TopicIdea,
   TopicStatus,
+  TopicFormat,
   ContentPipelineItem,
   PipelineStage,
   ScriptItem,
@@ -317,7 +318,7 @@ export const instagramApi = {
   async generateScript(
     accountId: string,
     topicId?: string,
-    format: 'Reel' | 'Carousel' = 'Reel',
+    format: TopicFormat = 'Reel',
     customTitle?: string
   ): Promise<ScriptItem> {
     const data = await safeFetchJson<{ script: ScriptItem }>(`${BASE_URL}/scripts/generate`, {
@@ -326,6 +327,19 @@ export const instagramApi = {
       body: JSON.stringify({ accountId, topicId, format, customTitle })
     });
     return data.script;
+  },
+
+  async generateAiImage(params: {
+    scriptId: string;
+    prompt?: string;
+    aspectRatio?: string;
+    stylePreset?: string;
+  }): Promise<{ success: boolean; imageUrl?: string; error?: string; quotaExceeded?: boolean; script?: ScriptItem }> {
+    return safeFetchJson(`${BASE_URL}/images/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
   },
 
   async updateScript(scriptId: string, updates: Partial<ScriptItem>): Promise<ScriptItem> {

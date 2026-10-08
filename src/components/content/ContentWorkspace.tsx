@@ -15,6 +15,7 @@ import {
 } from '../../types/instagram';
 import { InstagramTopicsView } from '../instagram/InstagramTopicsView';
 import { InstagramScriptsView } from '../instagram/InstagramScriptsView';
+import { instagramApi } from '../../services/instagramApi';
 import {
   FileText,
   ListFilter,
@@ -23,6 +24,7 @@ import {
   FolderOpen,
   Sparkles,
   Layers,
+  AlertTriangle,
   Film,
   Copy,
   Check,
@@ -505,6 +507,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
 
   // Image-specific state
   const [isGeneratingMockImage, setIsGeneratingMockImage] = useState(false);
+  const [aiImageError, setAiImageError] = useState<{ message: string; quotaExceeded?: boolean } | null>(null);
   const [isRenderingFinalImage, setIsRenderingFinalImage] = useState(false);
   const [imageRenderSuccess, setImageRenderSuccess] = useState(false);
   const [imageDiffModal, setImageDiffModal] = useState<{
@@ -895,12 +898,45 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
     setImageDiffModal(null);
   };
 
-  const handleGenerateMockImage = () => {
+  const handleGenerateMockImage = async () => {
+    if (!selectedScript) return;
     setIsGeneratingMockImage(true);
-    setTimeout(() => {
+    setAiImageError(null);
+    try {
+      const concept = selectedScript.imageConcept || getDefaultImageConcept(selectedScript);
+      const res = await instagramApi.generateAiImage({
+        scriptId: selectedScript.id,
+        prompt: concept.visualPrompt || selectedScript.title,
+        aspectRatio: concept.aspectRatio || '1:1',
+        stylePreset: concept.stylePreset
+      });
+
+      if (res.imageUrl) {
+        const updated = {
+          ...concept,
+          mockImageUrl: res.imageUrl,
+          finalImageUrl: res.imageUrl
+        };
+        if (onUpdateScript) onUpdateScript(selectedScript.id, { imageConcept: updated });
+        setImageStage('mock');
+      } else if (res.error) {
+        setAiImageError({
+          message: res.error,
+          quotaExceeded: !!res.quotaExceeded
+        });
+      }
+    } catch (err: any) {
+      const errMsg = err?.message || String(err);
+      const isQuota = errMsg.includes('429') || errMsg.includes('Quota exceeded') || errMsg.includes('limit: 0');
+      setAiImageError({
+        message: isQuota
+          ? 'Gemini Image API Error: Quota exceeded (limit: 0 on Google AI Studio Free Tier). Image model requires a billing-enabled account.'
+          : errMsg,
+        quotaExceeded: isQuota
+      });
+    } finally {
       setIsGeneratingMockImage(false);
-      setImageStage('mock');
-    }, 1000);
+    }
   };
 
   const handleRenderFinalImage = async (overrideStyle?: StylePreset) => {
@@ -909,6 +945,8 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
     try {
       const currentImage = selectedScript?.imageConcept || getDefaultImageConcept(selectedScript);
       const aspect = (currentImage.aspectRatio as AspectRatio) || '1:1';
+      // Use the actual generated AI image or user asset if present!
+      const activeBackgroundImg = currentImage.mockImageUrl || currentImage.finalImageUrl;
 
       const res = await renderSocialCard({
         headline: currentImage.headline || selectedScript?.hook || selectedScript?.title || 'High Impact Strategy',
@@ -917,7 +955,8 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
         authorHandle: account?.username ? `@${account.username}` : '@s2s.studio',
         aspectRatio: aspect,
         stylePreset: styleToUse,
-        watermarkText: account?.displayName || 'S2S STUDIO'
+        watermarkText: account?.displayName || 'S2S STUDIO',
+        backgroundImageUrl: activeBackgroundImg
       });
 
       setRenderedImageData(res);
@@ -1122,9 +1161,14 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
 
             {/* Non-Destructive Format Switcher Dropdown */}
             {isFormatSwitcherOpen && (
-              <div
-                className="absolute left-0 mt-2 w-72 neo-card p-2 z-50 animate-in fade-in zoom-in-95 duration-150"
-              >
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsFormatSwitcherOpen(false)}
+                />
+                <div
+                  className="absolute left-0 mt-2 w-72 neo-card p-2 z-50 animate-in fade-in zoom-in-95 duration-150"
+                >
                 <div className="p-2 border-b-2 border-[#171717] dark:border-[#383844] mb-1">
                   <div className="text-[11px] font-black uppercase tracking-wider text-[#111111] dark:text-white">
                     Switch Production Format
@@ -1159,6 +1203,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                   );
                 })}
               </div>
+              </>
             )}
           </div>
 
@@ -1174,6 +1219,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
           {/* Draft selector dropdown */}
           {scripts.length > 1 && (
             <select
+              id="select-active-script"
               value={selectedScript?.id}
               onChange={(e) => onSelectScript(e.target.value)}
               className={`text-xs rounded-xl px-2.5 py-1.5 border font-semibold cursor-pointer outline-none ${
@@ -3492,6 +3538,31 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                     </div>
                   </div>
 
+                  {aiImageError && (
+                    <div className="p-4 rounded-2xl border border-amber-500/40 bg-amber-500/10 text-amber-200 text-xs space-y-2">
+                      <div className="font-bold flex items-center gap-2 text-amber-300">
+                        <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                        <span>AI Image Generation Provider Status: {aiImageError.quotaExceeded ? 'Quota Exceeded (429 RESOURCE_EXHAUSTED)' : 'Provider Error'}</span>
+                      </div>
+                      <p className="text-[11px] leading-relaxed text-zinc-300">
+                        {aiImageError.message}
+                      </p>
+                      <div className="pt-2 border-t border-amber-500/20 flex flex-wrap items-center justify-between gap-2 text-[10px]">
+                        <span className="text-zinc-400">Google AI Studio Free Tier has 0 quota for image models. Provide an image URL or use Graphic Canvas mode.</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAiImageError(null);
+                            setImageStage('mock');
+                          }}
+                          className="px-3 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white font-semibold cursor-pointer border border-zinc-700"
+                        >
+                          Preview Graphic Layout ➔
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   <div className={`p-6 rounded-2xl border space-y-4 ${
                     isDark ? 'bg-[#181826] border-[#2c2c40]' : 'bg-white border-slate-200 shadow-sm'
                   }`}>
@@ -3523,6 +3594,25 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         value={selectedScript?.imageConcept?.visualPrompt || `Minimalist modern graphic poster for: ${selectedScript?.title}. Clean typography, high contrast, brand accent orange.`}
                         onChange={(e) => handleUpdateImageConcept({ visualPrompt: e.target.value })}
                         className={`w-full text-xs px-3 py-2 rounded-xl border outline-none ${
+                          isDark ? 'bg-[#13131e] border-zinc-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
+                        }`}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
+                        Image Asset / AI Image URL (Optional)
+                      </label>
+                      <input
+                        id="input-image-asset-url"
+                        type="text"
+                        placeholder="Paste image URL (https://... or data:image/...) or leave blank for graphic styling"
+                        value={selectedScript?.imageConcept?.mockImageUrl || ''}
+                        onChange={(e) => handleUpdateImageConcept({
+                          mockImageUrl: e.target.value,
+                          finalImageUrl: e.target.value
+                        })}
+                        className={`w-full text-xs font-mono px-3 py-2 rounded-xl border outline-none ${
                           isDark ? 'bg-[#13131e] border-zinc-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
                         }`}
                       />
@@ -3641,17 +3731,32 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           <span className="truncate">{selectedScript?.imageConcept?.stylePreset || 'Editorial Graphic'}</span>
                         </div>
 
-                        <div className="my-auto space-y-3 px-2">
-                          <div className="w-12 h-12 rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center mx-auto shadow-inner">
-                            <Sparkles className="w-6 h-6" />
+                        {selectedScript?.imageConcept?.mockImageUrl ? (
+                          <div className="my-auto relative rounded-2xl overflow-hidden border border-blue-500/30 max-h-64 flex items-center justify-center bg-black/40">
+                            <img
+                              src={selectedScript.imageConcept.mockImageUrl}
+                              alt="Mock AI Asset"
+                              className="w-full h-auto object-cover max-h-64"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-4 flex flex-col justify-end text-left">
+                              <h3 className="text-sm font-bold text-white leading-snug">
+                                "{selectedScript?.imageConcept?.headline || selectedScript?.hook || selectedScript?.title}"
+                              </h3>
+                            </div>
                           </div>
-                          <h3 className="text-base font-black tracking-tight text-slate-900 dark:text-white leading-snug">
-                            "{selectedScript?.imageConcept?.headline || selectedScript?.hook || selectedScript?.title}"
-                          </h3>
-                          <p className="text-xs text-slate-600 dark:text-zinc-300 italic">
-                            {selectedScript?.contentPillar || 'Strategic Growth Principle'}
-                          </p>
-                        </div>
+                        ) : (
+                          <div className="my-auto space-y-3 px-2">
+                            <div className="w-12 h-12 rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center mx-auto shadow-inner">
+                              <Sparkles className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-base font-black tracking-tight text-slate-900 dark:text-white leading-snug">
+                              "{selectedScript?.imageConcept?.headline || selectedScript?.hook || selectedScript?.title}"
+                            </h3>
+                            <p className="text-xs text-slate-600 dark:text-zinc-300 italic">
+                              {selectedScript?.contentPillar || 'Strategic Growth Principle'}
+                            </p>
+                          </div>
+                        )}
 
                         <div className="flex items-center justify-between text-[10px] text-zinc-400 pt-2 border-t border-zinc-800/60 font-mono">
                           <span>{resText}</span>
@@ -3761,7 +3866,10 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                     }
 
                     return (
-                      <div className={`mx-auto ${aspectClass} rounded-3xl overflow-hidden border-2 border-blue-500/40 shadow-2xl bg-black relative flex items-center justify-center group`}>
+                      <div
+                        id="final-render-preview-card"
+                        className={`mx-auto ${aspectClass} rounded-3xl overflow-hidden border-2 border-blue-500/40 shadow-2xl bg-black relative flex items-center justify-center group`}
+                      >
                         {currentImgUrl ? (
                           <img
                             src={currentImgUrl}
@@ -3807,6 +3915,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
 
                     <div className="flex flex-wrap gap-3 pt-2">
                       <button
+                        id="btn-download-final-image"
                         type="button"
                         onClick={() => {
                           const imgUrl =
@@ -3903,6 +4012,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                       <div className="flex items-center gap-4 p-4 rounded-xl bg-black/30 border border-zinc-800">
                         <div className="w-24 h-24 rounded-lg overflow-hidden bg-black shrink-0 border border-zinc-700 shadow-md">
                           <img
+                            id="review-rendered-thumbnail"
                             src={renderedImageData?.dataUrl || selectedScript?.imageConcept?.finalImageUrl}
                             alt="Final Render Preview"
                             className="w-full h-full object-contain"

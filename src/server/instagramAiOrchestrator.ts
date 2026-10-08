@@ -5,6 +5,7 @@ import {
   InstagramAuditRecord,
   InstagramAuditMode,
   TopicIdea,
+  TopicFormat,
   ScriptItem,
   AISkillRecord,
   AIConfiguration,
@@ -27,7 +28,7 @@ interface ExecutionContext {
   rejectedTopics?: TopicIdea[];
   topicPromptContext?: string;
   scriptTopic?: TopicIdea | null;
-  format?: 'Reel' | 'Carousel';
+  format?: TopicFormat;
   auditMode?: InstagramAuditMode;
   userPrompt?: string;
 }
@@ -702,6 +703,14 @@ ${
 - Scene 1 MUST be 0-3s with an immediate viral visual + verbal hook (no "Hey guys" or generic warmups).
 - Include specific camera angles/visual cues, on-screen text overlays, spoken audio, and sound/audio vibe notes.
 - Include a high-converting CTA, engaging caption (formatted with linebreaks), and 12-18 strategic hashtags.`
+    : format === 'Image'
+    ? `For Single Image:
+- Design a high-impact single-frame graphic post.
+- Provide a clear headline and on-screen text overlay.
+- Provide a detailed visualPrompt describing the composition, lighting, textures, and style for AI image generation.
+- Default aspectRatio to "1:1".
+- Style preset should be one of: "Editorial Swiss Graphic", "Modern Minimalist", "Brutalist High Contrast", "Studio Product Lighting", "Cyberpunk Neon Dark".
+- Include a high-converting CTA, engaging caption, and 12-18 strategic hashtags.`
     : `For Carousel:
 - Provide 8-10 slides.
 - Slide 1: High-curiosity cover slide hook + thumbnail visual layout.
@@ -727,6 +736,14 @@ Return a STRICT JSON object:
       "audioNote": "Tense bass drop, sudden silence"
     }
   ],`
+      : format === 'Image'
+      ? `"imageConcept": {
+    "headline": "${scriptTopic?.title || 'Stop Overpaying'}",
+    "visualPrompt": "Minimalist graphic poster with dark background and vibrant amber accent showing personal finance data visualization",
+    "textOverlay": "${scriptTopic?.hook || 'The 3 Hidden Rules'}",
+    "aspectRatio": "1:1",
+    "stylePreset": "Editorial Swiss Graphic"
+  },`
       : `"slides": [
     {
       "slideNumber": 1,
@@ -822,10 +839,12 @@ Return STRICT JSON:
                 inputContext: { account: ctx.account.username, mode: ctx.auditMode || 'full', fallbackFrom: 'gemini_mcp' },
                 outputSummary: `Audit completed via Manus AI with overall score ${manusResult.scores?.overall_score || 85}/100`,
                 outputPayload: manusResult,
+                output: manusResult,
                 tokensUsed: { prompt: 1200, completion: 950, total: 2150 },
                 durationMs: Date.now() - startTime,
                 costUsd: 0.005,
                 status: 'success',
+                createdAt: new Date().toISOString(),
                 timestamp: new Date().toISOString()
               },
               fallbackUsed: true
@@ -850,10 +869,12 @@ Return STRICT JSON:
             inputContext: { account: ctx.account.username, mode: ctx.auditMode || 'full', fallbackReason: agentErr?.message },
             outputSummary: `Audit completed with overall score ${fallbackResult.scores?.overall_score || 85}/100`,
             outputPayload: fallbackResult,
+            output: fallbackResult,
             tokensUsed: { prompt: 850, completion: 650, total: 1500 },
             durationMs: Date.now() - startTime,
             costUsd: 0.002,
             status: 'success',
+            createdAt: new Date().toISOString(),
             timestamp: new Date().toISOString()
           },
           fallbackUsed: true
@@ -1222,6 +1243,28 @@ Here is why that approach is quietly slowing down your progress—and the exact 
         ],
         callToAction: `Save this post 📌 and comment "GUIDE" to get the step-by-step checklist!`
       };
+    } else if (format === 'Image') {
+      return {
+        title,
+        format: 'Image',
+        hook,
+        imageConcept: {
+          headline: title,
+          visualPrompt: `Minimalist modern financial graphic poster for ${account.displayName}: "${title}". Clean typography, high contrast, brand accent orange.`,
+          textOverlay: hook,
+          aspectRatio: '1:1',
+          stylePreset: 'Editorial Swiss Graphic'
+        },
+        caption: `Stop making this common mistake in ${account.niche}! 📊\n\nSave this post 📌 for your next review.\n\n#${account.category.replace(/\s+/g, '')} #${account.niche.replace(/\s+/g, '')}`,
+        hashtags: [
+          `#${account.category.replace(/\s+/g, '')}`,
+          `#${account.niche.replace(/\s+/g, '')}`,
+          '#Infographic',
+          '#PersonalFinance',
+          '#SmartMoney'
+        ],
+        callToAction: 'Save this post 📌 and share with someone who needs this!'
+      };
     } else {
       return {
         title,
@@ -1310,6 +1353,72 @@ If you found value in this carousel:
         `Directly strengthens compliance with active skill ${activeSkill.version}`
       ]
     };
+  }
+
+  // Real AI Image Generation Provider Engine
+  public async generateAiImage(
+    prompt: string,
+    aspectRatio: string = '1:1',
+    stylePreset?: string
+  ): Promise<{ imageUrl: string; provider: string; model: string }> {
+    const apiKey = this.getApiKey('gemini') || process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error('Gemini API key is not configured in Credential Vault or GEMINI_API_KEY environment variable.');
+    }
+
+    const { GoogleGenAI } = await import('@google/genai');
+    const ai = new GoogleGenAI({
+      apiKey,
+      httpOptions: {
+        headers: {
+          'User-Agent': GEMINI_USER_AGENT
+        }
+      }
+    });
+
+    // Real Gemini Image generation models catalog
+    const imageCandidateModels = [
+      'gemini-2.5-flash-image',
+      'gemini-3.1-flash-image',
+      'gemini-3-pro-image',
+      'gemini-3.1-flash-lite-image'
+    ];
+    let lastError: any = null;
+
+    for (const model of imageCandidateModels) {
+      try {
+        const response = await ai.models.generateContent({
+          model,
+          contents: `Generate an Instagram visual asset: ${prompt}. Aspect ratio ${aspectRatio}. Style: ${stylePreset || 'Editorial Graphic'}. Clean modern aesthetic.`
+        });
+
+        const candidates = response.candidates || [];
+        for (const cand of candidates) {
+          for (const part of cand.content?.parts || []) {
+            if ((part as any).inlineData?.data) {
+              const mime = (part as any).inlineData.mimeType || 'image/png';
+              const base64 = (part as any).inlineData.data;
+              return {
+                imageUrl: `data:${mime};base64,${base64}`,
+                provider: 'gemini',
+                model
+              };
+            }
+          }
+        }
+        throw new Error(`Model ${model} returned text instead of image data: ${response.text?.slice(0, 100)}`);
+      } catch (err: any) {
+        lastError = err;
+        const errMsg = err?.message || JSON.stringify(err);
+        if (errMsg.includes('429') || errMsg.includes('RESOURCE_EXHAUSTED') || errMsg.includes('limit: 0')) {
+          throw new Error(
+            `Gemini Image API Error: Quota exceeded (limit: 0 on Google AI Studio Free Tier). Model '${model}' requires a billing-enabled API key or Vertex AI enterprise quota.`
+          );
+        }
+      }
+    }
+
+    throw lastError || new Error('Failed to generate image with Gemini image models.');
   }
 
   // Provider Dispatcher

@@ -5,6 +5,7 @@ import {
   InstagramAuditRecord,
   InstagramAuditMode,
   TopicIdea,
+  TopicFormat,
   ContentPipelineItem,
   PipelineStage,
   ScriptItem,
@@ -2188,7 +2189,7 @@ export class InstagramService {
   public async generateScript(
     accountId: string,
     topicId?: string,
-    format: 'Reel' | 'Carousel' = 'Reel',
+    format: TopicFormat = 'Reel',
     customTitle?: string
   ): Promise<ScriptItem> {
     const account = this.getAccount(accountId);
@@ -2219,6 +2220,7 @@ export class InstagramService {
       hook: result.hook || topic?.hook || 'Start directly with core insight',
       scenes: result.scenes,
       slides: result.slides,
+      imageConcept: result.imageConcept,
       caption: result.caption || '',
       hashtags: result.hashtags || [],
       callToAction: result.callToAction || 'Save and share this insight!',
@@ -2241,6 +2243,51 @@ export class InstagramService {
     }
 
     return script;
+  }
+
+  // 4B. GENERATE REAL AI IMAGE FOR SCRIPT
+  public async generateImageForScript(
+    scriptId: string,
+    prompt?: string,
+    aspectRatio?: string,
+    stylePreset?: string
+  ): Promise<{ script: ScriptItem; imageUrl?: string; error?: string; quotaExceeded?: boolean }> {
+    const script = this.scripts.find(s => s.id === scriptId);
+    if (!script) throw new Error('Script not found');
+
+    const effectivePrompt =
+      prompt ||
+      script.imageConcept?.visualPrompt ||
+      `Minimalist social media graphic for ${script.title}: ${script.hook}`;
+
+    const effectiveAspect = aspectRatio || script.imageConcept?.aspectRatio || '1:1';
+    const effectiveStyle = stylePreset || script.imageConcept?.stylePreset || 'Editorial Swiss Graphic';
+
+    try {
+      const result = await this.orchestrator.generateAiImage(effectivePrompt, effectiveAspect, effectiveStyle);
+
+      if (!script.imageConcept) {
+        script.imageConcept = {
+          headline: script.hook || script.title,
+          visualPrompt: effectivePrompt,
+          textOverlay: script.hook,
+          aspectRatio: effectiveAspect as any,
+          stylePreset: effectiveStyle
+        };
+      }
+      script.imageConcept.mockImageUrl = result.imageUrl;
+      script.imageConcept.finalImageUrl = result.imageUrl;
+      script.updatedAt = new Date().toISOString();
+
+      return { script, imageUrl: result.imageUrl };
+    } catch (err: any) {
+      const isQuota = err.message.includes('Quota exceeded') || err.message.includes('limit: 0') || err.message.includes('429');
+      return {
+        script,
+        error: err.message,
+        quotaExceeded: isQuota
+      };
+    }
   }
 
   // 5. UPDATE SCRIPT (TRACK USER EDITS FOR LEARNING)

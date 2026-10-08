@@ -754,6 +754,11 @@ export interface GenerationRecord {
   feedback?: string;
   createdAt: string;
   error?: string;
+  outputSummary?: string;
+  outputPayload?: any;
+  costUsd?: number;
+  timestamp?: string;
+  fallbackUsed?: boolean;
 }
 
 export interface SystemReadiness {

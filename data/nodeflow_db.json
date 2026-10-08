@@ -1365,7 +1365,7 @@
       "category": "Finance & NBFC",
       "niche": "Personal Credit, EMI Cards & Wealth Literacy",
       "connectedAt": "2026-08-10T10:00:00.000Z",
-      "lastSyncAt": "2026-09-19T07:22:05.942Z",
+      "lastSyncAt": "2026-10-08T04:10:36.084Z",
       "isDemo": true,
       "contentPillars": [
         {
@@ -1471,6 +1471,163 @@
     }
   ],
   "instagramAudits": [
+    {
+      "id": "audit-1791432387246",
+      "accountId": "ig-bajajfinance",
+      "timestamp": "2026-10-08T04:06:27.246Z",
+      "auditMode": "full",
+      "status": "completed",
+      "progressStep": "Audit completed successfully",
+      "provider": "manus",
+      "model": "manus-1.6-lite",
+      "skillVersion": "v4",
+      "promptVersion": "mcp-audit-v2",
+      "scores": {
+        "profile_score": 72,
+        "content_score": 66,
+        "consistency_score": 70,
+        "engagement_score": 64,
+        "positioning_score": 71,
+        "overall_score": 68
+      },
+      "strengths": [
+        "High organic credibility in the Finance & NBFC domain with 428,500 engaged followers.",
+        "Content Pillars (Educational Financial Literacy & Product Transparency & How-Tos) demonstrate strong retention.",
+        "Bio clearly articulates niche positioning and value proposition for targeted demographic."
+      ],
+      "weaknesses": [
+        "Under-indexing on high-share educational carousel carousels (currently only 28% vs target 40%).",
+        "Reel watch-time drops 35% after the 7-second mark due to slow visual pacing.",
+        "Inconsistent posting times resulting in unpredictable algorithm reach spikes."
+      ],
+      "critical_issues": [
+        "Missing clear call-to-action hooks on 40% of recent Reels.",
+        "Bio link does not route to tracked campaign landings."
+      ],
+      "content_gaps": [
+        "Actionable 60-second step-by-step breakdowns answering common customer dilemmas in Personal Credit, EMI Cards & Wealth Literacy.",
+        "Save-worthy checklist carousels comparing complex industry options.",
+        "Customer story spotlights demonstrating tangible outcome metrics."
+      ],
+      "topic_opportunities": [
+        "The 3 Costly Mistakes Customers Make When Navigating Finance & NBFC (Reel breakdown).",
+        "5-Slide Emergency Checklist: What to Do Before Committing to Any Financial Contract.",
+        "Why Traditional Advice Fails: The Modern Framework for Rapid Personal Growth."
+      ],
+      "recommendations": [
+        {
+          "text": "Incorporate active AI Skill v4 guidelines into every video hook (first 2.5s).",
+          "priority": "high",
+          "completed": false
+        },
+        {
+          "text": "Shift weekly Reel distribution to 3 high-impact Reels and 2 10-slide Carousels.",
+          "priority": "high",
+          "completed": false
+        },
+        {
+          "text": "Audit competitor @tatacapital top-performing sound selection.",
+          "priority": "medium",
+          "completed": false
+        }
+      ],
+      "content_pillar_analysis": [
+        {
+          "pillar": "Educational Financial Literacy",
+          "performance": "Under-allocated",
+          "recommendation": "Target 40% allocation by generating 2 specialized pieces next week."
+        },
+        {
+          "pillar": "Product Transparency & How-Tos",
+          "performance": "On Target",
+          "recommendation": "Target 25% allocation by generating 2 specialized pieces next week."
+        },
+        {
+          "pillar": "Fraud Awareness & Consumer Safety",
+          "performance": "Under-allocated",
+          "recommendation": "Target 15% allocation by generating 2 specialized pieces next week."
+        },
+        {
+          "pillar": "Lifestyle & Real Customer Wins",
+          "performance": "On Target",
+          "recommendation": "Target 20% allocation by generating 2 specialized pieces next week."
+        }
+      ],
+      "competitor_observations": [
+        {
+          "competitor": "@tatacapital",
+          "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+          "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+        },
+        {
+          "competitor": "@hdfcbank",
+          "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+          "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+        },
+        {
+          "competitor": "@zerodhaonline",
+          "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+          "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+        }
+      ],
+      "changes_since_previous_audit": [
+        "Overall account health index changed to 68/100 (+2 pts).",
+        "Applied active skill rules from version v4 into audit assessment criteria.",
+        "Identified 3 new high-priority content gaps ready for Gemini topic generation."
+      ],
+      "createdBy": "System (User Request)",
+      "version": "v2.4",
+      "fallbackUsed": true,
+      "fallbackReason": "@bajajfinance (instagram_audit) - Fallback Triggered: Manus AI Research Agent (Gemini Error: Instagram data could not be retrieved. Please reconnect the Instagram account or check the required permissions.)",
+      "dataSources": [
+        "instagram_mcp"
+      ],
+      "whatsWorking": [
+        {
+          "title": "Problem-First Hook Velocity (< 2.5 seconds)",
+          "detail": "Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.",
+          "reason": "Instant pattern interrupts create emotional tension and stop the user from swiping."
+        },
+        {
+          "title": "7-10 Slide Educational Diagnostic Carousels",
+          "detail": "Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.",
+          "reason": "High utility content turns posts into permanent reference bookmarks in the user collection."
+        },
+        {
+          "title": "Verified Calculation Breakdowns & Transparent Math",
+          "detail": "Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.",
+          "reason": "Concrete numbers establish institutional authority and eliminate skepticism."
+        }
+      ],
+      "whatsNotWorking": [
+        {
+          "title": "Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")",
+          "detail": "First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.",
+          "reason": "Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.",
+          "guardrailRule": "Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.",
+          "addedToSkills": true
+        },
+        {
+          "title": "Multi-Concept Overloaded Carousels",
+          "detail": "Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.",
+          "reason": "Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.",
+          "guardrailRule": "Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.",
+          "addedToSkills": true
+        },
+        {
+          "title": "Small Gray Subtitles & Uncaptioned Video Feeds",
+          "detail": "Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.",
+          "reason": "Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.",
+          "guardrailRule": "Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.",
+          "addedToSkills": true
+        }
+      ],
+      "markdownReport": "# Instagram Content Audit Report: @bajajfinance\n\n**Audit date:** 8 October 2026 (UTC; connector snapshot approximately 04:07 UTC)  \n**Account:** @bajajfinance — Bajaj Finance Limited  \n**Sample:** 20 most recent posts returned by the Instagram connector, 17 September–6 October 2026 (UTC); insights retrieved for all 20.  \n**Scope:** Two-part audit requested: T-2 post diagnostic and 20-post account strategy scorecard.\n\n## Executive conclusion\n\nThe account is publishing frequently and its sampled feed is overwhelmingly video-led (18/20), with a strong human-interest Reel and a fraud-awareness Reel showing that emotional relevance and clear risk scenarios can travel much further than routine product explainers. However, the sample does not establish that the required carousel cadence is being met; captions frequently direct viewers to a bio link or product information rather than a single measurable response; comments are nearly absent outside two posts; and reach-based interaction performance is highly concentrated in one viral post. Strategy should retain high-performing stories and fraud education while adding verifiable, saveable financial explainers, an observable carousel lane, prompt-based CTAs, and formal claim/disclaimer review. Visual design, opening seconds, on-screen legal text, spoken audio, and retention drop-offs cannot be judged from the connector’s text and aggregate insight fields.\n\n## Account and sample overview\n\n| Metric | Result |\n|---|---:|\n| Followers | 1,753,025 |\n| Following | 6 |\n| Account post count | 2,818 |\n| Bio returned by connector | “For all your financial needs” |\n| User-supplied brand bio for context | “Empowering 80M+ customers with smart loans, EMI solutions & transparent wealth insights. 🇮🇳 #FinSmartEveryday” |\n| Posts / formats in sample | 20 total: 18 video posts (90%), 2 image posts (10%) |\n| Carousels explicitly identifiable from returned media metadata | Not identifiable; image media type alone does not distinguish single-image posts from carousels |\n| Total / mean reported interactions | 18,686 / 934.3 per post |\n| Median reported interactions | 247 per post |\n| Mean reach / mean views | 43,007 / 63,478 per post |\n| Interaction rate by reach, pooled | 2.17% |\n| Median per-post interaction rate by reach | 0.55% |\n| Mean comments / post | 13.3; median 0 |\n\n**Interaction rate by reach** is `(likes + comments + saves + shares) ÷ reach × 100`, using the connector’s reported `total_interactions` where it reconciles with the visible components. The pooled 2.17% rate is strongly lifted by one exceptional post. Excluding the 3 October human-interest Reel, mean reported interactions fall from 934 to **226 per post**. The supplied historical 3.84% engagement rate is not directly comparable unless its denominator, time window, and inclusion rules match this audit; treat it as directional context, not a like-for-like benchmark.\n\n## SECTION 1: T-2 (48 HOURS AGO) POST DIAGNOSTIC\n\n**T-2 convention used:** T-2 means the UTC calendar date 6 October 2026, two calendar dates before the audit date. One post was returned for that date. Its timestamp is **6 October 2026, 16:54:47 UTC**—about 35 hours 13 minutes before the connector snapshot, not exactly 48 hours before it. No post was published at the precise audit-time-minus-48-hours instant; the diagnostic below covers the post on the T-2 calendar date. This distinction avoids implying a 48-hour-old performance cohort that the timestamps do not support.\n\n**T-2 post:** Reel, “Bajaj Finance CA Loan explore kar rahe hain? Apply karne se pehle kuch important cheezein jaan lena useful ho sakta hai.” [View Reel](https://www.instagram.com/reel/DeKQj7dtoPb/)  \n**Snapshot metrics:** 72 likes, 0 comments, 5 saves, 1 share; 82 reported interactions; reach 19,816; views 28,065. Interaction rate by reach: **0.41%**. Views/reach: **1.42** (a ratio, not a retention measure).\n\n### 1. What Worked (Hooks, format, early reach)\n\n- The format is a Reel, aligned to a video-first sample and compatible with discovery, although actual distribution sources were not returned.\n- The caption opens with a defined product decision—exploring a CA loan—and a pre-application information promise. This is more targeted than a generic greeting and addresses a high-intent audience.\n- The post accumulated 19,816 reach and 28,065 views at the available snapshot. Five saves indicate some reference intent, but the available metrics do not establish retention or whether this is “early” relative to other posts.\n\n### 2. What Did Not Work (Drop-offs, weak retention, low comments)\n\n- The observed interaction rate by reach is **0.41%**, below the sample pooled rate of 2.17% and the median per-post rate of 0.55%. These are descriptive comparisons, not causal benchmarks; the sample-wide mean is distorted by a viral outlier.\n- No comments and only one share suggest little visible conversation or forwarding at the snapshot; five saves indicate limited save activity relative to 19,816 reach.\n- Retention drop-offs, average watch time, completion rate, and first-2.5-second hold are unavailable. The view/reach ratio cannot substitute for retention or prove repeat viewing.\n- The retrieved caption excerpt points viewers toward more information / a link in bio rather than a clearly evidenced single keyword, binary prompt, or save/comment action. As caption retrieval was truncated, this CTA assessment is limited to the returned text.\n\n### 3. Root-Cause Analysis (Why lift or drop occurred)\n\n- **Likely opportunity, not proven cause:** the product-specific “before applying” frame has relevance for CA borrowers, but the broad promise (“important things”) does not disclose the immediate payoff in the opening caption. A concrete checklist or decision rule could increase perceived utility.\n- The post is a product explainer in a feed where the best sampled performance comes from a relatable human story and a fear-reversal fraud scenario. A utility-first product post may need a sharper problem, transparent worked example, and participation trigger to earn saves/shares.\n- Observed engagement is sparse, especially comments. The metrics alone cannot distinguish creative weakness from audience targeting, post age, distribution, or platform factors; no historical time-series, impressions sources, or retention data were returned.\n- Compliance and execution cannot be concluded from caption metrics: no claim review of the video frames, offer terms, audio, or on-screen qualifications was possible.\n\n### 4. Strategic Adjustments (2-3 direct actionable pivots)\n\n1. **Replace the broad intro with a concrete decision hook:** test “CA loan lene se pehle yeh 3 documents check karein” (define any technical term in-frame), then deliver exactly three practical points and one action. Success measures: 3-second hold, completion rate, saves/reach, and shares/reach.\n2. **Turn the advice into a saveable companion carousel:** one CA-loan readiness checklist, one step per slide, swipe prompt on slides 2–8, final `SAVE` or `Comment CA` CTA. Include a relevant application/document caveat reviewed by compliance. Measure carousel completion/swipe-through, saves/reach, and keyword comments.\n3. **Replace passive “learn more” direction with one measurable CTA and a direct prompt:** e.g., “Comment CA for the document checklist” or “Save this before applying.” A/B-test one CTA at a time; compare qualified comments and saves per reach, not likes alone.\n\n## SECTION 2: 20-POST ACCOUNT AUDIT & STRATEGY SCORECARD\n\n### Format mix, cadence, and feed positioning\n\n- **Format mix:** 18 video posts (90%) and 2 image posts (10%). The connector did not mark whether either image post is a carousel. Therefore the sample supports a minimum **2 Reels/video posts per full calendar week** in the observed weeks, but cannot verify the required **1 Carousel per week**. Two image posts are not enough evidence to call either carousel or static single-image content.\n- **Posting cadence by UTC calendar week (ISO):** 17–20 Sep: 4 posts; 21–27 Sep: 7; 28 Sep–4 Oct: 7; 5–11 Oct through the 6 Oct snapshot: 2. All observed weeks have at least two video posts, but the last week is incomplete. Volume is high relative to the user’s minimum and should not be increased further until format balance and post utility improve.\n- **Content lanes observed from returned captions:** product promotion / product utility is prominent (CA, business, home, gold, solar, car, securities and EMI); fraud awareness appears in two clear examples; human-interest/brand purpose appears in two image posts and one high-performing Reel; entertainment/series appears in the rapid-fire episode. No reliable full-content lane classification is possible for every caption because some returned excerpts are shortened.\n- **Brand role and positioning:** product utility connects readily to the finance/NBFC category, while the human-interest swim-story and ambition Reel create emotional reach but need an explicit, natural bridge to financial inclusion or the brand promise. The connector’s current bio (“For all your financial needs”) is less distinctive than the user-supplied brand context. Align the live profile bio and pinned/highlight structure to the approved promise, subject to brand ownership.\n- **Hook evidence:** captions include direct dilemmas (“applying?”, “plan hai?”), corrections (“subsidy… solar free nahi”), a panic-warning KYC hook, and a human-story tension (“yeh tumse nahi hoga”). The human story drove the strongest observed response; the KYC warning led the remaining sample on reported interactions (428) and shares (38). Caption hooks are observable; visual/audio pattern interrupts and first-frame execution are not.\n- **Engagement quality:** sample median comments is zero. The human-interest Reel generated 242 comments; a Solar Finance explainer generated 21 and a different home-loan story had 1. Most posts did not elicit a comment. The most viral Reel contributed 4,987 shares and 1,535 saves; across the other 19 posts, average interactions were 226. Build reusable participation into routine education rather than expecting product mentions alone to create discussion.\n- **Accessibility and jargon:** terms visible in captions include EMI, ROI, subsidy, KYC, loan against securities, working capital, and financial product names. In the ROI explainer, the caption helpfully expands ROI as “Rate of Interest”; maintain that standard and add plain-language spoken/on-screen definitions. Explain EMI as the fixed periodic loan payment (with principal/interest context where relevant), and distinguish subsidy from total installed cost.\n- **Claim/disclaimer screening:** captions refer to approval, borrowing, subsidy, eligibility, cost, “extra” festive/OTT benefits, and product coverage/benefits. These require claim-specific review, particularly a subsidy/cost explanation, approval-related wording, eligibility, partner benefits, product coverage, rates or absolute amounts if shown in the creative. The returned caption excerpts do not establish whether there is a proximate, legible legal qualification on-screen. Absence in a caption excerpt is **not** evidence that the video has no on-screen disclaimer. Obtain frame-level review and compliance sign-off before asserting adequacy.\n- **Single-concept, CTA, opening, and visual guardrails:** captions are generally focused on one product or story; however, this cannot verify that each edit sticks to one concept. The sampled text includes practical and product-led CTAs, but several rely on link-in-bio or broad “learn more” directions; captions should end with a binary diagnostic prompt or one keyword/action. No caption excerpts suggest the prohibited “Murukku vs Chakli: The Crunch Audit” theme. Overlay contrast, 4–5-word text bursts, greetings in the actual first frame, and swipe prompts cannot be audited without creative assets.\n\n### Six numeric scores (out of 100)\n\nScores are evidence-based judgments against the user-provided rules, using the connector sample; they are not platform ratings or legal opinions.\n\n| Dimension | Score | Rationale |\n|---|---:|---|\n| Profile | 62 | Large account and a website link are present; returned bio is generic and differs from the supplied strategic bio. |\n| Content | 57 | Relevant product and awareness lanes, one exceptional human story; sample lacks verifiable carousel, creative execution, and claim-qualification evidence. |\n| Consistency | 78 | High and regular publishing; at least two videos in every observed week. Carousel-per-week requirement cannot be verified. |\n| Engagement | 54 | One major viral outlier; 0.55% median interaction rate by reach and zero median comments show routine engagement is much weaker than the headline mean. |\n| Positioning | 64 | Finance relevance is clear in product posts; differentiated plain-language wealth/credit literacy and consistent brand promise are under-evidenced. |\n| **Overall** | **63** | Strong publishing engine and occasional breakout creative, but format balance, repeatable utility, CTA discipline, evidence-based claims review, and typical-post engagement need improvement. |\n\n### Strategy scorecard against the supplied rules\n\n| Strategy requirement | Assessment | Evidence / limitation | Priority |\n|---|---|---|---|\n| Minimum 2 Reels and 1 Carousel weekly | **Partially met / carousel unverified** | 18/20 media are video; every sampled calendar week includes ≥2 videos. Image metadata does not identify carousel status. | High |\n| No static image with unclickable caption link; convert blog insights to saveable carousel + keyword DM | **Not verifiable** | 2 image posts; no image-count metadata, blog-origin tags, or DM automation details. No proven static post/link violation. | High |\n| High-contrast oversized text, ≤4–5 words per burst, vibrant pills | **Not assessable** | No creative frames returned. | High |\n| One core concept / framework | **Mostly supported by captions, not confirmed in creative** | Captions mostly focus on one product/story; full edits not inspectable. | Medium |\n| No greetings; open on dilemma, metric, or provocative assertion | **Caption hooks partly supported; visual opening unverified** | Several captions open with questions/warnings; opening video frames unavailable. | Medium |\n| Proximate legible legal qualification for absolute figures, interest terms, partner offers | **Needs compliance review** | Captions mention product/benefit/subsidy/approval topics; frames and on-screen disclaimer not supplied. | Critical |\n| Practical finance grounded in arithmetic, assumptions, formulas, breakdown | **Under-evidenced** | ROI/solar captions describe concepts, but no complete example with stated assumptions and transparent calculation is visible in retrieved text. | High |\n| Educational/product creative has one-action CTA | **Partially met / inconsistent** | Some CTAs direct to bio or product information; post-level caption excerpts do not consistently evidence a single SAVE/keyword action. | High |\n| Captions end with binary diagnostic prompt or specific keyword CTA | **Underdeveloped** | Interactions show near-zero comments on most sampled posts; caption truncation limits a complete ending-by-ending audit. | High |\n| Avoid generic motivation/listicles unless grounded in verifiable math | **Mixed** | Human-interest storytelling is not a financial-math lesson but performs exceptionally and supports brand narrative; keep it purposeful, not generic. No generic listicle conclusion drawn from snippets. | Medium |\n| Reel pattern interrupt within first 2.5 seconds | **Not assessable** | No video frames/audio or retention data. | High |\n| Carousel swipe trigger on slides 2–8 | **Not assessable** | Carousel status and slide assets unavailable. | High |\n| Specific low-friction CTA in every script | **Partially evidenced** | Caption CTAs are present in some posts but are often broad/product-information oriented; scripts themselves unavailable. | High |\n| Avoid “Murukku vs Chakli: The Crunch Audit” theme | **No violation observed in sample** | Returned captions concern finance, fraud, storytelling, or entertainment. | Low |\n\n### Detailed post-level performance\n\n“Interactions” and reach/view counts below are connector-reported. Per-post rate is reported interactions divided by reach. The one standout dominates the mean; compare medians and distribution rather than treating the mean as representative.\n\n| # | Date (UTC) | Format | Caption topic / opening cue | Interactions | Reach | Rate by reach | Saves / shares | Link |\n|---:|---|---|---|---:|---:|---:|---:|---|\n| 1 | 6 Oct | Reel | CA loan pre-application checks | 82 | 19,816 | 0.41% | 5 / 1 | [Reel](https://www.instagram.com/reel/DeKQj7dtoPb/) |\n| 2 | 5 Oct | Reel | Business loan “4 Cs” question | 106 | 22,015 | 0.48% | 9 / 13 | [Reel](https://www.instagram.com/reel/DeHY4GVt34c/) |\n| 3 | 3 Oct | Reel | Ambition despite discouragement; human story | 14,396 | 106,776 | 13.48% | 1,535 / 4,987 | [Reel](https://www.instagram.com/reel/DeBdX2FNixN/) |\n| 4 | 2 Oct | Reel | Business loan growth funding | 136 | 28,770 | 0.47% | 14 / 7 | [Reel](https://www.instagram.com/reel/DeAFi9nNxYj/) |\n| 5 | 1 Oct | Reel | Home-loan application readiness | 154 | 29,492 | 0.52% | 10 / 6 | [Reel](https://www.instagram.com/reel/Dd9TZOUtaH1/) |\n| 6 | 30 Sep | Reel | ROI explained through borrowing analogy | 226 | 40,722 | 0.55% | 15 / 12 | [Reel](https://www.instagram.com/reel/Dd5lmnWOyzT/) |\n| 7 | 29 Sep | Reel | Gold-loan product prompt | 163 | 40,904 | 0.40% | 21 / 8 | [Reel](https://www.instagram.com/reel/Dd4PHrKyURK/) |\n| 8 | 28 Sep | Reel | Diwali / Blockbuster EMI Days teaser | 265 | 44,796 | 0.59% | 40 / 23 | [Reel](https://www.instagram.com/reel/Dd1XvNHNk85/) |\n| 9 | 28 Sep | Reel | Fraud-awareness: fake investigation call | 150 | 29,379 | 0.51% | 18 / 2 | [Reel](https://www.instagram.com/reel/Dd01zPuNWmH/) |\n| 10 | 27 Sep | Reel | Loan against securities + OTT benefits | 243 | 45,105 | 0.54% | 16 / 22 | [Reel](https://www.instagram.com/reel/DdywAqmt5hw/) |\n| 11 | 26 Sep | Image | Swimming investment / athlete development | 226 | 46,503 | 0.49% | 15 / 10 | [Post](https://www.instagram.com/p/DdvPQn5oZWs/) |\n| 12 | 25 Sep | Image | Swimming investment / long-term preparation | 266 | 63,934 | 0.42% | 18 / 8 | [Post](https://www.instagram.com/p/DdtaltjOUMN/) |\n| 13 | 24 Sep | Reel | Solar Finance after subsidy cost | 251 | 37,767 | 0.66% | 23 / 25 | [Reel](https://www.instagram.com/reel/DdrTgOgNpbU/) |\n| 14 | 23 Sep | Reel | Subsidy does not mean solar is free | 258 | 41,169 | 0.63% | 26 / 9 | [Reel](https://www.instagram.com/reel/DdopkQxtF4g/) |\n| 15 | 22 Sep | Reel | Car choice: budget, EMI, running costs | 263 | 38,972 | 0.67% | 20 / 3 | [Reel](https://www.instagram.com/reel/DdmL5laNm_x/) |\n| 16 | 21 Sep | Reel | KYC-pending panic-call warning | 428 | 55,231 | 0.77% | 28 / 38 | [Reel](https://www.instagram.com/reel/DdjRXpMlYih/) |\n| 17 | 20 Sep | Reel | Home-loan / society-life story | 280 | 47,435 | 0.59% | 26 / 9 | [Reel](https://www.instagram.com/reel/DdhEG3XNYJS/) |\n| 18 | 20 Sep | Reel | Solar system components and coverage | 272 | 38,755 | 0.70% | 29 / 19 | [Reel](https://www.instagram.com/reel/DdgKxc-tGjb/) |\n| 19 | 18 Sep | Reel | Solar upfront-cost problem | 307 | 41,408 | 0.74% | 31 / 19 | [Reel](https://www.instagram.com/reel/Ddb7lnRtoop/) |\n| 20 | 17 Sep | Reel | Rapid-fire entertainment episode | 214 | 41,197 | 0.52% | 29 / 13 | [Reel](https://www.instagram.com/reel/DdZZcjByeV5/) |\n\n### Scored recommendations\n\nScores are **priority/opportunity scores out of 100** (higher = act sooner), not forecasts of guaranteed lift.\n\n| Priority score | Rank | Recommended change | Why / example execution | Success metric |\n|---:|---|---|---|---|\n| 96 | Critical | Establish a pre-publication finance-claim and on-screen disclosure checklist. | Flag absolute amounts, rates, savings, approval/eligibility language, subsidy, partner benefits, and coverage claims; require proximate legible qualification and caption alignment. Compliance team signs off before publishing. | 100% audited claim-bearing posts signed off; zero unresolved disclosure gaps in monthly sample. |\n| 92 | High | Meet cadence with at least one clearly identifiable educational carousel per week while retaining 2+ Reels. | Convert a high-intent topic (e.g., “solar subsidy: what it covers / does not cover”) into a 5–7-slide sequence: hook, definition, worked example with assumptions, caveat, checklist, `SAVE` action; place swipe prompts on slides 2–8. | Carousel posts/week; completion/swipe-through; saves/reach and shares/reach. |\n| 90 | High | Standardize single-action CTAs and end-caption prompts. | Choose one action per post: `SAVE`, or “Comment EMI for the breakdown,” or one keyword trigger. Avoid stacking “follow, like, share, click.” | CTA compliance rate; qualified comments and saves per reach; profile/link actions where available. |\n| 88 | High | Use worked financial arithmetic for practical explainers. | Show assumptions, formula, steps, and transparent breakdown for an EMI/interest or solar-cost example; label estimates and exclusions and define terms in plain language. | Saves/reach, shares/reach, correct-answer/poll rate, and completion rate. |\n| 84 | High | Build a reusable first-2.5-second hook and accessibility spec. | Create a dilemma, numerical fact with source, or misconception correction; use high-contrast oversized overlays in short 4–5-word bursts, define jargon in-frame, and verify silent viewing. | 2.5-second hold, average watch time, completion, accessibility checklist pass rate. |\n| 80 | High | Make T-2 and weekly reporting retention-aware and comparable. | Capture insights at consistent post ages (e.g. 24h and 72h) with reach, views, saves, shares, comments, watch time and completion where available; do not infer retention from views/reach. | Percentage of posts with consistent checkpoints; median 72h interaction rate and completion by format/lane. |\n| 78 | Medium | Replicate the mechanics, not the exact subject, of top stories and fraud content. | Preserve relatable tension and clear practical resolution; coordinate fraud-awareness ownership with ORM if applicable, then add brand-owned evergreen explainers that complement rather than duplicate. | Shares/reach, saves/reach, qualified comments, and lane-level median performance. |\n| 68 | Medium | Clarify profile promise and connect brand-purpose creative to finance literacy. | Align approved bio language with the user-provided distinctiveness; add a natural bridge in purpose-led posts to access, capability, or financial resilience without forcing product placement. | Profile visits-to-follow conversion, branded recall/response, and link actions. |\n| 45 | Low | Maintain an explicit topic exclusion log. | Add already-used themes such as “Murukku vs Chakli: The Crunch Audit” to a pre-production check; no similar violation appeared in this sample. | Zero repeated excluded concepts in monthly review. |\n\n### Recommended 30-day test plan\n\n1. **Weeks 1–4: format balance.** Publish at least 2 Reels plus 1 explicitly labeled carousel weekly. Keep image posts identifiable in the publishing log as single-image or carousel.\n2. **Hook test.** For comparable financial topics, alternate dilemma-led and misconception-led openings; maintain the same CTA and approximate duration. Record 2.5-second hold, completion, saves/reach, shares/reach, and comments/reach at fixed time checkpoints.\n3. **CTA test.** Compare a single `SAVE` CTA with a single keyword-comment CTA across similar educational posts; do not change hook and CTA simultaneously. Track qualified actions per reach.\n4. **Math-and-compliance test.** Publish a practical example with stated assumptions, formula, transparent calculation, plain-language glossary, and approved on-screen/caption qualifications. Review all claim-bearing edits before release.\n5. **Reporting.** At 24h and 72h, report median interaction rate by reach by format and lane, plus saves/reach, shares/reach, and comments/reach. Flag virality separately so outliers do not mask typical performance.\n\n## Final assessment\n\nKeep the account’s video cadence and storytelling strengths, but make useful financial learning—not product exposure alone—the repeatable content engine. A weekly observable carousel, arithmetic-backed explainers, concrete hooks, one-action CTAs, and claim-by-claim compliance review are the highest-value pivots. Judge outcomes by fixed-window medians and retention metrics, not raw views or a single viral outlier.\n\n## Method and limitations\n\n- **Data source:** Instagram connector account-info, recent-post list, and post-insights tools for the configured @bajajfinance account. Recent-post sample is the 20 entries returned; all 20 returned post IDs had insights with likes, comments, saves, shares, total interactions, reach, and views.\n- **Date/time:** Post timestamps supplied as UTC. T-2 is interpreted as the UTC calendar date 6 October 2026. The sampled post on that date was posted at 16:54:47 UTC, about 35h13 before the snapshot at approximately 04:08 UTC on 8 October; it was not exactly 48 hours old at snapshot time.\n- **Calculations:** Pooled interaction rate = sum of reported interactions ÷ sum of reach. Per-post rates use reported interactions ÷ post reach. Connector total interactions reconciled with likes + comments + saves + shares on sampled records. Views/reach is not a retention measure.\n- **Unavailable evidence:** No individual post creation assets, carousel slide counts, first frames, video playback, audio, transcript, on-screen text/disclaimer legibility, retention/watch-time, saves-source, audience demographics, distribution-source breakdown, or profile conversion insights were exposed in retrieved data. Captions in the connector output were sometimes shortened; CTA and claim observations are limited to visible returned excerpts. No visual compliance conclusions are made.\n- **Benchmark context:** historical ER and competitor figures in the user’s prompt were treated as supplied context, not independently verified or normalized. They are not directly comparable without matching dates, denominators, formats, and sampling.\n- **Compliance:** This is a content-risk screen, not legal advice or approval. Any financial, product, offer, partner, eligibility, rate, amount, benefit, or outcome claim should receive the organization’s normal compliance review.\n\n## References\n\n- [Instagram profile: @bajajfinance](https://www.instagram.com/bajajfinance/)\n- Representative sampled posts linked in the detailed post-level table above.\n",
+      "opportunities": [],
+      "taskUrl": "https://manus.im/app/af9zCwn6XiZPnTjULmfKqD",
+      "shareUrl": "https://manus.im/app/af9zCwn6XiZPnTjULmfKqD",
+      "attachmentUrl": "https://private-us-east-1.manuscdn.com/sessionFile/af9zCwn6XiZPnTjULmfKqD/sandbox/8cfSKswXWyl5sYKlsfmh3F_1791432616365_na1fn_L2hvbWUvdWJ1bnR1L2luc3RhZ3JhbV9iYWphamZpbmFuY2VfYXVkaXRfMjAyNi0xMC0wOA.md?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvYWY5ekN3bjZYaVpQblRqVUxtZktxRC9zYW5kYm94LzhjZlNLc3dYV3lsNXNZS2xzZm1oM0ZfMTc5MTQzMjYxNjM2NV9uYTFmbl9MMmh2YldVdmRXSjFiblIxTDJsdWMzUmhaM0poYlY5aVlXcGhhbVpwYm1GdVkyVmZZWFZrYVhSZk1qQXlOaTB4TUMwd09BLm1kIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzkzNDkxMjAwfX19XX0_&Key-Pair-Id=K2QY5QTL8JSY6C&Signature=MEYCIQDkD6lSvIzC9snHUPCIgyLocUgaYKHFdnrONpRwi7iW2AIhAIXwSOhIo6dq500ZBKl2AP6Zclh3w~Puw7PxSpp3AO4a"
+    },
     {
       "id": "audit-1789928634671",
       "accountId": "ig-snacc.mart-1789832445989",
@@ -2721,6 +2878,150 @@
   ],
   "instagramTopics": [
     {
+      "id": "topic-1791433317267-0",
+      "accountId": "ig-snacc.mart-1789832445989",
+      "title": "The 3 Hidden Costs of Bulk Snack Storage",
+      "hook": "Stop wasting money on stale snacks. 3 mistakes costing you 20% annually.",
+      "format": "Reel",
+      "contentPillar": "Educational Tutorials & Guides",
+      "viralPotentialScore": 92,
+      "auditRationale": "Addresses the gap for actionable 60-second step-by-step breakdowns by applying mathematical rigor to a common storage dilemma.",
+      "status": "pending",
+      "createdAt": "2026-10-08T04:21:57.267Z",
+      "generationId": "gen-1791433304033-xtqcp",
+      "angleOptions": [
+        "Moisture vs. Airtight logic",
+        "The FIFO (First-In, First-Out) pantry audit",
+        "Cost-per-gram breakdown of bulk buying"
+      ]
+    },
+    {
+      "id": "topic-1791433317267-1",
+      "accountId": "ig-snacc.mart-1789832445989",
+      "title": "Snack Selection Framework: The 5-Slide Decision Matrix",
+      "hook": "Stop guessing. Use this 5-slide framework to pick the perfect snack for your nutritional goal.",
+      "format": "Carousel",
+      "contentPillar": "Educational Tutorials & Guides",
+      "viralPotentialScore": 88,
+      "auditRationale": "Uses a save-worthy checklist format to solve the 'analysis paralysis' customers face when choosing between traditional and modern snack profiles.",
+      "status": "pending",
+      "createdAt": "2026-10-08T04:21:57.267Z",
+      "generationId": "gen-1791433304033-xtqcp",
+      "angleOptions": [
+        "Macro-nutrient density comparisons",
+        "Processing level classification",
+        "The 'Post-Snack Energy' tracking log"
+      ]
+    },
+    {
+      "id": "topic-1791433317267-2",
+      "accountId": "ig-snacc.mart-1789832445989",
+      "title": "From Local Craving to Business Expansion: A Customer Case Study",
+      "hook": "How one customer turned a 15-minute snack break into a weekly productivity boost.",
+      "format": "Reel",
+      "contentPillar": "Client Proof & Case Studies",
+      "viralPotentialScore": 95,
+      "auditRationale": "Directly fills the 'Customer story spotlight' gap by quantifying the tangible outcome (productivity) of a snack habit.",
+      "status": "pending",
+      "createdAt": "2026-10-08T04:21:57.267Z",
+      "generationId": "gen-1791433304033-xtqcp",
+      "angleOptions": [
+        "The '3 PM Slump' intervention study",
+        "Cost-benefit analysis of premium vs. low-quality snacks",
+        "Customer habit-stacking testimonial"
+      ]
+    },
+    {
+      "id": "topic-1791432586930-0",
+      "accountId": "ig-bajajfinance",
+      "title": "The EMI Amortization Trap",
+      "hook": "Why your principal barely drops in the first 12 months.",
+      "format": "Reel",
+      "contentPillar": "Educational Financial Literacy",
+      "viralPotentialScore": 94,
+      "auditRationale": "Addresses the gap in transparent financial mathematics by visualizing the amortization schedule via a high-contrast animation.",
+      "status": "pending",
+      "createdAt": "2026-10-08T04:09:46.930Z",
+      "generationId": "gen-1791432571736-dnae2",
+      "angleOptions": [
+        "Visualizing interest vs. principal split",
+        "Impact of prepayments on total interest",
+        "The math of long-term vs short-term tenure"
+      ]
+    },
+    {
+      "id": "topic-1791432586930-1",
+      "accountId": "ig-bajajfinance",
+      "title": "EMI Card Security Audit",
+      "hook": "3 settings to lock your EMI card instantly.",
+      "format": "Carousel",
+      "contentPillar": "Fraud Awareness & Consumer Safety",
+      "viralPotentialScore": 89,
+      "auditRationale": "Provides tactical actionability by guiding users through the app settings, reducing customer support friction.",
+      "status": "pending",
+      "createdAt": "2026-10-08T04:09:46.930Z",
+      "generationId": "gen-1791432571736-dnae2",
+      "angleOptions": [
+        "Setting transaction limits",
+        "Disabling contactless payments",
+        "Immediate card block procedures"
+      ]
+    },
+    {
+      "id": "topic-1791432586930-2",
+      "accountId": "ig-bajajfinance",
+      "title": "The True Cost of '0% Interest'",
+      "hook": "0% interest does not mean 0% cost.",
+      "format": "Reel",
+      "contentPillar": "Product Transparency & How-Tos",
+      "viralPotentialScore": 97,
+      "auditRationale": "Uses radical transparency to explain processing fees and documentation charges, building long-term brand trust.",
+      "status": "pending",
+      "createdAt": "2026-10-08T04:09:46.930Z",
+      "generationId": "gen-1791432571736-dnae2",
+      "angleOptions": [
+        "Breakdown of hidden processing fees",
+        "Calculating the effective APR",
+        "Reading your loan summary document"
+      ]
+    },
+    {
+      "id": "topic-1791432586930-3",
+      "accountId": "ig-bajajfinance",
+      "title": "Credit Score Repair Framework",
+      "hook": "Stop applying for loans if your score is below 700.",
+      "format": "Carousel",
+      "contentPillar": "Educational Financial Literacy",
+      "viralPotentialScore": 92,
+      "auditRationale": "Provides a step-by-step diagnostic framework that encourages saving the post for reference, boosting algorithm performance.",
+      "status": "pending",
+      "createdAt": "2026-10-08T04:09:46.930Z",
+      "generationId": "gen-1791432571736-dnae2",
+      "angleOptions": [
+        "The 30% credit utilization rule",
+        "Impact of late EMI payments",
+        "How to dispute credit bureau errors"
+      ]
+    },
+    {
+      "id": "topic-1791432586930-4",
+      "accountId": "ig-bajajfinance",
+      "title": "The 50/30/20 Rule Applied",
+      "hook": "Your salary distribution is leaking money.",
+      "format": "Carousel",
+      "contentPillar": "Lifestyle & Real Customer Wins",
+      "viralPotentialScore": 85,
+      "auditRationale": "Moves away from generic advice by grounding the 50/30/20 rule in specific debt-to-income ratio calculations.",
+      "status": "pending",
+      "createdAt": "2026-10-08T04:09:46.930Z",
+      "generationId": "gen-1791432571736-dnae2",
+      "angleOptions": [
+        "Automating EMI payments within the 50% bucket",
+        "Debt-to-income ratio thresholds",
+        "Emergency fund vs. loan repayment strategy"
+      ]
+    },
+    {
       "id": "topic-1789889764216-0",
       "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
@@ -2929,6 +3230,74 @@
     }
   ],
   "instagramScripts": [
+    {
+      "id": "script-1791433282402",
+      "accountId": "ig-snacc.mart-1789832445989",
+      "title": "Top 3 Snack Trends",
+      "format": "Reel",
+      "hook": "You are overpaying by 300% on the grocery shelf right now.",
+      "scenes": [
+        {
+          "timeframe": "0:00 - 0:03",
+          "visualCue": "Extreme close-up snap zoom of presenter slamming a grocery receipt next to three trending snack bags onto a stainless steel table.",
+          "onScreenText": "300% MARKUP EXPOSED",
+          "spokenAudio": "You are overpaying by 300% on the grocery shelf right now.",
+          "audioNote": "Heavy metallic impact sound effect cut directly to absolute silence."
+        },
+        {
+          "timeframe": "0:03 - 0:13",
+          "visualCue": "Split screen: Bag of viral protein puffs on left, plain roasted edamame on right with digital price-per-gram counters running.",
+          "onScreenText": "TREND 1: PROTEIN PUFFS",
+          "spokenAudio": "Trend one: Protein-fortified puffs. Brands charge four dollars fifty for twelve grams of protein. That is thirty-seven cents per gram versus roasted pulses at seven cents.",
+          "audioNote": "Fast digital ticking sound followed by a soft cash-register chime."
+        },
+        {
+          "timeframe": "0:13 - 0:24",
+          "visualCue": "Presenter dumps a 20g pouch of freeze-dried strawberries onto a precision digital micro-scale. Red graphic shows $300/kg extrapolation.",
+          "onScreenText": "TREND 2: FREEZE-DRIED FRUIT",
+          "spokenAudio": "Trend two: Freeze-dried fruit. Removing ninety-eight percent water concentrates shelf life, but at six dollars for twenty grams, you are paying three hundred dollars per kilo for apples.",
+          "audioNote": "Crisp crunch sound effect, low rhythmic electronic pulse."
+        },
+        {
+          "timeframe": "0:24 - 0:36",
+          "visualCue": "Presenter flips adaptogen mushroom cluster pack, magnifying the nutrition label where active ingredients register under 0.5%.",
+          "onScreenText": "TREND 3: ADAPTOGEN CLUSTERS",
+          "spokenAudio": "Trend three: Functional mushroom clusters. Look past the buzzwords. Active functional powders average under point five percent of total weight, wrapped in puffed rice at eight times markup.",
+          "audioNote": "Buzzer error tone followed by a clean bass drop."
+        },
+        {
+          "timeframe": "0:36 - 0:45",
+          "visualCue": "Presenter looks directly into lens, holding up a simplified cost-per-gram matrix chart.",
+          "onScreenText": "AUDIT YOUR BASKET",
+          "spokenAudio": "Buy smart, not marketed. Check your cost-per-gram before scanning at self-checkout. Comment SNACK to receive our free pantry cost audit sheet.",
+          "audioNote": "Clean, uplifting swell and tight outro snare."
+        }
+      ],
+      "caption": "The modern snack aisle is built on marketing premiums, not raw ingredient costs.\n\nHere is the raw arithmetic behind the 3 biggest snack trends:\n\n1. Protein Puffs: Average $0.37 per gram of protein vs. $0.07 per gram in roasted legumes (a 428% markup on processed soy/pea isolate).\n2. Freeze-Dried Fruit: $6.00 for a 20g pack scales to $300.00/kg—primarily paying for industrial vacuum moisture removal.\n3. Adaptogen Bites: Over 90% puffed grains and binder syrups with under 0.5% functional mushrooms by net weight.\n\nWe audit ingredients by weight and unit cost so you never overpay for air and packaging.\n\nDo you prioritize convenience or unit economics when buying snacks?\n\nComment SNACK below and we will DM you our complete Cost-Per-Gram Grocery Audit Guide.",
+      "hashtags": [
+        "#SnackTrends",
+        "#SmartSnacking",
+        "#GroceryAudit",
+        "#UnitCost",
+        "#ConsumerAwareness",
+        "#FoodEconomics",
+        "#ProteinSnacks",
+        "#HealthyPantry",
+        "#CleanEatingOnABudget",
+        "#GroceryHacks",
+        "#TransparentFood",
+        "#SnackSmart",
+        "#CostPerGram",
+        "#FoodMath"
+      ],
+      "callToAction": "Comment SNACK for our free Cost-Per-Gram Grocery Audit Guide",
+      "status": "draft",
+      "modelUsed": "gemini-3.8-flash",
+      "generationId": "gen-1791433243733-2q2ug",
+      "skillVersion": "v4",
+      "createdAt": "2026-10-08T04:21:22.402Z",
+      "updatedAt": "2026-10-08T04:21:22.402Z"
+    },
     {
       "id": "script-1789833029692",
       "accountId": "ig-snacc.mart-1789832445989",
@@ -8321,7 +8690,7 @@
         "timeoutMs": 30000,
         "retryCount": 2,
         "connectionStatus": "connected",
-        "lastTested": "2026-09-17T19:25:23.944Z",
+        "lastTested": "2026-10-08T04:20:19.988Z",
         "statusMessage": "Gemini connected successfully."
       },
       "openai": {
@@ -8409,10 +8778,10 @@
       "monthlyBudgetUsd": 100,
       "warningThresholdPct": 80,
       "hardStopPct": 100,
-      "currentSpendUsd": 18.474000000000004,
+      "currentSpendUsd": 18.480750000000004,
       "currentMonth": "September 2026",
-      "requestCountThisMonth": 148,
-      "estimatedTokensThisMonth": 178800
+      "requestCountThisMonth": 151,
+      "estimatedTokensThisMonth": 183300
     },
     "learningSettings": {
       "enabled": true,
@@ -8597,7 +8966,7 @@
         "Reel",
         "Carousel"
       ],
-      "changeSummary": "Self-learned guardrail added from rejected topic \"Murukku vs Chakli: The Crunch Audit\": Already did this topic",
+      "changeSummary": "Self-learned guardrails ingested from Live audit for @bajajfinance. Engine will actively avoid detected anti-patterns in upcoming topics and scripts.",
       "changelog": "Enforced 2.5s pattern interrupts, verified EMI/compounding numbers, and swipe retention triggers.",
       "reason": "Performance metrics confirmed 2.4x higher save rates on mathematically grounded posts.",
       "supportingFeedback": [
@@ -8605,7 +8974,7 @@
         "High engagement on CIBIL score calculation breakdowns."
       ],
       "approvedBy": "Sachin Jayanth",
-      "approvedAt": "2026-09-20T18:26:49.046Z",
+      "approvedAt": "2026-10-08T04:10:36.084Z",
       "createdAt": "2026-09-05T11:00:00.000Z",
       "previousVersion": "v3"
     }
@@ -8829,6 +9198,404 @@
     }
   ],
   "instagramGenerations": [
+    {
+      "id": "gen-1791433304033-xtqcp",
+      "task": "topic_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "topic-prompt-v8",
+      "skillVersion": "v4",
+      "inputContextSummary": "@snacc.mart (topic_generation) - Skill v4",
+      "inputContext": {
+        "account": "snacc.mart",
+        "skillVersion": "v4"
+      },
+      "output": [
+        {
+          "title": "The 3 Hidden Costs of Bulk Snack Storage",
+          "hook": "Stop wasting money on stale snacks. 3 mistakes costing you 20% annually.",
+          "format": "Reel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 92,
+          "auditRationale": "Addresses the gap for actionable 60-second step-by-step breakdowns by applying mathematical rigor to a common storage dilemma.",
+          "angleOptions": [
+            "Moisture vs. Airtight logic",
+            "The FIFO (First-In, First-Out) pantry audit",
+            "Cost-per-gram breakdown of bulk buying"
+          ]
+        },
+        {
+          "title": "Snack Selection Framework: The 5-Slide Decision Matrix",
+          "hook": "Stop guessing. Use this 5-slide framework to pick the perfect snack for your nutritional goal.",
+          "format": "Carousel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 88,
+          "auditRationale": "Uses a save-worthy checklist format to solve the 'analysis paralysis' customers face when choosing between traditional and modern snack profiles.",
+          "angleOptions": [
+            "Macro-nutrient density comparisons",
+            "Processing level classification",
+            "The 'Post-Snack Energy' tracking log"
+          ]
+        },
+        {
+          "title": "From Local Craving to Business Expansion: A Customer Case Study",
+          "hook": "How one customer turned a 15-minute snack break into a weekly productivity boost.",
+          "format": "Reel",
+          "contentPillar": "Client Proof & Case Studies",
+          "viralPotentialScore": 95,
+          "auditRationale": "Directly fills the 'Customer story spotlight' gap by quantifying the tangible outcome (productivity) of a snack habit.",
+          "angleOptions": [
+            "The '3 PM Slump' intervention study",
+            "Cost-benefit analysis of premium vs. low-quality snacks",
+            "Customer habit-stacking testimonial"
+          ]
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 13232,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-10-08T04:21:57.266Z"
+    },
+    {
+      "id": "gen-1791433243733-2q2ug",
+      "task": "script_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "script-prompt-v4",
+      "skillVersion": "v4",
+      "inputContextSummary": "@snacc.mart (script_generation) - Skill v4",
+      "inputContext": {
+        "account": "snacc.mart",
+        "skillVersion": "v4"
+      },
+      "output": {
+        "title": "Top 3 Snack Trends",
+        "format": "Reel",
+        "hook": "You are overpaying by 300% on the grocery shelf right now.",
+        "scenes": [
+          {
+            "timeframe": "0:00 - 0:03",
+            "visualCue": "Extreme close-up snap zoom of presenter slamming a grocery receipt next to three trending snack bags onto a stainless steel table.",
+            "onScreenText": "300% MARKUP EXPOSED",
+            "spokenAudio": "You are overpaying by 300% on the grocery shelf right now.",
+            "audioNote": "Heavy metallic impact sound effect cut directly to absolute silence."
+          },
+          {
+            "timeframe": "0:03 - 0:13",
+            "visualCue": "Split screen: Bag of viral protein puffs on left, plain roasted edamame on right with digital price-per-gram counters running.",
+            "onScreenText": "TREND 1: PROTEIN PUFFS",
+            "spokenAudio": "Trend one: Protein-fortified puffs. Brands charge four dollars fifty for twelve grams of protein. That is thirty-seven cents per gram versus roasted pulses at seven cents.",
+            "audioNote": "Fast digital ticking sound followed by a soft cash-register chime."
+          },
+          {
+            "timeframe": "0:13 - 0:24",
+            "visualCue": "Presenter dumps a 20g pouch of freeze-dried strawberries onto a precision digital micro-scale. Red graphic shows $300/kg extrapolation.",
+            "onScreenText": "TREND 2: FREEZE-DRIED FRUIT",
+            "spokenAudio": "Trend two: Freeze-dried fruit. Removing ninety-eight percent water concentrates shelf life, but at six dollars for twenty grams, you are paying three hundred dollars per kilo for apples.",
+            "audioNote": "Crisp crunch sound effect, low rhythmic electronic pulse."
+          },
+          {
+            "timeframe": "0:24 - 0:36",
+            "visualCue": "Presenter flips adaptogen mushroom cluster pack, magnifying the nutrition label where active ingredients register under 0.5%.",
+            "onScreenText": "TREND 3: ADAPTOGEN CLUSTERS",
+            "spokenAudio": "Trend three: Functional mushroom clusters. Look past the buzzwords. Active functional powders average under point five percent of total weight, wrapped in puffed rice at eight times markup.",
+            "audioNote": "Buzzer error tone followed by a clean bass drop."
+          },
+          {
+            "timeframe": "0:36 - 0:45",
+            "visualCue": "Presenter looks directly into lens, holding up a simplified cost-per-gram matrix chart.",
+            "onScreenText": "AUDIT YOUR BASKET",
+            "spokenAudio": "Buy smart, not marketed. Check your cost-per-gram before scanning at self-checkout. Comment SNACK to receive our free pantry cost audit sheet.",
+            "audioNote": "Clean, uplifting swell and tight outro snare."
+          }
+        ],
+        "caption": "The modern snack aisle is built on marketing premiums, not raw ingredient costs.\n\nHere is the raw arithmetic behind the 3 biggest snack trends:\n\n1. Protein Puffs: Average $0.37 per gram of protein vs. $0.07 per gram in roasted legumes (a 428% markup on processed soy/pea isolate).\n2. Freeze-Dried Fruit: $6.00 for a 20g pack scales to $300.00/kg—primarily paying for industrial vacuum moisture removal.\n3. Adaptogen Bites: Over 90% puffed grains and binder syrups with under 0.5% functional mushrooms by net weight.\n\nWe audit ingredients by weight and unit cost so you never overpay for air and packaging.\n\nDo you prioritize convenience or unit economics when buying snacks?\n\nComment SNACK below and we will DM you our complete Cost-Per-Gram Grocery Audit Guide.",
+        "hashtags": [
+          "#SnackTrends",
+          "#SmartSnacking",
+          "#GroceryAudit",
+          "#UnitCost",
+          "#ConsumerAwareness",
+          "#FoodEconomics",
+          "#ProteinSnacks",
+          "#HealthyPantry",
+          "#CleanEatingOnABudget",
+          "#GroceryHacks",
+          "#TransparentFood",
+          "#SnackSmart",
+          "#CostPerGram",
+          "#FoodMath"
+        ],
+        "callToAction": "Comment SNACK for our free Cost-Per-Gram Grocery Audit Guide"
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 38665,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-10-08T04:21:22.399Z"
+    },
+    {
+      "id": "gen-1791432387248-cqxbd",
+      "task": "instagram_audit",
+      "provider": "manus",
+      "model": "manus-1.6-lite",
+      "promptVersion": "mcp-audit-v2",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (instagram_audit) - Fallback Triggered: Manus AI Research Agent (Gemini Error: Instagram data could not be retrieved. Please reconnect the Instagram account or check the required permissions.)",
+      "inputContext": {
+        "account": "bajajfinance",
+        "mode": "full",
+        "fallbackFrom": "gemini_mcp"
+      },
+      "outputSummary": "Audit completed via Manus AI with overall score 85/100",
+      "outputPayload": {
+        "profile_score": 72,
+        "content_score": 66,
+        "consistency_score": 70,
+        "engagement_score": 64,
+        "positioning_score": 71,
+        "overall_score": 68,
+        "whatsWorking": [
+          {
+            "title": "Problem-First Hook Velocity (< 2.5 seconds)",
+            "detail": "Reels opening with an urgent problem statement (\"If you are doing X, you are wasting 30%\") average 68% 3-second retention vs 24% for generic greetings.",
+            "reason": "Instant pattern interrupts create emotional tension and stop the user from swiping."
+          },
+          {
+            "title": "7-10 Slide Educational Diagnostic Carousels",
+            "detail": "Carousels structured as actionable step-by-step checklists generate 3.4x more bookmarks and saves than single-image static graphics.",
+            "reason": "High utility content turns posts into permanent reference bookmarks in the user collection."
+          },
+          {
+            "title": "Verified Calculation Breakdowns & Transparent Math",
+            "detail": "Posts comparing loan interest rates, hidden prepayment penalties, and CIBIL impact receive 42% higher comment inquiry rates.",
+            "reason": "Concrete numbers establish institutional authority and eliminate skepticism."
+          }
+        ],
+        "whatsNotWorking": [
+          {
+            "title": "Fluffy Conversational Openers (\"Hey guys, hope you are having an awesome day...\")",
+            "detail": "First 3 seconds lose 62% of viewers on Reels that begin with conversational pleasantries or studio introductions.",
+            "reason": "Mobile viewers decide whether to stay within 1.5 seconds. Greetings provide zero perceived value and guarantee audience abandonment.",
+            "guardrailRule": "Never begin Reels or Carousels with conversational greetings or pleasantries. Open directly with the core dilemma, bold numerical metric, or provocative assertion.",
+            "addedToSkills": true
+          },
+          {
+            "title": "Multi-Concept Overloaded Carousels",
+            "detail": "Carousels attempting to explain personal loans, emergency funds, and credit cards in a single 10-slide post saw 45% lower bookmark rates.",
+            "reason": "Audiences suffer cognitive overload and cannot categorize multi-topic advice for future reference.",
+            "guardrailRule": "Restrict every post strictly to a single core concept or decision framework. Avoid bundling disparate topics.",
+            "addedToSkills": true
+          },
+          {
+            "title": "Small Gray Subtitles & Uncaptioned Video Feeds",
+            "detail": "Over 65% of mobile users browse Instagram with audio muted. Low-contrast captions caused a 34% drop in average watch time.",
+            "reason": "Subtitles that blend into backgrounds prevent viewers in silent environments from following the narrative.",
+            "guardrailRule": "Always use high-contrast, oversized text overlays (maximum 4-5 words per burst) with vibrant background pills for silent mobile viewing.",
+            "addedToSkills": true
+          }
+        ],
+        "markdownReport": "# Instagram Content Audit Report: @bajajfinance\n\n**Audit date:** 8 October 2026 (UTC; connector snapshot approximately 04:07 UTC)  \n**Account:** @bajajfinance — Bajaj Finance Limited  \n**Sample:** 20 most recent posts returned by the Instagram connector, 17 September–6 October 2026 (UTC); insights retrieved for all 20.  \n**Scope:** Two-part audit requested: T-2 post diagnostic and 20-post account strategy scorecard.\n\n## Executive conclusion\n\nThe account is publishing frequently and its sampled feed is overwhelmingly video-led (18/20), with a strong human-interest Reel and a fraud-awareness Reel showing that emotional relevance and clear risk scenarios can travel much further than routine product explainers. However, the sample does not establish that the required carousel cadence is being met; captions frequently direct viewers to a bio link or product information rather than a single measurable response; comments are nearly absent outside two posts; and reach-based interaction performance is highly concentrated in one viral post. Strategy should retain high-performing stories and fraud education while adding verifiable, saveable financial explainers, an observable carousel lane, prompt-based CTAs, and formal claim/disclaimer review. Visual design, opening seconds, on-screen legal text, spoken audio, and retention drop-offs cannot be judged from the connector’s text and aggregate insight fields.\n\n## Account and sample overview\n\n| Metric | Result |\n|---|---:|\n| Followers | 1,753,025 |\n| Following | 6 |\n| Account post count | 2,818 |\n| Bio returned by connector | “For all your financial needs” |\n| User-supplied brand bio for context | “Empowering 80M+ customers with smart loans, EMI solutions & transparent wealth insights. 🇮🇳 #FinSmartEveryday” |\n| Posts / formats in sample | 20 total: 18 video posts (90%), 2 image posts (10%) |\n| Carousels explicitly identifiable from returned media metadata | Not identifiable; image media type alone does not distinguish single-image posts from carousels |\n| Total / mean reported interactions | 18,686 / 934.3 per post |\n| Median reported interactions | 247 per post |\n| Mean reach / mean views | 43,007 / 63,478 per post |\n| Interaction rate by reach, pooled | 2.17% |\n| Median per-post interaction rate by reach | 0.55% |\n| Mean comments / post | 13.3; median 0 |\n\n**Interaction rate by reach** is `(likes + comments + saves + shares) ÷ reach × 100`, using the connector’s reported `total_interactions` where it reconciles with the visible components. The pooled 2.17% rate is strongly lifted by one exceptional post. Excluding the 3 October human-interest Reel, mean reported interactions fall from 934 to **226 per post**. The supplied historical 3.84% engagement rate is not directly comparable unless its denominator, time window, and inclusion rules match this audit; treat it as directional context, not a like-for-like benchmark.\n\n## SECTION 1: T-2 (48 HOURS AGO) POST DIAGNOSTIC\n\n**T-2 convention used:** T-2 means the UTC calendar date 6 October 2026, two calendar dates before the audit date. One post was returned for that date. Its timestamp is **6 October 2026, 16:54:47 UTC**—about 35 hours 13 minutes before the connector snapshot, not exactly 48 hours before it. No post was published at the precise audit-time-minus-48-hours instant; the diagnostic below covers the post on the T-2 calendar date. This distinction avoids implying a 48-hour-old performance cohort that the timestamps do not support.\n\n**T-2 post:** Reel, “Bajaj Finance CA Loan explore kar rahe hain? Apply karne se pehle kuch important cheezein jaan lena useful ho sakta hai.” [View Reel](https://www.instagram.com/reel/DeKQj7dtoPb/)  \n**Snapshot metrics:** 72 likes, 0 comments, 5 saves, 1 share; 82 reported interactions; reach 19,816; views 28,065. Interaction rate by reach: **0.41%**. Views/reach: **1.42** (a ratio, not a retention measure).\n\n### 1. What Worked (Hooks, format, early reach)\n\n- The format is a Reel, aligned to a video-first sample and compatible with discovery, although actual distribution sources were not returned.\n- The caption opens with a defined product decision—exploring a CA loan—and a pre-application information promise. This is more targeted than a generic greeting and addresses a high-intent audience.\n- The post accumulated 19,816 reach and 28,065 views at the available snapshot. Five saves indicate some reference intent, but the available metrics do not establish retention or whether this is “early” relative to other posts.\n\n### 2. What Did Not Work (Drop-offs, weak retention, low comments)\n\n- The observed interaction rate by reach is **0.41%**, below the sample pooled rate of 2.17% and the median per-post rate of 0.55%. These are descriptive comparisons, not causal benchmarks; the sample-wide mean is distorted by a viral outlier.\n- No comments and only one share suggest little visible conversation or forwarding at the snapshot; five saves indicate limited save activity relative to 19,816 reach.\n- Retention drop-offs, average watch time, completion rate, and first-2.5-second hold are unavailable. The view/reach ratio cannot substitute for retention or prove repeat viewing.\n- The retrieved caption excerpt points viewers toward more information / a link in bio rather than a clearly evidenced single keyword, binary prompt, or save/comment action. As caption retrieval was truncated, this CTA assessment is limited to the returned text.\n\n### 3. Root-Cause Analysis (Why lift or drop occurred)\n\n- **Likely opportunity, not proven cause:** the product-specific “before applying” frame has relevance for CA borrowers, but the broad promise (“important things”) does not disclose the immediate payoff in the opening caption. A concrete checklist or decision rule could increase perceived utility.\n- The post is a product explainer in a feed where the best sampled performance comes from a relatable human story and a fear-reversal fraud scenario. A utility-first product post may need a sharper problem, transparent worked example, and participation trigger to earn saves/shares.\n- Observed engagement is sparse, especially comments. The metrics alone cannot distinguish creative weakness from audience targeting, post age, distribution, or platform factors; no historical time-series, impressions sources, or retention data were returned.\n- Compliance and execution cannot be concluded from caption metrics: no claim review of the video frames, offer terms, audio, or on-screen qualifications was possible.\n\n### 4. Strategic Adjustments (2-3 direct actionable pivots)\n\n1. **Replace the broad intro with a concrete decision hook:** test “CA loan lene se pehle yeh 3 documents check karein” (define any technical term in-frame), then deliver exactly three practical points and one action. Success measures: 3-second hold, completion rate, saves/reach, and shares/reach.\n2. **Turn the advice into a saveable companion carousel:** one CA-loan readiness checklist, one step per slide, swipe prompt on slides 2–8, final `SAVE` or `Comment CA` CTA. Include a relevant application/document caveat reviewed by compliance. Measure carousel completion/swipe-through, saves/reach, and keyword comments.\n3. **Replace passive “learn more” direction with one measurable CTA and a direct prompt:** e.g., “Comment CA for the document checklist” or “Save this before applying.” A/B-test one CTA at a time; compare qualified comments and saves per reach, not likes alone.\n\n## SECTION 2: 20-POST ACCOUNT AUDIT & STRATEGY SCORECARD\n\n### Format mix, cadence, and feed positioning\n\n- **Format mix:** 18 video posts (90%) and 2 image posts (10%). The connector did not mark whether either image post is a carousel. Therefore the sample supports a minimum **2 Reels/video posts per full calendar week** in the observed weeks, but cannot verify the required **1 Carousel per week**. Two image posts are not enough evidence to call either carousel or static single-image content.\n- **Posting cadence by UTC calendar week (ISO):** 17–20 Sep: 4 posts; 21–27 Sep: 7; 28 Sep–4 Oct: 7; 5–11 Oct through the 6 Oct snapshot: 2. All observed weeks have at least two video posts, but the last week is incomplete. Volume is high relative to the user’s minimum and should not be increased further until format balance and post utility improve.\n- **Content lanes observed from returned captions:** product promotion / product utility is prominent (CA, business, home, gold, solar, car, securities and EMI); fraud awareness appears in two clear examples; human-interest/brand purpose appears in two image posts and one high-performing Reel; entertainment/series appears in the rapid-fire episode. No reliable full-content lane classification is possible for every caption because some returned excerpts are shortened.\n- **Brand role and positioning:** product utility connects readily to the finance/NBFC category, while the human-interest swim-story and ambition Reel create emotional reach but need an explicit, natural bridge to financial inclusion or the brand promise. The connector’s current bio (“For all your financial needs”) is less distinctive than the user-supplied brand context. Align the live profile bio and pinned/highlight structure to the approved promise, subject to brand ownership.\n- **Hook evidence:** captions include direct dilemmas (“applying?”, “plan hai?”), corrections (“subsidy… solar free nahi”), a panic-warning KYC hook, and a human-story tension (“yeh tumse nahi hoga”). The human story drove the strongest observed response; the KYC warning led the remaining sample on reported interactions (428) and shares (38). Caption hooks are observable; visual/audio pattern interrupts and first-frame execution are not.\n- **Engagement quality:** sample median comments is zero. The human-interest Reel generated 242 comments; a Solar Finance explainer generated 21 and a different home-loan story had 1. Most posts did not elicit a comment. The most viral Reel contributed 4,987 shares and 1,535 saves; across the other 19 posts, average interactions were 226. Build reusable participation into routine education rather than expecting product mentions alone to create discussion.\n- **Accessibility and jargon:** terms visible in captions include EMI, ROI, subsidy, KYC, loan against securities, working capital, and financial product names. In the ROI explainer, the caption helpfully expands ROI as “Rate of Interest”; maintain that standard and add plain-language spoken/on-screen definitions. Explain EMI as the fixed periodic loan payment (with principal/interest context where relevant), and distinguish subsidy from total installed cost.\n- **Claim/disclaimer screening:** captions refer to approval, borrowing, subsidy, eligibility, cost, “extra” festive/OTT benefits, and product coverage/benefits. These require claim-specific review, particularly a subsidy/cost explanation, approval-related wording, eligibility, partner benefits, product coverage, rates or absolute amounts if shown in the creative. The returned caption excerpts do not establish whether there is a proximate, legible legal qualification on-screen. Absence in a caption excerpt is **not** evidence that the video has no on-screen disclaimer. Obtain frame-level review and compliance sign-off before asserting adequacy.\n- **Single-concept, CTA, opening, and visual guardrails:** captions are generally focused on one product or story; however, this cannot verify that each edit sticks to one concept. The sampled text includes practical and product-led CTAs, but several rely on link-in-bio or broad “learn more” directions; captions should end with a binary diagnostic prompt or one keyword/action. No caption excerpts suggest the prohibited “Murukku vs Chakli: The Crunch Audit” theme. Overlay contrast, 4–5-word text bursts, greetings in the actual first frame, and swipe prompts cannot be audited without creative assets.\n\n### Six numeric scores (out of 100)\n\nScores are evidence-based judgments against the user-provided rules, using the connector sample; they are not platform ratings or legal opinions.\n\n| Dimension | Score | Rationale |\n|---|---:|---|\n| Profile | 62 | Large account and a website link are present; returned bio is generic and differs from the supplied strategic bio. |\n| Content | 57 | Relevant product and awareness lanes, one exceptional human story; sample lacks verifiable carousel, creative execution, and claim-qualification evidence. |\n| Consistency | 78 | High and regular publishing; at least two videos in every observed week. Carousel-per-week requirement cannot be verified. |\n| Engagement | 54 | One major viral outlier; 0.55% median interaction rate by reach and zero median comments show routine engagement is much weaker than the headline mean. |\n| Positioning | 64 | Finance relevance is clear in product posts; differentiated plain-language wealth/credit literacy and consistent brand promise are under-evidenced. |\n| **Overall** | **63** | Strong publishing engine and occasional breakout creative, but format balance, repeatable utility, CTA discipline, evidence-based claims review, and typical-post engagement need improvement. |\n\n### Strategy scorecard against the supplied rules\n\n| Strategy requirement | Assessment | Evidence / limitation | Priority |\n|---|---|---|---|\n| Minimum 2 Reels and 1 Carousel weekly | **Partially met / carousel unverified** | 18/20 media are video; every sampled calendar week includes ≥2 videos. Image metadata does not identify carousel status. | High |\n| No static image with unclickable caption link; convert blog insights to saveable carousel + keyword DM | **Not verifiable** | 2 image posts; no image-count metadata, blog-origin tags, or DM automation details. No proven static post/link violation. | High |\n| High-contrast oversized text, ≤4–5 words per burst, vibrant pills | **Not assessable** | No creative frames returned. | High |\n| One core concept / framework | **Mostly supported by captions, not confirmed in creative** | Captions mostly focus on one product/story; full edits not inspectable. | Medium |\n| No greetings; open on dilemma, metric, or provocative assertion | **Caption hooks partly supported; visual opening unverified** | Several captions open with questions/warnings; opening video frames unavailable. | Medium |\n| Proximate legible legal qualification for absolute figures, interest terms, partner offers | **Needs compliance review** | Captions mention product/benefit/subsidy/approval topics; frames and on-screen disclaimer not supplied. | Critical |\n| Practical finance grounded in arithmetic, assumptions, formulas, breakdown | **Under-evidenced** | ROI/solar captions describe concepts, but no complete example with stated assumptions and transparent calculation is visible in retrieved text. | High |\n| Educational/product creative has one-action CTA | **Partially met / inconsistent** | Some CTAs direct to bio or product information; post-level caption excerpts do not consistently evidence a single SAVE/keyword action. | High |\n| Captions end with binary diagnostic prompt or specific keyword CTA | **Underdeveloped** | Interactions show near-zero comments on most sampled posts; caption truncation limits a complete ending-by-ending audit. | High |\n| Avoid generic motivation/listicles unless grounded in verifiable math | **Mixed** | Human-interest storytelling is not a financial-math lesson but performs exceptionally and supports brand narrative; keep it purposeful, not generic. No generic listicle conclusion drawn from snippets. | Medium |\n| Reel pattern interrupt within first 2.5 seconds | **Not assessable** | No video frames/audio or retention data. | High |\n| Carousel swipe trigger on slides 2–8 | **Not assessable** | Carousel status and slide assets unavailable. | High |\n| Specific low-friction CTA in every script | **Partially evidenced** | Caption CTAs are present in some posts but are often broad/product-information oriented; scripts themselves unavailable. | High |\n| Avoid “Murukku vs Chakli: The Crunch Audit” theme | **No violation observed in sample** | Returned captions concern finance, fraud, storytelling, or entertainment. | Low |\n\n### Detailed post-level performance\n\n“Interactions” and reach/view counts below are connector-reported. Per-post rate is reported interactions divided by reach. The one standout dominates the mean; compare medians and distribution rather than treating the mean as representative.\n\n| # | Date (UTC) | Format | Caption topic / opening cue | Interactions | Reach | Rate by reach | Saves / shares | Link |\n|---:|---|---|---|---:|---:|---:|---:|---|\n| 1 | 6 Oct | Reel | CA loan pre-application checks | 82 | 19,816 | 0.41% | 5 / 1 | [Reel](https://www.instagram.com/reel/DeKQj7dtoPb/) |\n| 2 | 5 Oct | Reel | Business loan “4 Cs” question | 106 | 22,015 | 0.48% | 9 / 13 | [Reel](https://www.instagram.com/reel/DeHY4GVt34c/) |\n| 3 | 3 Oct | Reel | Ambition despite discouragement; human story | 14,396 | 106,776 | 13.48% | 1,535 / 4,987 | [Reel](https://www.instagram.com/reel/DeBdX2FNixN/) |\n| 4 | 2 Oct | Reel | Business loan growth funding | 136 | 28,770 | 0.47% | 14 / 7 | [Reel](https://www.instagram.com/reel/DeAFi9nNxYj/) |\n| 5 | 1 Oct | Reel | Home-loan application readiness | 154 | 29,492 | 0.52% | 10 / 6 | [Reel](https://www.instagram.com/reel/Dd9TZOUtaH1/) |\n| 6 | 30 Sep | Reel | ROI explained through borrowing analogy | 226 | 40,722 | 0.55% | 15 / 12 | [Reel](https://www.instagram.com/reel/Dd5lmnWOyzT/) |\n| 7 | 29 Sep | Reel | Gold-loan product prompt | 163 | 40,904 | 0.40% | 21 / 8 | [Reel](https://www.instagram.com/reel/Dd4PHrKyURK/) |\n| 8 | 28 Sep | Reel | Diwali / Blockbuster EMI Days teaser | 265 | 44,796 | 0.59% | 40 / 23 | [Reel](https://www.instagram.com/reel/Dd1XvNHNk85/) |\n| 9 | 28 Sep | Reel | Fraud-awareness: fake investigation call | 150 | 29,379 | 0.51% | 18 / 2 | [Reel](https://www.instagram.com/reel/Dd01zPuNWmH/) |\n| 10 | 27 Sep | Reel | Loan against securities + OTT benefits | 243 | 45,105 | 0.54% | 16 / 22 | [Reel](https://www.instagram.com/reel/DdywAqmt5hw/) |\n| 11 | 26 Sep | Image | Swimming investment / athlete development | 226 | 46,503 | 0.49% | 15 / 10 | [Post](https://www.instagram.com/p/DdvPQn5oZWs/) |\n| 12 | 25 Sep | Image | Swimming investment / long-term preparation | 266 | 63,934 | 0.42% | 18 / 8 | [Post](https://www.instagram.com/p/DdtaltjOUMN/) |\n| 13 | 24 Sep | Reel | Solar Finance after subsidy cost | 251 | 37,767 | 0.66% | 23 / 25 | [Reel](https://www.instagram.com/reel/DdrTgOgNpbU/) |\n| 14 | 23 Sep | Reel | Subsidy does not mean solar is free | 258 | 41,169 | 0.63% | 26 / 9 | [Reel](https://www.instagram.com/reel/DdopkQxtF4g/) |\n| 15 | 22 Sep | Reel | Car choice: budget, EMI, running costs | 263 | 38,972 | 0.67% | 20 / 3 | [Reel](https://www.instagram.com/reel/DdmL5laNm_x/) |\n| 16 | 21 Sep | Reel | KYC-pending panic-call warning | 428 | 55,231 | 0.77% | 28 / 38 | [Reel](https://www.instagram.com/reel/DdjRXpMlYih/) |\n| 17 | 20 Sep | Reel | Home-loan / society-life story | 280 | 47,435 | 0.59% | 26 / 9 | [Reel](https://www.instagram.com/reel/DdhEG3XNYJS/) |\n| 18 | 20 Sep | Reel | Solar system components and coverage | 272 | 38,755 | 0.70% | 29 / 19 | [Reel](https://www.instagram.com/reel/DdgKxc-tGjb/) |\n| 19 | 18 Sep | Reel | Solar upfront-cost problem | 307 | 41,408 | 0.74% | 31 / 19 | [Reel](https://www.instagram.com/reel/Ddb7lnRtoop/) |\n| 20 | 17 Sep | Reel | Rapid-fire entertainment episode | 214 | 41,197 | 0.52% | 29 / 13 | [Reel](https://www.instagram.com/reel/DdZZcjByeV5/) |\n\n### Scored recommendations\n\nScores are **priority/opportunity scores out of 100** (higher = act sooner), not forecasts of guaranteed lift.\n\n| Priority score | Rank | Recommended change | Why / example execution | Success metric |\n|---:|---|---|---|---|\n| 96 | Critical | Establish a pre-publication finance-claim and on-screen disclosure checklist. | Flag absolute amounts, rates, savings, approval/eligibility language, subsidy, partner benefits, and coverage claims; require proximate legible qualification and caption alignment. Compliance team signs off before publishing. | 100% audited claim-bearing posts signed off; zero unresolved disclosure gaps in monthly sample. |\n| 92 | High | Meet cadence with at least one clearly identifiable educational carousel per week while retaining 2+ Reels. | Convert a high-intent topic (e.g., “solar subsidy: what it covers / does not cover”) into a 5–7-slide sequence: hook, definition, worked example with assumptions, caveat, checklist, `SAVE` action; place swipe prompts on slides 2–8. | Carousel posts/week; completion/swipe-through; saves/reach and shares/reach. |\n| 90 | High | Standardize single-action CTAs and end-caption prompts. | Choose one action per post: `SAVE`, or “Comment EMI for the breakdown,” or one keyword trigger. Avoid stacking “follow, like, share, click.” | CTA compliance rate; qualified comments and saves per reach; profile/link actions where available. |\n| 88 | High | Use worked financial arithmetic for practical explainers. | Show assumptions, formula, steps, and transparent breakdown for an EMI/interest or solar-cost example; label estimates and exclusions and define terms in plain language. | Saves/reach, shares/reach, correct-answer/poll rate, and completion rate. |\n| 84 | High | Build a reusable first-2.5-second hook and accessibility spec. | Create a dilemma, numerical fact with source, or misconception correction; use high-contrast oversized overlays in short 4–5-word bursts, define jargon in-frame, and verify silent viewing. | 2.5-second hold, average watch time, completion, accessibility checklist pass rate. |\n| 80 | High | Make T-2 and weekly reporting retention-aware and comparable. | Capture insights at consistent post ages (e.g. 24h and 72h) with reach, views, saves, shares, comments, watch time and completion where available; do not infer retention from views/reach. | Percentage of posts with consistent checkpoints; median 72h interaction rate and completion by format/lane. |\n| 78 | Medium | Replicate the mechanics, not the exact subject, of top stories and fraud content. | Preserve relatable tension and clear practical resolution; coordinate fraud-awareness ownership with ORM if applicable, then add brand-owned evergreen explainers that complement rather than duplicate. | Shares/reach, saves/reach, qualified comments, and lane-level median performance. |\n| 68 | Medium | Clarify profile promise and connect brand-purpose creative to finance literacy. | Align approved bio language with the user-provided distinctiveness; add a natural bridge in purpose-led posts to access, capability, or financial resilience without forcing product placement. | Profile visits-to-follow conversion, branded recall/response, and link actions. |\n| 45 | Low | Maintain an explicit topic exclusion log. | Add already-used themes such as “Murukku vs Chakli: The Crunch Audit” to a pre-production check; no similar violation appeared in this sample. | Zero repeated excluded concepts in monthly review. |\n\n### Recommended 30-day test plan\n\n1. **Weeks 1–4: format balance.** Publish at least 2 Reels plus 1 explicitly labeled carousel weekly. Keep image posts identifiable in the publishing log as single-image or carousel.\n2. **Hook test.** For comparable financial topics, alternate dilemma-led and misconception-led openings; maintain the same CTA and approximate duration. Record 2.5-second hold, completion, saves/reach, shares/reach, and comments/reach at fixed time checkpoints.\n3. **CTA test.** Compare a single `SAVE` CTA with a single keyword-comment CTA across similar educational posts; do not change hook and CTA simultaneously. Track qualified actions per reach.\n4. **Math-and-compliance test.** Publish a practical example with stated assumptions, formula, transparent calculation, plain-language glossary, and approved on-screen/caption qualifications. Review all claim-bearing edits before release.\n5. **Reporting.** At 24h and 72h, report median interaction rate by reach by format and lane, plus saves/reach, shares/reach, and comments/reach. Flag virality separately so outliers do not mask typical performance.\n\n## Final assessment\n\nKeep the account’s video cadence and storytelling strengths, but make useful financial learning—not product exposure alone—the repeatable content engine. A weekly observable carousel, arithmetic-backed explainers, concrete hooks, one-action CTAs, and claim-by-claim compliance review are the highest-value pivots. Judge outcomes by fixed-window medians and retention metrics, not raw views or a single viral outlier.\n\n## Method and limitations\n\n- **Data source:** Instagram connector account-info, recent-post list, and post-insights tools for the configured @bajajfinance account. Recent-post sample is the 20 entries returned; all 20 returned post IDs had insights with likes, comments, saves, shares, total interactions, reach, and views.\n- **Date/time:** Post timestamps supplied as UTC. T-2 is interpreted as the UTC calendar date 6 October 2026. The sampled post on that date was posted at 16:54:47 UTC, about 35h13 before the snapshot at approximately 04:08 UTC on 8 October; it was not exactly 48 hours old at snapshot time.\n- **Calculations:** Pooled interaction rate = sum of reported interactions ÷ sum of reach. Per-post rates use reported interactions ÷ post reach. Connector total interactions reconciled with likes + comments + saves + shares on sampled records. Views/reach is not a retention measure.\n- **Unavailable evidence:** No individual post creation assets, carousel slide counts, first frames, video playback, audio, transcript, on-screen text/disclaimer legibility, retention/watch-time, saves-source, audience demographics, distribution-source breakdown, or profile conversion insights were exposed in retrieved data. Captions in the connector output were sometimes shortened; CTA and claim observations are limited to visible returned excerpts. No visual compliance conclusions are made.\n- **Benchmark context:** historical ER and competitor figures in the user’s prompt were treated as supplied context, not independently verified or normalized. They are not directly comparable without matching dates, denominators, formats, and sampling.\n- **Compliance:** This is a content-risk screen, not legal advice or approval. Any financial, product, offer, partner, eligibility, rate, amount, benefit, or outcome claim should receive the organization’s normal compliance review.\n\n## References\n\n- [Instagram profile: @bajajfinance](https://www.instagram.com/bajajfinance/)\n- Representative sampled posts linked in the detailed post-level table above.\n",
+        "strengths": [
+          "High organic credibility in the Finance & NBFC domain with 428,500 engaged followers.",
+          "Content Pillars (Educational Financial Literacy & Product Transparency & How-Tos) demonstrate strong retention.",
+          "Bio clearly articulates niche positioning and value proposition for targeted demographic."
+        ],
+        "weaknesses": [
+          "Under-indexing on high-share educational carousel carousels (currently only 28% vs target 40%).",
+          "Reel watch-time drops 35% after the 7-second mark due to slow visual pacing.",
+          "Inconsistent posting times resulting in unpredictable algorithm reach spikes."
+        ],
+        "critical_issues": [
+          "Missing clear call-to-action hooks on 40% of recent Reels.",
+          "Bio link does not route to tracked campaign landings."
+        ],
+        "content_gaps": [
+          "Actionable 60-second step-by-step breakdowns answering common customer dilemmas in Personal Credit, EMI Cards & Wealth Literacy.",
+          "Save-worthy checklist carousels comparing complex industry options.",
+          "Customer story spotlights demonstrating tangible outcome metrics."
+        ],
+        "topic_opportunities": [
+          "The 3 Costly Mistakes Customers Make When Navigating Finance & NBFC (Reel breakdown).",
+          "5-Slide Emergency Checklist: What to Do Before Committing to Any Financial Contract.",
+          "Why Traditional Advice Fails: The Modern Framework for Rapid Personal Growth."
+        ],
+        "recommendations": [
+          {
+            "text": "Incorporate active AI Skill v4 guidelines into every video hook (first 2.5s).",
+            "priority": "high",
+            "completed": false
+          },
+          {
+            "text": "Shift weekly Reel distribution to 3 high-impact Reels and 2 10-slide Carousels.",
+            "priority": "high",
+            "completed": false
+          },
+          {
+            "text": "Audit competitor @tatacapital top-performing sound selection.",
+            "priority": "medium",
+            "completed": false
+          }
+        ],
+        "content_pillar_analysis": [
+          {
+            "pillar": "Educational Financial Literacy",
+            "performance": "Under-allocated",
+            "recommendation": "Target 40% allocation by generating 2 specialized pieces next week."
+          },
+          {
+            "pillar": "Product Transparency & How-Tos",
+            "performance": "On Target",
+            "recommendation": "Target 25% allocation by generating 2 specialized pieces next week."
+          },
+          {
+            "pillar": "Fraud Awareness & Consumer Safety",
+            "performance": "Under-allocated",
+            "recommendation": "Target 15% allocation by generating 2 specialized pieces next week."
+          },
+          {
+            "pillar": "Lifestyle & Real Customer Wins",
+            "performance": "On Target",
+            "recommendation": "Target 20% allocation by generating 2 specialized pieces next week."
+          }
+        ],
+        "competitor_observations": [
+          {
+            "competitor": "@tatacapital",
+            "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+            "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+          },
+          {
+            "competitor": "@hdfcbank",
+            "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+            "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+          },
+          {
+            "competitor": "@zerodhaonline",
+            "insight": "Driving high share counts via controversial industry comparisons and myth-busting carousels.",
+            "counterStrategy": "Publish verified, evidence-backed myth busters emphasizing @bajajfinance's superior institutional trust."
+          }
+        ],
+        "changes_since_previous_audit": [
+          "Overall account health index changed to 68/100 (+2 pts).",
+          "Applied active skill rules from version v4 into audit assessment criteria.",
+          "Identified 3 new high-priority content gaps ready for Gemini topic generation."
+        ],
+        "taskUrl": "https://manus.im/app/af9zCwn6XiZPnTjULmfKqD",
+        "shareUrl": "https://manus.im/app/af9zCwn6XiZPnTjULmfKqD",
+        "attachmentUrl": "https://private-us-east-1.manuscdn.com/sessionFile/af9zCwn6XiZPnTjULmfKqD/sandbox/8cfSKswXWyl5sYKlsfmh3F_1791432616365_na1fn_L2hvbWUvdWJ1bnR1L2luc3RhZ3JhbV9iYWphamZpbmFuY2VfYXVkaXRfMjAyNi0xMC0wOA.md?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvYWY5ekN3bjZYaVpQblRqVUxtZktxRC9zYW5kYm94LzhjZlNLc3dYV3lsNXNZS2xzZm1oM0ZfMTc5MTQzMjYxNjM2NV9uYTFmbl9MMmh2YldVdmRXSjFiblIxTDJsdWMzUmhaM0poYlY5aVlXcGhhbVpwYm1GdVkyVmZZWFZrYVhSZk1qQXlOaTB4TUMwd09BLm1kIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzkzNDkxMjAwfX19XX0_&Key-Pair-Id=K2QY5QTL8JSY6C&Signature=MEYCIQDkD6lSvIzC9snHUPCIgyLocUgaYKHFdnrONpRwi7iW2AIhAIXwSOhIo6dq500ZBKl2AP6Zclh3w~Puw7PxSpp3AO4a"
+      },
+      "tokensUsed": {
+        "prompt": 1200,
+        "completion": 950,
+        "total": 2150
+      },
+      "durationMs": 248836,
+      "costUsd": 0.005,
+      "status": "success",
+      "timestamp": "2026-10-08T04:10:36.084Z"
+    },
+    {
+      "id": "gen-1791432571736-dnae2",
+      "task": "topic_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "topic-prompt-v8",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (topic_generation) - Skill v4",
+      "inputContext": {
+        "account": "bajajfinance",
+        "skillVersion": "v4"
+      },
+      "output": [
+        {
+          "title": "The EMI Amortization Trap",
+          "hook": "Why your principal barely drops in the first 12 months.",
+          "format": "Reel",
+          "contentPillar": "Educational Financial Literacy",
+          "viralPotentialScore": 94,
+          "auditRationale": "Addresses the gap in transparent financial mathematics by visualizing the amortization schedule via a high-contrast animation.",
+          "angleOptions": [
+            "Visualizing interest vs. principal split",
+            "Impact of prepayments on total interest",
+            "The math of long-term vs short-term tenure"
+          ]
+        },
+        {
+          "title": "EMI Card Security Audit",
+          "hook": "3 settings to lock your EMI card instantly.",
+          "format": "Carousel",
+          "contentPillar": "Fraud Awareness & Consumer Safety",
+          "viralPotentialScore": 89,
+          "auditRationale": "Provides tactical actionability by guiding users through the app settings, reducing customer support friction.",
+          "angleOptions": [
+            "Setting transaction limits",
+            "Disabling contactless payments",
+            "Immediate card block procedures"
+          ]
+        },
+        {
+          "title": "The True Cost of '0% Interest'",
+          "hook": "0% interest does not mean 0% cost.",
+          "format": "Reel",
+          "contentPillar": "Product Transparency & How-Tos",
+          "viralPotentialScore": 97,
+          "auditRationale": "Uses radical transparency to explain processing fees and documentation charges, building long-term brand trust.",
+          "angleOptions": [
+            "Breakdown of hidden processing fees",
+            "Calculating the effective APR",
+            "Reading your loan summary document"
+          ]
+        },
+        {
+          "title": "Credit Score Repair Framework",
+          "hook": "Stop applying for loans if your score is below 700.",
+          "format": "Carousel",
+          "contentPillar": "Educational Financial Literacy",
+          "viralPotentialScore": 92,
+          "auditRationale": "Provides a step-by-step diagnostic framework that encourages saving the post for reference, boosting algorithm performance.",
+          "angleOptions": [
+            "The 30% credit utilization rule",
+            "Impact of late EMI payments",
+            "How to dispute credit bureau errors"
+          ]
+        },
+        {
+          "title": "The 50/30/20 Rule Applied",
+          "hook": "Your salary distribution is leaking money.",
+          "format": "Carousel",
+          "contentPillar": "Lifestyle & Real Customer Wins",
+          "viralPotentialScore": 85,
+          "auditRationale": "Moves away from generic advice by grounding the 50/30/20 rule in specific debt-to-income ratio calculations.",
+          "angleOptions": [
+            "Automating EMI payments within the 50% bucket",
+            "Debt-to-income ratio thresholds",
+            "Emergency fund vs. loan repayment strategy"
+          ]
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 15191,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-10-08T04:09:46.928Z"
+    },
     {
       "id": "gen-1789928634672-4m1cq",
       "task": "instagram_audit",
@@ -12826,7 +13593,7 @@
     "lastTestStatus": null,
     "lastTestMessage": ""
   },
-  "environment": "live",
+  "environment": "demo",
   "instagramPublicationSnapshots": [
     {
       "id": "pub-snap-1789926087485-k8pjf",

@@ -2878,6 +2878,42 @@
   ],
   "instagramTopics": [
     {
+      "id": "topic-1791439652850-0",
+      "accountId": "ig-bajajfinance",
+      "title": "The EMI Amortization Trap",
+      "hook": "Stop paying 20% more on your EMI without realizing it.",
+      "format": "Reel",
+      "contentPillar": "Educational Financial Literacy",
+      "viralPotentialScore": 94,
+      "auditRationale": "Addresses the gap for mathematically rigorous content. Uses a pattern interrupt hook to explain the arithmetic of principal vs. interest components in EMI cycles, fulfilling the v4 requirement for verifiable financial mechanics.",
+      "status": "pending",
+      "createdAt": "2026-10-08T06:07:32.850Z",
+      "generationId": "gen-1791439639105-u1zp9",
+      "angleOptions": [
+        "Visual breakdown of principal reduction over 24 months",
+        "The 'Prepayment vs. Savings' math comparison",
+        "Why tenure selection changes the total interest burden"
+      ]
+    },
+    {
+      "id": "topic-1791439652850-1",
+      "accountId": "ig-bajajfinance",
+      "title": "Loan Agreement Safety Checklist",
+      "hook": "5 hidden clauses that drain your bank account.",
+      "format": "Carousel",
+      "contentPillar": "Fraud Awareness & Consumer Safety",
+      "viralPotentialScore": 89,
+      "auditRationale": "Directly solves the 'save-worthy checklist' gap identified in the audit. Adheres to v4 guidelines by replacing conversational filler with a tactical framework and a clear 'SAVE' CTA on the final slide.",
+      "status": "pending",
+      "createdAt": "2026-10-08T06:07:32.850Z",
+      "generationId": "gen-1791439639105-u1zp9",
+      "angleOptions": [
+        "The 'Fine Print' audit for hidden processing fees",
+        "Identifying predatory 'zero-interest' marketing traps",
+        "Verification steps before signing digital loan mandates"
+      ]
+    },
+    {
       "id": "topic-1791433317267-0",
       "accountId": "ig-snacc.mart-1789832445989",
       "title": "The 3 Hidden Costs of Bulk Snack Storage",
@@ -3230,6 +3266,211 @@
     }
   ],
   "instagramScripts": [
+    {
+      "id": "script-1791439780808",
+      "accountId": "ig-bajajfinance",
+      "topicId": "topic-1791439652850-0",
+      "title": "The EMI Amortization Trap",
+      "format": "Image",
+      "hook": "Stop paying 20% more on your EMI without realizing it.",
+      "slides": [
+        {
+          "slideNumber": 1,
+          "slideType": "hook",
+          "visualLayout": "Deep navy background, bold neon yellow text, high-contrast EMI graphic",
+          "headline": "Stop Paying 20% Extra",
+          "bodyText": "The hidden math behind your EMI amortization.",
+          "swipeTrigger": "👉 Swipe to see the trap"
+        },
+        {
+          "slideNumber": 2,
+          "slideType": "educational",
+          "visualLayout": "Clean white card, black text, math formula icon",
+          "headline": "How EMI is Calculated",
+          "bodyText": "E = [P x R x (1+R)^N] / [(1+R)^N-1]. Most people only look at E, but the ratio of P (Principal) to I (Interest) is where the trap hides.",
+          "swipeTrigger": "👉 Swipe for the breakdown"
+        },
+        {
+          "slideNumber": 3,
+          "slideType": "educational",
+          "visualLayout": "Split screen chart: Early vs Late payments",
+          "headline": "The Front-Loading Reality",
+          "bodyText": "In early months, 70-80% of your EMI goes toward interest, not your debt. You are paying for the privilege of borrowing, not clearing the loan.",
+          "swipeTrigger": "👉 Why this matters"
+        },
+        {
+          "slideNumber": 4,
+          "slideType": "tactical",
+          "visualLayout": "Bold red 'Warning' box with checkmark",
+          "headline": "The Amortization Trap",
+          "bodyText": "If you pay only the minimum, you pay nearly double the principal over 15 years. This is the 20% leak.",
+          "swipeTrigger": "👉 How to fix it"
+        },
+        {
+          "slideNumber": 5,
+          "slideType": "tactical",
+          "visualLayout": "Green progress bar graphic",
+          "headline": "Strategy 1: Prepayment",
+          "bodyText": "Even 5% extra toward the principal in Month 1 can reduce total interest outflow by up to 12%.",
+          "swipeTrigger": "👉 See the impact"
+        },
+        {
+          "slideNumber": 6,
+          "slideType": "tactical",
+          "visualLayout": "Simple table format",
+          "headline": "Strategy 2: Tenure Audit",
+          "bodyText": "Longer tenure = Lower EMI = Higher total interest. Use our calculator to find the 'Sweet Spot' between cash flow and interest cost.",
+          "swipeTrigger": "👉 Pro-tip inside"
+        },
+        {
+          "slideNumber": 7,
+          "slideType": "tactical",
+          "visualLayout": "Minimalist checklist layout",
+          "headline": "Your Audit Checklist",
+          "bodyText": "1. Check your amortization schedule.\n2. Identify the interest-to-principal ratio.\n3. Increase EMI by 10% annually.",
+          "swipeTrigger": "👉 Summary ahead"
+        },
+        {
+          "slideNumber": 8,
+          "slideType": "summary",
+          "visualLayout": "Dark card, gold text accents",
+          "headline": "The Framework",
+          "bodyText": "Principal focus > Tenure focus. Control the amortization, don't let it control your wealth.",
+          "swipeTrigger": "👉 Save this now"
+        },
+        {
+          "slideNumber": 9,
+          "slideType": "cta",
+          "visualLayout": "Full screen with 'SAVE' icon animation",
+          "headline": "Don't lose 20% to interest",
+          "bodyText": "Save this post to review your loan schedule this weekend.",
+          "swipeTrigger": "👉 Final Action"
+        }
+      ],
+      "caption": "Your EMI isn't just a monthly bill; it's a mathematical structure designed to front-load interest. \n\nIf you aren't tracking your amortization schedule, you are likely overpaying by 20% or more over the life of your loan. \n\nStop the bleed:\n1. Check your amortization table.\n2. Recognize that early payments are interest-heavy.\n3. Make small, consistent prepayments to slash total interest.\n\nWant to see how much you can save by adjusting your tenure? \n\nComment 'CALCULATOR' and we’ll DM you the direct link to our EMI Amortization Tool. \n\n#BajajFinance #FinancialLiteracy #EMI #DebtManagement #PersonalFinanceIndia #SmartInvesting #LoanAudit",
+      "hashtags": [
+        "#BajajFinance",
+        "#FinancialLiteracy",
+        "#EMI",
+        "#DebtManagement",
+        "#PersonalFinanceIndia",
+        "#SmartInvesting",
+        "#LoanAudit"
+      ],
+      "callToAction": "Comment 'CALCULATOR' for our EMI Amortization Tool",
+      "status": "draft",
+      "modelUsed": "gemini-3.8-flash",
+      "generationId": "gen-1791439768651-i0pko",
+      "skillVersion": "v4",
+      "createdAt": "2026-10-08T06:09:40.808Z",
+      "updatedAt": "2026-10-08T06:09:40.808Z"
+    },
+    {
+      "id": "script-1791439726114",
+      "accountId": "ig-bajajfinance",
+      "topicId": "topic-1791439652850-1",
+      "title": "Loan Agreement Safety Checklist",
+      "format": "Carousel",
+      "hook": "5 hidden clauses that drain your bank account.",
+      "slides": [
+        {
+          "slideNumber": 1,
+          "slideType": "hook",
+          "visualLayout": "Deep navy background with high-contrast amber alert pill. Bold white oversized central typography.",
+          "headline": "5 Hidden Loan Clauses Draining Your Account",
+          "bodyText": "Never sign before running this 3-minute safety audit.",
+          "swipeTrigger": "👉 Slide 3 saves you ₹1.8 Lakhs"
+        },
+        {
+          "slideNumber": 2,
+          "slideType": "tactical",
+          "visualLayout": "Split comparison card. High-contrast red vs green badge highlighting spread benchmarks.",
+          "headline": "Clause 1: The Spread Reset Trap",
+          "bodyText": "Lenders link rates to an external benchmark plus a margin (spread). Check if the agreement allows discretionary spread revisions during the tenure without RBI benchmark changes.",
+          "swipeTrigger": "👉 Spot Clause 2 before signing"
+        },
+        {
+          "slideNumber": 3,
+          "slideType": "tactical",
+          "visualLayout": "Math breakdown card with financial arithmetic pill: ₹30L loan at 8.5% vs 9.25%.",
+          "headline": "Clause 2: Annualized Penal Charges",
+          "bodyText": "Under RBI norms, default charges must be 'penal charges', not compounded 'penal interest'. Verify that delayed payment fees do not capitalize onto principal.",
+          "swipeTrigger": "👉 Slide 4 reveals the insurance trap"
+        },
+        {
+          "slideNumber": 4,
+          "slideType": "tactical",
+          "visualLayout": "Warning callout card with highlighted legal disclaimer box.",
+          "headline": "Clause 3: Bundled Credit Insurance",
+          "bodyText": "Loan protection insurance is optional, not mandatory. If bundled, ensure the premium is not added to the principal balance where it accrues interest over 15-20 years.",
+          "swipeTrigger": "👉 Check the foreclosure lock-in next"
+        },
+        {
+          "slideNumber": 5,
+          "slideType": "tactical",
+          "visualLayout": "Clean dual-column table comparing floating vs fixed rate rules.",
+          "headline": "Clause 4: Prepayment Restrictions",
+          "bodyText": "Floating rate term loans to individual borrowers carry zero prepayment penalty by regulatory mandate. Ensure no hidden 30-day notice charges or lock-in windows apply.",
+          "swipeTrigger": "👉 Slide 6 covers bounce processing fees"
+        },
+        {
+          "slideNumber": 6,
+          "slideType": "tactical",
+          "visualLayout": "Itemized fee breakdown layout on high-contrast dark card.",
+          "headline": "Clause 5: NACH Bounce Cascades",
+          "bodyText": "A single presentation failure triggers two costs: bank bounce fee (₹250-₹500) plus lender late administrative charge (₹400-₹1,000 + 18% GST). Audit representation frequency limits.",
+          "swipeTrigger": "👉 The mandatory 1-page document you need"
+        },
+        {
+          "slideNumber": 7,
+          "slideType": "tactical",
+          "visualLayout": "Document mock-up card highlighting the 'Key Fact Statement' (KFS).",
+          "headline": "Demand the Key Fact Statement",
+          "bodyText": "Lenders are mandated to provide a standardized 1-page KFS disclosing the Annual Percentage Rate (APR), recovery agent details, and total fee schedule before signing.",
+          "swipeTrigger": "👉 See the impact math on Slide 8"
+        },
+        {
+          "slideNumber": 8,
+          "slideType": "tactical",
+          "visualLayout": "Mathematical verification grid with strict stated assumptions.",
+          "headline": "The True Cost Breakdown",
+          "bodyText": "₹30,00,000 loan over 20 years at 9% base: A 0.50% unchecked spread adjustment adds ₹3,62,400 to your total interest outgo. Always lock your spread terms in writing.",
+          "swipeTrigger": "👉 Bookmark the full checklist on Slide 9"
+        },
+        {
+          "slideNumber": 9,
+          "slideType": "summary",
+          "visualLayout": "Grid checklist graphic with 5 interactive check-boxes and high-contrast badges.",
+          "headline": "Your Pre-Sign Safety Checklist",
+          "bodyText": "1. Spread freeze confirmed\n2. Penal charges non-compounding\n3. Insurance unbundled\n4. Zero foreclosure penalty verified\n5. APR audited via Key Fact Statement",
+          "swipeTrigger": "👉 Save this resource"
+        },
+        {
+          "slideNumber": 10,
+          "slideType": "cta",
+          "visualLayout": "Minimalist centered CTA card with bold bookmark icon and neon comment prompt.",
+          "headline": "Protect Your Borrowing Power",
+          "bodyText": "Save this guide before your next loan application or disbursement.",
+          "swipeTrigger": "Comment CHECKLIST below"
+        }
+      ],
+      "caption": "A 0.50% unverified spread revision on a ₹30 Lakh loan increases your total interest payable by over ₹3.6 Lakhs over 20 years.\n\nMost borrowers review the sanctioned loan amount and EMI, but ignore the fine print controlling loan servicing and default structures.\n\nBefore executing any loan agreement, audit these 5 elements:\n1. Spread stability against benchmark movements\n2. Penal charges vs compounding penal interest\n3. Single-premium bundled insurance additions to principal\n4. Zero prepayment penalties on individual floating rate loans\n5. Full APR disclosure in the Key Fact Statement (KFS)\n\nHave you verified your loan's Key Fact Statement (KFS) before signing, or did you rely solely on the sanction letter?\n\nComment 'CHECKLIST' below to get our interactive Loan Agreement Safety PDF sent to your DMs.",
+      "hashtags": [
+        "#BajajFinance",
+        "#ConsumerProtection",
+        "#FinancialLiteracy",
+        "#LoanAgreement",
+        "#KeyFactStatement",
+        "#SmartBorrowing"
+      ],
+      "callToAction": "Save this post for your next loan review and comment 'CHECKLIST' for the full safety audit sheet.",
+      "status": "draft",
+      "modelUsed": "gemini-3.8-flash",
+      "generationId": "gen-1791439686367-i9gd2",
+      "skillVersion": "v4",
+      "createdAt": "2026-10-08T06:08:46.114Z",
+      "updatedAt": "2026-10-08T06:08:46.114Z"
+    },
     {
       "id": "script-1791433282402",
       "accountId": "ig-snacc.mart-1789832445989",
@@ -8690,7 +8931,7 @@
         "timeoutMs": 30000,
         "retryCount": 2,
         "connectionStatus": "connected",
-        "lastTested": "2026-10-08T04:20:19.988Z",
+        "lastTested": "2026-10-08T06:06:46.707Z",
         "statusMessage": "Gemini connected successfully."
       },
       "openai": {
@@ -8778,10 +9019,10 @@
       "monthlyBudgetUsd": 100,
       "warningThresholdPct": 80,
       "hardStopPct": 100,
-      "currentSpendUsd": 18.480750000000004,
+      "currentSpendUsd": 18.487500000000004,
       "currentMonth": "September 2026",
-      "requestCountThisMonth": 151,
-      "estimatedTokensThisMonth": 183300
+      "requestCountThisMonth": 154,
+      "estimatedTokensThisMonth": 187800
     },
     "learningSettings": {
       "enabled": true,
@@ -9198,6 +9439,290 @@
     }
   ],
   "instagramGenerations": [
+    {
+      "id": "gen-1791439768651-i0pko",
+      "task": "script_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "script-prompt-v4",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (script_generation) - Skill v4",
+      "inputContext": {
+        "account": "bajajfinance",
+        "skillVersion": "v4"
+      },
+      "output": {
+        "title": "The EMI Amortization Trap",
+        "format": "Carousel",
+        "hook": "Stop paying 20% more on your EMI without realizing it.",
+        "slides": [
+          {
+            "slideNumber": 1,
+            "slideType": "hook",
+            "visualLayout": "Deep navy background, bold neon yellow text, high-contrast EMI graphic",
+            "headline": "Stop Paying 20% Extra",
+            "bodyText": "The hidden math behind your EMI amortization.",
+            "swipeTrigger": "👉 Swipe to see the trap"
+          },
+          {
+            "slideNumber": 2,
+            "slideType": "educational",
+            "visualLayout": "Clean white card, black text, math formula icon",
+            "headline": "How EMI is Calculated",
+            "bodyText": "E = [P x R x (1+R)^N] / [(1+R)^N-1]. Most people only look at E, but the ratio of P (Principal) to I (Interest) is where the trap hides.",
+            "swipeTrigger": "👉 Swipe for the breakdown"
+          },
+          {
+            "slideNumber": 3,
+            "slideType": "educational",
+            "visualLayout": "Split screen chart: Early vs Late payments",
+            "headline": "The Front-Loading Reality",
+            "bodyText": "In early months, 70-80% of your EMI goes toward interest, not your debt. You are paying for the privilege of borrowing, not clearing the loan.",
+            "swipeTrigger": "👉 Why this matters"
+          },
+          {
+            "slideNumber": 4,
+            "slideType": "tactical",
+            "visualLayout": "Bold red 'Warning' box with checkmark",
+            "headline": "The Amortization Trap",
+            "bodyText": "If you pay only the minimum, you pay nearly double the principal over 15 years. This is the 20% leak.",
+            "swipeTrigger": "👉 How to fix it"
+          },
+          {
+            "slideNumber": 5,
+            "slideType": "tactical",
+            "visualLayout": "Green progress bar graphic",
+            "headline": "Strategy 1: Prepayment",
+            "bodyText": "Even 5% extra toward the principal in Month 1 can reduce total interest outflow by up to 12%.",
+            "swipeTrigger": "👉 See the impact"
+          },
+          {
+            "slideNumber": 6,
+            "slideType": "tactical",
+            "visualLayout": "Simple table format",
+            "headline": "Strategy 2: Tenure Audit",
+            "bodyText": "Longer tenure = Lower EMI = Higher total interest. Use our calculator to find the 'Sweet Spot' between cash flow and interest cost.",
+            "swipeTrigger": "👉 Pro-tip inside"
+          },
+          {
+            "slideNumber": 7,
+            "slideType": "tactical",
+            "visualLayout": "Minimalist checklist layout",
+            "headline": "Your Audit Checklist",
+            "bodyText": "1. Check your amortization schedule.\n2. Identify the interest-to-principal ratio.\n3. Increase EMI by 10% annually.",
+            "swipeTrigger": "👉 Summary ahead"
+          },
+          {
+            "slideNumber": 8,
+            "slideType": "summary",
+            "visualLayout": "Dark card, gold text accents",
+            "headline": "The Framework",
+            "bodyText": "Principal focus > Tenure focus. Control the amortization, don't let it control your wealth.",
+            "swipeTrigger": "👉 Save this now"
+          },
+          {
+            "slideNumber": 9,
+            "slideType": "cta",
+            "visualLayout": "Full screen with 'SAVE' icon animation",
+            "headline": "Don't lose 20% to interest",
+            "bodyText": "Save this post to review your loan schedule this weekend.",
+            "swipeTrigger": "👉 Final Action"
+          }
+        ],
+        "caption": "Your EMI isn't just a monthly bill; it's a mathematical structure designed to front-load interest. \n\nIf you aren't tracking your amortization schedule, you are likely overpaying by 20% or more over the life of your loan. \n\nStop the bleed:\n1. Check your amortization table.\n2. Recognize that early payments are interest-heavy.\n3. Make small, consistent prepayments to slash total interest.\n\nWant to see how much you can save by adjusting your tenure? \n\nComment 'CALCULATOR' and we’ll DM you the direct link to our EMI Amortization Tool. \n\n#BajajFinance #FinancialLiteracy #EMI #DebtManagement #PersonalFinanceIndia #SmartInvesting #LoanAudit",
+        "hashtags": [
+          "#BajajFinance",
+          "#FinancialLiteracy",
+          "#EMI",
+          "#DebtManagement",
+          "#PersonalFinanceIndia",
+          "#SmartInvesting",
+          "#LoanAudit"
+        ],
+        "callToAction": "Comment 'CALCULATOR' for our EMI Amortization Tool"
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 12156,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-10-08T06:09:40.807Z"
+    },
+    {
+      "id": "gen-1791439686367-i9gd2",
+      "task": "script_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "script-prompt-v4",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (script_generation) - Skill v4",
+      "inputContext": {
+        "account": "bajajfinance",
+        "skillVersion": "v4"
+      },
+      "output": {
+        "title": "Loan Agreement Safety Checklist",
+        "format": "Carousel",
+        "hook": "5 hidden clauses that drain your bank account.",
+        "slides": [
+          {
+            "slideNumber": 1,
+            "slideType": "hook",
+            "visualLayout": "Deep navy background with high-contrast amber alert pill. Bold white oversized central typography.",
+            "headline": "5 Hidden Loan Clauses Draining Your Account",
+            "bodyText": "Never sign before running this 3-minute safety audit.",
+            "swipeTrigger": "👉 Slide 3 saves you ₹1.8 Lakhs"
+          },
+          {
+            "slideNumber": 2,
+            "slideType": "tactical",
+            "visualLayout": "Split comparison card. High-contrast red vs green badge highlighting spread benchmarks.",
+            "headline": "Clause 1: The Spread Reset Trap",
+            "bodyText": "Lenders link rates to an external benchmark plus a margin (spread). Check if the agreement allows discretionary spread revisions during the tenure without RBI benchmark changes.",
+            "swipeTrigger": "👉 Spot Clause 2 before signing"
+          },
+          {
+            "slideNumber": 3,
+            "slideType": "tactical",
+            "visualLayout": "Math breakdown card with financial arithmetic pill: ₹30L loan at 8.5% vs 9.25%.",
+            "headline": "Clause 2: Annualized Penal Charges",
+            "bodyText": "Under RBI norms, default charges must be 'penal charges', not compounded 'penal interest'. Verify that delayed payment fees do not capitalize onto principal.",
+            "swipeTrigger": "👉 Slide 4 reveals the insurance trap"
+          },
+          {
+            "slideNumber": 4,
+            "slideType": "tactical",
+            "visualLayout": "Warning callout card with highlighted legal disclaimer box.",
+            "headline": "Clause 3: Bundled Credit Insurance",
+            "bodyText": "Loan protection insurance is optional, not mandatory. If bundled, ensure the premium is not added to the principal balance where it accrues interest over 15-20 years.",
+            "swipeTrigger": "👉 Check the foreclosure lock-in next"
+          },
+          {
+            "slideNumber": 5,
+            "slideType": "tactical",
+            "visualLayout": "Clean dual-column table comparing floating vs fixed rate rules.",
+            "headline": "Clause 4: Prepayment Restrictions",
+            "bodyText": "Floating rate term loans to individual borrowers carry zero prepayment penalty by regulatory mandate. Ensure no hidden 30-day notice charges or lock-in windows apply.",
+            "swipeTrigger": "👉 Slide 6 covers bounce processing fees"
+          },
+          {
+            "slideNumber": 6,
+            "slideType": "tactical",
+            "visualLayout": "Itemized fee breakdown layout on high-contrast dark card.",
+            "headline": "Clause 5: NACH Bounce Cascades",
+            "bodyText": "A single presentation failure triggers two costs: bank bounce fee (₹250-₹500) plus lender late administrative charge (₹400-₹1,000 + 18% GST). Audit representation frequency limits.",
+            "swipeTrigger": "👉 The mandatory 1-page document you need"
+          },
+          {
+            "slideNumber": 7,
+            "slideType": "tactical",
+            "visualLayout": "Document mock-up card highlighting the 'Key Fact Statement' (KFS).",
+            "headline": "Demand the Key Fact Statement",
+            "bodyText": "Lenders are mandated to provide a standardized 1-page KFS disclosing the Annual Percentage Rate (APR), recovery agent details, and total fee schedule before signing.",
+            "swipeTrigger": "👉 See the impact math on Slide 8"
+          },
+          {
+            "slideNumber": 8,
+            "slideType": "tactical",
+            "visualLayout": "Mathematical verification grid with strict stated assumptions.",
+            "headline": "The True Cost Breakdown",
+            "bodyText": "₹30,00,000 loan over 20 years at 9% base: A 0.50% unchecked spread adjustment adds ₹3,62,400 to your total interest outgo. Always lock your spread terms in writing.",
+            "swipeTrigger": "👉 Bookmark the full checklist on Slide 9"
+          },
+          {
+            "slideNumber": 9,
+            "slideType": "summary",
+            "visualLayout": "Grid checklist graphic with 5 interactive check-boxes and high-contrast badges.",
+            "headline": "Your Pre-Sign Safety Checklist",
+            "bodyText": "1. Spread freeze confirmed\n2. Penal charges non-compounding\n3. Insurance unbundled\n4. Zero foreclosure penalty verified\n5. APR audited via Key Fact Statement",
+            "swipeTrigger": "👉 Save this resource"
+          },
+          {
+            "slideNumber": 10,
+            "slideType": "cta",
+            "visualLayout": "Minimalist centered CTA card with bold bookmark icon and neon comment prompt.",
+            "headline": "Protect Your Borrowing Power",
+            "bodyText": "Save this guide before your next loan application or disbursement.",
+            "swipeTrigger": "Comment CHECKLIST below"
+          }
+        ],
+        "caption": "A 0.50% unverified spread revision on a ₹30 Lakh loan increases your total interest payable by over ₹3.6 Lakhs over 20 years.\n\nMost borrowers review the sanctioned loan amount and EMI, but ignore the fine print controlling loan servicing and default structures.\n\nBefore executing any loan agreement, audit these 5 elements:\n1. Spread stability against benchmark movements\n2. Penal charges vs compounding penal interest\n3. Single-premium bundled insurance additions to principal\n4. Zero prepayment penalties on individual floating rate loans\n5. Full APR disclosure in the Key Fact Statement (KFS)\n\nHave you verified your loan's Key Fact Statement (KFS) before signing, or did you rely solely on the sanction letter?\n\nComment 'CHECKLIST' below to get our interactive Loan Agreement Safety PDF sent to your DMs.",
+        "hashtags": [
+          "#BajajFinance",
+          "#ConsumerProtection",
+          "#FinancialLiteracy",
+          "#LoanAgreement",
+          "#KeyFactStatement",
+          "#SmartBorrowing"
+        ],
+        "callToAction": "Save this post for your next loan review and comment 'CHECKLIST' for the full safety audit sheet."
+      },
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 39745,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-10-08T06:08:46.114Z"
+    },
+    {
+      "id": "gen-1791439639105-u1zp9",
+      "task": "topic_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "topic-prompt-v8",
+      "skillVersion": "v4",
+      "inputContextSummary": "@bajajfinance (topic_generation) - Skill v4",
+      "inputContext": {
+        "account": "bajajfinance",
+        "skillVersion": "v4"
+      },
+      "output": [
+        {
+          "title": "The EMI Amortization Trap",
+          "hook": "Stop paying 20% more on your EMI without realizing it.",
+          "format": "Reel",
+          "contentPillar": "Educational Financial Literacy",
+          "viralPotentialScore": 94,
+          "auditRationale": "Addresses the gap for mathematically rigorous content. Uses a pattern interrupt hook to explain the arithmetic of principal vs. interest components in EMI cycles, fulfilling the v4 requirement for verifiable financial mechanics.",
+          "angleOptions": [
+            "Visual breakdown of principal reduction over 24 months",
+            "The 'Prepayment vs. Savings' math comparison",
+            "Why tenure selection changes the total interest burden"
+          ]
+        },
+        {
+          "title": "Loan Agreement Safety Checklist",
+          "hook": "5 hidden clauses that drain your bank account.",
+          "format": "Carousel",
+          "contentPillar": "Fraud Awareness & Consumer Safety",
+          "viralPotentialScore": 89,
+          "auditRationale": "Directly solves the 'save-worthy checklist' gap identified in the audit. Adheres to v4 guidelines by replacing conversational filler with a tactical framework and a clear 'SAVE' CTA on the final slide.",
+          "angleOptions": [
+            "The 'Fine Print' audit for hidden processing fees",
+            "Identifying predatory 'zero-interest' marketing traps",
+            "Verification steps before signing digital loan mandates"
+          ]
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 13740,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-10-08T06:07:32.845Z"
+    },
     {
       "id": "gen-1791433304033-xtqcp",
       "task": "topic_generation",

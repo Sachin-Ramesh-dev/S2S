@@ -1376,12 +1376,12 @@ If you found value in this carousel:
       }
     });
 
-    // Real Gemini Image generation models catalog
+    // Current Nano Banana & Gemini Image Generation models (ordered by priority)
     const imageCandidateModels = [
-      'gemini-2.5-flash-image',
       'gemini-3.1-flash-image',
-      'gemini-3-pro-image',
-      'gemini-3.1-flash-lite-image'
+      'gemini-nano-banana-2.1',
+      'gemini-3.1-flash-lite-image',
+      'gemini-3-pro-image'
     ];
     let lastError: any = null;
 
@@ -1389,7 +1389,10 @@ If you found value in this carousel:
       try {
         const response = await ai.models.generateContent({
           model,
-          contents: `Generate an Instagram visual asset: ${prompt}. Aspect ratio ${aspectRatio}. Style: ${stylePreset || 'Editorial Graphic'}. Clean modern aesthetic.`
+          contents: `Generate an Instagram visual asset: ${prompt}. Aspect ratio ${aspectRatio}. Style: ${stylePreset || 'Editorial Graphic'}. Clean modern aesthetic.`,
+          config: {
+            responseModalities: ['IMAGE']
+          }
         });
 
         const candidates = response.candidates || [];

@@ -62,6 +62,25 @@ async function runAudit() {
     throw new Error('Failed to reject tiny buffer');
   }
 
+  // Test E: Key Enforcement & Stop Before Chargeable Calls (Requirement: Stop before potentially chargeable request)
+  console.log('\n  Testing Pre-Request Key & Quota Enforcement (Stop before chargeable call)...');
+  const prevKey = process.env.POLLINATIONS_API_KEY;
+  delete process.env.POLLINATIONS_API_KEY;
+  let keyCheckPassed = false;
+  try {
+    await orchestrator.generateFluxVisualScene('Test Scene Without Key');
+  } catch (err) {
+    if (err.message.includes('Pollinations API key not configured')) {
+      keyCheckPassed = true;
+      console.log('  ✓ Correctly stopped before network call when key is missing:', err.message.slice(0, 80) + '...');
+    }
+  } finally {
+    if (prevKey) process.env.POLLINATIONS_API_KEY = prevKey;
+  }
+  if (!keyCheckPassed) {
+    throw new Error('Failed to enforce pre-request key check');
+  }
+
   // 2. Playwright UI Verification
   console.log('\n2. Launching Playwright browser to verify UI simplification & credit notices...');
   const browser = await chromium.launch({ headless: true });
@@ -96,7 +115,7 @@ async function runAudit() {
     // Check Flux option
     await page.click('#provider-card-flux');
     await page.waitForTimeout(300);
-    const fluxNotice = page.locator('text=Flux Diffusion Engine Notice');
+    const fluxNotice = page.locator('text=Flux / Pollinations API Policy & Quota Notice');
     console.log('  ✓ Flux notice visible:', await fluxNotice.isVisible());
     const fluxGenBtn = page.locator('#btn-generate-mock-image');
     console.log('  ✓ Primary button label for Flux:', await fluxGenBtn.innerText());
@@ -112,7 +131,7 @@ async function runAudit() {
     // Check Local Canvas option
     await page.click('#provider-card-canvas');
     await page.waitForTimeout(300);
-    const canvasNotice = page.locator('text=100% Free & Unlimited Client Composition');
+    const canvasNotice = page.locator('text=100% Free Client Canvas').first();
     console.log('  ✓ Canvas free notice visible:', await canvasNotice.isVisible());
     const canvasGenBtn = page.locator('#btn-generate-mock-image');
     console.log('  ✓ Primary button label for Canvas:', await canvasGenBtn.innerText());

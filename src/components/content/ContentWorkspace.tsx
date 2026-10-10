@@ -3732,7 +3732,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                       </label>
                       <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                         {selectedImageProvider === 'flux'
-                          ? 'Community Diffusion (Flux)'
+                          ? 'Flux Diffusion (Key & Quota Apply)'
                           : selectedImageProvider === 'canvas'
                           ? '100% Free Client Canvas'
                           : selectedImageProvider === 'manus'
@@ -3758,7 +3758,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           <Sparkles className="w-3.5 h-3.5 text-purple-400 shrink-0" />
                           <div>
                             <div className="text-xs font-bold text-slate-900 dark:text-white">Flux AI Visuals</div>
-                            <div className="text-[10px] text-purple-400 font-mono">Free Diffusion</div>
+                            <div className="text-[10px] text-purple-400 font-mono">Key &amp; Quota Apply</div>
                           </div>
                         </div>
                       </button>
@@ -3778,7 +3778,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           <Layout className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                           <div>
                             <div className="text-xs font-bold text-slate-900 dark:text-white">Local Canvas</div>
-                            <div className="text-[10px] text-emerald-400 font-mono">100% Free • No AI</div>
+                            <div className="text-[10px] text-emerald-400 font-mono">100% Free • Client-Side</div>
                           </div>
                         </div>
                       </button>
@@ -3864,12 +3864,12 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           isDark ? 'text-purple-300' : 'text-purple-900'
                         }`}>
                           <Sparkles className="w-3.5 h-3.5 shrink-0 text-purple-400" />
-                          <span>Flux Diffusion Engine Notice</span>
+                          <span>Flux / Pollinations API Policy &amp; Quota Notice</span>
                         </div>
                         <p className={`leading-relaxed ${
                           isDark ? 'text-zinc-300' : 'text-slate-700'
                         }`}>
-                          Generates pure visual background scenes (receipts, cards, or retail counters) with zero corrupted text. Community access requires no API key. If the provider returns a rate limit (HTTP 402/401), configure an optional free key from <code>enter.pollinations.ai</code> in .env, or use Local Canvas Composer.
+                          Generates genuine visual background scenes without distorted text. A free allowance (Quest Pollen) may be available for registered accounts, but API authentication is required and quota restrictions apply. If no key is configured or the free allowance is exhausted, generation stops to prevent chargeable requests. Configure <code>POLLINATIONS_API_KEY</code> in .env (get a free key at <code>enter.pollinations.ai</code>) or use Local Canvas Composer.
                         </p>
                       </div>
                     )}
@@ -3882,7 +3882,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           isDark ? 'text-emerald-300' : 'text-emerald-900'
                         }`}>
                           <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-emerald-400" />
-                          <span>100% Free &amp; Unlimited Client Composition</span>
+                          <span>100% Free Client Canvas (No External API Calls)</span>
                         </div>
                         <p className={`leading-relaxed ${
                           isDark ? 'text-zinc-300' : 'text-slate-700'
@@ -4258,7 +4258,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           <span>{resText}</span>
                           <span className="text-purple-400 font-bold">
                             {(selectedScript?.imageConcept as any)?.provider === 'flux'
-                              ? 'Genuine AI Visual Artwork (Flux)'
+                              ? 'Model-Generated Visual Artwork (Flux)'
                               : (selectedScript?.imageConcept as any)?.provider === 'manus'
                               ? 'Composed by Manus AI Agent'
                               : 'Graphic Canvas Layout'}
@@ -4410,7 +4410,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                       </div>
                       <span className="text-xs font-mono text-zinc-400">
                         {(selectedScript?.imageConcept as any)?.provider === 'flux'
-                          ? 'Genuine Flux AI Artwork + S2S Studio Overlay'
+                          ? 'Flux AI Visual Artwork + S2S Studio Overlay'
                           : (selectedScript?.imageConcept as any)?.provider === 'manus'
                           ? 'Composed by Manus AI Agent'
                           : 'Client Canvas Render'}
@@ -4535,7 +4535,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                             <Sparkles className="w-3.5 h-3.5 text-blue-400" />
                             <span>
                               {(selectedScript?.imageConcept as any)?.provider === 'flux'
-                                ? 'Genuine Flux AI Artwork + S2S Studio Overlay'
+                                ? 'Flux AI Visual Artwork + S2S Studio Overlay'
                                 : (selectedScript?.imageConcept as any)?.provider === 'manus'
                                 ? 'Composed by Manus AI Agent'
                                 : 'Verified Rendered Graphic Card'}

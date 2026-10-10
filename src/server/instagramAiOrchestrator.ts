@@ -1646,15 +1646,19 @@ Save the completed image file in the sandbox environment and provide the downloa
 
     const encodedPrompt = encodeURIComponent(visualPrompt);
     const pollinationsKey = process.env.POLLINATIONS_API_KEY || '';
-    const seed = Math.floor(Math.random() * 100000);
-
-    const headers: Record<string, string> = {};
-    let endpointUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&nologo=true&seed=${seed}`;
-
-    if (pollinationsKey) {
-      headers['Authorization'] = `Bearer ${pollinationsKey}`;
-      endpointUrl += `&key=${encodeURIComponent(pollinationsKey)}`;
+    if (!pollinationsKey) {
+      throw new Error(
+        'Pollinations API key not configured. Pollinations enforces API authentication and quota restrictions (anonymous generation is payment-gated with HTTP 402/401). Generation was stopped before any potentially chargeable request. Configure POLLINATIONS_API_KEY in .env (a free allowance via Quest Pollen is available at https://enter.pollinations.ai/keys), or use the zero-cost Local Canvas Composer.'
+      );
     }
+
+    const seed = Math.floor(Math.random() * 100000);
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${pollinationsKey}`
+    };
+    const endpointUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&nologo=true&seed=${seed}&key=${encodeURIComponent(
+      pollinationsKey
+    )}`;
 
     let response: Response;
     try {
@@ -1664,7 +1668,7 @@ Save the completed image file in the sandbox environment and provide the downloa
       });
     } catch (fetchErr: any) {
       if (fetchErr.name === 'TimeoutError' || fetchErr.message?.includes('timeout')) {
-        throw new Error('Flux image generation timed out after 25 seconds. The community diffusion engine may be temporarily busy.');
+        throw new Error('Flux image generation timed out after 25 seconds. The diffusion engine may be temporarily busy.');
       }
       throw new Error(`Failed to connect to image generation engine: ${fetchErr.message || String(fetchErr)}`);
     }
@@ -1680,16 +1684,16 @@ Save the completed image file in the sandbox environment and provide the downloa
 
       if (response.status === 402) {
         throw new Error(
-          'Pollinations Community Free Limit Reached (HTTP 402 Payment Required). Anonymous usage is currently restricted by the provider. Please obtain a free API key at https://enter.pollinations.ai and configure POLLINATIONS_API_KEY in .env, or use Local Canvas Composer.'
+          'Pollinations account free allowance exhausted (HTTP 402 Payment Required). Request stopped before incurring charges. Check your Pollen balance at https://enter.pollinations.ai, or use Local Canvas Composer.'
         );
       }
       if (response.status === 401) {
         throw new Error(
-          'Pollinations API Key Required (HTTP 401 Unauthorized). The community endpoint rejected unauthenticated generation. Get a free key at https://enter.pollinations.ai and add POLLINATIONS_API_KEY in .env.'
+          'Pollinations API key invalid or unauthorized (HTTP 401). Please verify your POLLINATIONS_API_KEY at https://enter.pollinations.ai/keys, or use Local Canvas Composer.'
         );
       }
       if (response.status === 429) {
-        throw new Error('Pollinations Community Rate Limit Exceeded (HTTP 429). Please wait a few moments before trying again.');
+        throw new Error('Pollinations Rate Limit Exceeded (HTTP 429). Please wait a few moments before trying again.');
       }
       if (response.status === 502 || response.status === 503 || response.status === 504) {
         throw new Error(`Flux diffusion backend is temporarily overloaded (HTTP ${response.status}). Please retry in a few moments.`);
@@ -1737,7 +1741,7 @@ Save the completed image file in the sandbox environment and provide the downloa
     };
   }
 
-  // Real AI Image Generation Provider Engine (Supports Flux zero-cost diffusion, Gemini Free Tier & Manus AI Agent)
+  // AI Image Generation Provider Engine (Routes to Flux diffusion via Pollinations key/quota, Gemini, or Manus AI Agent)
   public async generateAiImage(
     prompt: string,
     aspectRatio: string = '1:1',

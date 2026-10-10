@@ -1394,6 +1394,10 @@ If you found value in this carousel:
 
   // Validate PNG / JPEG signature and extract dimensions
   public validateAndGetImageDimensions(buf: Buffer): { width: number; height: number; mime: string } {
+    if (!buf || buf.length < 128) {
+      throw new Error(`Invalid image file: Buffer too small (${buf ? buf.length : 0} bytes). Expected complete image binary.`);
+    }
+
     // PNG signature: 89 50 4E 47 0D 0A 1A 0A
     if (
       buf.length >= 24 &&
@@ -1408,22 +1412,39 @@ If you found value in this carousel:
     ) {
       const width = buf.readUInt32BE(16);
       const height = buf.readUInt32BE(20);
-      return { width, height, mime: 'image/png' };
+      if (width > 0 && height > 0) {
+        return { width, height, mime: 'image/png' };
+      }
+      throw new Error(`Corrupted PNG header: Parsed invalid dimensions ${width}x${height}`);
     }
 
     // JPEG signature: FF D8 FF
     if (buf.length >= 4 && buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) {
       let offset = 2;
       while (offset < buf.length - 8) {
-        if (buf[offset] === 0xff && (buf[offset + 1] === 0xc0 || buf[offset + 1] === 0xc2)) {
-          const height = buf.readUInt16BE(offset + 5);
-          const width = buf.readUInt16BE(offset + 7);
-          return { width, height, mime: 'image/jpeg' };
+        if (buf[offset] === 0xff) {
+          const marker = buf[offset + 1];
+          // SOF0 (0xC0), SOF1 (0xC1), SOF2 (0xC2) contain height and width
+          if (marker === 0xc0 || marker === 0xc1 || marker === 0xc2) {
+            const height = buf.readUInt16BE(offset + 5);
+            const width = buf.readUInt16BE(offset + 7);
+            if (width > 0 && height > 0) {
+              return { width, height, mime: 'image/jpeg' };
+            }
+            throw new Error(`Corrupted JPEG frame header: Parsed invalid dimensions ${width}x${height}`);
+          }
+          // SOS (0xDA) or EOI (0xD9) means start of scan / end of image, no more SOF headers
+          if (marker === 0xda || marker === 0xd9) {
+            break;
+          }
+          const markerLen = buf.readUInt16BE(offset + 2);
+          if (markerLen <= 0) break;
+          offset += 2 + markerLen;
+        } else {
+          offset++;
         }
-        const markerLen = buf.readUInt16BE(offset + 2);
-        offset += 2 + (markerLen > 0 ? markerLen : 2);
       }
-      return { width: 1080, height: 1080, mime: 'image/jpeg' };
+      throw new Error('Invalid JPEG structure: Valid SOF (Start of Frame) dimension marker not found.');
     }
 
     throw new Error('Invalid image file format: Signature does not match PNG or JPEG magic bytes.');
@@ -1596,7 +1617,7 @@ Save the completed image file in the sandbox environment and provide the downloa
     };
   }
 
-  // Genuine AI Image Generation (Flux Latent Diffusion Model at Zero Cost)
+  // Genuine AI Image Generation (Flux Latent Diffusion Model)
   public async generateFluxVisualScene(
     prompt: string,
     aspectRatio: string = '1:1',
@@ -1624,19 +1645,74 @@ Save the completed image file in the sandbox environment and provide the downloa
     const visualPrompt = `${prompt.trim()}, ${styleInstruction}, photorealistic 8k, highly detailed, clean background, no text, no words, no letters, no watermark, no logos, no typography`;
 
     const encodedPrompt = encodeURIComponent(visualPrompt);
-    const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&nologo=true&private=true&enhance=true&seed=${Math.floor(
-      Math.random() * 100000
-    )}`;
+    const pollinationsKey = process.env.POLLINATIONS_API_KEY || '';
+    const seed = Math.floor(Math.random() * 100000);
 
-    const response = await fetch(pollinationsUrl);
+    const headers: Record<string, string> = {};
+    let endpointUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&nologo=true&seed=${seed}`;
+
+    if (pollinationsKey) {
+      headers['Authorization'] = `Bearer ${pollinationsKey}`;
+      endpointUrl += `&key=${encodeURIComponent(pollinationsKey)}`;
+    }
+
+    let response: Response;
+    try {
+      response = await fetch(endpointUrl, {
+        headers,
+        signal: AbortSignal.timeout(25000)
+      });
+    } catch (fetchErr: any) {
+      if (fetchErr.name === 'TimeoutError' || fetchErr.message?.includes('timeout')) {
+        throw new Error('Flux image generation timed out after 25 seconds. The community diffusion engine may be temporarily busy.');
+      }
+      throw new Error(`Failed to connect to image generation engine: ${fetchErr.message || String(fetchErr)}`);
+    }
+
     if (!response.ok) {
-      throw new Error(`Flux image model generation failed: HTTP ${response.status} ${response.statusText}`);
+      const contentType = response.headers.get('content-type') || '';
+      let errorBody = '';
+      try {
+        errorBody = await response.text();
+      } catch {
+        errorBody = response.statusText;
+      }
+
+      if (response.status === 402) {
+        throw new Error(
+          'Pollinations Community Free Limit Reached (HTTP 402 Payment Required). Anonymous usage is currently restricted by the provider. Please obtain a free API key at https://enter.pollinations.ai and configure POLLINATIONS_API_KEY in .env, or use Local Canvas Composer.'
+        );
+      }
+      if (response.status === 401) {
+        throw new Error(
+          'Pollinations API Key Required (HTTP 401 Unauthorized). The community endpoint rejected unauthenticated generation. Get a free key at https://enter.pollinations.ai and add POLLINATIONS_API_KEY in .env.'
+        );
+      }
+      if (response.status === 429) {
+        throw new Error('Pollinations Community Rate Limit Exceeded (HTTP 429). Please wait a few moments before trying again.');
+      }
+      if (response.status === 502 || response.status === 503 || response.status === 504) {
+        throw new Error(`Flux diffusion backend is temporarily overloaded (HTTP ${response.status}). Please retry in a few moments.`);
+      }
+
+      throw new Error(`Flux image model generation failed (HTTP ${response.status}): ${errorBody.slice(0, 300)}`);
+    }
+
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.startsWith('image/')) {
+      const bodyText = await response.text();
+      throw new Error(`Invalid response from image model provider (Expected image/*, received ${contentType}): ${bodyText.slice(0, 300)}`);
     }
 
     const arrayBuf = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuf);
 
+    if (buffer.length < 2048) {
+      throw new Error(`Received incomplete or truncated image buffer (${buffer.length} bytes). Expected complete image.`);
+    }
+
     const dims = this.validateAndGetImageDimensions(buffer);
+    const actualModel = response.headers.get('x-model-used') || 'flux-schnell';
 
     try {
       const fs = await import('fs');
@@ -1653,7 +1729,7 @@ Save the completed image file in the sandbox environment and provide the downloa
     return {
       imageUrl: dataUrl,
       provider: 'flux',
-      model: 'flux-schnell',
+      model: actualModel,
       width: dims.width,
       height: dims.height,
       byteLength: buffer.length,

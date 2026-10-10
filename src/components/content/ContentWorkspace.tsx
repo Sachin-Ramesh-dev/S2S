@@ -563,6 +563,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
 
   // Visual Production Provider: 'flux' (genuine zero-cost diffusion) | 'canvas' (zero-cost layout) | 'manus' (credit agent) | 'gemini' (API)
   const [selectedImageProvider, setSelectedImageProvider] = useState<'flux' | 'canvas' | 'manus' | 'gemini'>('flux');
+  const [isAdvancedImageSettingsOpen, setIsAdvancedImageSettingsOpen] = useState(false);
   // Manus Image Task Tracking State
   const [manusTaskState, setManusTaskState] = useState<{
     active: boolean;
@@ -3672,21 +3673,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         <span>Regenerate</span>
                       </button>
 
-                      <button
-                        id="btn-preview-canvas-layout"
-                        type="button"
-                        onClick={() => setImageStage('mock')}
-                        className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 cursor-pointer ${
-                          selectedImageProvider === 'canvas'
-                            ? 'border-emerald-500/50 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25'
-                            : 'border-zinc-700 hover:bg-zinc-800 text-zinc-300'
-                        }`}
-                        title="Zero-cost client-side layout composition"
-                      >
-                        <Layout className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>Compose Graphic Card ➔</span>
-                      </button>
-
+                      {/* SINGLE PRIMARY GENERATION BUTTON (Requirement 8) */}
                       {selectedImageProvider === 'manus' ? (
                         <button
                           id="btn-generate-manus-image"
@@ -3696,7 +3683,17 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60 shrink-0"
                         >
                           <Bot className={`w-3.5 h-3.5 ${manusTaskState.active ? 'animate-spin' : ''}`} />
-                          <span>{manusTaskState.active ? 'Manus Agent Working...' : 'Generate with Manus Agent ➔'}</span>
+                          <span>{manusTaskState.active ? 'Manus Agent Working...' : 'Dispatch Manus Agent (1 Credit) ➔'}</span>
+                        </button>
+                      ) : selectedImageProvider === 'canvas' ? (
+                        <button
+                          id="btn-generate-mock-image"
+                          type="button"
+                          onClick={() => setImageStage('mock')}
+                          className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer shrink-0"
+                        >
+                          <Layout className="w-3.5 h-3.5" />
+                          <span>Compose Graphic Layout ➔</span>
                         </button>
                       ) : selectedImageProvider === 'flux' ? (
                         <button
@@ -3715,201 +3712,201 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           type="button"
                           onClick={handleGenerateMockImage}
                           disabled={isGeneratingMockImage}
-                          className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60 shrink-0"
+                          className="px-4 py-2 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60 shrink-0"
                         >
                           <Sparkles className={`w-3.5 h-3.5 ${isGeneratingMockImage ? 'animate-spin' : ''}`} />
-                          <span>{isGeneratingMockImage ? 'Checking API...' : 'Generate Mock Image ➔'}</span>
+                          <span>{isGeneratingMockImage ? 'Checking API...' : 'Generate with Gemini (Billing Req.) ➔'}</span>
                         </button>
                       )}
                     </div>
                   </div>
 
-                  {/* VISUAL PRODUCTION PROVIDER SELECTOR (Requirements 2, 6, 7) */}
+                  {/* COLLAPSED VISUAL PRODUCTION PROVIDER SELECTOR (Requirements 6 & 8) */}
                   <div className={`p-4 rounded-2xl border space-y-3 ${
                     isDark ? 'bg-[#181826] border-[#2c2c40]' : 'bg-white border-slate-200 shadow-sm'
                   }`}>
                     <div className="flex items-center justify-between">
                       <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-                        <span>Visual Production Provider</span>
+                        <span>Visual Engine Provider</span>
                       </label>
                       <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                         {selectedImageProvider === 'flux'
-                          ? 'Zero-Cost Genuine AI Artwork'
+                          ? 'Community Diffusion (Flux)'
                           : selectedImageProvider === 'canvas'
-                          ? '100% Zero-Cost Mode'
+                          ? '100% Free Client Canvas'
                           : selectedImageProvider === 'manus'
-                          ? 'Task Credit Based'
-                          : 'Free Tier (Limit: 0)'}
+                          ? 'Task Credit Required'
+                          : 'Billing Account Required'}
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                      {/* Provider 1: Genuine AI Visual Scene (Flux) */}
-                      <div
+                    {/* Compact Segmented Selector */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                      {/* Option 1: Flux AI */}
+                      <button
+                        type="button"
                         id="provider-card-flux"
                         onClick={() => setSelectedImageProvider('flux')}
-                        className={`p-3.5 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                        className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                           selectedImageProvider === 'flux'
-                            ? 'border-purple-500 bg-purple-500/10 shadow-sm'
-                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40' : 'border-slate-200 hover:border-slate-300 bg-slate-50'
+                            ? 'border-purple-500 bg-purple-500/15 shadow-sm text-purple-200'
+                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40 text-zinc-400' : 'border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700'
                         }`}
                       >
-                        <div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-                              <span>Flux AI Visual Engine</span>
-                            </span>
-                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400">
-                              Free / Diffusion
-                            </span>
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                          <div>
+                            <div className="text-xs font-bold text-slate-900 dark:text-white">Flux AI Visuals</div>
+                            <div className="text-[10px] text-purple-400 font-mono">Free Diffusion</div>
                           </div>
-                          <p className="text-[11px] text-zinc-400 mt-1.5 leading-snug">
-                            Genuine latent diffusion (Flux). Generates pure visual scenes &amp; illustrations without text corruption.
-                          </p>
                         </div>
-                        <div className="mt-2 pt-2 border-t border-zinc-800 text-[10px] text-purple-400 font-mono">
-                          ✓ $0.00 Cost • Pure Visuals
-                        </div>
-                      </div>
+                      </button>
 
-                      {/* Provider 2: Local Canvas Composer */}
-                      <div
+                      {/* Option 2: Local Canvas */}
+                      <button
+                        type="button"
                         id="provider-card-canvas"
                         onClick={() => setSelectedImageProvider('canvas')}
-                        className={`p-3.5 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                        className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                           selectedImageProvider === 'canvas'
-                            ? 'border-emerald-500 bg-emerald-500/10 shadow-sm'
-                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40' : 'border-slate-200 hover:border-slate-300 bg-slate-50'
+                            ? 'border-emerald-500 bg-emerald-500/15 shadow-sm text-emerald-200'
+                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40 text-zinc-400' : 'border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700'
                         }`}
                       >
-                        <div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                              <Layout className="w-3.5 h-3.5 text-emerald-400" />
-                              <span>Local Canvas Composer</span>
-                            </span>
-                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
-                              Free
-                            </span>
+                        <div className="flex items-center gap-2">
+                          <Layout className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          <div>
+                            <div className="text-xs font-bold text-slate-900 dark:text-white">Local Canvas</div>
+                            <div className="text-[10px] text-emerald-400 font-mono">100% Free • No AI</div>
                           </div>
-                          <p className="text-[11px] text-zinc-400 mt-1.5 leading-snug">
-                            Zero-cost client composition. Swiss typography, geometric grids, custom badges &amp; margins.
-                          </p>
                         </div>
-                        <div className="mt-2 pt-2 border-t border-zinc-800 text-[10px] text-emerald-400 font-mono">
-                          ✓ 0s Latency • $0.00 Cost
-                        </div>
-                      </div>
+                      </button>
 
-                      {/* Provider 3: Manus AI Agent */}
-                      <div
+                      {/* Option 3: Manus AI */}
+                      <button
+                        type="button"
                         id="provider-card-manus"
                         onClick={() => setSelectedImageProvider('manus')}
-                        className={`p-3.5 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                        className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                           selectedImageProvider === 'manus'
-                            ? 'border-indigo-500 bg-indigo-500/10 shadow-sm'
-                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40' : 'border-slate-200 hover:border-slate-300 bg-slate-50'
+                            ? 'border-indigo-500 bg-indigo-500/15 shadow-sm text-indigo-200'
+                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40 text-zinc-400' : 'border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700'
                         }`}
                       >
-                        <div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                              <Bot className="w-3.5 h-3.5 text-indigo-400" />
-                              <span>Manus AI Agent</span>
-                            </span>
-                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400">
-                              Credits
-                            </span>
+                        <div className="flex items-center gap-2">
+                          <Bot className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                          <div>
+                            <div className="text-xs font-bold text-slate-900 dark:text-white">Manus Agent</div>
+                            <div className="text-[10px] text-indigo-400 font-mono">1 Task Credit</div>
                           </div>
-                          <p className="text-[11px] text-zinc-400 mt-1.5 leading-snug">
-                            Autonomous visual composition via Manus sandbox. Produces high-DPI 1920×1920 PNG graphics.
-                          </p>
                         </div>
-                        <div className="mt-2 pt-2 border-t border-zinc-800 text-[10px] text-indigo-400 font-mono">
-                          ~35s Latency • 1 Manus Task
-                        </div>
-                      </div>
+                      </button>
 
-                      {/* Provider 4: Gemini Image API */}
-                      <div
+                      {/* Option 4: Gemini */}
+                      <button
+                        type="button"
                         id="provider-card-gemini"
                         onClick={() => setSelectedImageProvider('gemini')}
-                        className={`p-3.5 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                        className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                           selectedImageProvider === 'gemini'
-                            ? 'border-amber-500 bg-amber-500/10 shadow-sm'
-                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40' : 'border-slate-200 hover:border-slate-300 bg-slate-50'
+                            ? 'border-amber-500 bg-amber-500/15 shadow-sm text-amber-200'
+                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40 text-zinc-400' : 'border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700'
                         }`}
                       >
-                        <div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                              <span>Gemini Image API</span>
-                            </span>
-                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">
-                              Limit: 0
-                            </span>
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                          <div>
+                            <div className="text-xs font-bold text-slate-900 dark:text-white">Gemini API</div>
+                            <div className="text-[10px] text-amber-400 font-mono">Limit: 0 / Billing</div>
                           </div>
-                          <p className="text-[11px] text-zinc-400 mt-1.5 leading-snug">
-                            Direct Gemini Image API endpoint. Free Tier project has zero image allocation (HTTP 429).
-                          </p>
                         </div>
-                        <div className="mt-2 pt-2 border-t border-zinc-800 text-[10px] text-amber-400 font-mono">
-                          Requires GCP Billing
-                        </div>
-                      </div>
+                      </button>
                     </div>
 
-                    {/* Flux Two-Stage Guidance Notice (Requirements 3, 4, 5) */}
-                    {selectedImageProvider === 'flux' && (
-                      <div className={`p-3.5 rounded-xl border text-[11px] space-y-1.5 ${
-                        isDark ? 'bg-purple-950/40 border-purple-500/40 text-purple-200' : 'bg-purple-50/90 border-purple-200 text-purple-950'
-                      }`}>
-                        <div className={`font-bold flex items-center gap-2 ${
-                          isDark ? 'text-purple-300' : 'text-purple-900'
-                        }`}>
-                          <Sparkles className="w-3.5 h-3.5 shrink-0 text-purple-400" />
-                          <span>Two-Stage Production: Pure AI Visuals + Precision Typography</span>
-                        </div>
-                        <p className={`leading-relaxed ${
-                          isDark ? 'text-zinc-300' : 'text-slate-700'
-                        }`}>
-                          The Flux diffusion model generates a genuine background scene (photorealistic shopping receipts, credit cards, or editorial visual scenes) without distorted typography. Headlines and branding are cleanly overlaid in safe margins during Stage 3.
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Manus Credit Guidance Notice (Requirement 7) */}
+                    {/* CLEAR NOTICE BEFORE CREDIT / BALANCE CONSUMPTION (Requirements 6 & 9) */}
                     {selectedImageProvider === 'manus' && (
-                      <div className={`p-3.5 rounded-xl border text-[11px] space-y-1.5 ${
+                      <div className={`p-3 rounded-xl border text-[11px] space-y-1.5 ${
                         isDark ? 'bg-indigo-950/40 border-indigo-500/40 text-indigo-200' : 'bg-indigo-50/90 border-indigo-200 text-indigo-950'
                       }`}>
                         <div className={`font-bold flex items-center gap-2 ${
                           isDark ? 'text-indigo-300' : 'text-indigo-900'
                         }`}>
-                          <Info className="w-3.5 h-3.5 shrink-0" />
-                          <span>Manus Task Credits &amp; Consumption Guide</span>
+                          <Info className="w-3.5 h-3.5 shrink-0 text-indigo-400" />
+                          <span>Manus Account Credits Notice</span>
                         </div>
                         <p className={`leading-relaxed ${
                           isDark ? 'text-zinc-300' : 'text-slate-700'
                         }`}>
-                          Each generation creates an autonomous agent session (<code>agent_profile: manus-1.6-lite</code>) in your Manus account, consuming <strong>1 task execution</strong>. S2S will never automatically repeat tasks or spend credits without your explicit action.
+                          Dispatching Manus starts an autonomous agent in your account (<code>agent_profile: manus-1.6-lite</code>), consuming <strong>1 task execution</strong>. S2S never triggers automatic runs without your explicit button click.
                         </p>
-                        <div className={`flex items-center gap-3 pt-1 text-[10px] ${
+                        <div className={`flex items-center gap-3 pt-0.5 text-[10px] ${
                           isDark ? 'text-indigo-400' : 'text-indigo-700 font-semibold'
                         }`}>
-                          <span>Check available credits &amp; plan:</span>
+                          <span>Verify plan balance:</span>
                           <a
                             href="https://manus.im/app"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="underline hover:opacity-80 inline-flex items-center gap-1 font-bold"
                           >
-                            Manus Dashboard (manus.im/app) <ExternalLink className="w-3 h-3" />
+                            Manus Dashboard <ExternalLink className="w-3 h-3" />
                           </a>
                         </div>
+                      </div>
+                    )}
+
+                    {selectedImageProvider === 'flux' && (
+                      <div className={`p-3 rounded-xl border text-[11px] space-y-1.5 ${
+                        isDark ? 'bg-purple-950/40 border-purple-500/40 text-purple-200' : 'bg-purple-50/90 border-purple-200 text-purple-950'
+                      }`}>
+                        <div className={`font-bold flex items-center gap-2 ${
+                          isDark ? 'text-purple-300' : 'text-purple-900'
+                        }`}>
+                          <Sparkles className="w-3.5 h-3.5 shrink-0 text-purple-400" />
+                          <span>Flux Diffusion Engine Notice</span>
+                        </div>
+                        <p className={`leading-relaxed ${
+                          isDark ? 'text-zinc-300' : 'text-slate-700'
+                        }`}>
+                          Generates pure visual background scenes (receipts, cards, or retail counters) with zero corrupted text. Community access requires no API key. If the provider returns a rate limit (HTTP 402/401), configure an optional free key from <code>enter.pollinations.ai</code> in .env, or use Local Canvas Composer.
+                        </p>
+                      </div>
+                    )}
+
+                    {selectedImageProvider === 'canvas' && (
+                      <div className={`p-3 rounded-xl border text-[11px] space-y-1 ${
+                        isDark ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200' : 'bg-emerald-50/90 border-emerald-200 text-emerald-950'
+                      }`}>
+                        <div className={`font-bold flex items-center gap-2 ${
+                          isDark ? 'text-emerald-300' : 'text-emerald-900'
+                        }`}>
+                          <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-emerald-400" />
+                          <span>100% Free &amp; Unlimited Client Composition</span>
+                        </div>
+                        <p className={`leading-relaxed ${
+                          isDark ? 'text-zinc-300' : 'text-slate-700'
+                        }`}>
+                          Composes graphic cards locally in your browser using precision typography and geometric layouts. Zero external API calls, zero latency, and zero balance consumption.
+                        </p>
+                      </div>
+                    )}
+
+                    {selectedImageProvider === 'gemini' && (
+                      <div className={`p-3 rounded-xl border text-[11px] space-y-1 ${
+                        isDark ? 'bg-amber-950/40 border-amber-500/40 text-amber-200' : 'bg-amber-50/90 border-amber-200 text-amber-950'
+                      }`}>
+                        <div className={`font-bold flex items-center gap-2 ${
+                          isDark ? 'text-amber-300' : 'text-amber-900'
+                        }`}>
+                          <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+                          <span>GCP Billing Account Required</span>
+                        </div>
+                        <p className={`leading-relaxed ${
+                          isDark ? 'text-zinc-300' : 'text-slate-700'
+                        }`}>
+                          Google AI Studio Free Tier has zero image model quota (HTTP 429). Generating images through Gemini requires a billing-enabled Google Cloud project.
+                        </p>
                       </div>
                     )}
                   </div>
@@ -4044,73 +4041,95 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                       />
                     </div>
 
-                    <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                        Image Asset / AI Image URL (Optional)
-                      </label>
-                      <input
-                        id="input-image-asset-url"
-                        type="text"
-                        placeholder="Paste image URL (https://... or data:image/...) or leave blank for graphic styling"
-                        value={selectedScript?.imageConcept?.mockImageUrl || ''}
-                        onChange={(e) => handleUpdateImageConcept({
-                          mockImageUrl: e.target.value,
-                          finalImageUrl: e.target.value
-                        })}
-                        className={`w-full text-xs font-mono px-3 py-2 rounded-xl border outline-none ${
-                          isDark ? 'bg-[#13131e] border-zinc-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
-                        }`}
-                      />
-                    </div>
+                    {/* ADVANCED SETTINGS COLLAPSED PANEL (Requirement 8) */}
+                    <div className={`rounded-xl border transition-all ${
+                      isDark ? 'border-zinc-800 bg-[#141422]' : 'border-slate-200 bg-slate-50/70'
+                    }`}>
+                      <button
+                        type="button"
+                        id="btn-toggle-advanced-image-settings"
+                        onClick={() => setIsAdvancedImageSettingsOpen(!isAdvancedImageSettingsOpen)}
+                        className="w-full px-4 py-3 flex items-center justify-between text-left text-xs font-semibold text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+                      >
+                        <span className="flex items-center gap-2">
+                          <Sliders className="w-3.5 h-3.5 text-blue-400" />
+                          <span>Advanced Settings (Aspect Ratio, Theme Preset, Image URL)</span>
+                        </span>
+                        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isAdvancedImageSettingsOpen ? 'rotate-180' : ''}`} />
+                      </button>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                          Aspect Ratio
-                        </label>
-                        <div className="flex gap-2">
-                          {(['1:1', '4:5', '9:16'] as Array<'1:1' | '4:5' | '9:16'>).map((ratio) => {
-                            const currentRatio = selectedScript?.imageConcept?.aspectRatio || '1:1';
-                            const btnId = ratio === '1:1' ? 'btn-aspect-1-1' : ratio === '4:5' ? 'btn-aspect-4-5' : 'btn-aspect-9-16';
-                            return (
-                              <button
-                                key={ratio}
-                                id={btnId}
-                                type="button"
-                                onClick={() => handleUpdateImageConcept({ aspectRatio: ratio })}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold border transition-colors cursor-pointer ${
-                                  currentRatio === ratio
-                                    ? 'bg-blue-600 text-white border-blue-500 shadow-xs'
-                                    : isDark
-                                    ? 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:bg-zinc-700'
-                                    : 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'
+                      {isAdvancedImageSettingsOpen && (
+                        <div id="advanced-settings-panel" className="p-4 pt-2 border-t border-zinc-800/60 space-y-4">
+                          <div>
+                            <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
+                              Image Asset / Background URL (Optional)
+                            </label>
+                            <input
+                              id="input-image-asset-url"
+                              type="text"
+                              placeholder="Paste image URL (https://... or data:image/...) or leave blank"
+                              value={selectedScript?.imageConcept?.mockImageUrl || ''}
+                              onChange={(e) => handleUpdateImageConcept({
+                                mockImageUrl: e.target.value,
+                                finalImageUrl: e.target.value
+                              })}
+                              className={`w-full text-xs font-mono px-3 py-2 rounded-xl border outline-none ${
+                                isDark ? 'bg-[#13131e] border-zinc-700 text-white' : 'bg-white border-slate-200 text-slate-900'
+                              }`}
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
+                                Aspect Ratio
+                              </label>
+                              <div className="flex gap-2">
+                                {(['1:1', '4:5', '9:16'] as Array<'1:1' | '4:5' | '9:16'>).map((ratio) => {
+                                  const currentRatio = selectedScript?.imageConcept?.aspectRatio || '1:1';
+                                  const btnId = ratio === '1:1' ? 'btn-aspect-1-1' : ratio === '4:5' ? 'btn-aspect-4-5' : 'btn-aspect-9-16';
+                                  return (
+                                    <button
+                                      key={ratio}
+                                      id={btnId}
+                                      type="button"
+                                      onClick={() => handleUpdateImageConcept({ aspectRatio: ratio })}
+                                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold border transition-colors cursor-pointer ${
+                                        currentRatio === ratio
+                                          ? 'bg-blue-600 text-white border-blue-500 shadow-xs'
+                                          : isDark
+                                          ? 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:bg-zinc-700'
+                                          : 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'
+                                      }`}
+                                    >
+                                      {ratio} {ratio === '1:1' ? '(Square)' : ratio === '4:5' ? '(Portrait)' : '(Story)'}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
+                                Style Preset
+                              </label>
+                              <select
+                                value={selectedScript?.imageConcept?.stylePreset || 'Editorial Swiss Graphic'}
+                                onChange={(e) => handleUpdateImageConcept({ stylePreset: e.target.value })}
+                                className={`w-full text-xs font-semibold px-3 py-2 rounded-xl border outline-none ${
+                                  isDark ? 'bg-[#13131e] border-zinc-700 text-white' : 'bg-white border-slate-200 text-slate-900'
                                 }`}
                               >
-                                {ratio} {ratio === '1:1' ? '(Square)' : ratio === '4:5' ? '(Portrait)' : '(Story)'}
-                              </button>
-                            );
-                          })}
+                                <option value="Editorial Swiss Graphic">Editorial Swiss Graphic</option>
+                                <option value="Brutalist High Contrast">Brutalist High Contrast</option>
+                                <option value="Minimal Modern Vector">Minimal Modern Vector</option>
+                                <option value="Studio Product Lighting">Studio Product Lighting</option>
+                                <option value="Cyberpunk Neon Dark">Cyberpunk Neon Dark</option>
+                              </select>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-
-                      <div>
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                          Style Preset
-                        </label>
-                        <select
-                          value={selectedScript?.imageConcept?.stylePreset || 'Editorial Swiss Graphic'}
-                          onChange={(e) => handleUpdateImageConcept({ stylePreset: e.target.value })}
-                          className={`w-full text-xs font-semibold px-3 py-2 rounded-xl border outline-none ${
-                            isDark ? 'bg-[#13131e] border-zinc-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
-                          }`}
-                        >
-                          <option value="Editorial Swiss Graphic">Editorial Swiss Graphic</option>
-                          <option value="Brutalist High Contrast">Brutalist High Contrast</option>
-                          <option value="Minimal Modern Vector">Minimal Modern Vector</option>
-                          <option value="Studio Product Lighting">Studio Product Lighting</option>
-                          <option value="Cyberpunk Neon Dark">Cyberpunk Neon Dark</option>
-                        </select>
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -70,6 +70,18 @@ export class InstagramAiOrchestrator {
     }
   }
 
+  // Retrieve prioritized Gemini keys (Vault override -> Primary GEMINI_API_KEY -> Backup GEMINI_API_KEY_BACKUP)
+  private getGeminiApiKeys(): string[] {
+    const vaultKey = this.vaultSecretResolver('gemini')?.trim();
+    const primary = process.env.GEMINI_API_KEY?.trim();
+    const backup = process.env.GEMINI_API_KEY_BACKUP?.trim();
+    const keys: string[] = [];
+    if (vaultKey) keys.push(vaultKey);
+    if (primary && !keys.includes(primary)) keys.push(primary);
+    if (backup && !keys.includes(backup)) keys.push(backup);
+    return keys;
+  }
+
   /**
    * Dedicated Live Instagram MCP + Gemini Agent Page Audit
    * Zero-hallucination, agentic tool calling over Meta Graph API v20.0
@@ -1361,20 +1373,12 @@ If you found value in this carousel:
     aspectRatio: string = '1:1',
     stylePreset?: string
   ): Promise<{ imageUrl: string; provider: string; model: string }> {
-    const apiKey = this.getApiKey('gemini') || process.env.GEMINI_API_KEY;
-    if (!apiKey) {
+    const keysToTry = this.getGeminiApiKeys();
+    if (keysToTry.length === 0) {
       throw new Error('Gemini API key is not configured in Credential Vault or GEMINI_API_KEY environment variable.');
     }
 
     const { GoogleGenAI } = await import('@google/genai');
-    const ai = new GoogleGenAI({
-      apiKey,
-      httpOptions: {
-        headers: {
-          'User-Agent': GEMINI_USER_AGENT
-        }
-      }
-    });
 
     // Current Nano Banana & Gemini Image Generation models (ordered by priority)
     const imageCandidateModels = [
@@ -1385,38 +1389,52 @@ If you found value in this carousel:
     ];
     let lastError: any = null;
 
-    for (const model of imageCandidateModels) {
-      try {
-        const response = await ai.models.generateContent({
-          model,
-          contents: `Generate an Instagram visual asset: ${prompt}. Aspect ratio ${aspectRatio}. Style: ${stylePreset || 'Editorial Graphic'}. Clean modern aesthetic.`,
-          config: {
-            responseModalities: ['IMAGE']
-          }
-        });
-
-        const candidates = response.candidates || [];
-        for (const cand of candidates) {
-          for (const part of cand.content?.parts || []) {
-            if ((part as any).inlineData?.data) {
-              const mime = (part as any).inlineData.mimeType || 'image/png';
-              const base64 = (part as any).inlineData.data;
-              return {
-                imageUrl: `data:${mime};base64,${base64}`,
-                provider: 'gemini',
-                model
-              };
-            }
+    for (let keyIdx = 0; keyIdx < keysToTry.length; keyIdx++) {
+      const apiKey = keysToTry[keyIdx];
+      const isBackup = keyIdx > 0;
+      const ai = new GoogleGenAI({
+        apiKey,
+        httpOptions: {
+          headers: {
+            'User-Agent': GEMINI_USER_AGENT
           }
         }
-        throw new Error(`Model ${model} returned text instead of image data: ${response.text?.slice(0, 100)}`);
-      } catch (err: any) {
-        lastError = err;
-        const errMsg = err?.message || JSON.stringify(err);
-        if (errMsg.includes('429') || errMsg.includes('RESOURCE_EXHAUSTED') || errMsg.includes('limit: 0')) {
-          throw new Error(
-            `Gemini Image API Error: Quota exceeded (limit: 0 on Google AI Studio Free Tier). Model '${model}' requires a billing-enabled API key or Vertex AI enterprise quota.`
-          );
+      });
+
+      for (const model of imageCandidateModels) {
+        try {
+          const response = await ai.models.generateContent({
+            model,
+            contents: `Generate an Instagram visual asset: ${prompt}. Aspect ratio ${aspectRatio}. Style: ${stylePreset || 'Editorial Graphic'}. Clean modern aesthetic.`,
+            config: {
+              responseModalities: ['IMAGE']
+            }
+          });
+
+          const candidates = response.candidates || [];
+          for (const cand of candidates) {
+            for (const part of cand.content?.parts || []) {
+              if ((part as any).inlineData?.data) {
+                const mime = (part as any).inlineData.mimeType || 'image/png';
+                const base64 = (part as any).inlineData.data;
+                return {
+                  imageUrl: `data:${mime};base64,${base64}`,
+                  provider: isBackup ? 'gemini-backup' : 'gemini',
+                  model
+                };
+              }
+            }
+          }
+        } catch (err: any) {
+          lastError = err;
+          const errMsg = err?.message || JSON.stringify(err);
+          if (errMsg.includes('429') || errMsg.includes('RESOURCE_EXHAUSTED') || errMsg.includes('limit: 0')) {
+            lastError = new Error(
+              `Gemini Image API Error: Quota exceeded (limit: 0 on Google AI Studio Free Tier). Model '${model}' requires a billing-enabled API key or Vertex AI enterprise quota.`
+            );
+            // Try next candidate model or next key
+            continue;
+          }
         }
       }
     }
@@ -1449,81 +1467,87 @@ If you found value in this carousel:
     }
   }
 
-  // Real Google Gemini Adapter via @google/genai SDK with multi-model failover & retry
+  // Real Google Gemini Adapter via @google/genai SDK with multi-key & multi-model failover
   private async callGemini(apiKey: string | undefined, model: string, prompt: string): Promise<any> {
-    const effectiveKey = apiKey || process.env.GEMINI_API_KEY;
-    if (!effectiveKey) {
+    const keysToTry = apiKey ? [apiKey] : this.getGeminiApiKeys();
+    if (keysToTry.length === 0) {
       throw new Error('Gemini API key is not configured in Credential Vault or GEMINI_API_KEY environment variable.');
     }
 
     const { GoogleGenAI } = await import('@google/genai');
-    const ai = new GoogleGenAI({
-      apiKey: effectiveKey,
-      httpOptions: {
-        headers: {
-          'User-Agent': GEMINI_USER_AGENT
-        }
-      }
-    });
-
     const initialModel = model || 'gemini-3.8-flash';
     // Models to try in order of resilience if primary encounters 503 / high demand / quota
     const candidateModels = Array.from(new Set([initialModel, 'gemini-3.1-flash-lite', 'gemini-flash-latest']));
 
     let lastError: any = null;
 
-    for (const currentModel of candidateModels) {
-      // Try up to 2 attempts with exponential backoff on 503/429
-      for (let attempt = 1; attempt <= 2; attempt++) {
-        try {
-          const response = await ai.models.generateContent({
-            model: currentModel,
-            contents: prompt,
-            config: {
-              responseMimeType: 'application/json',
-              temperature: this.config.providers.gemini.temperature || 0.7
+    for (let keyIdx = 0; keyIdx < keysToTry.length; keyIdx++) {
+      const currentKey = keysToTry[keyIdx];
+      const isBackupKey = keyIdx > 0;
+      const ai = new GoogleGenAI({
+        apiKey: currentKey,
+        httpOptions: {
+          headers: {
+            'User-Agent': GEMINI_USER_AGENT
+          }
+        }
+      });
+
+      for (const currentModel of candidateModels) {
+        // Try up to 2 attempts with exponential backoff on 503/429
+        for (let attempt = 1; attempt <= 2; attempt++) {
+          try {
+            const response = await ai.models.generateContent({
+              model: currentModel,
+              contents: prompt,
+              config: {
+                responseMimeType: 'application/json',
+                temperature: this.config.providers.gemini.temperature || 0.7
+              }
+            });
+
+            const rawText = response.text;
+            if (!rawText) {
+              throw new Error('Gemini returned an empty response.');
             }
-          });
 
-          const rawText = response.text;
-          if (!rawText) {
-            throw new Error('Gemini returned an empty response.');
+            const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+            const parsed = JSON.parse(cleanJson);
+            if (isBackupKey) {
+              console.log(`Gemini backup key (${currentKey.slice(0, 10)}...) failover succeeded on ${currentModel}.`);
+            } else if (currentModel !== initialModel) {
+              console.log(`Gemini model failover to ${currentModel} succeeded.`);
+            }
+            return parsed;
+          } catch (err: any) {
+            lastError = err;
+            const errMsg = err?.message || JSON.stringify(err);
+            const isTransient =
+              errMsg.includes('503') ||
+              errMsg.includes('high demand') ||
+              errMsg.includes('UNAVAILABLE') ||
+              errMsg.includes('429') ||
+              errMsg.includes('RESOURCE_EXHAUSTED');
+
+            if (isTransient && attempt < 2) {
+              // Wait with backoff before retry on same model
+              await new Promise((r) => setTimeout(r, 600 * attempt));
+              continue;
+            }
+
+            if (isTransient) {
+              console.warn(`Gemini model ${currentModel} unavailable (503/429) on key ${keyIdx + 1}. Trying next option...`);
+              break; // Break inner loop to try next candidate model or key
+            }
+
+            if (errMsg.includes('JSON')) {
+              console.warn(`Gemini returned malformed JSON on ${currentModel}. Trying next candidate model...`);
+              break;
+            }
+
+            // Non-transient error (e.g. auth failed), stop and rethrow
+            throw err;
           }
-
-          const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-          const parsed = JSON.parse(cleanJson);
-          if (currentModel !== initialModel) {
-            console.log(`Gemini model failover to ${currentModel} succeeded.`);
-          }
-          return parsed;
-        } catch (err: any) {
-          lastError = err;
-          const errMsg = err?.message || JSON.stringify(err);
-          const isTransient =
-            errMsg.includes('503') ||
-            errMsg.includes('high demand') ||
-            errMsg.includes('UNAVAILABLE') ||
-            errMsg.includes('429') ||
-            errMsg.includes('RESOURCE_EXHAUSTED');
-
-          if (isTransient && attempt < 2) {
-            // Wait with backoff before retry on same model
-            await new Promise((r) => setTimeout(r, 600 * attempt));
-            continue;
-          }
-
-          if (isTransient) {
-            console.warn(`Gemini model ${currentModel} unavailable (503/high demand). Trying candidate model...`);
-            break; // Break inner loop to try next candidate model
-          }
-
-          if (errMsg.includes('JSON')) {
-            console.warn(`Gemini returned malformed JSON on ${currentModel}. Trying next candidate model...`);
-            break;
-          }
-
-          // Non-transient error (e.g. auth failed), stop and rethrow
-          throw err;
         }
       }
     }

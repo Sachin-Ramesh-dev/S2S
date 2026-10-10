@@ -49,6 +49,31 @@ export class InstagramAiOrchestrator {
     this.config = newConfig;
   }
 
+  // Cache of API keys and model combinations confirmed to have zero quota for image generation (limit: 0 on Free Tier)
+  private zeroQuotaImageKeys = new Set<string>();
+  private zeroQuotaModelKeys = new Set<string>();
+
+  // Detect explicit zero quota error in HTTP 429 responses
+  private isZeroQuotaError(err: any): boolean {
+    if (!err) return false;
+    const msg = typeof err === 'string' ? err : (err.message || JSON.stringify(err));
+    return (
+      msg.includes('limit: 0') ||
+      msg.includes("limit '0'") ||
+      msg.includes('"limit": 0') ||
+      msg.includes('"limit":"0"') ||
+      msg.includes('limit: "0"') ||
+      msg.includes('quotaLimit: "0"') ||
+      msg.includes('"quotaLimit": "0"') ||
+      msg.includes('quotaLimitValue: "0"') ||
+      msg.includes('"quotaLimitValue": "0"') ||
+      msg.includes('quota limit of zero') ||
+      msg.includes('quota limit of 0') ||
+      msg.includes('GenerateRequestsPerDayPerProjectPerModel-FreeTier') ||
+      /quota.*limit.*(0|zero)/i.test(msg)
+    );
+  }
+
   // Retrieve API key prioritizing vault, then environment variable
   private getApiKey(provider: string): string | undefined {
     const vaultKey = this.vaultSecretResolver(provider);
@@ -1378,6 +1403,14 @@ If you found value in this carousel:
       throw new Error('Gemini API key is not configured in Credential Vault or GEMINI_API_KEY environment variable.');
     }
 
+    // Filter out keys already confirmed to have zero image quota on Free Tier
+    const activeKeys = keysToTry.filter(k => !this.zeroQuotaImageKeys.has(k));
+    if (activeKeys.length === 0) {
+      throw new Error(
+        'Gemini Image API Quota Exceeded (limit: 0 on Google AI Studio Free Tier). Free Tier does not include image generation quota. Zero-cost Graphic Canvas mode is active.'
+      );
+    }
+
     const { GoogleGenAI } = await import('@google/genai');
 
     // Current Nano Banana & Gemini Image Generation models (ordered by priority)
@@ -1389,8 +1422,8 @@ If you found value in this carousel:
     ];
     let lastError: any = null;
 
-    for (let keyIdx = 0; keyIdx < keysToTry.length; keyIdx++) {
-      const apiKey = keysToTry[keyIdx];
+    for (let keyIdx = 0; keyIdx < activeKeys.length; keyIdx++) {
+      const apiKey = activeKeys[keyIdx];
       const isBackup = keyIdx > 0;
       const ai = new GoogleGenAI({
         apiKey,
@@ -1402,6 +1435,12 @@ If you found value in this carousel:
       });
 
       for (const model of imageCandidateModels) {
+        const modelKeyCombo = `${apiKey}:${model}`;
+        if (this.zeroQuotaModelKeys.has(modelKeyCombo)) {
+          // Immediately skip known zero-quota model/key combination
+          continue;
+        }
+
         try {
           const response = await ai.models.generateContent({
             model,
@@ -1427,19 +1466,30 @@ If you found value in this carousel:
           }
         } catch (err: any) {
           lastError = err;
-          const errMsg = err?.message || JSON.stringify(err);
-          if (errMsg.includes('429') || errMsg.includes('RESOURCE_EXHAUSTED') || errMsg.includes('limit: 0')) {
+          if (this.isZeroQuotaError(err)) {
+            // Detect HTTP 429 response that explicitly reports a quota limit of zero:
+            // 1. Immediately record this model/key combination
+            this.zeroQuotaModelKeys.add(modelKeyCombo);
+            // 2. Mark this key as zero quota (Free Tier project has 0 quota across image models)
+            this.zeroQuotaImageKeys.add(apiKey);
             lastError = new Error(
-              `Gemini Image API Error: Quota exceeded (limit: 0 on Google AI Studio Free Tier). Model '${model}' requires a billing-enabled API key or Vertex AI enterprise quota.`
+              `Gemini Image API Quota Exceeded (limit: 0 on Google AI Studio Free Tier). Free Tier project has zero image allocation. Model '${model}' requires billing or Vertex AI enterprise quota.`
             );
-            // Try next candidate model or next key
+            break; // Stop testing other models on this zero-quota key!
+          }
+
+          const errMsg = err?.message || JSON.stringify(err);
+          if (errMsg.includes('429') || errMsg.includes('RESOURCE_EXHAUSTED')) {
+            lastError = new Error(
+              `Gemini Image API Error: Rate limited or quota exhausted for model '${model}'.`
+            );
             continue;
           }
         }
       }
     }
 
-    throw lastError || new Error('Failed to generate image with Gemini image models.');
+    throw lastError || new Error('All configured Gemini keys have zero quota for image generation on Free Tier.');
   }
 
   // Provider Dispatcher
@@ -1514,7 +1564,7 @@ If you found value in this carousel:
             const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
             const parsed = JSON.parse(cleanJson);
             if (isBackupKey) {
-              console.log(`Gemini backup key (${currentKey.slice(0, 10)}...) failover succeeded on ${currentModel}.`);
+              console.log(`Gemini backup key failover succeeded on ${currentModel}.`);
             } else if (currentModel !== initialModel) {
               console.log(`Gemini model failover to ${currentModel} succeeded.`);
             }

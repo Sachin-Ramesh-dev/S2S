@@ -56,7 +56,8 @@ import {
   AlertCircle,
   Camera,
   CheckSquare,
-  Square
+  Square,
+  Layout
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import {
@@ -3526,6 +3527,17 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                       </button>
 
                       <button
+                        id="btn-preview-canvas-layout"
+                        type="button"
+                        onClick={() => setImageStage('mock')}
+                        className="px-3 py-2 rounded-xl text-xs font-semibold border border-blue-500/40 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                        title="Zero-cost client-side layout composition"
+                      >
+                        <Layout className="w-3.5 h-3.5 text-blue-400" />
+                        <span>Compose Graphic Card ➔</span>
+                      </button>
+
+                      <button
                         id="btn-generate-mock-image"
                         type="button"
                         onClick={handleGenerateMockImage}
@@ -3533,7 +3545,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60 shrink-0"
                       >
                         <Sparkles className={`w-3.5 h-3.5 ${isGeneratingMockImage ? 'animate-spin' : ''}`} />
-                        <span>{isGeneratingMockImage ? 'Generating Mockup...' : 'Generate Mock Image ➔'}</span>
+                        <span>{isGeneratingMockImage ? 'Checking API...' : 'Generate Mock Image ➔'}</span>
                       </button>
                     </div>
                   </div>
@@ -3678,10 +3690,10 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                     <div>
                       <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
                         <Eye className="w-5 h-5 text-blue-400" />
-                        <span>Mock Image Preview</span>
+                        <span>Editorial Graphic Layout Preview</span>
                       </h2>
                       <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
-                        Visual layout framing, aspect ratio check, and typography overlay verification.
+                        Visual layout framing, aspect ratio check, and typography overlay verification (Zero-cost client composition).
                       </p>
                     </div>
 
@@ -3704,7 +3716,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60"
                       >
                         <Sparkles className={`w-3.5 h-3.5 ${isRenderingFinalImage ? 'animate-spin' : ''}`} />
-                        <span>{isRenderingFinalImage ? 'Rendering Image...' : imageRenderSuccess ? 'Image Rendered!' : 'Render Final Image ➔'}</span>
+                        <span>{isRenderingFinalImage ? 'Rendering Graphic...' : imageRenderSuccess ? 'Graphic Rendered!' : 'Render Final Graphic Card ➔'}</span>
                       </button>
                     </div>
                   </div>
@@ -3735,7 +3747,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           <div className="my-auto relative rounded-2xl overflow-hidden border border-blue-500/30 max-h-64 flex items-center justify-center bg-black/40">
                             <img
                               src={selectedScript.imageConcept.mockImageUrl}
-                              alt="Mock AI Asset"
+                              alt="Composed Visual Asset"
                               className="w-full h-auto object-cover max-h-64"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-4 flex flex-col justify-end text-left">
@@ -3760,7 +3772,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
 
                         <div className="flex items-center justify-between text-[10px] text-zinc-400 pt-2 border-t border-zinc-800/60 font-mono">
                           <span>{resText}</span>
-                          <span className="text-blue-400 font-bold">Mock Preview</span>
+                          <span className="text-blue-400 font-bold">Graphic Canvas Layout</span>
                         </div>
                       </div>
                     );
@@ -3775,10 +3787,10 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                     <div>
                       <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
                         <Sparkles className="w-5 h-5 text-blue-400" />
-                        <span>Final Rendered Image Asset</span>
+                        <span>Rendered Social Graphic Card</span>
                       </h2>
                       <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
-                        High-resolution asset produced and ready for export or scheduling.
+                        High-resolution graphic card produced via zero-cost client canvas rendering. Ready for export or scheduling.
                       </p>
                     </div>
 
@@ -3903,14 +3915,14 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                       <div className="flex items-center gap-2">
                         <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                         <span className="font-bold text-sm text-slate-900 dark:text-white">
-                          Image Rendered ({selectedScript?.imageConcept?.aspectRatio || '1:1'} PNG)
+                          Graphic Card Rendered ({selectedScript?.imageConcept?.aspectRatio || '1:1'} PNG)
                         </span>
                       </div>
-                      <span className="text-xs font-mono text-zinc-400">High-Resolution Asset</span>
+                      <span className="text-xs font-mono text-zinc-400">Client Canvas Render</span>
                     </div>
 
                     <p className="text-xs text-zinc-400">
-                      Visual asset has been generated according to the prompt directive and formatted with exact platform dimensions.
+                      Visual graphic composed locally with precision typography, safe margins, and brand styling.
                     </p>
 
                     <div className="flex flex-wrap gap-3 pt-2">
@@ -3934,7 +3946,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-sm"
                       >
                         <Download className="w-3.5 h-3.5" />
-                        <span>Download PNG</span>
+                        <span>Download Graphic PNG</span>
                       </button>
 
                       <button

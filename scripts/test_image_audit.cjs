@@ -19,34 +19,26 @@ async function testFullPipeline() {
     await page.waitForTimeout(1000);
 
     // Navigate to Content Production -> Script Studio
-    const navContent = page.locator('text=Content Production').first();
-    if (await navContent.isVisible()) {
-      await navContent.click();
-      await page.waitForTimeout(500);
-    }
-    const scriptStudio = page.locator('text=Script Studio').first();
-    if (await scriptStudio.isVisible()) {
-      await scriptStudio.click();
-      await page.waitForTimeout(500);
-    }
+    await page.waitForSelector('#nav-primary-production', { timeout: 10000 });
+    await page.click('#nav-primary-production');
+    await page.waitForTimeout(500);
 
     // Switch to Single Image format if not already in Image format
     console.log('2. Ensuring Single Image format is active...');
+    await page.waitForSelector('#btn-format-switcher', { timeout: 10000 });
     const formatBtn = page.locator('#btn-format-switcher');
-    if (await formatBtn.isVisible()) {
-      const btnText = await formatBtn.textContent();
-      if (!btnText.includes('Image')) {
-        await formatBtn.click();
-        await page.waitForTimeout(300);
-        const imgOpt = page.locator('#switch-to-format-image');
-        if (await imgOpt.isVisible()) {
-          await imgOpt.click();
-          await page.waitForTimeout(800);
-        }
-      }
+    const btnText = await formatBtn.textContent();
+    if (!btnText.includes('Image')) {
+      await formatBtn.click();
+      await page.waitForTimeout(300);
+      await page.click('#switch-to-format-image');
+      await page.waitForTimeout(800);
     }
 
-    console.log('3. Currently in Image Stage 1 (Concept & Copy)');
+    console.log('3. Ensuring Image Stage 1 (Concept & Copy) is active...');
+    await page.waitForSelector('#image-stage-tab-concept', { timeout: 10000 });
+    await page.click('#image-stage-tab-concept');
+    await page.waitForTimeout(500);
     await page.waitForSelector('#btn-generate-mock-image', { timeout: 10000 });
 
     // Step A: Test AI Image Generation call and verify honest 429 quota failure surfacing
@@ -83,7 +75,7 @@ async function testFullPipeline() {
     await page.waitForTimeout(1000);
 
     // Verify mock image is displayed in Stage 2
-    const mockImg = page.locator('#mock-image-container img[alt="Mock AI Asset"]');
+    const mockImg = page.locator('#mock-image-container img');
     const isMockImgVisible = await mockImg.isVisible();
     console.log('✓ Mock preview contains real image asset:', isMockImgVisible);
     await page.screenshot({ path: path.join(screenshotDir, 'audit_02_mock_image_real_asset.png') });
@@ -134,16 +126,9 @@ async function testFullPipeline() {
     await page.waitForTimeout(1500);
 
     // Navigate to Content Production -> Script Studio after reload
-    const navContentReload = page.locator('text=Content Production').first();
-    if (await navContentReload.isVisible()) {
-      await navContentReload.click();
-      await page.waitForTimeout(500);
-    }
-    const scriptStudioReload = page.locator('text=Script Studio').first();
-    if (await scriptStudioReload.isVisible()) {
-      await scriptStudioReload.click();
-      await page.waitForTimeout(500);
-    }
+    await page.waitForSelector('#nav-primary-production', { timeout: 10000 });
+    await page.click('#nav-primary-production');
+    await page.waitForTimeout(500);
 
     // Restore selected script if needed
     if (currentScriptId) {

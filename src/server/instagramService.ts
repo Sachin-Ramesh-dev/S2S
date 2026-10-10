@@ -2245,13 +2245,14 @@ export class InstagramService {
     return script;
   }
 
-  // 4B. GENERATE REAL AI IMAGE FOR SCRIPT
+  // 4B. GENERATE REAL AI IMAGE FOR SCRIPT (GEMINI OR MANUS AGENT)
   public async generateImageForScript(
     scriptId: string,
     prompt?: string,
     aspectRatio?: string,
-    stylePreset?: string
-  ): Promise<{ script: ScriptItem; imageUrl?: string; error?: string; quotaExceeded?: boolean }> {
+    stylePreset?: string,
+    provider: 'gemini' | 'manus' = 'gemini'
+  ): Promise<{ script: ScriptItem; imageUrl?: string; error?: string; quotaExceeded?: boolean; taskId?: string; taskUrl?: string }> {
     const script = this.scripts.find(s => s.id === scriptId);
     if (!script) throw new Error('Script not found');
 
@@ -2264,7 +2265,7 @@ export class InstagramService {
     const effectiveStyle = stylePreset || script.imageConcept?.stylePreset || 'Editorial Swiss Graphic';
 
     try {
-      const result = await this.orchestrator.generateAiImage(effectivePrompt, effectiveAspect, effectiveStyle);
+      const result = await this.orchestrator.generateAiImage(effectivePrompt, effectiveAspect, effectiveStyle, provider);
 
       if (!script.imageConcept) {
         script.imageConcept = {
@@ -2277,9 +2278,18 @@ export class InstagramService {
       }
       script.imageConcept.mockImageUrl = result.imageUrl;
       script.imageConcept.finalImageUrl = result.imageUrl;
+      (script.imageConcept as any).provider = result.provider;
+      (script.imageConcept as any).model = result.model;
+      if (result.taskId) (script.imageConcept as any).taskId = result.taskId;
+      if (result.taskUrl) (script.imageConcept as any).taskUrl = result.taskUrl;
       script.updatedAt = new Date().toISOString();
 
-      return { script, imageUrl: result.imageUrl };
+      return {
+        script,
+        imageUrl: result.imageUrl,
+        taskId: result.taskId,
+        taskUrl: result.taskUrl
+      };
     } catch (err: any) {
       const isQuota = err.message.includes('Quota exceeded') || err.message.includes('limit: 0') || err.message.includes('429');
       return {
@@ -2288,6 +2298,63 @@ export class InstagramService {
         quotaExceeded: isQuota
       };
     }
+  }
+
+  // 4C. MANUS ASYNC IMAGE TASK METHODS
+  public async createManusImageTask(
+    scriptId: string,
+    prompt?: string,
+    aspectRatio?: string,
+    stylePreset?: string
+  ): Promise<{ taskId: string; taskUrl: string }> {
+    const script = this.scripts.find(s => s.id === scriptId);
+    const effectivePrompt =
+      prompt ||
+      script?.imageConcept?.visualPrompt ||
+      `Minimalist social media graphic for ${script?.title || 'post'}: ${script?.hook || ''}`;
+    const effectiveAspect = aspectRatio || script?.imageConcept?.aspectRatio || '1:1';
+    const effectiveStyle = stylePreset || script?.imageConcept?.stylePreset || 'Editorial Swiss Graphic';
+
+    return await this.orchestrator.createManusImageTask(effectivePrompt, effectiveAspect, effectiveStyle);
+  }
+
+  public async checkManusImageTaskStatus(taskId: string) {
+    return await this.orchestrator.checkManusImageTaskStatus(taskId);
+  }
+
+  public async finalizeManusImage(scriptId: string, taskId: string, taskUrl: string, attachmentUrl: string) {
+    const script = this.scripts.find(s => s.id === scriptId);
+    if (!script) throw new Error('Script not found');
+
+    const finalized = await this.orchestrator.finalizeManusImage(attachmentUrl);
+
+    if (!script.imageConcept) {
+      script.imageConcept = {
+        headline: script.hook || script.title,
+        visualPrompt: script.title,
+        aspectRatio: '1:1',
+        stylePreset: 'Editorial Swiss Graphic'
+      };
+    }
+
+    script.imageConcept.mockImageUrl = finalized.dataUrl;
+    script.imageConcept.finalImageUrl = finalized.dataUrl;
+    (script.imageConcept as any).provider = 'manus';
+    (script.imageConcept as any).model = 'manus-1.6-lite';
+    (script.imageConcept as any).taskId = taskId;
+    (script.imageConcept as any).taskUrl = taskUrl;
+    (script.imageConcept as any).width = finalized.width;
+    (script.imageConcept as any).height = finalized.height;
+    (script.imageConcept as any).byteLength = finalized.byteLength;
+    script.updatedAt = new Date().toISOString();
+
+    return {
+      script,
+      imageUrl: finalized.dataUrl,
+      width: finalized.width,
+      height: finalized.height,
+      byteLength: finalized.byteLength
+    };
   }
 
   // 5. UPDATE SCRIPT (TRACK USER EDITS FOR LEARNING)

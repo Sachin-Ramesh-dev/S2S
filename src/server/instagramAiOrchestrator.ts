@@ -1392,12 +1392,243 @@ If you found value in this carousel:
     };
   }
 
-  // Real AI Image Generation Provider Engine
-  public async generateAiImage(
+  // Validate PNG / JPEG signature and extract dimensions
+  public validateAndGetImageDimensions(buf: Buffer): { width: number; height: number; mime: string } {
+    // PNG signature: 89 50 4E 47 0D 0A 1A 0A
+    if (
+      buf.length >= 24 &&
+      buf[0] === 0x89 &&
+      buf[1] === 0x50 &&
+      buf[2] === 0x4e &&
+      buf[3] === 0x47 &&
+      buf[4] === 0x0d &&
+      buf[5] === 0x0a &&
+      buf[6] === 0x1a &&
+      buf[7] === 0x0a
+    ) {
+      const width = buf.readUInt32BE(16);
+      const height = buf.readUInt32BE(20);
+      return { width, height, mime: 'image/png' };
+    }
+
+    // JPEG signature: FF D8 FF
+    if (buf.length >= 4 && buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) {
+      let offset = 2;
+      while (offset < buf.length - 8) {
+        if (buf[offset] === 0xff && (buf[offset + 1] === 0xc0 || buf[offset + 1] === 0xc2)) {
+          const height = buf.readUInt16BE(offset + 5);
+          const width = buf.readUInt16BE(offset + 7);
+          return { width, height, mime: 'image/jpeg' };
+        }
+        const markerLen = buf.readUInt16BE(offset + 2);
+        offset += 2 + (markerLen > 0 ? markerLen : 2);
+      }
+      return { width: 1080, height: 1080, mime: 'image/jpeg' };
+    }
+
+    throw new Error('Invalid image file format: Signature does not match PNG or JPEG magic bytes.');
+  }
+
+  // Create Manus Image Composition Task
+  public async createManusImageTask(
     prompt: string,
     aspectRatio: string = '1:1',
     stylePreset?: string
-  ): Promise<{ imageUrl: string; provider: string; model: string }> {
+  ): Promise<{ taskId: string; taskUrl: string }> {
+    const effectiveKey = this.getApiKey('manus') || process.env.MANUS_API_KEY;
+    if (!effectiveKey || effectiveKey.length < 5 || effectiveKey.includes('***')) {
+      throw new Error('MANUS_API_KEY is not configured in environment or Credential Vault.');
+    }
+
+    const projectId = process.env.MANUS_PROJECT_ID || this.config.providers.manus.project || 'UCXhiJSSCHcueJmRs5NMPb';
+    const baseUrl = this.config.providers.manus.baseUrl || 'https://api.manus.ai';
+
+    const promptText = `Generate an Instagram visual asset with clean modern graphic composition:
+Prompt: ${prompt}
+Format: Single Image (${aspectRatio})
+Style Preset: ${stylePreset || 'Editorial Swiss Graphic'}
+Visual Requirements: High contrast, Swiss typography hierarchy, clean margins, safe zones, professional color palette.
+Save the completed image file in the sandbox environment and provide the downloadable PNG image attachment.`;
+
+    const createRes = await fetch(`${baseUrl}/v2/task.create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-manus-api-key': effectiveKey
+      },
+      body: JSON.stringify({
+        title: `Instagram Visual Graphic - ${aspectRatio} - ${stylePreset || 'Editorial'}`,
+        message: {
+          content: [
+            {
+              type: 'text',
+              text: promptText
+            }
+          ]
+        },
+        project_id: projectId,
+        interactive_mode: false,
+        hide_in_task_list: false,
+        share_visibility: 'public',
+        agent_profile: 'manus-1.6-lite'
+      })
+    });
+
+    if (!createRes.ok) {
+      const errText = await createRes.text();
+      throw new Error(`Manus API task.create failed (${createRes.status}): ${errText}`);
+    }
+
+    const createData: any = await createRes.json();
+    const taskId = createData.task_id || createData.data?.task_id || createData.id;
+    const taskUrl = createData.task_url || createData.share_url || `https://manus.im/app/${taskId}`;
+
+    if (!taskId) {
+      throw new Error('Manus API did not return a valid task_id.');
+    }
+
+    return { taskId, taskUrl };
+  }
+
+  // Check Manus Image Task Status & Extract Attachments
+  public async checkManusImageTaskStatus(
+    taskId: string
+  ): Promise<{
+    status: string;
+    brief: string;
+    isFinished: boolean;
+    attachment?: { url: string; filename: string; contentType: string };
+    error?: string;
+  }> {
+    const effectiveKey = this.getApiKey('manus') || process.env.MANUS_API_KEY;
+    if (!effectiveKey) throw new Error('MANUS_API_KEY is not configured.');
+
+    const baseUrl = this.config.providers.manus.baseUrl || 'https://api.manus.ai';
+    const listRes = await fetch(`${baseUrl}/v2/task.listMessages?task_id=${encodeURIComponent(taskId)}`, {
+      method: 'GET',
+      headers: {
+        'x-manus-api-key': effectiveKey
+      }
+    });
+
+    if (!listRes.ok) {
+      const errText = await listRes.text();
+      return {
+        status: 'error',
+        brief: `HTTP ${listRes.status}`,
+        isFinished: true,
+        error: `Failed to query task status: ${errText}`
+      };
+    }
+
+    const listData: any = await listRes.json();
+    const messages: any[] = listData.messages || listData.data?.messages || [];
+
+    const statusMsg = messages.find((m: any) => m.type === 'status_update');
+    const agentStatus = statusMsg?.status_update?.agent_status || 'running';
+    const brief = statusMsg?.status_update?.brief || 'Manus agent working...';
+
+    // Look for image attachment in messages
+    let attachment: { url: string; filename: string; contentType: string } | undefined;
+    for (const msg of messages) {
+      const atts = msg.assistant_message?.attachments || msg.attachments || [];
+      for (const att of atts) {
+        if (
+          att.content_type?.startsWith('image/') ||
+          att.type === 'image' ||
+          /\.(png|jpe?g|webp)$/i.test(att.filename || '')
+        ) {
+          attachment = {
+            url: att.url,
+            filename: att.filename || 'manus_image.png',
+            contentType: att.content_type || 'image/png'
+          };
+          break;
+        }
+      }
+      if (attachment) break;
+    }
+
+    const isFinished = agentStatus === 'stopped' || agentStatus === 'completed' || agentStatus === 'finished';
+
+    return {
+      status: agentStatus,
+      brief,
+      isFinished,
+      attachment
+    };
+  }
+
+  // Finalize Manus Image: Download bytes, validate signature & dimensions, return base64
+  public async finalizeManusImage(
+    attachmentUrl: string
+  ): Promise<{ dataUrl: string; byteLength: number; width: number; height: number; mimeType: string }> {
+    const imgRes = await fetch(attachmentUrl);
+    if (!imgRes.ok) {
+      throw new Error(`Failed to fetch Manus image attachment: HTTP ${imgRes.status}`);
+    }
+
+    const arrayBuffer = await imgRes.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Validate signature and decode dimensions
+    const { width, height, mime } = this.validateAndGetImageDimensions(buffer);
+
+    // Persist image to data/generated_images/ for durable filesystem storage
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const dir = path.join(process.cwd(), 'data', 'generated_images');
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      const filename = `manus-${Date.now()}-${width}x${height}.${mime === 'image/jpeg' ? 'jpg' : 'png'}`;
+      fs.writeFileSync(path.join(dir, filename), buffer);
+    } catch {
+      // non-fatal if disk write fails
+    }
+
+    const dataUrl = `data:${mime};base64,${buffer.toString('base64')}`;
+    return {
+      dataUrl,
+      byteLength: buffer.length,
+      width,
+      height,
+      mimeType: mime
+    };
+  }
+
+  // Real AI Image Generation Provider Engine (Supports Gemini Free Tier failover & Manus AI Agent composition)
+  public async generateAiImage(
+    prompt: string,
+    aspectRatio: string = '1:1',
+    stylePreset?: string,
+    provider: 'gemini' | 'manus' = 'gemini'
+  ): Promise<{ imageUrl: string; provider: string; model: string; taskId?: string; taskUrl?: string; width?: number; height?: number }> {
+    if (provider === 'manus') {
+      const task = await this.createManusImageTask(prompt, aspectRatio, stylePreset);
+      // Poll until completion with timeout
+      const maxAttempts = 20; // 20 * 3000ms = 60s
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        await new Promise((r) => setTimeout(r, 3000));
+        const status = await this.checkManusImageTaskStatus(task.taskId);
+        if (status.isFinished) {
+          if (status.attachment?.url) {
+            const finalized = await this.finalizeManusImage(status.attachment.url);
+            return {
+              imageUrl: finalized.dataUrl,
+              provider: 'manus',
+              model: 'manus-1.6-lite',
+              taskId: task.taskId,
+              taskUrl: task.taskUrl,
+              width: finalized.width,
+              height: finalized.height
+            };
+          }
+          throw new Error('Manus AI completed the task but did not attach an image file.');
+        }
+      }
+      throw new Error(`Manus AI task timed out after 60 seconds (Task ID: ${task.taskId}). View status at ${task.taskUrl}`);
+    }
+
     const keysToTry = this.getGeminiApiKeys();
     if (keysToTry.length === 0) {
       throw new Error('Gemini API key is not configured in Credential Vault or GEMINI_API_KEY environment variable.');

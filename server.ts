@@ -2635,14 +2635,14 @@ app.post('/api/instagram/scripts/generate', async (req, res) => {
   }
 });
 
-// Real AI Image Generation Route
+// Real AI Image Generation Route (Gemini or Manus)
 app.post('/api/instagram/images/generate', async (req, res) => {
   try {
-    const { scriptId, prompt, aspectRatio, stylePreset } = req.body;
+    const { scriptId, prompt, aspectRatio, stylePreset, provider } = req.body;
     if (!scriptId) {
       return res.status(400).json({ error: 'scriptId is required' });
     }
-    const result = await instagramService.generateImageForScript(scriptId, prompt, aspectRatio, stylePreset);
+    const result = await instagramService.generateImageForScript(scriptId, prompt, aspectRatio, stylePreset, provider || 'gemini');
     persistInstagramState();
     if (result.error) {
       return res.status(result.quotaExceeded ? 429 : 500).json({
@@ -2655,6 +2655,42 @@ app.post('/api/instagram/images/generate', async (req, res) => {
     res.json({ success: true, ...result });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Manus Async Image Task API Routes
+app.post('/api/instagram/images/manus/create-task', async (req, res) => {
+  try {
+    const { scriptId, prompt, aspectRatio, stylePreset } = req.body;
+    if (!scriptId) return res.status(400).json({ error: 'scriptId is required' });
+    const task = await instagramService.createManusImageTask(scriptId, prompt, aspectRatio, stylePreset);
+    res.json({ success: true, ...task });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/instagram/images/manus/task-status/:taskId', async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const status = await instagramService.checkManusImageTaskStatus(taskId);
+    res.json({ success: true, taskId, ...status });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/instagram/images/manus/finalize-task', async (req, res) => {
+  try {
+    const { scriptId, taskId, taskUrl, attachmentUrl } = req.body;
+    if (!scriptId || !attachmentUrl) {
+      return res.status(400).json({ error: 'scriptId and attachmentUrl are required' });
+    }
+    const result = await instagramService.finalizeManusImage(scriptId, taskId, taskUrl || `https://manus.im/app/${taskId}`, attachmentUrl);
+    persistInstagramState();
+    res.json({ success: true, ...result });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

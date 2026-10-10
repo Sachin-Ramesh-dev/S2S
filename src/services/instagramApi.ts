@@ -334,8 +334,57 @@ export const instagramApi = {
     prompt?: string;
     aspectRatio?: string;
     stylePreset?: string;
-  }): Promise<{ success: boolean; imageUrl?: string; error?: string; quotaExceeded?: boolean; script?: ScriptItem }> {
+    provider?: string;
+  }): Promise<{ success: boolean; imageUrl?: string; error?: string; quotaExceeded?: boolean; script?: ScriptItem; taskId?: string; taskUrl?: string }> {
     return safeFetchJson(`${BASE_URL}/images/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+  },
+
+  async createManusImageTask(params: {
+    scriptId: string;
+    prompt?: string;
+    aspectRatio?: string;
+    stylePreset?: string;
+  }): Promise<{ success: boolean; taskId: string; taskUrl: string; error?: string }> {
+    return safeFetchJson(`${BASE_URL}/images/manus/create-task`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+  },
+
+  async getManusTaskStatus(taskId: string): Promise<{
+    success: boolean;
+    taskId: string;
+    status: string;
+    brief: string;
+    isFinished: boolean;
+    attachment?: { url: string; filename: string; contentType: string };
+    error?: string;
+  }> {
+    return safeFetchJson(`${BASE_URL}/images/manus/task-status/${encodeURIComponent(taskId)}`, {
+      method: 'GET'
+    });
+  },
+
+  async finalizeManusImage(params: {
+    scriptId: string;
+    taskId: string;
+    taskUrl?: string;
+    attachmentUrl: string;
+  }): Promise<{
+    success: boolean;
+    script: ScriptItem;
+    imageUrl: string;
+    width: number;
+    height: number;
+    byteLength: number;
+    error?: string;
+  }> {
+    return safeFetchJson(`${BASE_URL}/images/manus/finalize-task`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(params)

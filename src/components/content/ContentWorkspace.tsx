@@ -57,7 +57,8 @@ import {
   Camera,
   CheckSquare,
   Square,
-  Layout
+  Layout,
+  Bot
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import {
@@ -560,6 +561,24 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
     useState<StylePreset>('Editorial Swiss Graphic');
   const [imageVaultToast, setImageVaultToast] = useState<string | null>(null);
 
+  // Visual Production Provider: 'canvas' (default zero-cost) | 'manus' (credit-based agent) | 'gemini' (API)
+  const [selectedImageProvider, setSelectedImageProvider] = useState<'canvas' | 'manus' | 'gemini'>('canvas');
+  // Manus Image Task Tracking State
+  const [manusTaskState, setManusTaskState] = useState<{
+    active: boolean;
+    taskId?: string;
+    taskUrl?: string;
+    status: string;
+    brief: string;
+    elapsedSeconds: number;
+    error?: string;
+  }>({
+    active: false,
+    status: 'idle',
+    brief: '',
+    elapsedSeconds: 0
+  });
+
   // Repurpose tool state
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
 
@@ -937,6 +956,120 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
       });
     } finally {
       setIsGeneratingMockImage(false);
+    }
+  };
+
+  const handleGenerateWithManus = async () => {
+    if (!selectedScript) return;
+    setAiImageError(null);
+    setManusTaskState({
+      active: true,
+      status: 'starting',
+      brief: 'Initiating Manus agent session...',
+      elapsedSeconds: 0
+    });
+
+    const concept = selectedScript.imageConcept || getDefaultImageConcept(selectedScript);
+
+    try {
+      // 1. Create Manus Image Task
+      const taskRes = await instagramApi.createManusImageTask({
+        scriptId: selectedScript.id,
+        prompt: concept.visualPrompt || selectedScript.title,
+        aspectRatio: concept.aspectRatio || '1:1',
+        stylePreset: concept.stylePreset
+      });
+
+      if (!taskRes.success || !taskRes.taskId) {
+        throw new Error(taskRes.error || 'Failed to initialize Manus agent task');
+      }
+
+      setManusTaskState(prev => ({
+        ...prev,
+        taskId: taskRes.taskId,
+        taskUrl: taskRes.taskUrl,
+        status: 'running',
+        brief: 'Manus agent dispatched in sandbox...'
+      }));
+
+      // 2. Poll Task Messages until completion or timeout (max 30 polls * 3s = 90s)
+      const maxPolls = 30;
+      let finalAttachment: { url: string; filename: string; contentType: string } | null = null;
+
+      for (let poll = 1; poll <= maxPolls; poll++) {
+        await new Promise(r => setTimeout(r, 3000));
+        setManusTaskState(prev => ({
+          ...prev,
+          elapsedSeconds: prev.elapsedSeconds + 3
+        }));
+
+        const statusRes = await instagramApi.getManusTaskStatus(taskRes.taskId);
+        if (statusRes.error) {
+          throw new Error(statusRes.error);
+        }
+
+        setManusTaskState(prev => ({
+          ...prev,
+          status: statusRes.status,
+          brief: statusRes.brief || 'Manus agent working in sandbox...'
+        }));
+
+        if (statusRes.attachment?.url) {
+          finalAttachment = statusRes.attachment;
+        }
+
+        if (statusRes.isFinished) {
+          if (statusRes.attachment?.url) {
+            finalAttachment = statusRes.attachment;
+          }
+          break;
+        }
+      }
+
+      if (!finalAttachment?.url) {
+        throw new Error(
+          `Manus agent finished without an image attachment. You can inspect the run at: ${taskRes.taskUrl}`
+        );
+      }
+
+      // 3. Finalize Image: Server downloads, validates signature & dimensions, persists to script
+      setManusTaskState(prev => ({
+        ...prev,
+        brief: 'Downloading & validating high-resolution image bytes...'
+      }));
+
+      const finalizeRes = await instagramApi.finalizeManusImage({
+        scriptId: selectedScript.id,
+        taskId: taskRes.taskId,
+        taskUrl: taskRes.taskUrl,
+        attachmentUrl: finalAttachment.url
+      });
+
+      if (!finalizeRes.success) {
+        throw new Error(finalizeRes.error || 'Failed to finalize Manus image asset');
+      }
+
+      if (onUpdateScript) {
+        onUpdateScript(selectedScript.id, { imageConcept: finalizeRes.script.imageConcept });
+      }
+
+      setImageSuccessToast(`✓ Manus agent visual composed successfully (${finalizeRes.width || 1920}×${finalizeRes.height || 1920} PNG)!`);
+      setTimeout(() => setImageSuccessToast(null), 4000);
+      setImageStage('mock');
+    } catch (err: any) {
+      setManusTaskState(prev => ({
+        ...prev,
+        error: err.message || String(err)
+      }));
+      setAiImageError({
+        message: err.message || String(err),
+        quotaExceeded: false
+      });
+    } finally {
+      setManusTaskState(prev => ({
+        ...prev,
+        active: false
+      }));
     }
   };
 
@@ -3530,25 +3663,247 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         id="btn-preview-canvas-layout"
                         type="button"
                         onClick={() => setImageStage('mock')}
-                        className="px-3 py-2 rounded-xl text-xs font-semibold border border-blue-500/40 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                        className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 cursor-pointer ${
+                          selectedImageProvider === 'canvas'
+                            ? 'border-emerald-500/50 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25'
+                            : 'border-zinc-700 hover:bg-zinc-800 text-zinc-300'
+                        }`}
                         title="Zero-cost client-side layout composition"
                       >
-                        <Layout className="w-3.5 h-3.5 text-blue-400" />
+                        <Layout className="w-3.5 h-3.5 text-emerald-400" />
                         <span>Compose Graphic Card ➔</span>
                       </button>
 
-                      <button
-                        id="btn-generate-mock-image"
-                        type="button"
-                        onClick={handleGenerateMockImage}
-                        disabled={isGeneratingMockImage}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60 shrink-0"
-                      >
-                        <Sparkles className={`w-3.5 h-3.5 ${isGeneratingMockImage ? 'animate-spin' : ''}`} />
-                        <span>{isGeneratingMockImage ? 'Checking API...' : 'Generate Mock Image ➔'}</span>
-                      </button>
+                      {selectedImageProvider === 'manus' ? (
+                        <button
+                          id="btn-generate-manus-image"
+                          type="button"
+                          onClick={handleGenerateWithManus}
+                          disabled={manusTaskState.active}
+                          className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60 shrink-0"
+                        >
+                          <Bot className={`w-3.5 h-3.5 ${manusTaskState.active ? 'animate-spin' : ''}`} />
+                          <span>{manusTaskState.active ? 'Manus Agent Working...' : 'Generate with Manus Agent ➔'}</span>
+                        </button>
+                      ) : (
+                        <button
+                          id="btn-generate-mock-image"
+                          type="button"
+                          onClick={handleGenerateMockImage}
+                          disabled={isGeneratingMockImage}
+                          className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60 shrink-0"
+                        >
+                          <Sparkles className={`w-3.5 h-3.5 ${isGeneratingMockImage ? 'animate-spin' : ''}`} />
+                          <span>{isGeneratingMockImage ? 'Checking API...' : 'Generate Mock Image ➔'}</span>
+                        </button>
+                      )}
                     </div>
                   </div>
+
+                  {/* VISUAL PRODUCTION PROVIDER SELECTOR (Requirement 2 & 7) */}
+                  <div className={`p-4 rounded-2xl border space-y-3 ${
+                    isDark ? 'bg-[#181826] border-[#2c2c40]' : 'bg-white border-slate-200 shadow-sm'
+                  }`}>
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+                        <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+                        <span>Visual Production Provider</span>
+                      </label>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                        {selectedImageProvider === 'canvas' ? '100% Zero-Cost Mode' : selectedImageProvider === 'manus' ? 'Task Credit Based' : 'Free Tier (Limit: 0)'}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {/* Provider 1: Local Canvas Composer */}
+                      <div
+                        id="provider-card-canvas"
+                        onClick={() => setSelectedImageProvider('canvas')}
+                        className={`p-3.5 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                          selectedImageProvider === 'canvas'
+                            ? 'border-emerald-500 bg-emerald-500/10 shadow-sm'
+                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40' : 'border-slate-200 hover:border-slate-300 bg-slate-50'
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                              <Layout className="w-3.5 h-3.5 text-emerald-400" />
+                              <span>Local Canvas Composer</span>
+                            </span>
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
+                              Free
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-zinc-400 mt-1.5 leading-snug">
+                            Zero-cost client composition. Swiss typography, geometric grids, custom badges & margins.
+                          </p>
+                        </div>
+                        <div className="mt-2 pt-2 border-t border-zinc-800 text-[10px] text-emerald-400 font-mono">
+                          ✓ 0s Latency • $0.00 Cost
+                        </div>
+                      </div>
+
+                      {/* Provider 2: Manus AI Agent */}
+                      <div
+                        id="provider-card-manus"
+                        onClick={() => setSelectedImageProvider('manus')}
+                        className={`p-3.5 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                          selectedImageProvider === 'manus'
+                            ? 'border-indigo-500 bg-indigo-500/10 shadow-sm'
+                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40' : 'border-slate-200 hover:border-slate-300 bg-slate-50'
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                              <Bot className="w-3.5 h-3.5 text-indigo-400" />
+                              <span>Manus AI Agent</span>
+                            </span>
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400">
+                              Credits
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-zinc-400 mt-1.5 leading-snug">
+                            Autonomous visual composition via Manus sandbox. Produces high-DPI 1920×1920 PNG graphics.
+                          </p>
+                        </div>
+                        <div className="mt-2 pt-2 border-t border-zinc-800 text-[10px] text-indigo-400 font-mono">
+                          ~35s Latency • 1 Manus Task
+                        </div>
+                      </div>
+
+                      {/* Provider 3: Gemini Image API */}
+                      <div
+                        id="provider-card-gemini"
+                        onClick={() => setSelectedImageProvider('gemini')}
+                        className={`p-3.5 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                          selectedImageProvider === 'gemini'
+                            ? 'border-amber-500 bg-amber-500/10 shadow-sm'
+                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40' : 'border-slate-200 hover:border-slate-300 bg-slate-50'
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                              <span>Gemini Image API</span>
+                            </span>
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">
+                              Limit: 0
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-zinc-400 mt-1.5 leading-snug">
+                            Direct Gemini Image API endpoint. Free Tier project has zero image allocation (HTTP 429).
+                          </p>
+                        </div>
+                        <div className="mt-2 pt-2 border-t border-zinc-800 text-[10px] text-amber-400 font-mono">
+                          Requires GCP Billing
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Manus Credit Guidance Notice (Requirement 7) */}
+                    {selectedImageProvider === 'manus' && (
+                      <div className={`p-3.5 rounded-xl border text-[11px] space-y-1.5 ${
+                        isDark ? 'bg-indigo-950/40 border-indigo-500/40 text-indigo-200' : 'bg-indigo-50/90 border-indigo-200 text-indigo-950'
+                      }`}>
+                        <div className={`font-bold flex items-center gap-2 ${
+                          isDark ? 'text-indigo-300' : 'text-indigo-900'
+                        }`}>
+                          <Info className="w-3.5 h-3.5 shrink-0" />
+                          <span>Manus Task Credits &amp; Consumption Guide</span>
+                        </div>
+                        <p className={`leading-relaxed ${
+                          isDark ? 'text-zinc-300' : 'text-slate-700'
+                        }`}>
+                          Each generation creates an autonomous agent session (<code>agent_profile: manus-1.6-lite</code>) in your Manus account, consuming <strong>1 task execution</strong>. S2S will never automatically repeat tasks or spend credits without your explicit action.
+                        </p>
+                        <div className={`flex items-center gap-3 pt-1 text-[10px] ${
+                          isDark ? 'text-indigo-400' : 'text-indigo-700 font-semibold'
+                        }`}>
+                          <span>Check available credits &amp; plan:</span>
+                          <a
+                            href="https://manus.im/app"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline hover:opacity-80 inline-flex items-center gap-1 font-bold"
+                          >
+                            Manus Dashboard (manus.im/app) <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* MANUS REAL-TIME ASYNC TASK PROGRESS UI (Requirement 4) */}
+                  {(manusTaskState.active || (manusTaskState.status !== 'idle' && !manusTaskState.error && manusTaskState.status !== 'cancelled')) && (
+                    <div className={`p-4 rounded-2xl border text-xs space-y-3 animate-in fade-in ${
+                      isDark ? 'border-indigo-500/40 bg-indigo-950/30 text-indigo-200' : 'border-indigo-300 bg-indigo-50 text-indigo-950'
+                    }`}>
+                      <div className="flex items-center justify-between">
+                        <div className={`flex items-center gap-2 font-bold ${
+                          isDark ? 'text-indigo-300' : 'text-indigo-900'
+                        }`}>
+                          <Bot className="w-4 h-4 text-indigo-500 animate-spin" />
+                          <span>Manus Agent Composing Visual Asset</span>
+                        </div>
+                        <span className={`font-mono text-[10px] px-2 py-0.5 rounded font-semibold ${
+                          isDark ? 'bg-indigo-500/20 text-indigo-300' : 'bg-indigo-200 text-indigo-900'
+                        }`}>
+                          Elapsed: {manusTaskState.elapsedSeconds}s
+                        </span>
+                      </div>
+
+                      <div className={`p-3 rounded-xl border space-y-1.5 font-mono text-[11px] ${
+                        isDark ? 'bg-black/40 border-indigo-500/20' : 'bg-white/80 border-indigo-200'
+                      }`}>
+                        <div className={`flex items-center justify-between text-[10px] ${
+                          isDark ? 'text-zinc-400' : 'text-slate-500'
+                        }`}>
+                          <span>TASK ID: <strong className={isDark ? 'text-white' : 'text-slate-900'}>{manusTaskState.taskId || 'Initializing...'}</strong></span>
+                          {manusTaskState.taskUrl && (
+                            <a
+                              href={manusTaskState.taskUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`underline inline-flex items-center gap-1 font-bold ${
+                                isDark ? 'text-indigo-400 hover:text-indigo-200' : 'text-indigo-700 hover:text-indigo-900'
+                              }`}
+                            >
+                              Open in Manus App <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                        </div>
+                        <div className={`font-sans ${isDark ? 'text-indigo-300' : 'text-indigo-900'}`}>
+                          Status: <span className={`font-bold uppercase ${isDark ? 'text-white' : 'text-slate-900'}`}>{manusTaskState.status}</span>
+                        </div>
+                        <p className={`font-sans italic text-[11px] ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                          "{manusTaskState.brief || 'Connecting to agent...'}"
+                        </p>
+                      </div>
+
+                      <div className="w-full bg-zinc-800/40 rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className="bg-indigo-500 h-1.5 rounded-full transition-all duration-300 animate-pulse"
+                          style={{ width: `${Math.min(95, Math.max(10, manusTaskState.elapsedSeconds * 2.5))}%` }}
+                        />
+                      </div>
+
+                      <div className={`flex items-center justify-between text-[10px] pt-1 ${
+                        isDark ? 'text-zinc-400' : 'text-slate-500'
+                      }`}>
+                        <span>Agent profile: manus-1.6-lite • Sandbox rendering</span>
+                        <button
+                          type="button"
+                          onClick={() => setManusTaskState(prev => ({ ...prev, active: false, status: 'cancelled' }))}
+                          className="hover:underline cursor-pointer"
+                        >
+                          Dismiss Progress
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   {aiImageError && (
                     <div className="p-4 rounded-2xl border border-amber-500/40 bg-amber-500/10 text-amber-200 text-xs space-y-2">
@@ -3772,7 +4127,11 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
 
                         <div className="flex items-center justify-between text-[10px] text-zinc-400 pt-2 border-t border-zinc-800/60 font-mono">
                           <span>{resText}</span>
-                          <span className="text-blue-400 font-bold">Graphic Canvas Layout</span>
+                          <span className="text-blue-400 font-bold">
+                            {(selectedScript?.imageConcept as any)?.provider === 'manus'
+                              ? 'Composed by Manus AI Agent'
+                              : 'Graphic Canvas Layout'}
+                          </span>
                         </div>
                       </div>
                     );
@@ -3918,11 +4277,17 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           Graphic Card Rendered ({selectedScript?.imageConcept?.aspectRatio || '1:1'} PNG)
                         </span>
                       </div>
-                      <span className="text-xs font-mono text-zinc-400">Client Canvas Render</span>
+                      <span className="text-xs font-mono text-zinc-400">
+                        {(selectedScript?.imageConcept as any)?.provider === 'manus'
+                          ? 'Composed by Manus AI Agent'
+                          : 'Client Canvas Render'}
+                      </span>
                     </div>
 
                     <p className="text-xs text-zinc-400">
-                      Visual graphic composed locally with precision typography, safe margins, and brand styling.
+                      {(selectedScript?.imageConcept as any)?.provider === 'manus'
+                        ? 'Visual graphic composed by autonomous Manus agent in sandbox environment with high-DPI output.'
+                        : 'Visual graphic composed locally with precision typography, safe margins, and brand styling.'}
                     </p>
 
                     <div className="flex flex-wrap gap-3 pt-2">
@@ -4033,13 +4398,19 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         <div className="space-y-1 text-xs">
                           <div className="font-bold text-white flex items-center gap-1.5">
                             <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-                            <span>Verified Rendered Asset</span>
+                            <span>
+                              {(selectedScript?.imageConcept as any)?.provider === 'manus'
+                                ? 'Composed by Manus AI Agent'
+                                : 'Verified Rendered Graphic Card'}
+                            </span>
                           </div>
                           <p className="text-zinc-400 text-[11px]">
-                            High-resolution graphic card styled with {selectedScript?.imageConcept?.stylePreset || 'Editorial Swiss Graphic'} layout.
+                            {(selectedScript?.imageConcept as any)?.provider === 'manus'
+                              ? `Visual asset composed by autonomous Manus agent in sandbox (${selectedScript?.imageConcept?.aspectRatio || '1:1'} PNG).`
+                              : `High-resolution graphic card styled with ${selectedScript?.imageConcept?.stylePreset || 'Editorial Swiss Graphic'} layout.`}
                           </p>
                           <span className="inline-block text-[10px] font-mono text-blue-300">
-                            {selectedScript?.imageConcept?.aspectRatio || '1:1'} Format • High-DPI PNG
+                            {selectedScript?.imageConcept?.aspectRatio || '1:1'} Format • {(selectedScript?.imageConcept as any)?.provider === 'manus' ? 'Composed by Manus AI Agent' : 'High-DPI PNG'}
                           </span>
                         </div>
                       </div>

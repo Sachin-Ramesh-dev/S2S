@@ -561,8 +561,8 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
     useState<StylePreset>('Editorial Swiss Graphic');
   const [imageVaultToast, setImageVaultToast] = useState<string | null>(null);
 
-  // Visual Production Provider: 'canvas' (default zero-cost) | 'manus' (credit-based agent) | 'gemini' (API)
-  const [selectedImageProvider, setSelectedImageProvider] = useState<'canvas' | 'manus' | 'gemini'>('canvas');
+  // Visual Production Provider: 'flux' (genuine zero-cost diffusion) | 'canvas' (zero-cost layout) | 'manus' (credit agent) | 'gemini' (API)
+  const [selectedImageProvider, setSelectedImageProvider] = useState<'flux' | 'canvas' | 'manus' | 'gemini'>('flux');
   // Manus Image Task Tracking State
   const [manusTaskState, setManusTaskState] = useState<{
     active: boolean;
@@ -924,20 +924,33 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
     setAiImageError(null);
     try {
       const concept = selectedScript.imageConcept || getDefaultImageConcept(selectedScript);
+      const providerToUse = selectedImageProvider === 'gemini' ? 'gemini' : 'flux';
       const res = await instagramApi.generateAiImage({
         scriptId: selectedScript.id,
         prompt: concept.visualPrompt || selectedScript.title,
         aspectRatio: concept.aspectRatio || '1:1',
-        stylePreset: concept.stylePreset
+        stylePreset: concept.stylePreset,
+        provider: providerToUse
       });
 
       if (res.imageUrl) {
         const updated = {
           ...concept,
           mockImageUrl: res.imageUrl,
-          finalImageUrl: res.imageUrl
+          finalImageUrl: res.imageUrl,
+          provider: res.provider || providerToUse,
+          model: res.model || (providerToUse === 'flux' ? 'flux-schnell' : 'gemini'),
+          width: res.width,
+          height: res.height,
+          byteLength: res.byteLength
         };
-        if (onUpdateScript) onUpdateScript(selectedScript.id, { imageConcept: updated });
+        if (onUpdateScript) onUpdateScript(selectedScript.id, { imageConcept: updated as any });
+        setImageSuccessToast(
+          providerToUse === 'flux'
+            ? `✓ Genuine visual artwork generated via Flux (${res.width || 1024}×${res.height || 1024})!`
+            : '✓ Image generated successfully!'
+        );
+        setTimeout(() => setImageSuccessToast(null), 4000);
         setImageStage('mock');
       } else if (res.error) {
         setAiImageError({
@@ -3685,6 +3698,17 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           <Bot className={`w-3.5 h-3.5 ${manusTaskState.active ? 'animate-spin' : ''}`} />
                           <span>{manusTaskState.active ? 'Manus Agent Working...' : 'Generate with Manus Agent ➔'}</span>
                         </button>
+                      ) : selectedImageProvider === 'flux' ? (
+                        <button
+                          id="btn-generate-mock-image"
+                          type="button"
+                          onClick={handleGenerateMockImage}
+                          disabled={isGeneratingMockImage}
+                          className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60 shrink-0"
+                        >
+                          <Sparkles className={`w-3.5 h-3.5 ${isGeneratingMockImage ? 'animate-spin' : ''}`} />
+                          <span>{isGeneratingMockImage ? 'Generating Scene with Flux...' : 'Generate AI Visual Scene ➔'}</span>
+                        </button>
                       ) : (
                         <button
                           id="btn-generate-mock-image"
@@ -3700,7 +3724,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                     </div>
                   </div>
 
-                  {/* VISUAL PRODUCTION PROVIDER SELECTOR (Requirement 2 & 7) */}
+                  {/* VISUAL PRODUCTION PROVIDER SELECTOR (Requirements 2, 6, 7) */}
                   <div className={`p-4 rounded-2xl border space-y-3 ${
                     isDark ? 'bg-[#181826] border-[#2c2c40]' : 'bg-white border-slate-200 shadow-sm'
                   }`}>
@@ -3710,12 +3734,47 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         <span>Visual Production Provider</span>
                       </label>
                       <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                        {selectedImageProvider === 'canvas' ? '100% Zero-Cost Mode' : selectedImageProvider === 'manus' ? 'Task Credit Based' : 'Free Tier (Limit: 0)'}
+                        {selectedImageProvider === 'flux'
+                          ? 'Zero-Cost Genuine AI Artwork'
+                          : selectedImageProvider === 'canvas'
+                          ? '100% Zero-Cost Mode'
+                          : selectedImageProvider === 'manus'
+                          ? 'Task Credit Based'
+                          : 'Free Tier (Limit: 0)'}
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      {/* Provider 1: Local Canvas Composer */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                      {/* Provider 1: Genuine AI Visual Scene (Flux) */}
+                      <div
+                        id="provider-card-flux"
+                        onClick={() => setSelectedImageProvider('flux')}
+                        className={`p-3.5 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                          selectedImageProvider === 'flux'
+                            ? 'border-purple-500 bg-purple-500/10 shadow-sm'
+                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40' : 'border-slate-200 hover:border-slate-300 bg-slate-50'
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                              <span>Flux AI Visual Engine</span>
+                            </span>
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400">
+                              Free / Diffusion
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-zinc-400 mt-1.5 leading-snug">
+                            Genuine latent diffusion (Flux). Generates pure visual scenes &amp; illustrations without text corruption.
+                          </p>
+                        </div>
+                        <div className="mt-2 pt-2 border-t border-zinc-800 text-[10px] text-purple-400 font-mono">
+                          ✓ $0.00 Cost • Pure Visuals
+                        </div>
+                      </div>
+
+                      {/* Provider 2: Local Canvas Composer */}
                       <div
                         id="provider-card-canvas"
                         onClick={() => setSelectedImageProvider('canvas')}
@@ -3736,7 +3795,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                             </span>
                           </div>
                           <p className="text-[11px] text-zinc-400 mt-1.5 leading-snug">
-                            Zero-cost client composition. Swiss typography, geometric grids, custom badges & margins.
+                            Zero-cost client composition. Swiss typography, geometric grids, custom badges &amp; margins.
                           </p>
                         </div>
                         <div className="mt-2 pt-2 border-t border-zinc-800 text-[10px] text-emerald-400 font-mono">
@@ -3744,7 +3803,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         </div>
                       </div>
 
-                      {/* Provider 2: Manus AI Agent */}
+                      {/* Provider 3: Manus AI Agent */}
                       <div
                         id="provider-card-manus"
                         onClick={() => setSelectedImageProvider('manus')}
@@ -3773,7 +3832,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         </div>
                       </div>
 
-                      {/* Provider 3: Gemini Image API */}
+                      {/* Provider 4: Gemini Image API */}
                       <div
                         id="provider-card-gemini"
                         onClick={() => setSelectedImageProvider('gemini')}
@@ -3802,6 +3861,25 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         </div>
                       </div>
                     </div>
+
+                    {/* Flux Two-Stage Guidance Notice (Requirements 3, 4, 5) */}
+                    {selectedImageProvider === 'flux' && (
+                      <div className={`p-3.5 rounded-xl border text-[11px] space-y-1.5 ${
+                        isDark ? 'bg-purple-950/40 border-purple-500/40 text-purple-200' : 'bg-purple-50/90 border-purple-200 text-purple-950'
+                      }`}>
+                        <div className={`font-bold flex items-center gap-2 ${
+                          isDark ? 'text-purple-300' : 'text-purple-900'
+                        }`}>
+                          <Sparkles className="w-3.5 h-3.5 shrink-0 text-purple-400" />
+                          <span>Two-Stage Production: Pure AI Visuals + Precision Typography</span>
+                        </div>
+                        <p className={`leading-relaxed ${
+                          isDark ? 'text-zinc-300' : 'text-slate-700'
+                        }`}>
+                          The Flux diffusion model generates a genuine background scene (photorealistic shopping receipts, credit cards, or editorial visual scenes) without distorted typography. Headlines and branding are cleanly overlaid in safe margins during Stage 3.
+                        </p>
+                      </div>
+                    )}
 
                     {/* Manus Credit Guidance Notice (Requirement 7) */}
                     {selectedImageProvider === 'manus' && (
@@ -4099,18 +4177,50 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         </div>
 
                         {selectedScript?.imageConcept?.mockImageUrl ? (
-                          <div className="my-auto relative rounded-2xl overflow-hidden border border-blue-500/30 max-h-64 flex items-center justify-center bg-black/40">
-                            <img
-                              src={selectedScript.imageConcept.mockImageUrl}
-                              alt="Composed Visual Asset"
-                              className="w-full h-auto object-cover max-h-64"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-4 flex flex-col justify-end text-left">
-                              <h3 className="text-sm font-bold text-white leading-snug">
-                                "{selectedScript?.imageConcept?.headline || selectedScript?.hook || selectedScript?.title}"
-                              </h3>
+                          (selectedScript?.imageConcept as any)?.provider === 'flux' ? (
+                            <div className="my-auto flex flex-col items-center justify-center space-y-2">
+                              <div className="relative rounded-2xl overflow-hidden border-2 border-purple-500/40 shadow-lg bg-black/60 max-h-72 w-full flex items-center justify-center">
+                                <img
+                                  src={selectedScript.imageConcept.mockImageUrl}
+                                  alt="Model-Generated Visual Asset"
+                                  className="w-full h-auto object-cover max-h-72"
+                                />
+                                <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md text-[10px] font-mono text-purple-300 border border-purple-500/30">
+                                  Pure Model Pixels (No Distortion)
+                                </div>
+                              </div>
+                              <div className={`w-full p-2.5 rounded-xl border text-left text-[11px] space-y-0.5 ${
+                                isDark ? 'bg-purple-950/40 border-purple-500/30 text-zinc-300' : 'bg-purple-50/90 border-purple-200 text-purple-950'
+                              }`}>
+                                <div className={`font-bold flex items-center justify-between ${
+                                  isDark ? 'text-purple-300' : 'text-purple-900'
+                                }`}>
+                                  <span>Model: {(selectedScript.imageConcept as any)?.model || 'flux-schnell'}</span>
+                                  <span className={`font-mono text-[10px] ${
+                                    isDark ? 'text-purple-400' : 'text-purple-700 font-semibold'
+                                  }`}>{(selectedScript.imageConcept as any)?.width || 1024} × {(selectedScript.imageConcept as any)?.height || 1024} px</span>
+                                </div>
+                                <p className={`text-[10px] ${
+                                  isDark ? 'text-zinc-400' : 'text-slate-700'
+                                }`}>
+                                  Visual scene generated without embedded text. Main headline &amp; Swiss typography are cleanly overlaid in Stage 3.
+                                </p>
+                              </div>
                             </div>
-                          </div>
+                          ) : (
+                            <div className="my-auto relative rounded-2xl overflow-hidden border border-blue-500/30 max-h-64 flex items-center justify-center bg-black/40">
+                              <img
+                                src={selectedScript.imageConcept.mockImageUrl}
+                                alt="Composed Visual Asset"
+                                className="w-full h-auto object-cover max-h-64"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-4 flex flex-col justify-end text-left">
+                                <h3 className="text-sm font-bold text-white leading-snug">
+                                  "{selectedScript?.imageConcept?.headline || selectedScript?.hook || selectedScript?.title}"
+                                </h3>
+                              </div>
+                            </div>
+                          )
                         ) : (
                           <div className="my-auto space-y-3 px-2">
                             <div className="w-12 h-12 rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center mx-auto shadow-inner">
@@ -4127,8 +4237,10 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
 
                         <div className="flex items-center justify-between text-[10px] text-zinc-400 pt-2 border-t border-zinc-800/60 font-mono">
                           <span>{resText}</span>
-                          <span className="text-blue-400 font-bold">
-                            {(selectedScript?.imageConcept as any)?.provider === 'manus'
+                          <span className="text-purple-400 font-bold">
+                            {(selectedScript?.imageConcept as any)?.provider === 'flux'
+                              ? 'Genuine AI Visual Artwork (Flux)'
+                              : (selectedScript?.imageConcept as any)?.provider === 'manus'
                               ? 'Composed by Manus AI Agent'
                               : 'Graphic Canvas Layout'}
                           </span>
@@ -4278,14 +4390,18 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         </span>
                       </div>
                       <span className="text-xs font-mono text-zinc-400">
-                        {(selectedScript?.imageConcept as any)?.provider === 'manus'
+                        {(selectedScript?.imageConcept as any)?.provider === 'flux'
+                          ? 'Genuine Flux AI Artwork + S2S Studio Overlay'
+                          : (selectedScript?.imageConcept as any)?.provider === 'manus'
                           ? 'Composed by Manus AI Agent'
                           : 'Client Canvas Render'}
                       </span>
                     </div>
 
                     <p className="text-xs text-zinc-400">
-                      {(selectedScript?.imageConcept as any)?.provider === 'manus'
+                      {(selectedScript?.imageConcept as any)?.provider === 'flux'
+                        ? 'Visual scene generated by Flux diffusion model. Main headline and branding typography composited with safe margins, contrast scrim, and zero text distortion.'
+                        : (selectedScript?.imageConcept as any)?.provider === 'manus'
                         ? 'Visual graphic composed by autonomous Manus agent in sandbox environment with high-DPI output.'
                         : 'Visual graphic composed locally with precision typography, safe margins, and brand styling.'}
                     </p>
@@ -4399,18 +4515,22 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           <div className="font-bold text-white flex items-center gap-1.5">
                             <Sparkles className="w-3.5 h-3.5 text-blue-400" />
                             <span>
-                              {(selectedScript?.imageConcept as any)?.provider === 'manus'
+                              {(selectedScript?.imageConcept as any)?.provider === 'flux'
+                                ? 'Genuine Flux AI Artwork + S2S Studio Overlay'
+                                : (selectedScript?.imageConcept as any)?.provider === 'manus'
                                 ? 'Composed by Manus AI Agent'
                                 : 'Verified Rendered Graphic Card'}
                             </span>
                           </div>
                           <p className="text-zinc-400 text-[11px]">
-                            {(selectedScript?.imageConcept as any)?.provider === 'manus'
+                            {(selectedScript?.imageConcept as any)?.provider === 'flux'
+                              ? `Visual scene generated by Flux diffusion model (${(selectedScript?.imageConcept as any)?.width || 1024}×${(selectedScript?.imageConcept as any)?.height || 1024}) with verified typography overlay.`
+                              : (selectedScript?.imageConcept as any)?.provider === 'manus'
                               ? `Visual asset composed by autonomous Manus agent in sandbox (${selectedScript?.imageConcept?.aspectRatio || '1:1'} PNG).`
                               : `High-resolution graphic card styled with ${selectedScript?.imageConcept?.stylePreset || 'Editorial Swiss Graphic'} layout.`}
                           </p>
                           <span className="inline-block text-[10px] font-mono text-blue-300">
-                            {selectedScript?.imageConcept?.aspectRatio || '1:1'} Format • {(selectedScript?.imageConcept as any)?.provider === 'manus' ? 'Composed by Manus AI Agent' : 'High-DPI PNG'}
+                            {selectedScript?.imageConcept?.aspectRatio || '1:1'} Format • {(selectedScript?.imageConcept as any)?.provider === 'flux' ? 'Flux AI + Typography Overlay' : (selectedScript?.imageConcept as any)?.provider === 'manus' ? 'Composed by Manus AI Agent' : 'High-DPI PNG'}
                           </span>
                         </div>
                       </div>

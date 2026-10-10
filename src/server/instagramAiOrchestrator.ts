@@ -1596,13 +1596,82 @@ Save the completed image file in the sandbox environment and provide the downloa
     };
   }
 
-  // Real AI Image Generation Provider Engine (Supports Gemini Free Tier failover & Manus AI Agent composition)
+  // Genuine AI Image Generation (Flux Latent Diffusion Model at Zero Cost)
+  public async generateFluxVisualScene(
+    prompt: string,
+    aspectRatio: string = '1:1',
+    stylePreset?: string
+  ): Promise<{ imageUrl: string; provider: string; model: string; width: number; height: number; byteLength: number; mimeType: string }> {
+    let width = 1024;
+    let height = 1024;
+    if (aspectRatio === '4:5') {
+      width = 1024;
+      height = 1280;
+    } else if (aspectRatio === '9:16') {
+      width = 768;
+      height = 1344;
+    }
+
+    const styleInstruction =
+      stylePreset === 'Modern Minimalist'
+        ? 'minimalist editorial aesthetic, clean architectural composition, subtle soft shadows'
+        : stylePreset === 'Studio Product Lighting'
+        ? 'cinematic commercial photography, high-end studio lighting, sharp focus'
+        : stylePreset === 'Cyberpunk Neon Dark'
+        ? 'dark moody atmosphere, cinematic neon rim lighting, high contrast'
+        : 'editorial photorealistic scene, natural lighting, shallow depth of field, balanced artistic composition';
+
+    const visualPrompt = `${prompt.trim()}, ${styleInstruction}, photorealistic 8k, highly detailed, clean background, no text, no words, no letters, no watermark, no logos, no typography`;
+
+    const encodedPrompt = encodeURIComponent(visualPrompt);
+    const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&nologo=true&private=true&enhance=true&seed=${Math.floor(
+      Math.random() * 100000
+    )}`;
+
+    const response = await fetch(pollinationsUrl);
+    if (!response.ok) {
+      throw new Error(`Flux image model generation failed: HTTP ${response.status} ${response.statusText}`);
+    }
+
+    const arrayBuf = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuf);
+
+    const dims = this.validateAndGetImageDimensions(buffer);
+
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const dir = path.join(process.cwd(), 'data', 'generated_images');
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      const filename = `flux-${Date.now()}-${dims.width}x${dims.height}.${dims.mime === 'image/jpeg' ? 'jpg' : 'png'}`;
+      fs.writeFileSync(path.join(dir, filename), buffer);
+    } catch {
+      // non-fatal
+    }
+
+    const dataUrl = `data:${dims.mime};base64,${buffer.toString('base64')}`;
+    return {
+      imageUrl: dataUrl,
+      provider: 'flux',
+      model: 'flux-schnell',
+      width: dims.width,
+      height: dims.height,
+      byteLength: buffer.length,
+      mimeType: dims.mime
+    };
+  }
+
+  // Real AI Image Generation Provider Engine (Supports Flux zero-cost diffusion, Gemini Free Tier & Manus AI Agent)
   public async generateAiImage(
     prompt: string,
     aspectRatio: string = '1:1',
     stylePreset?: string,
-    provider: 'gemini' | 'manus' = 'gemini'
-  ): Promise<{ imageUrl: string; provider: string; model: string; taskId?: string; taskUrl?: string; width?: number; height?: number }> {
+    provider: 'gemini' | 'manus' | 'flux' = 'flux'
+  ): Promise<{ imageUrl: string; provider: string; model: string; taskId?: string; taskUrl?: string; width?: number; height?: number; byteLength?: number }> {
+    if (provider === 'flux') {
+      return await this.generateFluxVisualScene(prompt, aspectRatio, stylePreset);
+    }
+
     if (provider === 'manus') {
       const task = await this.createManusImageTask(prompt, aspectRatio, stylePreset);
       // Poll until completion with timeout
@@ -1620,7 +1689,8 @@ Save the completed image file in the sandbox environment and provide the downloa
               taskId: task.taskId,
               taskUrl: task.taskUrl,
               width: finalized.width,
-              height: finalized.height
+              height: finalized.height,
+              byteLength: finalized.byteLength
             };
           }
           throw new Error('Manus AI completed the task but did not attach an image file.');

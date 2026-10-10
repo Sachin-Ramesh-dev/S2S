@@ -2282,14 +2282,22 @@ export class InstagramService {
       (script.imageConcept as any).model = result.model;
       if (result.taskId) (script.imageConcept as any).taskId = result.taskId;
       if (result.taskUrl) (script.imageConcept as any).taskUrl = result.taskUrl;
+      if ((result as any).width) (script.imageConcept as any).width = (result as any).width;
+      if ((result as any).height) (script.imageConcept as any).height = (result as any).height;
+      if ((result as any).byteLength) (script.imageConcept as any).byteLength = (result as any).byteLength;
       script.updatedAt = new Date().toISOString();
 
       return {
         script,
         imageUrl: result.imageUrl,
         taskId: result.taskId,
-        taskUrl: result.taskUrl
-      };
+        taskUrl: result.taskUrl,
+        provider: result.provider,
+        model: result.model,
+        width: (result as any).width,
+        height: (result as any).height,
+        byteLength: (result as any).byteLength
+      } as any;
     } catch (err: any) {
       const isQuota = err.message.includes('Quota exceeded') || err.message.includes('limit: 0') || err.message.includes('429');
       return {

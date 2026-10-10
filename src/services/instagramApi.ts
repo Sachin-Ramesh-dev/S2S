@@ -335,7 +335,20 @@ export const instagramApi = {
     aspectRatio?: string;
     stylePreset?: string;
     provider?: string;
-  }): Promise<{ success: boolean; imageUrl?: string; error?: string; quotaExceeded?: boolean; script?: ScriptItem; taskId?: string; taskUrl?: string }> {
+  }): Promise<{
+    success: boolean;
+    imageUrl?: string;
+    error?: string;
+    quotaExceeded?: boolean;
+    script?: ScriptItem;
+    taskId?: string;
+    taskUrl?: string;
+    provider?: string;
+    model?: string;
+    width?: number;
+    height?: number;
+    byteLength?: number;
+  }> {
     return safeFetchJson(`${BASE_URL}/images/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

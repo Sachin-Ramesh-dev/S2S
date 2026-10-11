@@ -10,7 +10,7 @@ import { SAMPLE_WORKFLOWS } from './src/data/sampleWorkflows';
 import { InstagramService } from './src/server/instagramService';
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3005;
 
 app.use(express.json({ limit: '15mb', strict: false }));
 app.use(express.urlencoded({ extended: true, limit: '15mb' }));
@@ -2642,7 +2642,7 @@ app.post('/api/instagram/images/generate', async (req, res) => {
     if (!scriptId) {
       return res.status(400).json({ error: 'scriptId is required' });
     }
-    const result = await instagramService.generateImageForScript(scriptId, prompt, aspectRatio, stylePreset, provider || 'gemini');
+    const result = await instagramService.generateImageForScript(scriptId, prompt, aspectRatio, stylePreset, provider || 'flux');
     persistInstagramState();
     if (result.error) {
       return res.status(result.quotaExceeded ? 429 : 500).json({

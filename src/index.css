@@ -92,81 +92,81 @@ body {
 /* Cards & Surfaces */
 .neo-card {
   background-color: var(--bg-surface);
-  border: 2px solid var(--border-neo);
-  box-shadow: 4px 4px 0 var(--shadow-neo);
-  border-radius: 16px;
+  border: 1.5px solid var(--border-neo);
+  box-shadow: 2.5px 2.5px 0 var(--shadow-neo);
+  border-radius: 14px;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .neo-card-subtle {
   background-color: var(--bg-surface-elevated);
-  border: 2px solid var(--border-neo);
-  box-shadow: 3px 3px 0 var(--shadow-neo);
-  border-radius: 14px;
+  border: 1.5px solid var(--border-neo);
+  box-shadow: 1.5px 1.5px 0 var(--shadow-neo);
+  border-radius: 12px;
 }
 
 .neo-card-interactive {
   background-color: var(--bg-surface);
-  border: 2px solid var(--border-neo);
-  box-shadow: 4px 4px 0 var(--shadow-neo);
-  border-radius: 16px;
+  border: 1.5px solid var(--border-neo);
+  box-shadow: 2.5px 2.5px 0 var(--shadow-neo);
+  border-radius: 14px;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
   cursor: pointer;
 }
 .neo-card-interactive:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--shadow-neo);
+  transform: translate(-1.5px, -1.5px);
+  box-shadow: 4px 4px 0 var(--shadow-neo);
 }
 .neo-card-interactive:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 var(--shadow-neo);
+  transform: translate(1.5px, 1.5px);
+  box-shadow: 1px 1px 0 var(--shadow-neo);
 }
 
 /* Buttons */
 .neo-btn {
   font-family: var(--font-body);
   font-weight: 700;
-  border: 2px solid var(--border-neo);
+  border: 1.5px solid var(--border-neo);
   border-radius: 10px;
-  box-shadow: 3px 3px 0 var(--shadow-neo);
+  box-shadow: 2px 2px 0 var(--shadow-neo);
   transition: transform 0.12s ease, box-shadow 0.12s ease;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 8px 16px;
-  font-size: 0.875rem;
+  gap: 7px;
+  padding: 7px 14px;
+  font-size: 0.8125rem;
   line-height: 1.25rem;
   user-select: none;
 }
 .neo-btn:hover {
   transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 var(--shadow-neo);
+  box-shadow: 3px 3px 0 var(--shadow-neo);
 }
 .neo-btn:active {
-  transform: translate(2px, 2px);
+  transform: translate(1.5px, 1.5px);
   box-shadow: 1px 1px 0 var(--shadow-neo);
 }
 
 .neo-btn-sm {
-  padding: 6px 12px;
+  padding: 5px 10px;
   font-size: 0.75rem;
-  border-radius: 8px;
-  box-shadow: 2px 2px 0 var(--shadow-neo);
+  border-radius: 7px;
+  box-shadow: 1.5px 1.5px 0 var(--shadow-neo);
 }
 .neo-btn-sm:hover {
-  box-shadow: 3px 3px 0 var(--shadow-neo);
+  box-shadow: 2.5px 2.5px 0 var(--shadow-neo);
 }
 
 .neo-btn-lg {
-  padding: 12px 24px;
-  font-size: 1rem;
-  border-radius: 12px;
-  box-shadow: 4px 4px 0 var(--shadow-neo);
+  padding: 10px 20px;
+  font-size: 0.9375rem;
+  border-radius: 11px;
+  box-shadow: 3px 3px 0 var(--shadow-neo);
 }
 .neo-btn-lg:hover {
-  box-shadow: 6px 6px 0 var(--shadow-neo);
+  box-shadow: 4.5px 4.5px 0 var(--shadow-neo);
 }
 
 .neo-btn-primary {
@@ -210,33 +210,33 @@ body {
 
 /* Inputs & Form Controls */
 .neo-input {
-  border: 2px solid var(--border-neo);
-  border-radius: 10px;
+  border: 1.5px solid var(--border-neo);
+  border-radius: 9px;
   background-color: var(--bg-input);
   color: var(--text-primary);
-  box-shadow: 2px 2px 0 var(--shadow-neo);
-  padding: 8px 12px;
-  font-size: 0.875rem;
+  box-shadow: 1.5px 1.5px 0 var(--shadow-neo);
+  padding: 7px 11px;
+  font-size: 0.8125rem;
   outline: none;
   transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
 .neo-input:focus {
-  box-shadow: 4px 4px 0 var(--shadow-neo);
+  box-shadow: 3px 3px 0 var(--shadow-neo);
 }
 
 /* Badges & Status Pills */
 .neo-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: 0.75rem;
-  border: 2px solid var(--border-neo);
-  border-radius: 8px;
-  box-shadow: 2px 2px 0 var(--shadow-neo);
-  padding: 3px 8px;
-  line-height: 1rem;
+  font-size: 0.7rem;
+  border: 1.5px solid var(--border-neo);
+  border-radius: 6px;
+  box-shadow: 1.5px 1.5px 0 var(--shadow-neo);
+  padding: 2px 7px;
+  line-height: 0.95rem;
 }
 
 .neo-badge-mint {
@@ -280,19 +280,19 @@ body {
 
 /* Neo-Brutalist Modal & Slideover */
 .neo-modal {
-  border: 2px solid var(--border-neo);
+  border: 1.5px solid var(--border-neo);
   border-radius: 16px;
   background-color: var(--bg-surface);
   color: var(--text-primary);
-  box-shadow: 6px 6px 0 var(--shadow-neo);
+  box-shadow: 4px 4px 0 var(--shadow-neo);
 }
 .neo-modal-header {
-  border-bottom: 2px solid var(--border-neo);
+  border-bottom: 1.5px solid var(--border-neo);
   background-color: var(--bg-surface-elevated);
   padding: 16px 20px;
 }
 .neo-modal-footer {
-  border-top: 2px solid var(--border-neo);
+  border-top: 1.5px solid var(--border-neo);
   background-color: var(--bg-surface-elevated);
   padding: 16px 20px;
 }

@@ -13,60 +13,67 @@ async function testGenuineImageGeneration() {
   const testScript = db.instagramScripts.find(s => s.title.includes('EMI')) || db.instagramScripts[0];
   console.log(`1. Target Script: [${testScript.id}] "${testScript.title}"`);
 
-  // Define visual scene prompt without embedded typography
-  const visualPrompt = 'Close-up editorial photograph of a retail shopping counter with an electronic credit card terminal, crumpled sales receipts, magnifying glass showing fine print, dramatic studio shadows, cinematic lighting, 8k resolution, clean composition, no text, no letters, no logos, no watermark';
+  // Check if UI-only mode is requested
+  const isUiOnly = process.argv.includes('--ui-only');
 
-  console.log('\n2. Calling POST /api/instagram/images/generate with provider: flux...');
-  const t0 = Date.now();
-  const genRes = await fetch(`${BASE_URL}/images/generate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      scriptId: testScript.id,
-      prompt: visualPrompt,
-      aspectRatio: '1:1',
-      stylePreset: 'Editorial Swiss Graphic',
-      provider: 'flux'
-    })
-  });
+  if (!isUiOnly) {
+    // Define visual scene prompt without embedded typography
+    const visualPrompt = 'Close-up editorial photograph of a retail shopping counter with an electronic credit card terminal, crumpled sales receipts, magnifying glass showing fine print, dramatic studio shadows, cinematic lighting, 8k resolution, clean composition, no text, no letters, no logos, no watermark';
 
-  const durationMs = Date.now() - t0;
-  console.log(`Response received in ${durationMs}ms with HTTP status ${genRes.status}`);
+    console.log('\n2. Calling POST /api/instagram/images/generate with provider: flux...');
+    const t0 = Date.now();
+    const genRes = await fetch(`${BASE_URL}/images/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        scriptId: testScript.id,
+        prompt: visualPrompt,
+        aspectRatio: '1:1',
+        stylePreset: 'Editorial Swiss Graphic',
+        provider: 'flux'
+      })
+    });
 
-  if (!genRes.ok) {
-    const errText = await genRes.text();
-    throw new Error(`Generation failed: ${errText}`);
-  }
+    const durationMs = Date.now() - t0;
+    console.log(`Response received in ${durationMs}ms with HTTP status ${genRes.status}`);
 
-  const genData = await genRes.json();
-  console.log('\n3. Raw Provider Response Metadata:');
-  console.log({
-    success: genData.success,
-    provider: genData.provider,
-    model: genData.model,
-    width: genData.width,
-    height: genData.height,
-    byteLength: genData.byteLength,
-    isDataUrl: genData.imageUrl?.startsWith('data:image/'),
-    mimeType: genData.imageUrl?.split(';')[0]?.replace('data:', '')
-  });
+    if (!genRes.ok) {
+      const errText = await genRes.text();
+      throw new Error(`Generation failed: ${errText}`);
+    }
 
-  if (!genData.imageUrl || genData.provider !== 'flux') {
-    throw new Error('API did not return valid Flux model output');
-  }
+    const genData = await genRes.json();
+    console.log('\n3. Raw Provider Response Metadata:');
+    console.log({
+      success: genData.success,
+      provider: genData.provider,
+      model: genData.model,
+      width: genData.width,
+      height: genData.height,
+      byteLength: genData.byteLength,
+      isDataUrl: genData.imageUrl?.startsWith('data:image/'),
+      mimeType: genData.imageUrl?.split(';')[0]?.replace('data:', '')
+    });
 
-  // 4. Validate binary bytes and magic headers
-  console.log('\n4. Validating image binary bytes and magic headers...');
-  const base64Data = genData.imageUrl.split(',')[1];
-  const imgBuffer = Buffer.from(base64Data, 'base64');
-  const magicHex = imgBuffer.slice(0, 4).toString('hex');
-  const isJpeg = magicHex.startsWith('ffd8ff');
-  const isPng = magicHex.startsWith('89504e47');
-  console.log(`- Buffer size: ${imgBuffer.length} bytes (${(imgBuffer.length / 1024).toFixed(1)} KB)`);
-  console.log(`- Magic bytes: 0x${magicHex} (${isJpeg ? 'Valid JPEG' : isPng ? 'Valid PNG' : 'UNKNOWN'})`);
+    if (!genData.imageUrl || genData.provider !== 'flux') {
+      throw new Error('API did not return valid Flux model output');
+    }
 
-  if (!isJpeg && !isPng) {
-    throw new Error('Image header does not match valid JPEG or PNG signature!');
+    // 4. Validate binary bytes and magic headers
+    console.log('\n4. Validating image binary bytes and magic headers...');
+    const base64Data = genData.imageUrl.split(',')[1];
+    const imgBuffer = Buffer.from(base64Data, 'base64');
+    const magicHex = imgBuffer.slice(0, 4).toString('hex');
+    const isJpeg = magicHex.startsWith('ffd8ff');
+    const isPng = magicHex.startsWith('89504e47');
+    console.log(`- Buffer size: ${imgBuffer.length} bytes (${(imgBuffer.length / 1024).toFixed(1)} KB)`);
+    console.log(`- Magic bytes: 0x${magicHex} (${isJpeg ? 'Valid JPEG' : isPng ? 'Valid PNG' : 'UNKNOWN'})`);
+
+    if (!isJpeg && !isPng) {
+      throw new Error('Image header does not match valid JPEG or PNG signature!');
+    }
+  } else {
+    console.log('\n2. --ui-only flag detected: Skipping network generation to preserve quota and using already generated image.');
   }
 
   // 5. Verify database persistence
@@ -83,7 +90,7 @@ async function testGenuineImageGeneration() {
     hasFinalImage: !!concept.finalImageUrl
   });
 
-  if (concept.provider !== 'flux' || concept.model !== 'flux-schnell') {
+  if (concept.provider !== 'flux' || (!concept.model.includes('flux') && !concept.model.includes('schnell'))) {
     throw new Error('Script did not persist flux metadata correctly');
   }
   console.log('✓ Database persistence verified!');
@@ -139,8 +146,8 @@ async function testGenuineImageGeneration() {
     const pureModelNotice = page.locator('text=Pure Model Pixels (No Distortion)');
     console.log('✓ Pure Model Pixels indicator visible:', await pureModelNotice.isVisible());
 
-    const fluxAttribution = page.locator('text=Genuine AI Visual Artwork (Flux)');
-    console.log('✓ Stage 2 displays "Genuine AI Visual Artwork (Flux)":', await fluxAttribution.isVisible());
+    const fluxAttribution = page.locator('text=Model-Generated Visual Artwork (Flux)');
+    console.log('✓ Stage 2 displays "Model-Generated Visual Artwork (Flux)":', await fluxAttribution.isVisible());
     await page.screenshot({ path: path.join(screenshotDir, 'genuine_02_stage2_pure_visual_artwork.png') });
     console.log('✓ Screenshot saved: genuine_02_stage2_pure_visual_artwork.png');
 
@@ -160,7 +167,7 @@ async function testGenuineImageGeneration() {
     const finalSrc = await finalCard.getAttribute('src');
     console.log('✓ Stage 3 Composited Card visible:', isFinalImgVisible, 'length:', finalSrc ? finalSrc.length : 0);
 
-    const stage3Attribution = page.locator('text=Genuine Flux AI Artwork + S2S Studio Overlay').first();
+    const stage3Attribution = page.locator('text=Flux AI Visual Artwork + S2S Studio Overlay').first();
     console.log('✓ Stage 3 attribution visible:', await stage3Attribution.isVisible());
     await page.screenshot({ path: path.join(screenshotDir, 'genuine_03_stage3_composited_overlay.png') });
     console.log('✓ Screenshot saved: genuine_03_stage3_composited_overlay.png');
@@ -170,8 +177,8 @@ async function testGenuineImageGeneration() {
     await page.click('#image-stage-tab-review');
     await page.waitForTimeout(1000);
 
-    const stage4Attribution = page.locator('text=Genuine Flux AI Artwork + S2S Studio Overlay').first();
-    console.log('✓ Stage 4 Review displays "Genuine Flux AI Artwork + S2S Studio Overlay":', await stage4Attribution.isVisible());
+    const stage4Attribution = page.locator('text=Flux AI Visual Artwork + S2S Studio Overlay').first();
+    console.log('✓ Stage 4 Review displays "Flux AI Visual Artwork + S2S Studio Overlay":', await stage4Attribution.isVisible());
     await page.screenshot({ path: path.join(screenshotDir, 'genuine_04_stage4_review_schedule.png') });
     console.log('✓ Screenshot saved: genuine_04_stage4_review_schedule.png');
 

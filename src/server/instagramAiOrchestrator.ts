@@ -1652,13 +1652,17 @@ Save the completed image file in the sandbox environment and provide the downloa
       );
     }
 
+    const redactKey = (text: string): string => {
+      if (!text || !pollinationsKey) return text;
+      return text.split(pollinationsKey).join('[REDACTED]');
+    };
+
     const seed = Math.floor(Math.random() * 100000);
     const headers: Record<string, string> = {
       Authorization: `Bearer ${pollinationsKey}`
     };
-    const endpointUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&nologo=true&seed=${seed}&key=${encodeURIComponent(
-      pollinationsKey
-    )}`;
+    // Use official gen.pollinations.ai/image gateway with Bearer token authentication (no credentials in query string)
+    const endpointUrl = `https://gen.pollinations.ai/image/${encodedPrompt}?width=${width}&height=${height}&model=flux&nologo=true&seed=${seed}`;
 
     let response: Response;
     try {
@@ -1670,7 +1674,7 @@ Save the completed image file in the sandbox environment and provide the downloa
       if (fetchErr.name === 'TimeoutError' || fetchErr.message?.includes('timeout')) {
         throw new Error('Flux image generation timed out after 25 seconds. The diffusion engine may be temporarily busy.');
       }
-      throw new Error(`Failed to connect to image generation engine: ${fetchErr.message || String(fetchErr)}`);
+      throw new Error(`Failed to connect to image generation engine: ${redactKey(fetchErr.message || String(fetchErr))}`);
     }
 
     if (!response.ok) {
@@ -1681,10 +1685,11 @@ Save the completed image file in the sandbox environment and provide the downloa
       } catch {
         errorBody = response.statusText;
       }
+      const safeErrorBody = redactKey(errorBody);
 
       if (response.status === 402) {
         throw new Error(
-          'Pollinations account free allowance exhausted (HTTP 402 Payment Required). Request stopped before incurring charges. Check your Pollen balance at https://enter.pollinations.ai, or use Local Canvas Composer.'
+          'Pollinations account free allowance exhausted (HTTP 402 Payment Required). Request rejected due to insufficient balance. Check your Pollen balance at https://enter.pollinations.ai, or use the zero-cost Local Canvas Composer.'
         );
       }
       if (response.status === 401) {
@@ -1699,13 +1704,13 @@ Save the completed image file in the sandbox environment and provide the downloa
         throw new Error(`Flux diffusion backend is temporarily overloaded (HTTP ${response.status}). Please retry in a few moments.`);
       }
 
-      throw new Error(`Flux image model generation failed (HTTP ${response.status}): ${errorBody.slice(0, 300)}`);
+      throw new Error(`Flux image model generation failed (HTTP ${response.status}): ${safeErrorBody.slice(0, 300)}`);
     }
 
     const contentType = response.headers.get('content-type') || '';
     if (!contentType.startsWith('image/')) {
       const bodyText = await response.text();
-      throw new Error(`Invalid response from image model provider (Expected image/*, received ${contentType}): ${bodyText.slice(0, 300)}`);
+      throw new Error(`Invalid response from image model provider (Expected image/*, received ${contentType}): ${redactKey(bodyText.slice(0, 300))}`);
     }
 
     const arrayBuf = await response.arrayBuffer();

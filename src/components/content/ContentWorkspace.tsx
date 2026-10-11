@@ -616,6 +616,12 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
     }
   }, [selectedScript?.id, selectedScript?.productionStage, currentBranch]);
 
+  // Reset rendered composites when switching scripts to prevent stale cross-post leakage
+  useEffect(() => {
+    setRenderedImageData(null);
+    setRenderedDeckBlobs([]);
+  }, [selectedScript?.id]);
+
   // Carousel Handlers
   const handleUpdateSlide = (idx: number, updates: Partial<CarouselSlide>) => {
     if (!selectedScript || !onUpdateScript) return;
@@ -868,6 +874,20 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
     if (!selectedScript || !onUpdateScript) return;
     const current = selectedScript.imageConcept || getDefaultImageConcept(selectedScript);
     const updated = { ...current, ...updates };
+
+    // Invalidate stale composite if core visual/text inputs changed
+    if (
+      updates.headline !== undefined ||
+      updates.visualPrompt !== undefined ||
+      updates.aspectRatio !== undefined ||
+      updates.stylePreset !== undefined ||
+      updates.textOverlay !== undefined ||
+      updates.mockImageUrl !== undefined
+    ) {
+      setRenderedImageData(null);
+      delete updated.finalImageUrl;
+    }
+
     onUpdateScript(selectedScript.id, { imageConcept: updated });
   };
 
@@ -915,7 +935,10 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
 
   const handleAcceptImageDiff = () => {
     if (!imageDiffModal || !selectedScript || !onUpdateScript) return;
-    onUpdateScript(selectedScript.id, { imageConcept: imageDiffModal.proposed });
+    const updated = { ...imageDiffModal.proposed };
+    setRenderedImageData(null);
+    delete updated.finalImageUrl;
+    onUpdateScript(selectedScript.id, { imageConcept: updated });
     setImageDiffModal(null);
   };
 
@@ -961,11 +984,19 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
       }
     } catch (err: any) {
       const errMsg = err?.message || String(err);
-      const isQuota = errMsg.includes('429') || errMsg.includes('Quota exceeded') || errMsg.includes('limit: 0');
+      const isQuota =
+        errMsg.includes('429') ||
+        errMsg.includes('Quota exceeded') ||
+        errMsg.includes('limit: 0') ||
+        errMsg.includes('402') ||
+        errMsg.includes('free allowance exhausted');
       setAiImageError({
-        message: isQuota
-          ? 'Gemini Image API Error: Quota exceeded (limit: 0 on Google AI Studio Free Tier). Image model requires a billing-enabled account.'
-          : errMsg,
+        message:
+          providerToUse === 'flux'
+            ? errMsg
+            : isQuota
+              ? 'Gemini Image API Error: Quota exceeded (limit: 0 on Google AI Studio Free Tier). Image model requires a billing-enabled account.'
+              : errMsg,
         quotaExceeded: isQuota
       });
     } finally {
@@ -1093,8 +1124,8 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
     try {
       const currentImage = selectedScript?.imageConcept || getDefaultImageConcept(selectedScript);
       const aspect = (currentImage.aspectRatio as AspectRatio) || '1:1';
-      // Use the actual generated AI image or user asset if present!
-      const activeBackgroundImg = currentImage.mockImageUrl || currentImage.finalImageUrl;
+      // Use the actual generated AI image or user asset if present as clean background
+      const activeBackgroundImg = currentImage.mockImageUrl;
 
       const res = await renderSocialCard({
         headline: currentImage.headline || selectedScript?.hook || selectedScript?.title || 'High Impact Strategy',
@@ -1119,10 +1150,12 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
       }
 
       setImageRenderSuccess(true);
-      setImageStage('final');
+      // Preserve current stage if entering review directly, otherwise show final stage
+      setImageStage(prev => (prev === 'review' ? 'review' : 'final'));
       setTimeout(() => setImageRenderSuccess(false), 3000);
     } catch (err) {
       console.error('Failed to render final image:', err);
+      setRenderedImageData(null);
     } finally {
       setIsRenderingFinalImage(false);
     }
@@ -1135,18 +1168,37 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
   }, [carouselStage, selectedScript?.id]);
 
   useEffect(() => {
-    if (imageStage === 'final' && !renderedImageData && !isRenderingFinalImage) {
+    // Auto-composite on entering Stage 3 (final) or Stage 4 (review) if not yet generated or stale
+    if ((imageStage === 'final' || imageStage === 'review') && !renderedImageData && !isRenderingFinalImage) {
       handleRenderFinalImage();
     }
-  }, [imageStage, selectedScript?.id]);
+  }, [imageStage, selectedScript?.id, renderedImageData]);
 
   const handleConfirmScheduleImage = async () => {
     if (!selectedScript || !onApproveAndScheduleScript) return;
     if (!hasConfirmedImageSchedule) return;
 
+    const currentImage = selectedScript.imageConcept || getDefaultImageConcept(selectedScript);
+    const effectiveFinalUrl =
+      renderedImageData?.dataUrl ||
+      currentImage.finalImageUrl ||
+      '';
+
+    if (!effectiveFinalUrl) {
+      console.error('Cannot schedule: final composited graphic card is required');
+      return;
+    }
+
     setIsScheduleImageModalOpen(false);
     try {
-      const currentImage = selectedScript.imageConcept || getDefaultImageConcept(selectedScript);
+      const finalizedConcept = {
+        ...currentImage,
+        finalImageUrl: effectiveFinalUrl
+      };
+
+      if (onUpdateScript) {
+        onUpdateScript(selectedScript.id, { imageConcept: finalizedConcept });
+      }
 
       await onApproveAndScheduleScript(selectedScript, {
         scheduledDate: imageScheduleDate,
@@ -1155,10 +1207,10 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
         caption: selectedScript.caption,
         hashtags: selectedScript.hashtags,
         callToAction: selectedScript.callToAction,
-        imageConcept: currentImage,
+        imageConcept: finalizedConcept,
         aspectRatio: currentImage.aspectRatio || '1:1',
-        mediaUrls: [currentImage.finalImageUrl || currentImage.mockImageUrl || ''],
-        coverImageUrl: currentImage.finalImageUrl || currentImage.mockImageUrl
+        mediaUrls: [effectiveFinalUrl],
+        coverImageUrl: effectiveFinalUrl
       });
       setImageSuccessToast(`Image scheduled successfully for ${imageScheduleDate} at ${imageScheduleTime}!`);
       setTimeout(() => setImageSuccessToast(null), 4000);
@@ -1271,26 +1323,21 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
     <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
       {/* 1. TOP STRATEGIC LINEAGE BAR (Always visible) */}
       <div
-        className="px-6 py-3 border-b-2 border-[#171717] dark:border-[#383844] flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 shrink-0 select-none bg-[#F8F5EE] dark:bg-[#131316] transition-colors"
+        className="px-6 py-2.5 border-b border-[#171717]/15 dark:border-[#383844] flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 shrink-0 select-none bg-[#F8F5EE] dark:bg-[#131316] transition-colors"
       >
         {/* Left: Strategic Lineage Hierarchy */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          <span className="neo-badge neo-badge-lavender text-[10px] flex items-center gap-1 font-black">
-            <Compass className="w-3.5 h-3.5" />
-            <span>LINEAGE</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#B9A7FF]/20 text-[#522EB5] dark:text-[#CBBFFF] border border-[#B9A7FF]/40 font-mono">
+            {selectedScript?.contentPillar || 'Core Content Gap'}
           </span>
 
-          <span className="font-mono font-bold text-xs text-[#111111] dark:text-[#E4E4E7]">
-            AUDIT: <span className="underline decoration-[#FFD66B] font-black">{selectedScript?.contentPillar || 'Core Content Gap'}</span>
+          <span className="text-zinc-400 dark:text-zinc-600 font-bold">/</span>
+
+          <span className="font-bold text-xs truncate max-w-[220px] text-[#111111] dark:text-zinc-200" title={selectedScript?.topicTitle || selectedScript?.title}>
+            "{selectedScript?.topicTitle || selectedScript?.title || 'Untitled'}"
           </span>
 
-          <span className="font-black text-sm text-[#111111] dark:text-[#F5F3EC]">→</span>
-
-          <span className="font-mono font-bold text-xs truncate max-w-[200px] text-[#111111] dark:text-[#E4E4E7]" title={selectedScript?.topicTitle || selectedScript?.title}>
-            TOPIC: <span className="underline decoration-[#45D9A6] font-black">"{selectedScript?.topicTitle || selectedScript?.title || 'Untitled'}"</span>
-          </span>
-
-          <span className="font-black text-sm text-[#111111] dark:text-[#F5F3EC]">→</span>
+          <span className="text-zinc-400 dark:text-zinc-600 font-bold">/</span>
 
           {/* Active Format Badge with Change Dropdown */}
           <div className="relative inline-block">
@@ -1298,12 +1345,12 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
               id="btn-format-switcher"
               type="button"
               onClick={() => setIsFormatSwitcherOpen(!isFormatSwitcherOpen)}
-              className="neo-btn neo-btn-sky py-1 px-2.5 text-xs font-black flex items-center gap-1.5"
+              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#7CC7FF]/20 hover:bg-[#7CC7FF]/30 text-[#0D5B9E] dark:text-[#93D5FF] border border-[#7CC7FF]/40 transition-colors flex items-center gap-1.5 cursor-pointer shadow-[1px_1px_0_#0D5B9E]/20"
             >
               {currentBranch === 'Reel' && <Film className="w-3.5 h-3.5" />}
               {currentBranch === 'Carousel' && <Layers className="w-3.5 h-3.5" />}
               {currentBranch === 'Image' && <ImageIcon className="w-3.5 h-3.5" />}
-              <span>FORMAT: {selectedScript?.format || 'Reel'}</span>
+              <span>{selectedScript?.format || 'Reel'} Studio</span>
               <ChevronDown className="w-3.5 h-3.5 opacity-70" />
             </button>
 
@@ -1317,7 +1364,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                 <div
                   className="absolute left-0 mt-2 w-72 neo-card p-2 z-50 animate-in fade-in zoom-in-95 duration-150"
                 >
-                <div className="p-2 border-b-2 border-[#171717] dark:border-[#383844] mb-1">
+                <div className="p-2 border-b border-[#171717]/20 dark:border-[#383844] mb-1">
                   <div className="text-[11px] font-black uppercase tracking-wider text-[#111111] dark:text-white">
                     Switch Production Format
                   </div>
@@ -1334,9 +1381,9 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                       id={`switch-to-format-${fmt.toLowerCase()}`}
                       type="button"
                       onClick={() => handleSwitchFormat(fmt)}
-                      className={`w-full text-left p-2.5 rounded-lg flex items-center justify-between text-xs font-black transition-colors cursor-pointer ${
+                      className={`w-full text-left p-2.5 rounded-lg flex items-center justify-between text-xs font-bold transition-colors cursor-pointer ${
                         isCurrent
-                          ? 'bg-[#FFD66B] text-[#111111] border-2 border-[#171717]'
+                          ? 'bg-[#FFD66B] text-[#111111] border border-[#171717]/40 shadow-[1px_1px_0_#111111]'
                           : 'hover:bg-[#F8F5EE] dark:hover:bg-zinc-800 text-[#111111] dark:text-zinc-200'
                       }`}
                     >
@@ -1354,12 +1401,6 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
               </>
             )}
           </div>
-
-          <span className="font-black text-sm text-[#111111] dark:text-[#F5F3EC]">→</span>
-
-          <span className="neo-badge neo-badge-coral text-[10px] font-black">
-            STAGE: {currentBranch === 'Reel' ? reelStage.toUpperCase() : currentBranch === 'Carousel' ? carouselStage.toUpperCase() : imageStage.toUpperCase()}
-          </span>
         </div>
 
         {/* Right: Draft Selector & Secondary Tools */}
@@ -1370,8 +1411,8 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
               id="select-active-script"
               value={selectedScript?.id}
               onChange={(e) => onSelectScript(e.target.value)}
-              className={`text-xs rounded-xl px-2.5 py-1.5 border font-semibold cursor-pointer outline-none ${
-                isDark ? 'bg-[#1b1b28] border-zinc-700 text-white' : 'bg-slate-100 border-slate-300 text-slate-800'
+              className={`text-xs rounded-lg px-2.5 py-1.5 border font-semibold cursor-pointer outline-none transition-colors ${
+                isDark ? 'bg-[#1b1b28] border-zinc-700 text-white' : 'bg-white border-slate-300 text-slate-800'
               }`}
             >
               {scripts.map((s) => (
@@ -1387,8 +1428,8 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
               id="btn-open-repurpose-tool"
               type="button"
               onClick={() => setSecondaryToolModal('repurpose')}
-              className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-colors flex items-center gap-1.5 cursor-pointer ${
-                isDark ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300' : 'border-slate-300 hover:bg-slate-100 text-slate-700'
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                isDark ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300' : 'border-slate-300 hover:bg-white text-slate-700'
               }`}
               title="Cross-platform repurposing engine"
             >
@@ -1400,8 +1441,8 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
               id="btn-open-media-vault"
               type="button"
               onClick={() => setSecondaryToolModal('media')}
-              className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-colors flex items-center gap-1.5 cursor-pointer ${
-                isDark ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300' : 'border-slate-300 hover:bg-slate-100 text-slate-700'
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                isDark ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300' : 'border-slate-300 hover:bg-white text-slate-700'
               }`}
               title="Media asset vault"
             >
@@ -1430,35 +1471,37 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
             {/* Stage Pipeline Tabs */}
             <div
               className={`px-6 py-2 border-b flex items-center gap-2 overflow-x-auto select-none ${
-                isDark ? 'bg-[#12121a] border-[#222230]' : 'bg-slate-50 border-slate-200'
+                isDark ? 'bg-[#12121a]/80 border-[#222230]' : 'bg-[#FAF8F5] border-slate-200/80'
               }`}
             >
-              {[
-                { id: 'script', label: '1. Script (4-Act)', icon: FileText },
-                { id: 'storyboard', label: '2. Storyboard', icon: Layers },
-                { id: 'video', label: '3. Video Preview', icon: Film },
-                { id: 'review', label: '4. Review & Schedule', icon: Calendar }
-              ].map((st) => (
-                <button
-                  key={st.id}
-                  id={`reel-stage-tab-${st.id}`}
-                  type="button"
-                  onClick={() => {
-                    onClearToast?.();
-                    setReelStage(st.id as any);
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
-                    reelStage === st.id
-                      ? 'bg-orange-600 text-white shadow-xs'
-                      : isDark
-                      ? 'text-zinc-400 hover:text-zinc-200'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  <st.icon className="w-3.5 h-3.5" />
-                  <span>{st.label}</span>
-                </button>
-              ))}
+              <div className="flex items-center gap-1 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                {[
+                  { id: 'script', label: '1. Script (4-Act)', icon: FileText },
+                  { id: 'storyboard', label: '2. Storyboard', icon: Layers },
+                  { id: 'video', label: '3. Video Preview', icon: Film },
+                  { id: 'review', label: '4. Review & Schedule', icon: Calendar }
+                ].map((st) => (
+                  <button
+                    key={st.id}
+                    id={`reel-stage-tab-${st.id}`}
+                    type="button"
+                    onClick={() => {
+                      onClearToast?.();
+                      setReelStage(st.id as any);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                      reelStage === st.id
+                        ? 'bg-orange-600 text-white shadow-xs'
+                        : isDark
+                        ? 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-black/5'
+                    }`}
+                  >
+                    <st.icon className="w-3.5 h-3.5" />
+                    <span>{st.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Stage Content */}
@@ -2379,35 +2422,37 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
             {/* Stage Pipeline Tabs */}
             <div
               className={`px-6 py-2 border-b flex items-center gap-2 overflow-x-auto select-none ${
-                isDark ? 'bg-[#12121a] border-[#222230]' : 'bg-slate-50 border-slate-200'
+                isDark ? 'bg-[#12121a]/80 border-[#222230]' : 'bg-[#FAF8F5] border-slate-200/80'
               }`}
             >
-              {[
-                { id: 'copy', label: `1. Slide Copy (${(selectedScript?.slides?.length || 5)} Slides)`, icon: FileText },
-                { id: 'mock', label: '2. Mock Carousel', icon: Eye },
-                { id: 'final', label: '3. Final Render', icon: Sparkles },
-                { id: 'review', label: '4. Review & Schedule', icon: Calendar }
-              ].map((st) => (
-                <button
-                  key={st.id}
-                  id={`carousel-stage-tab-${st.id}`}
-                  type="button"
-                  onClick={() => {
-                    onClearToast?.();
-                    setCarouselStage(st.id as any);
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
-                    carouselStage === st.id
-                      ? 'bg-purple-600 text-white shadow-xs'
-                      : isDark
-                      ? 'text-zinc-400 hover:text-zinc-200'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  <st.icon className="w-3.5 h-3.5" />
-                  <span>{st.label}</span>
-                </button>
-              ))}
+              <div className="flex items-center gap-1 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                {[
+                  { id: 'copy', label: `1. Slide Copy (${(selectedScript?.slides?.length || 5)} Slides)`, icon: FileText },
+                  { id: 'mock', label: '2. Mock Carousel', icon: Eye },
+                  { id: 'final', label: '3. Final Render', icon: Sparkles },
+                  { id: 'review', label: '4. Review & Schedule', icon: Calendar }
+                ].map((st) => (
+                  <button
+                    key={st.id}
+                    id={`carousel-stage-tab-${st.id}`}
+                    type="button"
+                    onClick={() => {
+                      onClearToast?.();
+                      setCarouselStage(st.id as any);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                      carouselStage === st.id
+                        ? 'bg-purple-600 text-white shadow-xs'
+                        : isDark
+                        ? 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-black/5'
+                    }`}
+                  >
+                    <st.icon className="w-3.5 h-3.5" />
+                    <span>{st.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Stage Content */}
@@ -3603,35 +3648,37 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
             {/* Stage Pipeline Tabs */}
             <div
               className={`px-6 py-2 border-b flex items-center gap-2 overflow-x-auto select-none ${
-                isDark ? 'bg-[#12121a] border-[#222230]' : 'bg-slate-50 border-slate-200'
+                isDark ? 'bg-[#12121a]/80 border-[#222230]' : 'bg-[#FAF8F5] border-slate-200/80'
               }`}
             >
-              {[
-                { id: 'concept', label: '1. Concept & Copy', icon: FileText },
-                { id: 'mock', label: '2. Mock Image', icon: Eye },
-                { id: 'final', label: '3. Final Render', icon: Sparkles },
-                { id: 'review', label: '4. Review & Schedule', icon: Calendar }
-              ].map((st) => (
-                <button
-                  key={st.id}
-                  id={`image-stage-tab-${st.id}`}
-                  type="button"
-                  onClick={() => {
-                    onClearToast?.();
-                    setImageStage(st.id as any);
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
-                    imageStage === st.id
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : isDark
-                      ? 'text-zinc-400 hover:text-zinc-200'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  <st.icon className="w-3.5 h-3.5" />
-                  <span>{st.label}</span>
-                </button>
-              ))}
+              <div className="flex items-center gap-1 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                {[
+                  { id: 'concept', label: '1. Concept & Copy', icon: FileText },
+                  { id: 'mock', label: '2. Mock Image', icon: Eye },
+                  { id: 'final', label: '3. Final Render', icon: Sparkles },
+                  { id: 'review', label: '4. Review & Schedule', icon: Calendar }
+                ].map((st) => (
+                  <button
+                    key={st.id}
+                    id={`image-stage-tab-${st.id}`}
+                    type="button"
+                    onClick={() => {
+                      onClearToast?.();
+                      setImageStage(st.id as any);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                      imageStage === st.id
+                        ? 'bg-blue-600 text-white shadow-xs'
+                        : isDark
+                        ? 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-black/5'
+                    }`}
+                  >
+                    <st.icon className="w-3.5 h-3.5" />
+                    <span>{st.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Stage Content */}
@@ -3689,7 +3736,14 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         <button
                           id="btn-generate-mock-image"
                           type="button"
-                          onClick={() => setImageStage('mock')}
+                          onClick={() => {
+                            handleUpdateImageConcept({
+                              provider: 'canvas',
+                              mockImageUrl: undefined,
+                              finalImageUrl: undefined
+                            });
+                            setImageStage('mock');
+                          }}
                           className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer shrink-0"
                         >
                           <Layout className="w-3.5 h-3.5" />
@@ -4070,8 +4124,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                               placeholder="Paste image URL (https://... or data:image/...) or leave blank"
                               value={selectedScript?.imageConcept?.mockImageUrl || ''}
                               onChange={(e) => handleUpdateImageConcept({
-                                mockImageUrl: e.target.value,
-                                finalImageUrl: e.target.value
+                                mockImageUrl: e.target.value
                               })}
                               className={`w-full text-xs font-mono px-3 py-2 rounded-xl border outline-none ${
                                 isDark ? 'bg-[#13131e] border-zinc-700 text-white' : 'bg-white border-slate-200 text-slate-900'
@@ -4409,16 +4462,20 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         </span>
                       </div>
                       <span className="text-xs font-mono text-zinc-400">
-                        {(selectedScript?.imageConcept as any)?.provider === 'flux'
+                        {(selectedScript?.imageConcept as any)?.provider === 'flux' &&
+                        selectedScript?.imageConcept?.mockImageUrl &&
+                        String((selectedScript?.imageConcept as any)?.model || '').includes('flux')
                           ? 'Flux AI Visual Artwork + S2S Studio Overlay'
                           : (selectedScript?.imageConcept as any)?.provider === 'manus'
                           ? 'Composed by Manus AI Agent'
-                          : 'Client Canvas Render'}
+                          : 'Local Graphic Card (Canvas Composer)'}
                       </span>
                     </div>
 
                     <p className="text-xs text-zinc-400">
-                      {(selectedScript?.imageConcept as any)?.provider === 'flux'
+                      {(selectedScript?.imageConcept as any)?.provider === 'flux' &&
+                      selectedScript?.imageConcept?.mockImageUrl &&
+                      String((selectedScript?.imageConcept as any)?.model || '').includes('flux')
                         ? 'Visual scene generated by Flux diffusion model. Main headline and branding typography composited with safe margins, contrast scrim, and zero text distortion.'
                         : (selectedScript?.imageConcept as any)?.provider === 'manus'
                         ? 'Visual graphic composed by autonomous Manus agent in sandbox environment with high-DPI output.'
@@ -4520,7 +4577,15 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                     </div>
 
                     {/* Rendered Asset Preview in Review */}
-                    {(renderedImageData?.dataUrl || selectedScript?.imageConcept?.finalImageUrl) && (
+                    {isRenderingFinalImage ? (
+                      <div className="flex items-center gap-4 p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-300">
+                        <RefreshCw className="w-5 h-5 animate-spin text-blue-400 shrink-0" />
+                        <div>
+                          <p className="text-xs font-bold text-white">Rendering High-Resolution Final Graphic Card...</p>
+                          <p className="text-[11px] text-zinc-400">Compositing Swiss typography, dynamic scrim, and author handle over background artwork.</p>
+                        </div>
+                      </div>
+                    ) : (renderedImageData?.dataUrl || selectedScript?.imageConcept?.finalImageUrl) ? (
                       <div className="flex items-center gap-4 p-4 rounded-xl bg-black/30 border border-zinc-800">
                         <div className="w-24 h-24 rounded-lg overflow-hidden bg-black shrink-0 border border-zinc-700 shadow-md">
                           <img
@@ -4534,24 +4599,50 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           <div className="font-bold text-white flex items-center gap-1.5">
                             <Sparkles className="w-3.5 h-3.5 text-blue-400" />
                             <span>
-                              {(selectedScript?.imageConcept as any)?.provider === 'flux'
+                              {(selectedScript?.imageConcept as any)?.provider === 'flux' &&
+                              selectedScript?.imageConcept?.mockImageUrl &&
+                              String((selectedScript?.imageConcept as any)?.model || '').includes('flux')
                                 ? 'Flux AI Visual Artwork + S2S Studio Overlay'
                                 : (selectedScript?.imageConcept as any)?.provider === 'manus'
                                 ? 'Composed by Manus AI Agent'
-                                : 'Verified Rendered Graphic Card'}
+                                : 'Local Graphic Card (Canvas Composer)'}
                             </span>
                           </div>
                           <p className="text-zinc-400 text-[11px]">
-                            {(selectedScript?.imageConcept as any)?.provider === 'flux'
+                            {(selectedScript?.imageConcept as any)?.provider === 'flux' &&
+                            selectedScript?.imageConcept?.mockImageUrl &&
+                            String((selectedScript?.imageConcept as any)?.model || '').includes('flux')
                               ? `Visual scene generated by Flux diffusion model (${(selectedScript?.imageConcept as any)?.width || 1024}×${(selectedScript?.imageConcept as any)?.height || 1024}) with verified typography overlay.`
                               : (selectedScript?.imageConcept as any)?.provider === 'manus'
                               ? `Visual asset composed by autonomous Manus agent in sandbox (${selectedScript?.imageConcept?.aspectRatio || '1:1'} PNG).`
-                              : `High-resolution graphic card styled with ${selectedScript?.imageConcept?.stylePreset || 'Editorial Swiss Graphic'} layout.`}
+                              : `High-resolution graphic card styled with ${selectedScript?.imageConcept?.stylePreset || 'Editorial Swiss Graphic'} layout (Zero external API calls).`}
                           </p>
                           <span className="inline-block text-[10px] font-mono text-blue-300">
-                            {selectedScript?.imageConcept?.aspectRatio || '1:1'} Format • {(selectedScript?.imageConcept as any)?.provider === 'flux' ? 'Flux AI + Typography Overlay' : (selectedScript?.imageConcept as any)?.provider === 'manus' ? 'Composed by Manus AI Agent' : 'High-DPI PNG'}
+                            {selectedScript?.imageConcept?.aspectRatio || '1:1'} Format • {
+                              (selectedScript?.imageConcept as any)?.provider === 'flux' &&
+                              selectedScript?.imageConcept?.mockImageUrl &&
+                              String((selectedScript?.imageConcept as any)?.model || '').includes('flux')
+                                ? 'Flux AI + Typography Overlay'
+                                : (selectedScript?.imageConcept as any)?.provider === 'manus'
+                                ? 'Composed by Manus AI Agent'
+                                : '100% Free Client Canvas'
+                            }
                           </span>
                         </div>
+                      </div>
+                    ) : (
+                      <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center justify-between">
+                        <div>
+                          <p className="font-bold text-amber-200">Final Graphic Card Not Yet Rendered</p>
+                          <p className="text-[11px] text-amber-400/80">Rendering is required before publication can be scheduled.</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRenderFinalImage()}
+                          className="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-bold cursor-pointer"
+                        >
+                          Render Card Now
+                        </button>
                       </div>
                     )}
 
@@ -4624,12 +4715,18 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                       <button
                         id="btn-schedule-image"
                         type="button"
+                        disabled={isRenderingFinalImage || (!renderedImageData && !selectedScript?.imageConcept?.finalImageUrl)}
                         onClick={() => {
+                          if (isRenderingFinalImage || (!renderedImageData && !selectedScript?.imageConcept?.finalImageUrl)) return;
                           onClearToast?.();
                           setHasConfirmedImageSchedule(false);
                           setIsScheduleImageModalOpen(true);
                         }}
-                        className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg transition-all flex items-center gap-2 cursor-pointer"
+                        className={`px-5 py-2.5 text-white rounded-xl text-xs font-bold shadow-lg transition-all flex items-center gap-2 cursor-pointer ${
+                          isRenderingFinalImage || (!renderedImageData && !selectedScript?.imageConcept?.finalImageUrl)
+                            ? 'bg-zinc-700 opacity-40 cursor-not-allowed'
+                            : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500'
+                        }`}
                       >
                         <Calendar className="w-4 h-4" />
                         <span>Schedule Image to Calendar</span>
@@ -4760,7 +4857,35 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                       <p className="text-zinc-400 font-mono text-[11px]">
                         Format: Single Image • Aspect Ratio: {selectedScript?.imageConcept?.aspectRatio || '1:1'}
                       </p>
+                      <p className="text-zinc-400 font-mono text-[11px]">
+                        Engine: {
+                          (selectedScript?.imageConcept as any)?.provider === 'flux' &&
+                          selectedScript?.imageConcept?.mockImageUrl &&
+                          String((selectedScript?.imageConcept as any)?.model || '').includes('flux')
+                            ? 'Flux Diffusion Model + S2S Typography Overlay'
+                            : (selectedScript?.imageConcept as any)?.provider === 'manus'
+                            ? 'Manus AI Agent'
+                            : 'Local Canvas Composer (100% Free Client-Side)'
+                        }
+                      </p>
                     </div>
+
+                    {(renderedImageData?.dataUrl || selectedScript?.imageConcept?.finalImageUrl) && (
+                      <div className="flex items-center gap-3 p-3 rounded-xl bg-black/30 border border-zinc-800">
+                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-black shrink-0 border border-zinc-700">
+                          <img
+                            id="schedule-modal-rendered-thumbnail"
+                            src={renderedImageData?.dataUrl || selectedScript?.imageConcept?.finalImageUrl}
+                            alt="Scheduled Final Asset"
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] font-bold text-zinc-300 block">Final Graphic Asset</span>
+                          <span className="text-[10px] text-zinc-400 font-mono block">Verified composite ready for calendar publication</span>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
@@ -4826,7 +4951,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                       id="btn-confirm-schedule-image"
                       type="button"
                       onClick={handleConfirmScheduleImage}
-                      disabled={!hasConfirmedImageSchedule}
+                      disabled={!hasConfirmedImageSchedule || isRenderingFinalImage || (!renderedImageData && !selectedScript?.imageConcept?.finalImageUrl)}
                       className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       <Calendar className="w-3.5 h-3.5" />

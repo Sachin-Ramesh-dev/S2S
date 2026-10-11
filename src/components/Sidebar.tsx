@@ -156,14 +156,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       className={`${
         isCollapsed ? 'w-16' : 'w-64'
       } ${
-        isDark ? 'bg-[#131316] border-[#383844]' : 'bg-[#F8F5EE] border-[#171717]'
-      } border-r-2 flex flex-col justify-between shrink-0 transition-all duration-200 z-30 select-none h-full`}
+        isDark ? 'bg-[#131316] border-[#383844]' : 'bg-[#F8F5EE] border-[#171717]/20'
+      } border-r flex flex-col justify-between shrink-0 transition-all duration-200 z-30 select-none h-full`}
     >
       {/* Top Header: Logo & Collapse Button */}
       <div className="flex flex-col min-h-0 flex-1">
         <div
-          className={`h-14 px-3.5 flex items-center justify-between border-b-2 shrink-0 ${
-            isDark ? 'border-[#383844]' : 'border-[#171717]'
+          className={`h-14 px-3.5 flex items-center justify-between border-b shrink-0 ${
+            isDark ? 'border-[#383844]' : 'border-[#171717]/20'
           }`}
         >
           <div
@@ -173,7 +173,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             title="S2S Home Command Center"
           >
             {/* S2S Logo */}
-            <div className="w-8 h-8 rounded-lg bg-[#FF4D5A] border-2 border-[#171717] dark:border-[#383844] shadow-[2px_2px_0_#111111] dark:shadow-[2px_2px_0_#0A0A0D] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#FF4D5A] border border-[#171717] dark:border-[#383844] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] flex items-center justify-center">
               <span className="text-white font-black text-xs tracking-tight font-heading">S2S</span>
             </div>
             {!isCollapsed && (
@@ -194,10 +194,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   type="button"
                   title="Quick Search (Cmd+K)"
                   onClick={onQuickSearch}
-                  className={`p-1.5 rounded-lg border-2 transition-all cursor-pointer ${
+                  className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
                     isDark
-                      ? 'border-transparent hover:border-[#383844] hover:bg-[#1E1E24] text-zinc-400 hover:text-white shadow-none hover:shadow-[2px_2px_0_#0A0A0D]'
-                      : 'border-transparent hover:border-[#171717] hover:bg-white text-[#111111] shadow-none hover:shadow-[2px_2px_0_#111111]'
+                      ? 'border-transparent hover:border-[#383844] hover:bg-[#1E1E24] text-zinc-400 hover:text-white shadow-none hover:shadow-[1.5px_1.5px_0_#0A0A0D]'
+                      : 'border-transparent hover:border-[#171717]/40 hover:bg-white text-[#111111] shadow-none hover:shadow-[1.5px_1.5px_0_#111111]'
                   }`}
                 >
                   <Search className="w-4 h-4" />
@@ -208,10 +208,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 type="button"
                 title="Toggle Sidebar"
                 onClick={onToggleCollapse}
-                className={`p-1.5 rounded-lg border-2 transition-all cursor-pointer ${
+                className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
                   isDark
-                    ? 'border-transparent hover:border-[#383844] hover:bg-[#1E1E24] text-zinc-400 hover:text-white shadow-none hover:shadow-[2px_2px_0_#0A0A0D]'
-                    : 'border-transparent hover:border-[#171717] hover:bg-white text-[#111111] shadow-none hover:shadow-[2px_2px_0_#111111]'
+                    ? 'border-transparent hover:border-[#383844] hover:bg-[#1E1E24] text-zinc-400 hover:text-white shadow-none hover:shadow-[1.5px_1.5px_0_#0A0A0D]'
+                    : 'border-transparent hover:border-[#171717]/40 hover:bg-white text-[#111111] shadow-none hover:shadow-[1.5px_1.5px_0_#111111]'
                 }`}
               >
                 <PanelLeftClose className="w-4 h-4" />
@@ -224,7 +224,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               type="button"
               title="Expand Sidebar"
               onClick={onToggleCollapse}
-              className={`p-1.5 rounded-lg border-2 border-transparent hover:border-[#171717] dark:hover:border-[#383844] hover:bg-white dark:hover:bg-[#1E1E24] cursor-pointer ${
+              className={`p-1.5 rounded-lg border border-transparent hover:border-[#171717]/40 dark:hover:border-[#383844] hover:bg-white dark:hover:bg-[#1E1E24] cursor-pointer ${
                 isDark ? 'text-zinc-400 hover:text-white' : 'text-[#111111]'
               }`}
             >
@@ -245,7 +245,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <span>🚀</span>
                   <span>Primary Journey</span>
                 </span>
-                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded border border-[#171717] dark:border-[#383844] bg-[#FFD66B] text-[#111111] font-bold">Content OS</span>
+                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded border border-[#171717]/20 dark:border-[#383844] bg-black/5 dark:bg-white/10 text-[#111111] dark:text-zinc-300 font-bold">Content OS</span>
               </div>
             )}
 
@@ -267,12 +267,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         onNavigate(domain.id, domain.defaultSubView);
                       }}
                       title={domain.description}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer border-2 ${
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
                         active
-                          ? 'bg-[#111111] text-white dark:bg-[#F5F3EC] dark:text-[#111111] border-[#171717] dark:border-[#383844] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#0A0A0D]'
+                          ? 'bg-[#111111] text-white dark:bg-[#F5F3EC] dark:text-[#111111] border-[#171717] dark:border-[#383844] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D]'
                           : isDark
-                          ? 'border-transparent text-zinc-300 hover:border-[#383844] hover:bg-[#1E1E24] hover:text-[#F5F3EC] hover:shadow-[2px_2px_0_#0A0A0D]'
-                          : 'border-transparent text-[#111111] hover:border-[#171717] hover:bg-white hover:text-[#111111] hover:shadow-[2px_2px_0_#111111]'
+                          ? 'border-transparent text-zinc-300 hover:border-[#383844] hover:bg-[#1E1E24] hover:text-[#F5F3EC] hover:shadow-[1.5px_1.5px_0_#0A0A0D]'
+                          : 'border-transparent text-[#111111] hover:border-[#171717]/30 hover:bg-white hover:text-[#111111] hover:shadow-[1.5px_1.5px_0_#111111]'
                       }`}
                     >
                       <div className="flex items-center gap-2.5 truncate">
@@ -295,7 +295,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                     {/* Sub-items for Primary Journey (if expanded) */}
                     {!isCollapsed && hasSubItems && isSubOpen && (
-                      <div className="pl-6 pr-1 py-1 space-y-1 border-l-2 border-[#171717] dark:border-[#383844] ml-4 my-1">
+                      <div className="pl-6 pr-1 py-1 space-y-1 border-l border-[#171717]/25 dark:border-[#383844] ml-4 my-1">
                         {domain.subItems!.map((sub) => {
                           const isSubActive = active && activeSubView === sub.id;
                           return (
@@ -305,9 +305,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               type="button"
                               onClick={() => onNavigate(domain.id, sub.id)}
                               title={sub.description}
-                              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs transition-all cursor-pointer text-left border-2 ${
+                              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs transition-all cursor-pointer text-left border ${
                                 isSubActive
-                                  ? 'bg-[#FFD66B] text-[#111111] font-black border-[#171717] shadow-[2px_2px_0_#111111]'
+                                  ? 'bg-[#FFD66B] text-[#111111] font-bold border-[#171717]/40 shadow-[1px_1px_0_#111111]'
                                   : isDark
                                   ? 'border-transparent text-zinc-400 hover:bg-[#1E1E24] hover:text-[#F5F3EC]'
                                   : 'border-transparent text-[#4B5563] hover:bg-white hover:text-[#111111]'
@@ -328,14 +328,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* ============================================================== */}
           {/* SECTION 2: ⚡ AUTOMATION (Dedicated Domain - n8n Workflows)   */}
           {/* ============================================================== */}
-          <div className="pt-2 border-t-2 border-[#171717] dark:border-[#383844] space-y-1">
+          <div className="pt-2 border-t border-[#171717]/15 dark:border-[#383844] space-y-1">
             {!isCollapsed && (
               <div className="px-2.5 pb-1 flex items-center justify-between text-[10px] font-black uppercase tracking-wider font-heading text-[#111111] dark:text-[#F5F3EC]">
                 <span className="flex items-center gap-1.5">
                   <span>⚡</span>
                   <span>Automation</span>
                 </span>
-                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded border border-[#171717] dark:border-[#383844] bg-[#7CC7FF] text-[#111111] font-bold">
+                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded border border-[#171717]/20 dark:border-[#383844] bg-black/5 dark:bg-white/10 text-[#111111] dark:text-zinc-300 font-bold">
                   n8n Engine
                 </span>
               </div>
@@ -360,12 +360,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       }
                     }}
                     title={domain.description}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer border-2 ${
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
                       isWorkflowsActive
-                        ? 'bg-[#7CC7FF] text-[#111111] border-[#171717] dark:border-[#383844] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#0A0A0D]'
+                        ? 'bg-[#7CC7FF] text-[#111111] border-[#171717]/40 dark:border-[#383844] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D]'
                         : isDark
-                        ? 'border-transparent text-zinc-400 hover:border-[#383844] hover:bg-[#1E1E24] hover:text-[#F5F3EC] hover:shadow-[2px_2px_0_#0A0A0D]'
-                        : 'border-transparent text-[#111111] hover:border-[#171717] hover:bg-white hover:text-[#111111] hover:shadow-[2px_2px_0_#111111]'
+                        ? 'border-transparent text-zinc-400 hover:border-[#383844] hover:bg-[#1E1E24] hover:text-[#F5F3EC] hover:shadow-[1.5px_1.5px_0_#0A0A0D]'
+                        : 'border-transparent text-[#111111] hover:border-[#171717]/30 hover:bg-white hover:text-[#111111] hover:shadow-[1.5px_1.5px_0_#111111]'
                     }`}
                   >
                     <div className="flex items-center gap-2.5 truncate">
@@ -382,7 +382,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                   {/* Workflows 5 Sub-Items (Builder, Templates, Active, Runs, Automations) */}
                   {!isCollapsed && isWorkflowsOpen && (
-                    <div className="pl-6 pr-1 py-1 space-y-1 border-l-2 border-[#171717] dark:border-[#383844] ml-4 my-1">
+                    <div className="pl-6 pr-1 py-1 space-y-1 border-l border-[#171717]/25 dark:border-[#383844] ml-4 my-1">
                       {domain.subItems!.map((sub) => {
                         const isSubActive = isWorkflowsActive && activeSubView === sub.id;
 
@@ -393,9 +393,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             type="button"
                             onClick={() => onNavigate('workflows', sub.id)}
                             title={sub.description}
-                            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs transition-all cursor-pointer text-left border-2 ${
+                            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs transition-all cursor-pointer text-left border ${
                               isSubActive
-                                ? 'bg-[#7CC7FF] text-[#111111] font-black border-[#171717] shadow-[2px_2px_0_#111111]'
+                                ? 'bg-[#7CC7FF] text-[#111111] font-bold border-[#171717]/40 shadow-[1px_1px_0_#111111]'
                                 : isDark
                                 ? 'border-transparent text-zinc-400 hover:bg-[#1E1E24] hover:text-[#F5F3EC]'
                                 : 'border-transparent text-[#4B5563] hover:bg-white hover:text-[#111111]'
@@ -415,7 +415,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* ============================================================== */}
           {/* SECTION 3: 🛠️ SUPPORTING TOOLS (Collapsible, Visually Secondary) */}
           {/* ============================================================== */}
-          <div className="pt-2 border-t-2 border-[#171717] dark:border-[#383844] space-y-1">
+          <div className="pt-2 border-t border-[#171717]/15 dark:border-[#383844] space-y-1">
             {!isCollapsed ? (
               <button
                 type="button"
@@ -431,7 +431,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </span>
               </button>
             ) : (
-              <div className="h-0.5 bg-[#171717] dark:bg-[#383844] my-1" />
+              <div className="h-0.5 bg-[#171717]/20 dark:bg-[#383844] my-1" />
             )}
 
             {(isSupportingOpen || isCollapsed) && (
@@ -446,12 +446,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       type="button"
                       onClick={() => onNavigate(tool.id, tool.defaultSubView)}
                       title={tool.description}
-                      className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border-2 ${
+                      className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
                         active
-                          ? 'bg-[#B9A7FF] text-[#111111] border-[#171717] dark:border-[#383844] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#0A0A0D]'
+                          ? 'bg-[#B9A7FF] text-[#111111] border-[#171717]/40 dark:border-[#383844] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D]'
                           : isDark
-                          ? 'border-transparent text-zinc-400 hover:border-[#383844] hover:bg-[#1E1E24] hover:text-[#F5F3EC] hover:shadow-[2px_2px_0_#0A0A0D]'
-                          : 'border-transparent text-[#111111] hover:border-[#171717] hover:bg-white hover:text-[#111111] hover:shadow-[2px_2px_0_#111111]'
+                          ? 'border-transparent text-zinc-400 hover:border-[#383844] hover:bg-[#1E1E24] hover:text-[#F5F3EC] hover:shadow-[1.5px_1.5px_0_#0A0A0D]'
+                          : 'border-transparent text-[#111111] hover:border-[#171717]/30 hover:bg-white hover:text-[#111111] hover:shadow-[1.5px_1.5px_0_#111111]'
                       }`}
                     >
                       <div className="flex items-center gap-2.5 truncate">
@@ -469,8 +469,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Bottom Footer: Keyboard Shortcuts */}
       <div
-        className={`p-2.5 border-t-2 shrink-0 space-y-1 text-xs ${
-          isDark ? 'border-[#383844] text-zinc-400' : 'border-[#171717] text-[#111111]'
+        className={`p-2.5 border-t shrink-0 space-y-1 text-xs ${
+          isDark ? 'border-[#383844] text-zinc-400' : 'border-[#171717]/15 text-[#111111]'
         }`}
       >
         {onOpenShortcuts && (
@@ -479,13 +479,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             type="button"
             onClick={onOpenShortcuts}
             title="Keyboard Shortcuts Cheatsheet (?)"
-            className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg border-2 border-[#171717] dark:border-[#383844] bg-white dark:bg-[#1E1E24] shadow-[2px_2px_0_#111111] dark:shadow-[2px_2px_0_#0A0A0D] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer font-bold`}
+            className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg border border-[#171717]/30 dark:border-[#383844] bg-white dark:bg-[#1E1E24] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer font-bold`}
           >
             <Keyboard className="w-4 h-4 shrink-0 text-[#111111] dark:text-[#FFD66B]" />
             {!isCollapsed && (
               <div className="flex items-center justify-between w-full">
                 <span>Shortcuts</span>
-                <kbd className="px-1.5 py-0.5 rounded border border-[#171717] dark:border-[#383844] bg-[#FFD66B] text-[#111111] text-[10px] font-mono font-black">
+                <kbd className="px-1.5 py-0.5 rounded border border-[#171717]/30 dark:border-[#383844] bg-[#FFD66B] text-[#111111] text-[10px] font-mono font-black">
                   ?
                 </kbd>
               </div>

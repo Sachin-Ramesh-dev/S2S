@@ -91,12 +91,12 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
     >
       {/* 1. HERO HEADER: Creative Command Center */}
       <div
-        className={`relative p-8 sm:p-10 rounded-2xl border-[2.5px] border-[#171717] dark:border-[#383844] shadow-[6px_6px_0_#111111] dark:shadow-[6px_6px_0_#0A0A0D] overflow-hidden transition-all ${
+        className={`relative p-8 sm:p-10 rounded-2xl border border-[#171717]/30 dark:border-[#383844] shadow-[3.5px_3.5px_0_#111111] dark:shadow-[3.5px_3.5px_0_#0A0A0D] overflow-hidden transition-all ${
           isDark ? 'bg-[#1E1E24]' : 'bg-white'
         }`}
       >
         {/* Playful Neo-Brutalist decorative stamp */}
-        <div className="absolute top-4 right-4 hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-md border-2 border-[#171717] dark:border-[#383844] bg-[#FFD66B] text-[#111111] text-[10px] font-black uppercase font-heading shadow-[2px_2px_0_#111111] rotate-2 select-none">
+        <div className="absolute top-4 right-4 hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-md border border-[#171717]/40 dark:border-[#383844] bg-[#FFD66B] text-[#111111] text-[10px] font-black uppercase font-heading shadow-[1.5px_1.5px_0_#111111] rotate-2 select-none">
           <Star className="w-3 h-3 fill-current" />
           <span>AUTONOMOUS CREATOR OS</span>
         </div>
@@ -170,7 +170,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
 
           {/* Account Profile Card: Physical Credential Panel */}
           <div
-            className={`w-full lg:w-80 shrink-0 p-5 rounded-xl border-2 border-[#171717] dark:border-[#383844] shadow-[4px_4px_0_#111111] dark:shadow-[4px_4px_0_#0A0A0D] ${
+            className={`w-full lg:w-80 shrink-0 p-5 rounded-xl border border-[#171717]/30 dark:border-[#383844] shadow-[2.5px_2.5px_0_#111111] dark:shadow-[2.5px_2.5px_0_#0A0A0D] ${
               isDark ? 'bg-[#25252E]' : 'bg-[#FBF9F4]'
             }`}
           >
@@ -182,7 +182,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
             {account ? (
               <div className="space-y-3">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-lg border-2 border-[#171717] bg-[#B9A7FF] flex items-center justify-center font-black text-lg text-[#111111] shrink-0 shadow-[2px_2px_0_#111111]">
+                  <div className="w-12 h-12 rounded-lg border border-[#171717]/40 bg-[#B9A7FF] flex items-center justify-center font-black text-lg text-[#111111] shrink-0 shadow-[1.5px_1.5px_0_#111111]">
                     {account.username.charAt(0).toUpperCase()}
                   </div>
 
@@ -196,12 +196,12 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t-2 border-[#171717] dark:border-[#383844] text-xs">
-                  <div className="p-2 rounded-lg border border-[#171717] dark:border-[#383844] bg-white dark:bg-[#1E1E24]">
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#171717]/20 dark:border-[#383844] text-xs">
+                  <div className="p-2 rounded-lg border border-[#171717]/20 dark:border-[#383844] bg-white dark:bg-[#1E1E24]">
                     <div className="text-[10px] text-[#4B5563] dark:text-[#9CA3AF] font-bold uppercase">Followers</div>
                     <div className="font-black text-sm font-heading">{followersFormatted}</div>
                   </div>
-                  <div className="p-2 rounded-lg border border-[#171717] dark:border-[#383844] bg-white dark:bg-[#1E1E24]">
+                  <div className="p-2 rounded-lg border border-[#171717]/20 dark:border-[#383844] bg-white dark:bg-[#1E1E24]">
                     <div className="text-[10px] text-[#4B5563] dark:text-[#9CA3AF] font-bold uppercase">Engagement</div>
                     <div className="font-black text-sm font-heading text-[#45D9A6]">{account.engagementRate || 3.8}%</div>
                   </div>
@@ -224,7 +224,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
         </div>
 
         {/* 2. PRIMARY JOURNEY PIPELINE BAR */}
-        <div className="mt-8 pt-6 border-t-2 border-[#171717] dark:border-[#383844]">
+        <div className="mt-8 pt-6 border-t border-[#171717]/15 dark:border-[#383844]">
           <div className="text-xs font-black uppercase tracking-wider text-[#111111] dark:text-[#F5F3EC] mb-3 flex items-center justify-between font-heading">
             <span className="flex items-center gap-2">
               <span>PRIMARY JOURNEY PIPELINE</span>
@@ -238,7 +238,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
             {/* Step 1: Home */}
             <div
               onClick={() => onNavigate('home')}
-              className="p-3.5 rounded-xl border-2 border-[#171717] dark:border-[#383844] bg-[#FFD66B] text-[#111111] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#0A0A0D] cursor-pointer"
+              className="p-3.5 rounded-xl border border-[#171717]/40 dark:border-[#383844] bg-[#FFD66B] text-[#111111] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] cursor-pointer"
             >
               <div className="text-[10px] font-black uppercase opacity-75 font-heading">01 STAGE</div>
               <div className="font-black text-sm flex items-center gap-1 font-heading">
@@ -250,7 +250,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
             {/* Step 2: Page Audit */}
             <div
               onClick={() => onNavigate('audit')}
-              className={`p-3.5 rounded-xl border-2 border-[#171717] dark:border-[#383844] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#111111] transition-all cursor-pointer ${
+              className={`p-3.5 rounded-xl border border-[#171717]/30 dark:border-[#383844] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_#111111] transition-all cursor-pointer ${
                 isDark ? 'bg-[#1E1E24]' : 'bg-white'
               }`}
             >
@@ -266,7 +266,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
             {/* Step 3: Topics */}
             <div
               onClick={() => onNavigate('topics')}
-              className={`p-3.5 rounded-xl border-2 border-[#171717] dark:border-[#383844] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#111111] transition-all cursor-pointer ${
+              className={`p-3.5 rounded-xl border border-[#171717]/30 dark:border-[#383844] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_#111111] transition-all cursor-pointer ${
                 isDark ? 'bg-[#1E1E24]' : 'bg-white'
               }`}
             >
@@ -286,7 +286,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
             {/* Step 4: Content Production */}
             <div
               onClick={() => onNavigate('production', 'scripts')}
-              className={`p-3.5 rounded-xl border-2 border-[#171717] dark:border-[#383844] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#111111] transition-all cursor-pointer ${
+              className={`p-3.5 rounded-xl border border-[#171717]/30 dark:border-[#383844] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_#111111] transition-all cursor-pointer ${
                 isDark ? 'bg-[#1E1E24]' : 'bg-white'
               }`}
             >
@@ -306,7 +306,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
             {/* Step 5: Publishing */}
             <div
               onClick={() => onNavigate('publishing', 'calendar')}
-              className={`p-3.5 rounded-xl border-2 border-[#171717] dark:border-[#383844] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#111111] transition-all cursor-pointer ${
+              className={`p-3.5 rounded-xl border border-[#171717]/30 dark:border-[#383844] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_#111111] transition-all cursor-pointer ${
                 isDark ? 'bg-[#1E1E24]' : 'bg-white'
               }`}
             >
@@ -326,7 +326,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
             {/* Step 6: Performance */}
             <div
               onClick={() => onNavigate('performance')}
-              className={`p-3.5 rounded-xl border-2 border-[#171717] dark:border-[#383844] shadow-[3px_3px_0_#111111] dark:shadow-[3px_3px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#111111] transition-all cursor-pointer ${
+              className={`p-3.5 rounded-xl border border-[#171717]/30 dark:border-[#383844] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_#111111] transition-all cursor-pointer ${
                 isDark ? 'bg-[#1E1E24]' : 'bg-white'
               }`}
             >
@@ -355,7 +355,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* ACTION 1: Topics Waiting for Approval */}
           <div
-            className={`p-6 rounded-2xl border-2 border-[#171717] dark:border-[#383844] shadow-[4px_4px_0_#111111] dark:shadow-[4px_4px_0_#0A0A0D] flex flex-col justify-between ${
+            className={`p-6 rounded-2xl border border-[#171717]/30 dark:border-[#383844] shadow-[2.5px_2.5px_0_#111111] dark:shadow-[2.5px_2.5px_0_#0A0A0D] flex flex-col justify-between ${
               pendingTopics.length > 0
                 ? isDark ? 'bg-[#25252E]' : 'bg-[#FBF9F4]'
                 : isDark ? 'bg-[#1E1E24]' : 'bg-white'
@@ -394,7 +394,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
               )}
             </div>
 
-            <div className="pt-4 border-t-2 border-[#171717] dark:border-[#383844] flex items-center justify-between">
+            <div className="pt-4 border-t border-[#171717]/15 dark:border-[#383844] flex items-center justify-between">
               {pendingTopics.length > 0 ? (
                 <button
                   id="cta-review-topics"
@@ -424,7 +424,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
 
           {/* ACTION 2: Content Currently in Production */}
           <div
-            className={`p-6 rounded-2xl border-2 border-[#171717] dark:border-[#383844] shadow-[4px_4px_0_#111111] dark:shadow-[4px_4px_0_#0A0A0D] flex flex-col justify-between ${
+            className={`p-6 rounded-2xl border border-[#171717]/30 dark:border-[#383844] shadow-[2.5px_2.5px_0_#111111] dark:shadow-[2.5px_2.5px_0_#0A0A0D] flex flex-col justify-between ${
               inProductionScripts.length > 0
                 ? isDark ? 'bg-[#25252E]' : 'bg-[#FBF9F4]'
                 : isDark ? 'bg-[#1E1E24]' : 'bg-white'
@@ -468,7 +468,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
               )}
             </div>
 
-            <div className="pt-4 border-t-2 border-[#171717] dark:border-[#383844] flex items-center justify-between">
+            <div className="pt-4 border-t border-[#171717]/15 dark:border-[#383844] flex items-center justify-between">
               <button
                 id="cta-continue-production"
                 type="button"
@@ -497,7 +497,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
 
           {/* ACTION 3: Posts Ready to Schedule / Peak Window */}
           <div
-            className={`p-6 rounded-2xl border-2 border-[#171717] dark:border-[#383844] shadow-[4px_4px_0_#111111] dark:shadow-[4px_4px_0_#0A0A0D] flex flex-col justify-between ${
+            className={`p-6 rounded-2xl border border-[#171717]/30 dark:border-[#383844] shadow-[2.5px_2.5px_0_#111111] dark:shadow-[2.5px_2.5px_0_#0A0A0D] flex flex-col justify-between ${
               scheduledPosts.length === 0
                 ? isDark ? 'bg-[#25252E]' : 'bg-[#FBF9F4]'
                 : isDark ? 'bg-[#1E1E24]' : 'bg-white'
@@ -535,7 +535,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
               )}
             </div>
 
-            <div className="pt-4 border-t-2 border-[#171717] dark:border-[#383844] flex items-center justify-between">
+            <div className="pt-4 border-t border-[#171717]/15 dark:border-[#383844] flex items-center justify-between">
               <button
                 id="cta-schedule-post"
                 type="button"
@@ -553,7 +553,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
 
           {/* ACTION 4: Diagnostic Page Audit Banner */}
           <div
-            className={`p-6 rounded-2xl border-2 border-[#171717] dark:border-[#383844] shadow-[4px_4px_0_#111111] dark:shadow-[4px_4px_0_#0A0A0D] flex flex-col justify-between ${
+            className={`p-6 rounded-2xl border border-[#171717]/30 dark:border-[#383844] shadow-[2.5px_2.5px_0_#111111] dark:shadow-[2.5px_2.5px_0_#0A0A0D] flex flex-col justify-between ${
               !latestAudit
                 ? isDark ? 'bg-[#25252E]' : 'bg-[#FBF9F4]'
                 : isDark ? 'bg-[#1E1E24]' : 'bg-white'
@@ -590,7 +590,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
               </div>
             </div>
 
-            <div className="pt-4 border-t-2 border-[#171717] dark:border-[#383844] flex items-center justify-between">
+            <div className="pt-4 border-t border-[#171717]/15 dark:border-[#383844] flex items-center justify-between">
               <button
                 id="cta-review-audit"
                 type="button"

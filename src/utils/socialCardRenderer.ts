@@ -41,15 +41,15 @@ interface ThemeConfig {
 
 const THEMES: Record<StylePreset, ThemeConfig> = {
   'Editorial Swiss Graphic': {
-    bgColor: '#0f1117',
-    bgGradientEnd: '#161922',
+    bgColor: '#0a0d14',
+    bgGradientEnd: '#141824',
     gridLines: true,
     gridColor: 'rgba(255, 255, 255, 0.05)',
     textColor: '#ffffff',
-    textSecondary: '#94a3b8',
+    textSecondary: '#cbd5e1', // High-contrast Slate 300
     accentColor: '#f97316', // Vibrant Swiss orange
-    accentBg: 'rgba(249, 115, 22, 0.15)',
-    cardBorderColor: 'rgba(249, 115, 22, 0.3)',
+    accentBg: 'rgba(249, 115, 22, 0.18)',
+    cardBorderColor: 'rgba(249, 115, 22, 0.4)',
     fontFamily: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif',
     monoFont: 'ui-monospace, SFMono-Regular, Menlo, monospace'
   },
@@ -57,11 +57,11 @@ const THEMES: Record<StylePreset, ThemeConfig> = {
     bgColor: '#18181b',
     bgGradientEnd: '#09090b',
     gridLines: false,
-    textColor: '#f4f4f5',
-    textSecondary: '#a1a1aa',
+    textColor: '#ffffff',
+    textSecondary: '#d4d4d8', // Zinc 300
     accentColor: '#38bdf8', // Modern Sky Blue
-    accentBg: 'rgba(56, 189, 248, 0.12)',
-    cardBorderColor: 'rgba(255, 255, 255, 0.1)',
+    accentBg: 'rgba(56, 189, 248, 0.16)',
+    cardBorderColor: 'rgba(56, 189, 248, 0.35)',
     fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif',
     monoFont: 'ui-monospace, SFMono-Regular, Menlo, monospace'
   },
@@ -71,35 +71,35 @@ const THEMES: Record<StylePreset, ThemeConfig> = {
     gridLines: true,
     gridColor: 'rgba(255, 255, 255, 0.08)',
     textColor: '#ffffff',
-    textSecondary: '#a3a3a3',
+    textSecondary: '#e5e5e5', // High-voltage neutral
     accentColor: '#10b981', // High-voltage emerald
-    accentBg: 'rgba(16, 185, 129, 0.2)',
+    accentBg: 'rgba(16, 185, 129, 0.22)',
     cardBorderColor: '#10b981',
     fontFamily: '"Arial Black", Impact, -apple-system, sans-serif',
     monoFont: 'ui-monospace, SFMono-Regular, Courier, monospace'
   },
   'Studio Product Lighting': {
-    bgColor: '#13111c',
+    bgColor: '#110e1a',
     bgGradientEnd: '#211d33',
     gridLines: false,
     textColor: '#ffffff',
-    textSecondary: '#c4b5fd',
+    textSecondary: '#ddd6fe', // Violet 200
     accentColor: '#a855f7', // Studio Purple Glow
-    accentBg: 'rgba(168, 85, 247, 0.15)',
-    cardBorderColor: 'rgba(168, 85, 247, 0.35)',
+    accentBg: 'rgba(168, 85, 247, 0.18)',
+    cardBorderColor: 'rgba(168, 85, 247, 0.45)',
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     monoFont: 'ui-monospace, SFMono-Regular, Menlo, monospace'
   },
   'Cyberpunk Neon Dark': {
-    bgColor: '#090a10',
+    bgColor: '#080911',
     bgGradientEnd: '#130e26',
     gridLines: true,
-    gridColor: 'rgba(192, 132, 252, 0.06)',
+    gridColor: 'rgba(192, 132, 252, 0.08)',
     textColor: '#ffffff',
-    textSecondary: '#9d98b5',
+    textSecondary: '#c4b5fd', // Cyber Lavender
     accentColor: '#06b6d4', // Cyber Cyan
-    accentBg: 'rgba(6, 182, 212, 0.18)',
-    cardBorderColor: 'rgba(6, 182, 212, 0.4)',
+    accentBg: 'rgba(6, 182, 212, 0.2)',
+    cardBorderColor: 'rgba(6, 182, 212, 0.45)',
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
     monoFont: 'ui-monospace, SFMono-Regular, Menlo, monospace'
   }
@@ -118,7 +118,8 @@ export function getResolutionForAspect(ratio: AspectRatio = '1:1'): { width: num
 }
 
 /**
- * Wraps text into lines on canvas and returns lines drawn
+ * Wraps text into lines on canvas and returns lines drawn.
+ * Enforces both maxLines and maxAllowedY to strictly prevent text overlaps with the footer.
  */
 function wrapAndDrawText(
   ctx: CanvasRenderingContext2D,
@@ -127,7 +128,8 @@ function wrapAndDrawText(
   y: number,
   maxWidth: number,
   lineHeight: number,
-  maxLines: number = 8
+  maxLines: number = 8,
+  maxAllowedY?: number
 ): number {
   const words = text.split(/\s+/);
   let line = '';
@@ -138,7 +140,7 @@ function wrapAndDrawText(
     const testLine = line + (line ? ' ' : '') + words[n];
     const metrics = ctx.measureText(testLine);
     if (metrics.width > maxWidth && n > 0) {
-      if (lineCount >= maxLines - 1) {
+      if (lineCount >= maxLines - 1 || (maxAllowedY && currentY + lineHeight > maxAllowedY)) {
         ctx.fillText(line + '...', x, currentY);
         return lineCount + 1;
       }
@@ -146,12 +148,15 @@ function wrapAndDrawText(
       line = words[n];
       currentY += lineHeight;
       lineCount++;
+      if (maxAllowedY && currentY > maxAllowedY) {
+        return lineCount;
+      }
     } else {
       line = testLine;
     }
   }
 
-  if (line && lineCount < maxLines) {
+  if (line && lineCount < maxLines && (!maxAllowedY || currentY <= maxAllowedY)) {
     ctx.fillText(line, x, currentY);
     lineCount++;
   }
@@ -185,6 +190,36 @@ export async function renderSocialCard(options: RenderCardOptions): Promise<{ da
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Failed to get 2d canvas context');
 
+  // Shadow helpers to guarantee crisp contrast on any background
+  const setTextShadow = () => {
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.92)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 2;
+  };
+
+  const clearShadow = () => {
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+  };
+
+  // Safe Margins based on Aspect Ratio
+  let marginX = 56;
+  let marginTop = 56;
+  let marginBottom = 56;
+
+  if (aspectRatio === '9:16') {
+    marginX = 64;
+    marginTop = 140; // Safe zone below Instagram Story top bar/camera
+    marginBottom = 160; // Safe zone above Instagram Story reply bar
+  } else if (aspectRatio === '4:5') {
+    marginX = 64;
+    marginTop = 64;
+    marginBottom = 64;
+  }
+
   // 1. BACKGROUND (Real Image or Gradient)
   if (options.backgroundImageUrl && options.backgroundImageUrl.trim().length > 0) {
     try {
@@ -212,11 +247,32 @@ export async function renderSocialCard(options: RenderCardOptions): Promise<{ da
       }
       ctx.drawImage(img, drawX, drawY, drawW, drawH);
 
-      // Contrast scrim for readability
-      ctx.fillStyle = 'rgba(10, 12, 18, 0.65)';
+      // MULTI-LAYER EDITORIAL SWISS GRADIENT SCRIM (Approved by user)
+      // Layer A: Base uniform dimming
+      ctx.fillStyle = 'rgba(7, 9, 15, 0.64)';
       ctx.fillRect(0, 0, width, height);
+
+      // Layer B: Directional vertical contrast gradient
+      const vScrim = ctx.createLinearGradient(0, 0, 0, height);
+      vScrim.addColorStop(0, 'rgba(5, 7, 12, 0.88)'); // Header area
+      vScrim.addColorStop(0.20, 'rgba(6, 8, 14, 0.76)');
+      vScrim.addColorStop(0.50, 'rgba(6, 8, 14, 0.72)'); // Content zone
+      vScrim.addColorStop(0.80, 'rgba(6, 8, 14, 0.82)');
+      vScrim.addColorStop(1, 'rgba(5, 7, 12, 0.90)'); // Footer area
+      ctx.fillStyle = vScrim;
+      ctx.fillRect(0, 0, width, height);
+
+      // Layer C: Subtle vignette behind main content box
+      const textVignette = ctx.createRadialGradient(
+        width * 0.5, (marginTop + (height - marginBottom)) * 0.5, 60,
+        width * 0.5, (marginTop + (height - marginBottom)) * 0.5, width * 0.7
+      );
+      textVignette.addColorStop(0, 'rgba(0, 0, 0, 0.35)');
+      textVignette.addColorStop(1, 'transparent');
+      ctx.fillStyle = textVignette;
+      ctx.fillRect(0, marginTop, width, height - marginTop - marginBottom);
     } catch {
-      // Fallback to gradient if loading fails
+      // Fallback to theme gradient if loading fails
       const bgGradient = ctx.createLinearGradient(0, 0, width, height);
       bgGradient.addColorStop(0, theme.bgColor);
       bgGradient.addColorStop(1, theme.bgGradientEnd || theme.bgColor);
@@ -261,21 +317,26 @@ export async function renderSocialCard(options: RenderCardOptions): Promise<{ da
   }
 
   // 4. OUTER SAFE-ZONE BORDER
-  const margin = 56;
+  clearShadow();
   ctx.strokeStyle = theme.cardBorderColor;
   ctx.lineWidth = 2;
-  ctx.strokeRect(margin, margin, width - margin * 2, height - margin * 2);
+  ctx.strokeRect(marginX, marginTop, width - marginX * 2, height - marginTop - marginBottom);
 
   // 5. TOP HEADER BAR
-  const headerY = margin + 48;
-  const contentLeft = margin + 56;
-  const contentRight = width - margin - 56;
+  const headerY = marginTop + 44;
+  const contentLeft = marginX + 48;
+  const contentRight = width - marginX - 48;
   const contentWidth = contentRight - contentLeft;
 
-  // Account handle badge
-  ctx.fillStyle = theme.accentBg;
-  const badgeWidth = 260;
+  // Account handle badge with dynamic measurement & overflow prevention
+  ctx.font = `bold 18px ${theme.monoFont}`;
+  const handleMetrics = ctx.measureText(authorHandle);
+  const maxHandleBadgeW = contentWidth * 0.46;
+  const badgeWidth = Math.max(160, Math.min(maxHandleBadgeW, handleMetrics.width + 56));
   const badgeHeight = 44;
+
+  clearShadow();
+  ctx.fillStyle = theme.accentBg;
   ctx.beginPath();
   ctx.roundRect(contentLeft, headerY - 30, badgeWidth, badgeHeight, 22);
   ctx.fill();
@@ -289,65 +350,63 @@ export async function renderSocialCard(options: RenderCardOptions): Promise<{ da
   ctx.arc(contentLeft + 22, headerY - 8, 5, 0, Math.PI * 2);
   ctx.fill();
 
-  // Author handle text
+  // Author handle text with truncation protection
+  setTextShadow();
   ctx.font = `bold 18px ${theme.monoFont}`;
   ctx.fillStyle = theme.textColor;
-  ctx.fillText(authorHandle, contentLeft + 38, headerY - 2);
+  let displayHandle = authorHandle;
+  if (handleMetrics.width > badgeWidth - 52) {
+    while (displayHandle.length > 3 && ctx.measureText(displayHandle + '...').width > badgeWidth - 52) {
+      displayHandle = displayHandle.slice(0, -1);
+    }
+    displayHandle += '...';
+  }
+  ctx.fillText(displayHandle, contentLeft + 38, headerY - 2);
 
   // Slide Number or Tag (Top Right)
-  if (slideNumber && totalSlides) {
-    const slidePillText = `SLIDE ${String(slideNumber).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
-    ctx.font = `bold 16px ${theme.monoFont}`;
-    const pillMetrics = ctx.measureText(slidePillText);
-    const pillW = pillMetrics.width + 36;
+  const slidePillText = (slideNumber && totalSlides)
+    ? `SLIDE ${String(slideNumber).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`
+    : (tag ? tag.toUpperCase() : 'STRATEGY');
+  ctx.font = `bold 16px ${theme.monoFont}`;
+  const tagMetrics = ctx.measureText(slidePillText);
+  const maxTagBadgeW = contentWidth * 0.46;
+  const pillW = Math.max(110, Math.min(maxTagBadgeW, tagMetrics.width + 36));
 
-    ctx.fillStyle = theme.accentBg;
-    ctx.beginPath();
-    ctx.roundRect(contentRight - pillW, headerY - 30, pillW, badgeHeight, 22);
-    ctx.fill();
-    ctx.strokeStyle = theme.accentColor + '55';
-    ctx.stroke();
+  clearShadow();
+  ctx.fillStyle = theme.accentBg;
+  ctx.beginPath();
+  ctx.roundRect(contentRight - pillW, headerY - 30, pillW, badgeHeight, 22);
+  ctx.fill();
+  ctx.strokeStyle = theme.accentColor + '55';
+  ctx.stroke();
 
-    ctx.fillStyle = theme.accentColor;
-    ctx.fillText(slidePillText, contentRight - pillW + 18, headerY - 2);
-  } else {
-    // Format / Category tag
-    const tagText = tag.toUpperCase();
-    ctx.font = `bold 16px ${theme.monoFont}`;
-    const tagMetrics = ctx.measureText(tagText);
-    const tagW = tagMetrics.width + 32;
-
-    ctx.fillStyle = theme.accentBg;
-    ctx.beginPath();
-    ctx.roundRect(contentRight - tagW, headerY - 30, tagW, badgeHeight, 22);
-    ctx.fill();
-    ctx.strokeStyle = theme.accentColor + '55';
-    ctx.stroke();
-
-    ctx.fillStyle = theme.accentColor;
-    ctx.fillText(tagText, contentRight - tagW + 16, headerY - 2);
-  }
+  setTextShadow();
+  ctx.fillStyle = theme.accentColor;
+  ctx.fillText(slidePillText, contentRight - pillW + 18, headerY - 2);
 
   // 6. MAIN CONTENT SECTION
-  let currentY = headerY + 110;
+  let currentY = headerY + (aspectRatio === '9:16' ? 140 : 100);
 
   // Eyebrow / Pillar Indicator
-  ctx.font = `bold 15px ${theme.monoFont}`;
+  setTextShadow();
+  ctx.font = `bold 16px ${theme.monoFont}`;
   ctx.fillStyle = theme.accentColor;
   ctx.fillText('// ' + (tag ? tag.toUpperCase() : 'CORE PRINCIPLE'), contentLeft, currentY);
 
-  currentY += 45;
+  currentY += 46;
 
-  // Headline with dynamic font sizing
+  // Headline with dynamic font sizing & line wrap
   const headlineLen = headline.length;
-  let headlineFontSize = 58;
-  let headlineLineHeight = 72;
+  let headlineFontSize = 56;
+  let headlineLineHeight = 70;
+  const maxHeadlineLines = aspectRatio === '9:16' ? 5 : 4;
+
   if (headlineLen > 100) {
-    headlineFontSize = 46;
-    headlineLineHeight = 58;
+    headlineFontSize = 42;
+    headlineLineHeight = 54;
   } else if (headlineLen > 65) {
-    headlineFontSize = 52;
-    headlineLineHeight = 64;
+    headlineFontSize = 48;
+    headlineLineHeight = 60;
   }
 
   ctx.font = `bold ${headlineFontSize}px ${theme.fontFamily}`;
@@ -359,12 +418,13 @@ export async function renderSocialCard(options: RenderCardOptions): Promise<{ da
     currentY,
     contentWidth,
     headlineLineHeight,
-    5
+    maxHeadlineLines
   );
 
   currentY += linesDrawn * headlineLineHeight + 28;
 
   // Horizontal separator divider
+  clearShadow();
   ctx.strokeStyle = theme.cardBorderColor;
   ctx.lineWidth = 1.5;
   ctx.beginPath();
@@ -374,11 +434,19 @@ export async function renderSocialCard(options: RenderCardOptions): Promise<{ da
 
   currentY += 48;
 
-  // Body text / Strategic insight
-  if (bodyText) {
+  // Footer Y Position (Calculated early to guard against body overlap)
+  const footerY = height - marginBottom - 44;
+  const maxAllowedBodyY = footerY - 50;
+
+  // Body text / Strategic insight with strict overflow & overlap guard
+  if (bodyText && currentY < maxAllowedBodyY) {
+    setTextShadow();
     const bodyFontSize = 28;
     const bodyLineHeight = 44;
-    ctx.font = `400 ${bodyFontSize}px ${theme.fontFamily}`;
+    const availableHeight = maxAllowedBodyY - currentY;
+    const maxBodyLines = Math.max(1, Math.min(6, Math.floor(availableHeight / bodyLineHeight)));
+
+    ctx.font = `500 ${bodyFontSize}px ${theme.fontFamily}`;
     ctx.fillStyle = theme.textSecondary;
     wrapAndDrawText(
       ctx,
@@ -387,39 +455,34 @@ export async function renderSocialCard(options: RenderCardOptions): Promise<{ da
       currentY,
       contentWidth,
       bodyLineHeight,
-      6
+      maxBodyLines,
+      maxAllowedBodyY
     );
   }
 
-  // 7. FOOTER SECTION (At bottom margin)
-  const footerY = height - margin - 48;
-
-  // Footer subtle line
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+  // 7. FOOTER SECTION (Guaranteed safe margins)
+  clearShadow();
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(contentLeft, footerY - 40);
-  ctx.lineTo(contentRight, footerY - 40);
+  ctx.moveTo(contentLeft, footerY - 36);
+  ctx.lineTo(contentRight, footerY - 36);
   ctx.stroke();
 
+  setTextShadow();
   // Watermark / Brand OS on Left
-  ctx.font = `bold 14px ${theme.monoFont}`;
+  ctx.font = `bold 15px ${theme.monoFont}`;
   ctx.fillStyle = theme.textSecondary;
-  ctx.fillText(`⚡ ${watermarkText} • ${aspectRatio}`, contentLeft, footerY);
+  const watermarkStr = `⚡ ${watermarkText} • ${aspectRatio}`;
+  ctx.fillText(watermarkStr, contentLeft, footerY);
 
   // Swipe Trigger or Action Hint on Right
-  if (swipeTrigger) {
-    ctx.font = `bold 17px ${theme.fontFamily}`;
-    ctx.fillStyle = theme.accentColor;
-    const swipeMetrics = ctx.measureText(swipeTrigger);
-    ctx.fillText(swipeTrigger, contentRight - swipeMetrics.width, footerY);
-  } else {
-    const actionText = 'SAVE FOR LATER 📌';
-    ctx.font = `bold 15px ${theme.monoFont}`;
-    ctx.fillStyle = theme.accentColor;
-    const actionMetrics = ctx.measureText(actionText);
-    ctx.fillText(actionText, contentRight - actionMetrics.width, footerY);
-  }
+  const actionText = swipeTrigger || 'SAVE FOR LATER 📌';
+  ctx.font = `bold 16px ${theme.monoFont}`;
+  ctx.fillStyle = theme.accentColor;
+  const actionMetrics = ctx.measureText(actionText);
+  ctx.fillText(actionText, contentRight - actionMetrics.width, footerY);
+  clearShadow();
 
   // 8. EXPORT BLOB & DATA URL
   const dataUrl = canvas.toDataURL('image/png', 1.0);

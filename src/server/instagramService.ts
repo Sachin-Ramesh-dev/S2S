@@ -2251,7 +2251,7 @@ export class InstagramService {
     prompt?: string,
     aspectRatio?: string,
     stylePreset?: string,
-    provider: 'gemini' | 'manus' = 'gemini'
+    provider: 'gemini' | 'manus' | 'flux' = 'flux'
   ): Promise<{ script: ScriptItem; imageUrl?: string; error?: string; quotaExceeded?: boolean; taskId?: string; taskUrl?: string }> {
     const script = this.scripts.find(s => s.id === scriptId);
     if (!script) throw new Error('Script not found');
@@ -2299,7 +2299,12 @@ export class InstagramService {
         byteLength: (result as any).byteLength
       } as any;
     } catch (err: any) {
-      const isQuota = err.message.includes('Quota exceeded') || err.message.includes('limit: 0') || err.message.includes('429');
+      const isQuota =
+        err.message.includes('Quota exceeded') ||
+        err.message.includes('limit: 0') ||
+        err.message.includes('429') ||
+        err.message.includes('402') ||
+        err.message.includes('free allowance exhausted');
       return {
         script,
         error: err.message,

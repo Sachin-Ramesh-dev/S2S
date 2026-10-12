@@ -44,40 +44,30 @@ export const S2STopHeader: React.FC<S2STopHeaderProps> = ({
     <header
       id="s2s-top-header"
       className={`h-14 px-6 border-b flex items-center justify-between shrink-0 select-none z-20 transition-colors ${
-        isDark ? 'bg-[#131316] border-[#383844]' : 'bg-[#F8F5EE] border-[#171717]/20'
+        isDark ? 'bg-[#18181B] border-[#27272A]' : 'bg-white border-neutral-200'
       }`}
     >
       {/* Left: Domain Breadcrumb */}
-      <div className="flex items-center gap-2.5">
-        <span className="text-base">{activeDomain === 'home' ? '🏠' : (currentDomainConfig?.icon || '⚡')}</span>
-        <span className={`text-xs font-black uppercase tracking-tight font-heading ${isDark ? 'text-[#F5F3EC]' : 'text-[#111111]'}`}>
-          {activeDomain === 'home' ? 'HOME / ACTION CENTER' : (currentDomainConfig?.label?.toUpperCase() || activeDomain.toUpperCase())}
+      <div className="flex items-center gap-2">
+        <span className="text-sm">{activeDomain === 'home' ? '🏠' : (currentDomainConfig?.icon || '⚡')}</span>
+        <span className={`text-xs font-bold uppercase tracking-wider font-heading ${isDark ? 'text-zinc-200' : 'text-neutral-800'}`}>
+          {activeDomain === 'home' ? 'Home / Action Center' : (currentDomainConfig?.label || activeDomain)}
         </span>
         {currentSubItem && (
           <>
-            <span className="text-[#171717]/40 dark:text-[#9CA3AF] text-xs font-black">/</span>
-            <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#FFD66B]/90 text-[#111111] border border-[#171717]/30 shadow-[1px_1px_0_#111111]">
+            <span className="text-neutral-400 dark:text-zinc-600 text-xs">/</span>
+            <span className="text-xs font-medium px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-zinc-800 text-neutral-700 dark:text-zinc-300 border border-neutral-200 dark:border-zinc-700">
               {currentSubItem.label}
             </span>
           </>
         )}
       </div>
 
-      {/* Center: S2S Brand Motif (visible on md+) */}
-      <div className="hidden lg:flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-[#171717]/30 dark:border-[#383844] bg-white dark:bg-[#1E1E24] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] text-[9.5px] font-black uppercase tracking-wider font-heading">
-        <span className="px-1.5 py-0.5 rounded bg-[#FF4D5A]/15 text-[#C91A25] dark:text-[#FF7D87] font-black">SCROLL</span>
-        <span className="text-[#6B7280] dark:text-zinc-500 font-bold">→</span>
-        <span className="px-1.5 py-0.5 rounded bg-[#FFD66B]/30 text-[#8F5F00] dark:text-[#FFDF85] font-black">THINK</span>
-        <span className="text-[#6B7280] dark:text-zinc-500 font-bold">→</span>
-        <span className="px-1.5 py-0.5 rounded bg-[#B9A7FF]/25 text-[#522EB5] dark:text-[#CBBFFF] font-black">CREATE</span>
-        <span className="text-[#6B7280] dark:text-zinc-500 font-bold">→</span>
-        <span className="px-1.5 py-0.5 rounded bg-[#45D9A6]/25 text-[#0A6C48] dark:text-[#6EE7B7] font-black">PUBLISH</span>
-        <span className="text-[#6B7280] dark:text-zinc-500 font-bold">→</span>
-        <span className="px-1.5 py-0.5 rounded bg-[#7CC7FF]/25 text-[#0D5B9E] dark:text-[#93D5FF] font-black">LEARN</span>
-      </div>
+      {/* Center: Clean negative space */}
+      <div className="flex-1" />
 
       {/* Right: Environment, Theme & Account Switcher */}
-      <div className="flex items-center gap-2.5 shrink-0">
+      <div className="flex items-center gap-2 shrink-0">
         <EnvironmentToggle variant="pill" />
         <ThemeToggle variant="pill" />
 
@@ -87,34 +77,34 @@ export const S2STopHeader: React.FC<S2STopHeaderProps> = ({
             id="btn-instagram-page-switcher"
             type="button"
             onClick={() => setIsAccountDropdownOpen(!isAccountDropdownOpen)}
-            className={`flex items-center gap-2 px-3 py-1.5 border rounded-lg text-xs font-bold transition-all cursor-pointer shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none ${
+            className={`flex items-center gap-2 px-3 py-1.5 border rounded-lg text-xs font-semibold transition-all cursor-pointer shadow-xs active:scale-[0.98] ${
               isDark
-                ? 'bg-[#1E1E24] hover:bg-[#25252E] border-[#383844] text-[#F5F3EC]'
-                : 'bg-white hover:bg-[#FBF9F4] border-[#171717]/40 text-[#111111]'
+                ? 'bg-[#202025] hover:bg-[#27272F] border-zinc-800 text-zinc-200'
+                : 'bg-white hover:bg-neutral-50 border-neutral-200 text-neutral-800'
             }`}
           >
             {selectedAccount ? (
               <>
-                <div className="w-5 h-5 rounded-md border border-[#171717]/40 bg-[#FFD66B] flex items-center justify-center text-[10px] font-black uppercase text-[#111111] shrink-0">
+                <div className="w-5 h-5 rounded-md border border-neutral-200 dark:border-zinc-700 bg-amber-400/20 text-amber-600 dark:text-amber-300 flex items-center justify-center text-[10px] font-black uppercase shrink-0">
                   {selectedAccount.username.charAt(0)}
                 </div>
-                <span className="font-bold truncate max-w-[110px]">@{selectedAccount.username}</span>
+                <span className="font-semibold truncate max-w-[110px]">@{selectedAccount.username}</span>
               </>
             ) : (
               <span className="text-zinc-400 font-medium">No Account</span>
             )}
-            <ChevronDown className={`w-3.5 h-3.5 text-zinc-500 transition-transform ${isAccountDropdownOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform ${isAccountDropdownOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {isAccountDropdownOpen && (
             <div
-              className={`absolute right-0 mt-2 w-72 border rounded-xl shadow-[3.5px_3.5px_0_#111111] dark:shadow-[3.5px_3.5px_0_#0A0A0D] p-2 z-50 text-xs animate-in fade-in slide-in-from-top-2 ${
-                isDark ? 'bg-[#1E1E24] border-[#383844]' : 'bg-white border-[#171717]/30'
+              className={`absolute right-0 mt-2 w-72 border rounded-xl shadow-lg p-2 z-50 text-xs animate-in fade-in slide-in-from-top-1 ${
+                isDark ? 'bg-[#1E1E24] border-zinc-800' : 'bg-white border-neutral-200'
               }`}
             >
-              <div className="px-3 py-2 border-b-2 border-[#171717] dark:border-[#383844] text-[11px] font-black uppercase tracking-wider text-zinc-400 flex items-center justify-between font-heading">
-                <span>CONNECTED ACCOUNTS</span>
-                <span className="px-1.5 py-0.5 bg-[#45D9A6] text-[#111111] rounded font-bold">{accounts.length} Active</span>
+              <div className="px-3 py-2 border-b border-neutral-200 dark:border-zinc-800 text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-zinc-400 flex items-center justify-between font-heading">
+                <span>Connected Accounts</span>
+                <span className="px-1.5 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded font-medium text-[10px]">{accounts.length} Active</span>
               </div>
 
               <div className="py-1.5 space-y-1 max-h-56 overflow-y-auto">
@@ -128,14 +118,14 @@ export const S2STopHeader: React.FC<S2STopHeaderProps> = ({
                         onSelectAccount(acc);
                         setIsAccountDropdownOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between p-2 rounded-lg text-left transition-colors cursor-pointer border-2 ${
+                      className={`w-full flex items-center justify-between p-2 rounded-lg text-left transition-colors cursor-pointer border ${
                         isCurrent
                           ? isDark
-                            ? 'bg-[#2B2B36] text-[#F5F3EC] border-[#B9A7FF]'
-                            : 'bg-[#FFD66B]/20 text-[#111111] border-[#171717]'
+                            ? 'bg-zinc-800 text-zinc-100 border-zinc-700'
+                            : 'bg-neutral-100 text-neutral-900 border-neutral-300'
                           : isDark
-                          ? 'hover:bg-[#25252E] text-zinc-300 border-transparent'
-                          : 'hover:bg-[#F8F5EE] text-[#111111] border-transparent'
+                          ? 'hover:bg-zinc-800/50 text-zinc-300 border-transparent'
+                          : 'hover:bg-neutral-50 text-neutral-700 border-transparent'
                       }`}
                     >
                       <div className="flex items-center gap-2.5 truncate">

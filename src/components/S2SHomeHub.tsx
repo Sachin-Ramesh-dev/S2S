@@ -85,61 +85,43 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
   return (
     <div
       id="s2s-home-action-center"
-      className={`flex-1 overflow-y-auto p-6 md:p-10 space-y-8 ${
-        isDark ? 'bg-[#131316] text-[#F5F3EC]' : 'bg-[#F8F5EE] text-[#111111]'
+      className={`flex-1 overflow-y-auto p-6 md:p-8 space-y-6 ${
+        isDark ? 'bg-[#0F0F12] text-zinc-100' : 'bg-[#F9FAFB] text-neutral-900'
       }`}
     >
       {/* 1. HERO HEADER: Creative Command Center */}
       <div
-        className={`relative p-8 sm:p-10 rounded-2xl border border-[#171717]/30 dark:border-[#383844] shadow-[3.5px_3.5px_0_#111111] dark:shadow-[3.5px_3.5px_0_#0A0A0D] overflow-hidden transition-all ${
-          isDark ? 'bg-[#1E1E24]' : 'bg-white'
+        className={`relative p-6 sm:p-8 rounded-xl border border-neutral-200 dark:border-zinc-800 shadow-xs transition-all ${
+          isDark ? 'bg-[#18181B]' : 'bg-white'
         }`}
       >
-        {/* Playful Neo-Brutalist decorative stamp */}
-        <div className="absolute top-4 right-4 hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-md border border-[#171717]/40 dark:border-[#383844] bg-[#FFD66B] text-[#111111] text-[10px] font-black uppercase font-heading shadow-[1.5px_1.5px_0_#111111] rotate-2 select-none">
-          <Star className="w-3 h-3 fill-current" />
-          <span>AUTONOMOUS CREATOR OS</span>
-        </div>
-
         <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
-          <div className="space-y-4 max-w-2xl">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="neo-badge neo-badge-coral">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>ACTION CENTER</span>
-              </span>
-
+          <div className="space-y-3 max-w-2xl">
+            <div className="flex items-center gap-2">
               <span
                 id="home-env-badge"
                 className={`neo-badge ${isLiveMode ? 'neo-badge-mint' : 'neo-badge-yellow'}`}
               >
-                <span className={`w-2 h-2 rounded-full border border-[#171717] ${isLiveMode ? 'bg-[#111111]' : 'bg-[#111111]'}`} />
+                <span className={`w-1.5 h-1.5 rounded-full ${isLiveMode ? 'bg-emerald-600' : 'bg-amber-600'}`} />
                 <span>{isLiveMode ? 'LIVE PRODUCTION' : 'DEMO SANDBOX'}</span>
               </span>
             </div>
 
-            {/* Editorial Hero Title with Hand-Drawn Underline Motif */}
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight font-heading leading-[1.05] uppercase">
-              GOOD MORNING.<br />
-              YOUR CONTENT ENGINE<br />
-              <span className="relative inline-block text-[#FF4D5A]">
-                IS READY.
-                <svg className="absolute -bottom-2 left-0 w-full h-3 text-[#FFD66B]" viewBox="0 0 100 12" preserveAspectRatio="none">
-                  <path d="M0,8 Q50,0 100,6" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" />
-                </svg>
-              </span>
+            {/* Editorial Hero Title */}
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight font-heading leading-tight text-neutral-900 dark:text-white">
+              Good morning. Your content engine <span className="text-[#F43F5E]">is ready.</span>
             </h1>
 
-            <p className={`text-sm sm:text-base leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
+            <p className={`text-sm leading-relaxed font-normal ${isDark ? 'text-zinc-400' : 'text-neutral-500'}`}>
               Clear strategic decisions, active multi-format drafts, and verified publication slots waiting in your pipeline.
             </p>
 
             {/* Quick-Action Command Bar (Immediate Next Actions) */}
-            <div className="pt-2 flex flex-wrap items-center gap-3">
+            <div className="pt-2 flex flex-wrap items-center gap-2.5">
               <button
                 type="button"
                 onClick={() => onNavigate('production')}
-                className="neo-btn neo-btn-lavender"
+                className="neo-btn neo-btn-primary"
               >
                 <Film className="w-4 h-4" />
                 <span>Continue Production</span>
@@ -149,7 +131,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
               <button
                 type="button"
                 onClick={() => onNavigate('topics')}
-                className="neo-btn neo-btn-yellow"
+                className="neo-btn neo-btn-secondary"
               >
                 <Lightbulb className="w-4 h-4" />
                 <span>Review {pendingTopics.length > 0 ? `${pendingTopics.length} ` : ''}Topics</span>
@@ -159,7 +141,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
               <button
                 type="button"
                 onClick={() => onNavigate('audit')}
-                className="neo-btn neo-btn-mint"
+                className="neo-btn neo-btn-secondary"
               >
                 <Compass className="w-4 h-4" />
                 <span>Review Page Audit</span>
@@ -170,46 +152,46 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
 
           {/* Account Profile Card: Physical Credential Panel */}
           <div
-            className={`w-full lg:w-80 shrink-0 p-5 rounded-xl border border-[#171717]/30 dark:border-[#383844] shadow-[2.5px_2.5px_0_#111111] dark:shadow-[2.5px_2.5px_0_#0A0A0D] ${
-              isDark ? 'bg-[#25252E]' : 'bg-[#FBF9F4]'
+            className={`w-full lg:w-80 shrink-0 p-4 rounded-xl border border-neutral-200 dark:border-zinc-800 shadow-xs ${
+              isDark ? 'bg-zinc-900/40' : 'bg-neutral-50/70'
             }`}
           >
-            <div className="text-[10px] font-black uppercase tracking-wider text-[#4B5563] dark:text-[#9CA3AF] mb-3 flex items-center justify-between font-heading">
-              <span>CONNECTED TARGET</span>
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-zinc-400 mb-2.5 flex items-center justify-between font-heading">
+              <span>Connected Target</span>
               <span className="neo-badge neo-badge-mint text-[9px] py-0.5">ACTIVE</span>
             </div>
 
             {account ? (
               <div className="space-y-3">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-lg border border-[#171717]/40 bg-[#B9A7FF] flex items-center justify-center font-black text-lg text-[#111111] shrink-0 shadow-[1.5px_1.5px_0_#111111]">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg border border-neutral-200 dark:border-zinc-700 bg-purple-500/10 text-purple-700 dark:text-purple-300 flex items-center justify-center font-bold text-base shrink-0">
                     {account.username.charAt(0).toUpperCase()}
                   </div>
 
                   <div className="truncate">
-                    <div className="font-black text-base tracking-tight font-heading truncate">
+                    <div className="font-semibold text-sm tracking-tight font-heading truncate text-neutral-900 dark:text-white">
                       @{account.username}
                     </div>
-                    <div className="text-xs text-[#4B5563] dark:text-[#9CA3AF] truncate font-medium">
+                    <div className="text-xs text-neutral-500 dark:text-zinc-400 truncate font-normal">
                       {account.displayName || 'Instagram Creator'}
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#171717]/20 dark:border-[#383844] text-xs">
-                  <div className="p-2 rounded-lg border border-[#171717]/20 dark:border-[#383844] bg-white dark:bg-[#1E1E24]">
-                    <div className="text-[10px] text-[#4B5563] dark:text-[#9CA3AF] font-bold uppercase">Followers</div>
-                    <div className="font-black text-sm font-heading">{followersFormatted}</div>
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-neutral-200 dark:border-zinc-800 text-xs">
+                  <div className="p-2 rounded-lg border border-neutral-200 dark:border-zinc-800 bg-white dark:bg-zinc-800/60">
+                    <div className="text-[10px] text-neutral-400 dark:text-zinc-500 font-medium uppercase">Followers</div>
+                    <div className="font-semibold text-sm text-neutral-900 dark:text-white">{followersFormatted}</div>
                   </div>
-                  <div className="p-2 rounded-lg border border-[#171717]/20 dark:border-[#383844] bg-white dark:bg-[#1E1E24]">
-                    <div className="text-[10px] text-[#4B5563] dark:text-[#9CA3AF] font-bold uppercase">Engagement</div>
-                    <div className="font-black text-sm font-heading text-[#45D9A6]">{account.engagementRate || 3.8}%</div>
+                  <div className="p-2 rounded-lg border border-neutral-200 dark:border-zinc-800 bg-white dark:bg-zinc-800/60">
+                    <div className="text-[10px] text-neutral-400 dark:text-zinc-500 font-medium uppercase">Engagement</div>
+                    <div className="font-semibold text-sm text-emerald-600 dark:text-emerald-400">{account.engagementRate || 3.8}%</div>
                   </div>
                 </div>
               </div>
             ) : (
               <div className="space-y-3 text-left">
-                <div className="text-xs font-bold text-[#4B5563] dark:text-[#9CA3AF]">No Account Connected</div>
+                <div className="text-xs font-medium text-neutral-500 dark:text-zinc-400">No Account Connected</div>
                 <button
                   type="button"
                   onClick={onOpenConnectModal}
@@ -222,120 +204,122 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
             )}
           </div>
         </div>
+      </div>
 
-        {/* 2. PRIMARY JOURNEY PIPELINE BAR */}
-        <div className="mt-8 pt-6 border-t border-[#171717]/15 dark:border-[#383844]">
-          <div className="text-xs font-black uppercase tracking-wider text-[#111111] dark:text-[#F5F3EC] mb-3 flex items-center justify-between font-heading">
-            <span className="flex items-center gap-2">
-              <span>PRIMARY JOURNEY PIPELINE</span>
-              <span className="text-xs font-normal text-zinc-400">|</span>
-              <span className="text-[10px] text-[#FF4D5A]">SCROLL → THINK → CREATE → PUBLISH → LEARN</span>
-            </span>
-            <span className="neo-badge neo-badge-yellow text-[9px] py-0.5">6 STAGES</span>
+      {/* 2. PRIMARY JOURNEY PIPELINE BAR (Un-nested Standalone Progress Component) */}
+      <div
+        className={`p-4 rounded-xl border border-neutral-200 dark:border-zinc-800 shadow-xs space-y-3 ${
+          isDark ? 'bg-[#18181B]' : 'bg-white'
+        }`}
+      >
+        <div className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-zinc-400 flex items-center justify-between font-heading">
+          <span className="flex items-center gap-2">
+            <span>Primary Journey Pipeline</span>
+          </span>
+          <span className="neo-badge neo-badge-neutral text-[9px] py-0.5">6 Stages</span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+          {/* Step 1: Home */}
+          <div
+            onClick={() => onNavigate('home')}
+            className="p-3 rounded-lg border border-amber-500/40 bg-amber-500/10 text-neutral-900 dark:text-white cursor-pointer shadow-2xs"
+          >
+            <div className="text-[9px] font-semibold uppercase text-amber-700 dark:text-amber-400">01 Stage</div>
+            <div className="font-semibold text-xs flex items-center gap-1 mt-0.5">
+              <span>🏠</span> Home
+            </div>
+            <div className="text-[10px] text-neutral-500 dark:text-zinc-400 mt-1">Action Center</div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {/* Step 1: Home */}
-            <div
-              onClick={() => onNavigate('home')}
-              className="p-3.5 rounded-xl border border-[#171717]/40 dark:border-[#383844] bg-[#FFD66B] text-[#111111] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] cursor-pointer"
-            >
-              <div className="text-[10px] font-black uppercase opacity-75 font-heading">01 STAGE</div>
-              <div className="font-black text-sm flex items-center gap-1 font-heading">
-                <span>🏠</span> Home
-              </div>
-              <div className="text-[10px] font-bold mt-1">Action Center</div>
+          {/* Step 2: Page Audit */}
+          <div
+            onClick={() => onNavigate('audit')}
+            className={`p-3 rounded-lg border border-neutral-200 dark:border-zinc-800 hover:border-neutral-300 dark:hover:border-zinc-700 transition-colors cursor-pointer ${
+              isDark ? 'bg-zinc-900/30' : 'bg-neutral-50/50'
+            }`}
+          >
+            <div className="text-[9px] font-semibold uppercase text-neutral-400 dark:text-zinc-500">02 Stage</div>
+            <div className="font-semibold text-xs flex items-center gap-1 mt-0.5 text-neutral-900 dark:text-white">
+              <span>🔍</span> Audit
             </div>
+            <div className="text-[10px] text-rose-600 dark:text-rose-400 mt-1 font-medium">
+              {latestAudit ? `${latestAudit.scores?.overall_score || 88}/100 Health` : 'Run Diagnostic'}
+            </div>
+          </div>
 
-            {/* Step 2: Page Audit */}
-            <div
-              onClick={() => onNavigate('audit')}
-              className={`p-3.5 rounded-xl border border-[#171717]/30 dark:border-[#383844] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_#111111] transition-all cursor-pointer ${
-                isDark ? 'bg-[#1E1E24]' : 'bg-white'
-              }`}
-            >
-              <div className="text-[10px] font-black uppercase text-[#4B5563] dark:text-[#9CA3AF] font-heading">02 STAGE</div>
-              <div className="font-black text-sm flex items-center gap-1 font-heading">
-                <span>🔍</span> Audit
-              </div>
-              <div className="text-[10px] font-bold text-[#FF4D5A] mt-1">
-                {latestAudit ? `${latestAudit.scores?.overall_score || 88}/100 Health` : 'Run Diagnostic'}
-              </div>
+          {/* Step 3: Topics */}
+          <div
+            onClick={() => onNavigate('topics')}
+            className={`p-3 rounded-lg border border-neutral-200 dark:border-zinc-800 hover:border-neutral-300 dark:hover:border-zinc-700 transition-colors cursor-pointer ${
+              isDark ? 'bg-zinc-900/30' : 'bg-neutral-50/50'
+            }`}
+          >
+            <div className="text-[9px] font-semibold uppercase text-neutral-400 dark:text-zinc-500">03 Stage</div>
+            <div className="font-semibold text-xs flex items-center gap-1 mt-0.5 text-neutral-900 dark:text-white">
+              <span>💡</span> Topics
             </div>
+            <div className="text-[10px] mt-1 font-medium">
+              {pendingTopics.length > 0 ? (
+                <span className="text-amber-600 dark:text-amber-400 font-semibold">{pendingTopics.length} Pending</span>
+              ) : (
+                <span className="text-emerald-600 dark:text-emerald-400">All Approved</span>
+              )}
+            </div>
+          </div>
 
-            {/* Step 3: Topics */}
-            <div
-              onClick={() => onNavigate('topics')}
-              className={`p-3.5 rounded-xl border border-[#171717]/30 dark:border-[#383844] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_#111111] transition-all cursor-pointer ${
-                isDark ? 'bg-[#1E1E24]' : 'bg-white'
-              }`}
-            >
-              <div className="text-[10px] font-black uppercase text-[#4B5563] dark:text-[#9CA3AF] font-heading">03 STAGE</div>
-              <div className="font-black text-sm flex items-center gap-1 font-heading">
-                <span>💡</span> Topics
-              </div>
-              <div className="text-[10px] font-bold mt-1">
-                {pendingTopics.length > 0 ? (
-                  <span className="text-[#FF4D5A] font-black">{pendingTopics.length} Pending</span>
-                ) : (
-                  <span className="text-[#45D9A6] font-bold">All Approved</span>
-                )}
-              </div>
+          {/* Step 4: Content Production */}
+          <div
+            onClick={() => onNavigate('production', 'scripts')}
+            className={`p-3 rounded-lg border border-neutral-200 dark:border-zinc-800 hover:border-neutral-300 dark:hover:border-zinc-700 transition-colors cursor-pointer ${
+              isDark ? 'bg-zinc-900/30' : 'bg-neutral-50/50'
+            }`}
+          >
+            <div className="text-[9px] font-semibold uppercase text-neutral-400 dark:text-zinc-500">04 Stage</div>
+            <div className="font-semibold text-xs flex items-center gap-1 mt-0.5 text-neutral-900 dark:text-white">
+              <span>🎬</span> Studio
             </div>
+            <div className="text-[10px] mt-1 font-medium text-purple-600 dark:text-purple-400">
+              {inProductionScripts.length > 0 ? (
+                <span>{inProductionScripts.length} Active Drafts</span>
+              ) : (
+                <span>{scripts.length} Total</span>
+              )}
+            </div>
+          </div>
 
-            {/* Step 4: Content Production */}
-            <div
-              onClick={() => onNavigate('production', 'scripts')}
-              className={`p-3.5 rounded-xl border border-[#171717]/30 dark:border-[#383844] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_#111111] transition-all cursor-pointer ${
-                isDark ? 'bg-[#1E1E24]' : 'bg-white'
-              }`}
-            >
-              <div className="text-[10px] font-black uppercase text-[#4B5563] dark:text-[#9CA3AF] font-heading">04 STAGE</div>
-              <div className="font-black text-sm flex items-center gap-1 font-heading">
-                <span>🎬</span> Studio
-              </div>
-              <div className="text-[10px] font-bold mt-1 text-[#B9A7FF]">
-                {inProductionScripts.length > 0 ? (
-                  <span>{inProductionScripts.length} Active Drafts</span>
-                ) : (
-                  <span>{scripts.length} Total</span>
-                )}
-              </div>
+          {/* Step 5: Publishing */}
+          <div
+            onClick={() => onNavigate('publishing', 'calendar')}
+            className={`p-3 rounded-lg border border-neutral-200 dark:border-zinc-800 hover:border-neutral-300 dark:hover:border-zinc-700 transition-colors cursor-pointer ${
+              isDark ? 'bg-zinc-900/30' : 'bg-neutral-50/50'
+            }`}
+          >
+            <div className="text-[9px] font-semibold uppercase text-neutral-400 dark:text-zinc-500">05 Stage</div>
+            <div className="font-semibold text-xs flex items-center gap-1 mt-0.5 text-neutral-900 dark:text-white">
+              <span>📅</span> Dispatch
             </div>
+            <div className="text-[10px] mt-1 font-medium text-emerald-600 dark:text-emerald-400">
+              {scheduledPosts.length > 0 ? (
+                <span>{scheduledPosts.length} Scheduled</span>
+              ) : (
+                <span>Open Slots</span>
+              )}
+            </div>
+          </div>
 
-            {/* Step 5: Publishing */}
-            <div
-              onClick={() => onNavigate('publishing', 'calendar')}
-              className={`p-3.5 rounded-xl border border-[#171717]/30 dark:border-[#383844] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_#111111] transition-all cursor-pointer ${
-                isDark ? 'bg-[#1E1E24]' : 'bg-white'
-              }`}
-            >
-              <div className="text-[10px] font-black uppercase text-[#4B5563] dark:text-[#9CA3AF] font-heading">05 STAGE</div>
-              <div className="font-black text-sm flex items-center gap-1 font-heading">
-                <span>📅</span> Dispatch
-              </div>
-              <div className="text-[10px] font-bold mt-1 text-[#45D9A6]">
-                {scheduledPosts.length > 0 ? (
-                  <span>{scheduledPosts.length} Scheduled</span>
-                ) : (
-                  <span>Open Slots</span>
-                )}
-              </div>
+          {/* Step 6: Performance */}
+          <div
+            onClick={() => onNavigate('performance')}
+            className={`p-3 rounded-lg border border-neutral-200 dark:border-zinc-800 hover:border-neutral-300 dark:hover:border-zinc-700 transition-colors cursor-pointer ${
+              isDark ? 'bg-zinc-900/30' : 'bg-neutral-50/50'
+            }`}
+          >
+            <div className="text-[9px] font-semibold uppercase text-neutral-400 dark:text-zinc-500">06 Stage</div>
+            <div className="font-semibold text-xs flex items-center gap-1 mt-0.5 text-neutral-900 dark:text-white">
+              <span>📊</span> Analytics
             </div>
-
-            {/* Step 6: Performance */}
-            <div
-              onClick={() => onNavigate('performance')}
-              className={`p-3.5 rounded-xl border border-[#171717]/30 dark:border-[#383844] shadow-[1.5px_1.5px_0_#111111] dark:shadow-[1.5px_1.5px_0_#0A0A0D] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_#111111] transition-all cursor-pointer ${
-                isDark ? 'bg-[#1E1E24]' : 'bg-white'
-              }`}
-            >
-              <div className="text-[10px] font-black uppercase text-[#4B5563] dark:text-[#9CA3AF] font-heading">06 STAGE</div>
-              <div className="font-black text-sm flex items-center gap-1 font-heading">
-                <span>📊</span> Analytics
-              </div>
-              <div className="text-[10px] font-bold text-[#7CC7FF] mt-1">Hook Retention</div>
-            </div>
+            <div className="text-[10px] text-sky-600 dark:text-sky-400 mt-1 font-medium">Hook Retention</div>
           </div>
         </div>
       </div>
@@ -355,99 +339,99 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* ACTION 1: Topics Waiting for Approval */}
           <div
-            className={`p-6 rounded-2xl border border-[#171717]/30 dark:border-[#383844] shadow-[2.5px_2.5px_0_#111111] dark:shadow-[2.5px_2.5px_0_#0A0A0D] flex flex-col justify-between ${
+            className={`p-5 rounded-xl border border-neutral-200 dark:border-zinc-800 shadow-xs flex flex-col justify-between transition-colors ${
               pendingTopics.length > 0
-                ? isDark ? 'bg-[#25252E]' : 'bg-[#FBF9F4]'
-                : isDark ? 'bg-[#1E1E24]' : 'bg-white'
+                ? isDark ? 'bg-[#18181B]' : 'bg-white'
+                : isDark ? 'bg-zinc-900/40' : 'bg-neutral-50/50'
             }`}
           >
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-3.5">
                 <span className="neo-badge neo-badge-yellow">
                   <Lightbulb className="w-3.5 h-3.5" />
-                  <span>TOPIC APPROVAL QUEUE</span>
+                  <span>Topic Approval Queue</span>
                 </span>
-                <span className="neo-badge neo-badge-dark text-[10px]">
-                  {pendingTopics.length > 0 ? `${pendingTopics.length} PENDING` : 'UP TO DATE'}
+                <span className="neo-badge neo-badge-neutral text-[10px]">
+                  {pendingTopics.length > 0 ? `${pendingTopics.length} Pending` : 'Up to Date'}
                 </span>
               </div>
 
               {pendingTopics.length > 0 ? (
-                <div className="space-y-2 mb-6">
-                  <h3 className="font-black text-lg tracking-tight font-heading">
+                <div className="space-y-1.5 mb-5">
+                  <h3 className="font-semibold text-base tracking-tight text-neutral-900 dark:text-white">
                     {pendingTopics.length} Topic Ideas Waiting for Decision
                   </h3>
-                  <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
-                    Up next: <span className="font-bold text-[#111111] dark:text-white underline decoration-2 decoration-[#FFD66B]">"{pendingTopics[0].title}"</span>
-                    {pendingTopics[0].pillar && ` (${pendingTopics[0].pillar})`}. Review strategic alignment before sending to studio production.
+                  <p className={`text-xs leading-relaxed font-normal ${isDark ? 'text-zinc-400' : 'text-neutral-500'}`}>
+                    Up next: <span className="font-medium text-neutral-900 dark:text-white underline decoration-amber-400">"{pendingTopics[0].title}"</span>
+                    {pendingTopics[0].pillar && ` (${pendingTopics[0].pillar})`}. Review strategic alignment before studio production.
                   </p>
                 </div>
               ) : (
-                <div className="space-y-2 mb-6">
-                  <h3 className="font-black text-lg tracking-tight font-heading">
+                <div className="space-y-1.5 mb-5">
+                  <h3 className="font-semibold text-base tracking-tight text-neutral-900 dark:text-white">
                     All Topic Ideas Reviewed
                   </h3>
-                  <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
+                  <p className={`text-xs leading-relaxed font-normal ${isDark ? 'text-zinc-400' : 'text-neutral-500'}`}>
                     No topics currently waiting for approval. Generate new AI topic angles from your latest audit or content gaps.
                   </p>
                 </div>
               )}
             </div>
 
-            <div className="pt-4 border-t border-[#171717]/15 dark:border-[#383844] flex items-center justify-between">
+            <div className="pt-3 border-t border-neutral-200 dark:border-zinc-800 flex items-center justify-between">
               {pendingTopics.length > 0 ? (
                 <button
                   id="cta-review-topics"
                   type="button"
                   onClick={() => onNavigate('topics')}
-                  className="neo-btn neo-btn-yellow"
+                  className="neo-btn neo-btn-yellow neo-btn-sm"
                 >
                   <span>Review Topics</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3 h-3" />
                 </button>
               ) : (
                 <button
                   id="cta-generate-topics"
                   type="button"
                   onClick={() => onNavigate('topics')}
-                  className="neo-btn neo-btn-secondary"
+                  className="neo-btn neo-btn-secondary neo-btn-sm"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3 h-3" />
                   <span>Generate Topics</span>
                 </button>
               )}
-              <span className="text-xs font-black uppercase tracking-wider text-[#4B5563] dark:text-[#9CA3AF] font-heading">
-                STAGE 03
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-zinc-500">
+                Stage 03
               </span>
             </div>
           </div>
 
           {/* ACTION 2: Content Currently in Production */}
           <div
-            className={`p-6 rounded-2xl border border-[#171717]/30 dark:border-[#383844] shadow-[2.5px_2.5px_0_#111111] dark:shadow-[2.5px_2.5px_0_#0A0A0D] flex flex-col justify-between ${
+            className={`p-5 rounded-xl border border-neutral-200 dark:border-zinc-800 shadow-xs flex flex-col justify-between transition-colors ${
               inProductionScripts.length > 0
-                ? isDark ? 'bg-[#25252E]' : 'bg-[#FBF9F4]'
-                : isDark ? 'bg-[#1E1E24]' : 'bg-white'
+                ? isDark ? 'bg-[#18181B]' : 'bg-white'
+                : isDark ? 'bg-zinc-900/40' : 'bg-neutral-50/50'
             }`}
           >
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-3.5">
                 <span className="neo-badge neo-badge-lavender">
                   <Film className="w-3.5 h-3.5" />
-                  <span>STUDIO PRODUCTION</span>
+                  <span>Studio Production</span>
                 </span>
-                <span className="neo-badge neo-badge-dark text-[10px]">
-                  {inProductionScripts.length > 0 ? `${inProductionScripts.length} DRAFTS` : 'CLEAR'}
+                <span className="neo-badge neo-badge-neutral text-[10px]">
+                  {inProductionScripts.length > 0 ? `${inProductionScripts.length} Drafts` : 'Clear'}
                 </span>
               </div>
 
               {inProductionScripts.length > 0 ? (
-                <div className="space-y-2 mb-6">
-                  <h3 className="font-black text-lg tracking-tight font-heading">
+                <div className="space-y-1.5 mb-5">
+                  <h3 className="font-semibold text-base tracking-tight text-neutral-900 dark:text-white">
                     {inProductionScripts.length} Item{inProductionScripts.length > 1 ? 's' : ''} in Active Studio Work
                   </h3>
-                  <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
-                    Active draft: <span className="font-bold text-[#111111] dark:text-white underline decoration-2 decoration-[#B9A7FF]">"{inProductionScripts[0].title}"</span>
+                  <p className={`text-xs leading-relaxed font-normal ${isDark ? 'text-zinc-400' : 'text-neutral-500'}`}>
+                    Active draft: <span className="font-medium text-neutral-900 dark:text-white underline decoration-purple-400">"{inProductionScripts[0].title}"</span>
                     {inProductionScripts[0].format && ` (${inProductionScripts[0].format})`}.{' '}
                     {inProductionScripts[0].format === 'Carousel'
                       ? 'Review 5-slide breakdown and generate slide mockups.'
@@ -457,18 +441,18 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
                   </p>
                 </div>
               ) : (
-                <div className="space-y-2 mb-6">
-                  <h3 className="font-black text-lg tracking-tight font-heading">
+                <div className="space-y-1.5 mb-5">
+                  <h3 className="font-semibold text-base tracking-tight text-neutral-900 dark:text-white">
                     No Active Drafts in Progress
                   </h3>
-                  <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
+                  <p className={`text-xs leading-relaxed font-normal ${isDark ? 'text-zinc-400' : 'text-neutral-500'}`}>
                     Ready to start production on an approved topic across Reel, Carousel, or Image formats.
                   </p>
                 </div>
               )}
             </div>
 
-            <div className="pt-4 border-t border-[#171717]/15 dark:border-[#383844] flex items-center justify-between">
+            <div className="pt-3 border-t border-neutral-200 dark:border-zinc-800 flex items-center justify-between">
               <button
                 id="cta-continue-production"
                 type="button"
@@ -484,103 +468,103 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
                     onNavigate('production', active.productionStage === 'storyboard' ? 'creative' : 'scripts');
                   }
                 }}
-                className="neo-btn neo-btn-lavender"
+                className="neo-btn neo-btn-lavender neo-btn-sm"
               >
                 <span>Continue Studio Work</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3 h-3" />
               </button>
-              <span className="text-xs font-black uppercase tracking-wider text-[#4B5563] dark:text-[#9CA3AF] font-heading">
-                STAGE 04
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-zinc-500">
+                Stage 04
               </span>
             </div>
           </div>
 
           {/* ACTION 3: Posts Ready to Schedule / Peak Window */}
           <div
-            className={`p-6 rounded-2xl border border-[#171717]/30 dark:border-[#383844] shadow-[2.5px_2.5px_0_#111111] dark:shadow-[2.5px_2.5px_0_#0A0A0D] flex flex-col justify-between ${
+            className={`p-5 rounded-xl border border-neutral-200 dark:border-zinc-800 shadow-xs flex flex-col justify-between transition-colors ${
               scheduledPosts.length === 0
-                ? isDark ? 'bg-[#25252E]' : 'bg-[#FBF9F4]'
-                : isDark ? 'bg-[#1E1E24]' : 'bg-white'
+                ? isDark ? 'bg-[#18181B]' : 'bg-white'
+                : isDark ? 'bg-zinc-900/40' : 'bg-neutral-50/50'
             }`}
           >
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-3.5">
                 <span className="neo-badge neo-badge-mint">
                   <Calendar className="w-3.5 h-3.5" />
-                  <span>DISPATCH &amp; PEAK WINDOW</span>
+                  <span>Dispatch &amp; Peak Window</span>
                 </span>
-                <span className="neo-badge neo-badge-dark text-[10px]">
-                  {scheduledPosts.length > 0 ? `${scheduledPosts.length} SCHEDULED` : 'SLOT OPEN'}
+                <span className="neo-badge neo-badge-neutral text-[10px]">
+                  {scheduledPosts.length > 0 ? `${scheduledPosts.length} Scheduled` : 'Slot Open'}
                 </span>
               </div>
 
               {scheduledPosts.length > 0 ? (
-                <div className="space-y-2 mb-6">
-                  <h3 className="font-black text-lg tracking-tight font-heading">
+                <div className="space-y-1.5 mb-5">
+                  <h3 className="font-semibold text-base tracking-tight text-neutral-900 dark:text-white">
                     Next Post: {scheduledPosts[0].title}
                   </h3>
-                  <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
-                    Scheduled for <span className="font-bold text-[#111111] dark:text-white underline decoration-2 decoration-[#45D9A6]">{scheduledPosts[0].scheduledDate} at {scheduledPosts[0].scheduledTime || '18:30'}</span>. Peak engagement window secured.
+                  <p className={`text-xs leading-relaxed font-normal ${isDark ? 'text-zinc-400' : 'text-neutral-500'}`}>
+                    Scheduled for <span className="font-medium text-neutral-900 dark:text-white underline decoration-emerald-400">{scheduledPosts[0].scheduledDate} at {scheduledPosts[0].scheduledTime || '18:30'}</span>. Peak window secured.
                   </p>
                 </div>
               ) : (
-                <div className="space-y-2 mb-6">
-                  <h3 className="font-black text-lg tracking-tight font-heading">
+                <div className="space-y-1.5 mb-5">
+                  <h3 className="font-semibold text-base tracking-tight text-neutral-900 dark:text-white">
                     No Posts Scheduled for Peak Window
                   </h3>
-                  <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
+                  <p className={`text-xs leading-relaxed font-normal ${isDark ? 'text-zinc-400' : 'text-neutral-500'}`}>
                     Your upcoming 18:30 peak engagement slot is empty. Schedule an approved draft to maintain publishing consistency.
                   </p>
                 </div>
               )}
             </div>
 
-            <div className="pt-4 border-t border-[#171717]/15 dark:border-[#383844] flex items-center justify-between">
+            <div className="pt-3 border-t border-neutral-200 dark:border-zinc-800 flex items-center justify-between">
               <button
                 id="cta-schedule-post"
                 type="button"
                 onClick={() => onNavigate('publishing', 'calendar')}
-                className="neo-btn neo-btn-mint"
+                className="neo-btn neo-btn-mint neo-btn-sm"
               >
                 <span>{scheduledPosts.length > 0 ? 'View Calendar' : 'Schedule Post'}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3 h-3" />
               </button>
-              <span className="text-xs font-black uppercase tracking-wider text-[#4B5563] dark:text-[#9CA3AF] font-heading">
-                STAGE 05
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-zinc-500">
+                Stage 05
               </span>
             </div>
           </div>
 
           {/* ACTION 4: Diagnostic Page Audit Banner */}
           <div
-            className={`p-6 rounded-2xl border border-[#171717]/30 dark:border-[#383844] shadow-[2.5px_2.5px_0_#111111] dark:shadow-[2.5px_2.5px_0_#0A0A0D] flex flex-col justify-between ${
+            className={`p-5 rounded-xl border border-neutral-200 dark:border-zinc-800 shadow-xs flex flex-col justify-between transition-colors ${
               !latestAudit
-                ? isDark ? 'bg-[#25252E]' : 'bg-[#FBF9F4]'
-                : isDark ? 'bg-[#1E1E24]' : 'bg-white'
+                ? isDark ? 'bg-[#18181B]' : 'bg-white'
+                : isDark ? 'bg-zinc-900/40' : 'bg-neutral-50/50'
             }`}
           >
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-3.5">
                 <span className="neo-badge neo-badge-coral">
                   <Compass className="w-3.5 h-3.5" />
-                  <span>DIAGNOSTIC AUDIT</span>
+                  <span>Diagnostic Audit</span>
                 </span>
                 {latestAudit && (
-                  <span className="neo-badge neo-badge-dark text-[10px]">
-                    SCORE: {latestAudit.scores?.overall_score || 88}/100
+                  <span className="neo-badge neo-badge-neutral text-[10px]">
+                    Score: {latestAudit.scores?.overall_score || 88}/100
                   </span>
                 )}
               </div>
 
-              <div className="space-y-2 mb-6">
-                <h3 className="font-black text-lg tracking-tight font-heading">
+              <div className="space-y-1.5 mb-5">
+                <h3 className="font-semibold text-base tracking-tight text-neutral-900 dark:text-white">
                   {!latestAudit
                     ? 'Initial Diagnostic Page Audit Required'
                     : latestAudit.content_gaps && latestAudit.content_gaps.length > 0
                     ? `${latestAudit.content_gaps.length} Content Gaps Detected in Latest Audit`
                     : `Account Diagnostic Health Score: ${latestAudit.scores?.overall_score || 88}/100`}
                 </h3>
-                <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-[#9CA3AF]' : 'text-[#4B5563]'}`}>
+                <p className={`text-xs leading-relaxed font-normal ${isDark ? 'text-zinc-400' : 'text-neutral-500'}`}>
                   {!latestAudit
                     ? 'Run a profile audit to diagnose your content pillar distribution, competitor hooks, and viral gaps.'
                     : latestAudit.content_gaps && latestAudit.content_gaps.length > 0
@@ -590,7 +574,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
               </div>
             </div>
 
-            <div className="pt-4 border-t border-[#171717]/15 dark:border-[#383844] flex items-center justify-between">
+            <div className="pt-3 border-t border-neutral-200 dark:border-zinc-800 flex items-center justify-between">
               <button
                 id="cta-review-audit"
                 type="button"
@@ -600,13 +584,13 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
                   }
                   onNavigate('audit');
                 }}
-                className="neo-btn neo-btn-coral"
+                className="neo-btn neo-btn-coral neo-btn-sm"
               >
                 <span>{!latestAudit ? 'Run Diagnostic Audit' : 'Review Audit'}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3 h-3" />
               </button>
-              <span className="text-xs font-black uppercase tracking-wider text-[#4B5563] dark:text-[#9CA3AF] font-heading">
-                STAGE 02
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-zinc-500">
+                Stage 02
               </span>
             </div>
           </div>

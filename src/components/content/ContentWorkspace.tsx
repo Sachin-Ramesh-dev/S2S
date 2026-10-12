@@ -1298,7 +1298,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
   // If subview is 'topics', render InstagramTopicsView directly
   if (activeSubView === 'topics') {
     return (
-      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+      <div id="topics-scroll-container" className={`flex-1 min-w-0 h-full overflow-y-auto p-6 md:p-8 ${isDark ? 'bg-[#0F0F12] text-[#F5F3EC]' : 'bg-[#F9FAFB] text-[#111111]'}`}>
         <InstagramTopicsView
           account={account || ({ id: 'default', username: 'account', displayName: 'Account', followersCount: 0 } as any)}
           topics={topics}
@@ -1323,21 +1323,21 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
     <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
       {/* 1. TOP STRATEGIC LINEAGE BAR (Always visible) */}
       <div
-        className="px-6 py-2.5 border-b border-[#171717]/15 dark:border-[#383844] flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 shrink-0 select-none bg-[#F8F5EE] dark:bg-[#131316] transition-colors"
+        className="px-6 py-2.5 border-b border-neutral-200 dark:border-zinc-800 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 shrink-0 select-none bg-white dark:bg-[#18181B] transition-colors"
       >
         {/* Left: Strategic Lineage Hierarchy */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#B9A7FF]/20 text-[#522EB5] dark:text-[#CBBFFF] border border-[#B9A7FF]/40 font-mono">
+          <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20 font-mono">
             {selectedScript?.contentPillar || 'Core Content Gap'}
           </span>
 
-          <span className="text-zinc-400 dark:text-zinc-600 font-bold">/</span>
+          <span className="text-neutral-400 dark:text-zinc-600 font-medium">/</span>
 
-          <span className="font-bold text-xs truncate max-w-[220px] text-[#111111] dark:text-zinc-200" title={selectedScript?.topicTitle || selectedScript?.title}>
+          <span className="font-semibold text-xs truncate max-w-[220px] text-neutral-900 dark:text-zinc-100" title={selectedScript?.topicTitle || selectedScript?.title}>
             "{selectedScript?.topicTitle || selectedScript?.title || 'Untitled'}"
           </span>
 
-          <span className="text-zinc-400 dark:text-zinc-600 font-bold">/</span>
+          <span className="text-neutral-400 dark:text-zinc-600 font-medium">/</span>
 
           {/* Active Format Badge with Change Dropdown */}
           <div className="relative inline-block">
@@ -1345,7 +1345,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
               id="btn-format-switcher"
               type="button"
               onClick={() => setIsFormatSwitcherOpen(!isFormatSwitcherOpen)}
-              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#7CC7FF]/20 hover:bg-[#7CC7FF]/30 text-[#0D5B9E] dark:text-[#93D5FF] border border-[#7CC7FF]/40 transition-colors flex items-center gap-1.5 cursor-pointer shadow-[1px_1px_0_#0D5B9E]/20"
+              className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/20 transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
             >
               {currentBranch === 'Reel' && <Film className="w-3.5 h-3.5" />}
               {currentBranch === 'Carousel' && <Layers className="w-3.5 h-3.5" />}
@@ -1470,11 +1470,11 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
           <div className="flex-1 flex flex-col min-h-0">
             {/* Stage Pipeline Tabs */}
             <div
-              className={`px-6 py-2 border-b flex items-center gap-2 overflow-x-auto select-none ${
-                isDark ? 'bg-[#12121a]/80 border-[#222230]' : 'bg-[#FAF8F5] border-slate-200/80'
+              className={`px-6 py-2 border-b flex items-center gap-2 overflow-x-auto select-none transition-colors ${
+                isDark ? 'bg-[#18181B] border-zinc-800' : 'bg-white border-neutral-200'
               }`}
             >
-              <div className="flex items-center gap-1 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+              <div className="flex items-center gap-1 p-1 rounded-lg bg-neutral-100 dark:bg-zinc-800/60 border border-neutral-200 dark:border-zinc-800">
                 {[
                   { id: 'script', label: '1. Script (4-Act)', icon: FileText },
                   { id: 'storyboard', label: '2. Storyboard', icon: Layers },
@@ -1489,12 +1489,12 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                       onClearToast?.();
                       setReelStage(st.id as any);
                     }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                    className={`px-3 py-1.5 rounded-md text-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                       reelStage === st.id
-                        ? 'bg-orange-600 text-white shadow-xs'
+                        ? 'bg-white dark:bg-zinc-900 text-neutral-900 dark:text-white shadow-xs font-semibold'
                         : isDark
-                        ? 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-black/5'
+                        ? 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700/50 font-medium'
+                        : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200/50 font-medium'
                     }`}
                   >
                     <st.icon className="w-3.5 h-3.5" />
@@ -2421,11 +2421,11 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
           <div className="flex-1 flex flex-col min-h-0">
             {/* Stage Pipeline Tabs */}
             <div
-              className={`px-6 py-2 border-b flex items-center gap-2 overflow-x-auto select-none ${
-                isDark ? 'bg-[#12121a]/80 border-[#222230]' : 'bg-[#FAF8F5] border-slate-200/80'
+              className={`px-6 py-2 border-b flex items-center gap-2 overflow-x-auto select-none transition-colors ${
+                isDark ? 'bg-[#18181B] border-zinc-800' : 'bg-white border-neutral-200'
               }`}
             >
-              <div className="flex items-center gap-1 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+              <div className="flex items-center gap-1 p-1 rounded-lg bg-neutral-100 dark:bg-zinc-800/60 border border-neutral-200 dark:border-zinc-800">
                 {[
                   { id: 'copy', label: `1. Slide Copy (${(selectedScript?.slides?.length || 5)} Slides)`, icon: FileText },
                   { id: 'mock', label: '2. Mock Carousel', icon: Eye },
@@ -2440,12 +2440,12 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                       onClearToast?.();
                       setCarouselStage(st.id as any);
                     }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                    className={`px-3 py-1.5 rounded-md text-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                       carouselStage === st.id
-                        ? 'bg-purple-600 text-white shadow-xs'
+                        ? 'bg-white dark:bg-zinc-900 text-neutral-900 dark:text-white shadow-xs font-semibold'
                         : isDark
-                        ? 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-black/5'
+                        ? 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700/50 font-medium'
+                        : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200/50 font-medium'
                     }`}
                   >
                     <st.icon className="w-3.5 h-3.5" />
@@ -3647,11 +3647,11 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
           <div className="flex-1 flex flex-col min-h-0">
             {/* Stage Pipeline Tabs */}
             <div
-              className={`px-6 py-2 border-b flex items-center gap-2 overflow-x-auto select-none ${
-                isDark ? 'bg-[#12121a]/80 border-[#222230]' : 'bg-[#FAF8F5] border-slate-200/80'
+              className={`px-6 py-2 border-b flex items-center gap-2 overflow-x-auto select-none transition-colors ${
+                isDark ? 'bg-[#18181B] border-zinc-800' : 'bg-white border-neutral-200'
               }`}
             >
-              <div className="flex items-center gap-1 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+              <div className="flex items-center gap-1 p-1 rounded-lg bg-neutral-100 dark:bg-zinc-800/60 border border-neutral-200 dark:border-zinc-800">
                 {[
                   { id: 'concept', label: '1. Concept & Copy', icon: FileText },
                   { id: 'mock', label: '2. Mock Image', icon: Eye },
@@ -3666,12 +3666,12 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                       onClearToast?.();
                       setImageStage(st.id as any);
                     }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                    className={`px-3 py-1.5 rounded-md text-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                       imageStage === st.id
-                        ? 'bg-blue-600 text-white shadow-xs'
+                        ? 'bg-white dark:bg-zinc-900 text-neutral-900 dark:text-white shadow-xs font-semibold'
                         : isDark
-                        ? 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-black/5'
+                        ? 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700/50 font-medium'
+                        : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200/50 font-medium'
                     }`}
                   >
                     <st.icon className="w-3.5 h-3.5" />
@@ -3688,11 +3688,11 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                 <div className="p-6 md:p-8 space-y-6 max-w-4xl mx-auto">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
-                      <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                        <ImageIcon className="w-5 h-5 text-blue-400" />
+                      <h2 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white flex items-center gap-2">
+                        <ImageIcon className="w-5 h-5 text-blue-500" />
                         <span>Single Image Concept &amp; Copy</span>
                       </h2>
-                      <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                      <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-neutral-500'}`}>
                         Configure typography overlay, visual prompt direction, and frame aspect ratio.
                       </p>
                     </div>
@@ -3702,9 +3702,9 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         id="btn-ai-improve-image"
                         type="button"
                         onClick={handleAiImproveImageConcept}
-                        className="px-3 py-2 rounded-xl text-xs font-semibold border border-blue-500/40 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                        className="px-3 py-1.5 rounded-lg text-xs font-medium border border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
                       >
-                        <Wand2 className="w-3.5 h-3.5 text-blue-400" />
+                        <Wand2 className="w-3.5 h-3.5 text-blue-500" />
                         <span>AI Polish</span>
                       </button>
 
@@ -3712,8 +3712,8 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         id="btn-regenerate-image"
                         type="button"
                         onClick={handleRegenerateImageConcept}
-                        className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-colors flex items-center gap-1.5 cursor-pointer ${
-                          isDark ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300' : 'border-slate-300 hover:bg-slate-100 text-slate-700'
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                          isDark ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300' : 'border-neutral-200 hover:bg-neutral-50 text-neutral-700'
                         }`}
                       >
                         <RefreshCw className="w-3.5 h-3.5" />
@@ -3727,7 +3727,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           type="button"
                           onClick={handleGenerateWithManus}
                           disabled={manusTaskState.active}
-                          className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60 shrink-0"
+                          className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-60 shrink-0"
                         >
                           <Bot className={`w-3.5 h-3.5 ${manusTaskState.active ? 'animate-spin' : ''}`} />
                           <span>{manusTaskState.active ? 'Manus Agent Working...' : 'Dispatch Manus Agent (1 Credit) ➔'}</span>
@@ -3744,7 +3744,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                             });
                             setImageStage('mock');
                           }}
-                          className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer shrink-0"
+                          className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors flex items-center gap-2 cursor-pointer shrink-0"
                         >
                           <Layout className="w-3.5 h-3.5" />
                           <span>Compose Graphic Layout ➔</span>
@@ -3755,7 +3755,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           type="button"
                           onClick={handleGenerateMockImage}
                           disabled={isGeneratingMockImage}
-                          className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60 shrink-0"
+                          className="px-4 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-60 shrink-0"
                         >
                           <Sparkles className={`w-3.5 h-3.5 ${isGeneratingMockImage ? 'animate-spin' : ''}`} />
                           <span>{isGeneratingMockImage ? 'Generating Scene with Flux...' : 'Generate AI Visual Scene ➔'}</span>
@@ -3766,7 +3766,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                           type="button"
                           onClick={handleGenerateMockImage}
                           disabled={isGeneratingMockImage}
-                          className="px-4 py-2 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-60 shrink-0"
+                          className="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-60 shrink-0"
                         >
                           <Sparkles className={`w-3.5 h-3.5 ${isGeneratingMockImage ? 'animate-spin' : ''}`} />
                           <span>{isGeneratingMockImage ? 'Checking API...' : 'Generate with Gemini (Billing Req.) ➔'}</span>
@@ -3776,8 +3776,8 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                   </div>
 
                   {/* COLLAPSED VISUAL PRODUCTION PROVIDER SELECTOR (Requirements 6 & 8) */}
-                  <div className={`p-4 rounded-2xl border space-y-3 ${
-                    isDark ? 'bg-[#181826] border-[#2c2c40]' : 'bg-white border-slate-200 shadow-sm'
+                  <div className={`p-4 rounded-xl border space-y-3 ${
+                    isDark ? 'bg-[#18181B] border-zinc-800' : 'bg-white border-neutral-200 shadow-xs'
                   }`}>
                     <div className="flex items-center justify-between">
                       <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
@@ -3802,17 +3802,17 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         type="button"
                         id="provider-card-flux"
                         onClick={() => setSelectedImageProvider('flux')}
-                        className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                        className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer flex items-center justify-between ${
                           selectedImageProvider === 'flux'
-                            ? 'border-purple-500 bg-purple-500/15 shadow-sm text-purple-200'
-                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40 text-zinc-400' : 'border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700'
+                            ? 'border-purple-500 bg-purple-500/10 text-purple-700 dark:text-purple-300 shadow-2xs'
+                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-900/40 text-zinc-400' : 'border-neutral-200 hover:border-neutral-300 bg-neutral-50/60 text-neutral-600'
                         }`}
                       >
                         <div className="flex items-center gap-2">
-                          <Sparkles className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                          <Sparkles className="w-3.5 h-3.5 text-purple-500 shrink-0" />
                           <div>
-                            <div className="text-xs font-bold text-slate-900 dark:text-white">Flux AI Visuals</div>
-                            <div className="text-[10px] text-purple-400 font-mono">Key &amp; Quota Apply</div>
+                            <div className="text-xs font-semibold text-neutral-900 dark:text-white">Flux AI Visuals</div>
+                            <div className="text-[10px] text-purple-600 dark:text-purple-400 font-mono">Key &amp; Quota Apply</div>
                           </div>
                         </div>
                       </button>
@@ -3822,17 +3822,17 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         type="button"
                         id="provider-card-canvas"
                         onClick={() => setSelectedImageProvider('canvas')}
-                        className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                        className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer flex items-center justify-between ${
                           selectedImageProvider === 'canvas'
-                            ? 'border-emerald-500 bg-emerald-500/15 shadow-sm text-emerald-200'
-                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40 text-zinc-400' : 'border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700'
+                            ? 'border-emerald-500 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 shadow-2xs'
+                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-900/40 text-zinc-400' : 'border-neutral-200 hover:border-neutral-300 bg-neutral-50/60 text-neutral-600'
                         }`}
                       >
                         <div className="flex items-center gap-2">
-                          <Layout className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          <Layout className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                           <div>
-                            <div className="text-xs font-bold text-slate-900 dark:text-white">Local Canvas</div>
-                            <div className="text-[10px] text-emerald-400 font-mono">100% Free • Client-Side</div>
+                            <div className="text-xs font-semibold text-neutral-900 dark:text-white">Local Canvas</div>
+                            <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">100% Free • Client-Side</div>
                           </div>
                         </div>
                       </button>
@@ -3842,17 +3842,17 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         type="button"
                         id="provider-card-manus"
                         onClick={() => setSelectedImageProvider('manus')}
-                        className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                        className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer flex items-center justify-between ${
                           selectedImageProvider === 'manus'
-                            ? 'border-indigo-500 bg-indigo-500/15 shadow-sm text-indigo-200'
-                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40 text-zinc-400' : 'border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700'
+                            ? 'border-indigo-500 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 shadow-2xs'
+                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-900/40 text-zinc-400' : 'border-neutral-200 hover:border-neutral-300 bg-neutral-50/60 text-neutral-600'
                         }`}
                       >
                         <div className="flex items-center gap-2">
-                          <Bot className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                          <Bot className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
                           <div>
-                            <div className="text-xs font-bold text-slate-900 dark:text-white">Manus Agent</div>
-                            <div className="text-[10px] text-indigo-400 font-mono">1 Task Credit</div>
+                            <div className="text-xs font-semibold text-neutral-900 dark:text-white">Manus Agent</div>
+                            <div className="text-[10px] text-indigo-600 dark:text-indigo-400 font-mono">1 Task Credit</div>
                           </div>
                         </div>
                       </button>
@@ -3862,17 +3862,17 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                         type="button"
                         id="provider-card-gemini"
                         onClick={() => setSelectedImageProvider('gemini')}
-                        className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                        className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer flex items-center justify-between ${
                           selectedImageProvider === 'gemini'
-                            ? 'border-amber-500 bg-amber-500/15 shadow-sm text-amber-200'
-                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40 text-zinc-400' : 'border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700'
+                            ? 'border-amber-500 bg-amber-500/10 text-amber-700 dark:text-amber-300 shadow-2xs'
+                            : isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-900/40 text-zinc-400' : 'border-neutral-200 hover:border-neutral-300 bg-neutral-50/60 text-neutral-600'
                         }`}
                       >
                         <div className="flex items-center gap-2">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                          <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                           <div>
-                            <div className="text-xs font-bold text-slate-900 dark:text-white">Gemini API</div>
-                            <div className="text-[10px] text-amber-400 font-mono">Limit: 0 / Billing</div>
+                            <div className="text-xs font-semibold text-neutral-900 dark:text-white">Gemini API</div>
+                            <div className="text-[10px] text-amber-600 dark:text-amber-400 font-mono">Limit: 0 / Billing</div>
                           </div>
                         </div>
                       </button>
@@ -3880,29 +3880,29 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
 
                     {/* CLEAR NOTICE BEFORE CREDIT / BALANCE CONSUMPTION (Requirements 6 & 9) */}
                     {selectedImageProvider === 'manus' && (
-                      <div className={`p-3 rounded-xl border text-[11px] space-y-1.5 ${
-                        isDark ? 'bg-indigo-950/40 border-indigo-500/40 text-indigo-200' : 'bg-indigo-50/90 border-indigo-200 text-indigo-950'
+                      <div className={`p-2.5 rounded-lg border text-[11px] space-y-1 ${
+                        isDark ? 'bg-indigo-950/20 border-indigo-500/30 text-indigo-200' : 'bg-indigo-50/60 border-indigo-200/80 text-indigo-950'
                       }`}>
-                        <div className={`font-bold flex items-center gap-2 ${
+                        <div className={`font-semibold flex items-center gap-2 ${
                           isDark ? 'text-indigo-300' : 'text-indigo-900'
                         }`}>
                           <Info className="w-3.5 h-3.5 shrink-0 text-indigo-400" />
                           <span>Manus Account Credits Notice</span>
                         </div>
-                        <p className={`leading-relaxed ${
-                          isDark ? 'text-zinc-300' : 'text-slate-700'
+                        <p className={`leading-relaxed text-[11px] ${
+                          isDark ? 'text-zinc-300' : 'text-slate-600'
                         }`}>
                           Dispatching Manus starts an autonomous agent in your account (<code>agent_profile: manus-1.6-lite</code>), consuming <strong>1 task execution</strong>. S2S never triggers automatic runs without your explicit button click.
                         </p>
                         <div className={`flex items-center gap-3 pt-0.5 text-[10px] ${
-                          isDark ? 'text-indigo-400' : 'text-indigo-700 font-semibold'
+                          isDark ? 'text-indigo-400' : 'text-indigo-700 font-medium'
                         }`}>
                           <span>Verify plan balance:</span>
                           <a
                             href="https://manus.im/app"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="underline hover:opacity-80 inline-flex items-center gap-1 font-bold"
+                            className="underline hover:opacity-80 inline-flex items-center gap-1 font-semibold"
                           >
                             Manus Dashboard <ExternalLink className="w-3 h-3" />
                           </a>
@@ -3911,35 +3911,35 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
                     )}
 
                     {selectedImageProvider === 'flux' && (
-                      <div className={`p-3 rounded-xl border text-[11px] space-y-1.5 ${
-                        isDark ? 'bg-purple-950/40 border-purple-500/40 text-purple-200' : 'bg-purple-50/90 border-purple-200 text-purple-950'
+                      <div className={`p-2.5 rounded-lg border text-[11px] space-y-1 ${
+                        isDark ? 'bg-purple-950/20 border-purple-500/30 text-purple-200' : 'bg-purple-50/60 border-purple-200/80 text-purple-950'
                       }`}>
-                        <div className={`font-bold flex items-center gap-2 ${
+                        <div className={`font-semibold flex items-center gap-2 ${
                           isDark ? 'text-purple-300' : 'text-purple-900'
                         }`}>
                           <Sparkles className="w-3.5 h-3.5 shrink-0 text-purple-400" />
                           <span>Flux / Pollinations API Policy &amp; Quota Notice</span>
                         </div>
-                        <p className={`leading-relaxed ${
-                          isDark ? 'text-zinc-300' : 'text-slate-700'
+                        <p className={`leading-relaxed text-[11px] ${
+                          isDark ? 'text-zinc-300' : 'text-slate-600'
                         }`}>
-                          Generates genuine visual background scenes without distorted text. A free allowance (Quest Pollen) may be available for registered accounts, but API authentication is required and quota restrictions apply. If no key is configured or the free allowance is exhausted, generation stops to prevent chargeable requests. Configure <code>POLLINATIONS_API_KEY</code> in .env (get a free key at <code>enter.pollinations.ai</code>) or use Local Canvas Composer.
+                          Generates genuine visual background scenes without distorted text. A free allowance (Quest Pollen) may be available for registered accounts, but API authentication is required and quota restrictions apply. If no key is configured or the free allowance is exhausted, generation stops to prevent chargeable requests. Configure <code>POLLINATIONS_API_KEY</code> in .env or use Local Canvas Composer.
                         </p>
                       </div>
                     )}
 
                     {selectedImageProvider === 'canvas' && (
-                      <div className={`p-3 rounded-xl border text-[11px] space-y-1 ${
-                        isDark ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200' : 'bg-emerald-50/90 border-emerald-200 text-emerald-950'
+                      <div className={`p-2.5 rounded-lg border text-[11px] space-y-1 ${
+                        isDark ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-200' : 'bg-emerald-50/60 border-emerald-200/80 text-emerald-950'
                       }`}>
-                        <div className={`font-bold flex items-center gap-2 ${
+                        <div className={`font-semibold flex items-center gap-2 ${
                           isDark ? 'text-emerald-300' : 'text-emerald-900'
                         }`}>
                           <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-emerald-400" />
                           <span>100% Free Client Canvas (No External API Calls)</span>
                         </div>
-                        <p className={`leading-relaxed ${
-                          isDark ? 'text-zinc-300' : 'text-slate-700'
+                        <p className={`leading-relaxed text-[11px] ${
+                          isDark ? 'text-zinc-300' : 'text-slate-600'
                         }`}>
                           Composes graphic cards locally in your browser using precision typography and geometric layouts. Zero external API calls, zero latency, and zero balance consumption.
                         </p>

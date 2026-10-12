@@ -89,7 +89,8 @@ async function runAudit() {
   const screenshotDir = path.resolve('/Users/sachinramesh/.gemini/antigravity-ide/brain/56077cb5-6f5e-41dc-975b-dfeee3e234d7/.tempmediaStorage');
 
   try {
-    await page.goto('http://localhost:3000', { waitUntil: 'networkidle' });
+    const port = process.env.PORT || '3005';
+    await page.goto(`http://localhost:${port}`, { waitUntil: 'networkidle' });
     await page.waitForTimeout(1000);
 
     // Open Content Production -> Script Studio

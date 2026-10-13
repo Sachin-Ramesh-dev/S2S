@@ -82,6 +82,14 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
       : (account.followersCount / 1000).toFixed(1) + 'k'
     : '0';
 
+  // Dynamic time-of-day greeting
+  const greeting = (() => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return 'Good morning';
+    if (hour >= 12 && hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  })();
+
   return (
     <div
       id="s2s-home-action-center"
@@ -109,7 +117,7 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
 
             {/* Editorial Hero Title */}
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight font-heading leading-tight text-neutral-900 dark:text-white">
-              Good morning. Your content engine <span className="text-[#F43F5E]">is ready.</span>
+              {greeting}. Your content engine <span className="text-[#F43F5E]">is ready.</span>
             </h1>
 
             <p className={`text-sm leading-relaxed font-normal ${isDark ? 'text-zinc-400' : 'text-neutral-500'}`}>

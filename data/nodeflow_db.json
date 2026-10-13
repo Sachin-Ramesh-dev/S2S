@@ -1343,6 +1343,36 @@
       "iv": "di/6kCkbq7F/2mlU",
       "authTag": "ygmBSvi3qvZBl7etchebNQ==",
       "createdAt": "2026-09-30T16:33:57.163Z"
+    },
+    {
+      "id": "cred-meta-oauth-1791880835068",
+      "name": "Meta OAuth User Token",
+      "type": "api_key",
+      "maskedPreview": "EAAV...7xlc",
+      "cipherText": "Q2pv3REghtBdxUwySKN3bq+UAO6eUEACUTog3nUtvIljWQpzkD6pkXZNMd6DoRCU13OW4FaLxZIUKHcfbIzqNeYH6nLkzH/AFbkmZcHWhIlQcPHCn73tWIjd27Xu2EGxIOqsyK5K9sRKuYr9IpeQbtU1QMPHGs5PYaj/JJ+aypWqimtHUH8/jCioIFqDSwH+MLGQkT5X0/oAAMuhim3YfxpNqnlmoZvjUKDKDYohV1fpSqYMETfYSBpdSRYj5tVhWwpy8ljtUw==",
+      "iv": "7hHv15wmeofg0n32",
+      "authTag": "dCwDuHwsq0MfgFbCA8MX0g==",
+      "createdAt": "2026-10-13T08:40:35.090Z"
+    },
+    {
+      "id": "cred-meta-oauth-1791880853108",
+      "name": "Meta OAuth User Token",
+      "type": "api_key",
+      "maskedPreview": "EAAV...setY",
+      "cipherText": "d/m9bmVKdRa9qZ/KestyqR/Srt+bi4lilR2CaDjUt7kkeiOjT+iWczXlxUwVFKqMdMUjZ5re+gnLQDHzrfkhemydBuF+J/8f0XaiodMOt1aI0IBslY4CryweYqzXwP7d1WoN7EtCw/bXQWVtkOkLJ3cvg2JBo1ZUIbMvHeL6QDeNWiGBtVEPnH1x42pm0CUeP2JyBq66GdEaBiLzL/4OPbSX3R7wNl4waGM44ut0f2OsEOKb//3aPNK2Xa/gMhzykqNe",
+      "iv": "lhFqqq53jqHPwltc",
+      "authTag": "HNwKMkhJ7lksDrjEe8RLfg==",
+      "createdAt": "2026-10-13T08:40:53.128Z"
+    },
+    {
+      "id": "cred-meta-oauth-1791880910615",
+      "name": "Meta OAuth User Token",
+      "type": "api_key",
+      "maskedPreview": "EAAV...JNxS",
+      "cipherText": "NNOQEX+eVbAG9JiaKEHt75mMHzVxCJ4qflbqFwPKqk2f8B45vwtnvGkibqM0DaPZ7nb9RKP2wETRfaH4xWN2KsGOdR/4RM/Z3yX4eM7cub/K7d+VTK3pp0w3A4wsUynAQdd6luiKNsdwIN+New7ujhZo3BdXC4RV/uj1jzTHfbOLUWh7iVxYM1+GQLY8gXr7KrTxX3t0z02Tl30i5yHdSyxctMkNEN1AROSuRA5HoDYxc4YQRRg2mqAulNf+HTri",
+      "iv": "yrGZZLQZKKPWzo7f",
+      "authTag": "QxQuMquIhHT1b/IzbPxXZQ==",
+      "createdAt": "2026-10-13T08:41:50.636Z"
     }
   ],
   "securitySettings": {
@@ -2876,7 +2906,98 @@
       "isArchived": false
     }
   ],
-  "instagramTopics": [],
+  "instagramTopics": [
+    {
+      "id": "topic-1791786204696-0",
+      "accountId": "ig-snacc.mart-1789832445989",
+      "title": "The 200g Potato Chip Math: Packaged Air vs. Fresh Hot Kadai",
+      "hook": "73% NITROGEN, 27% POTATO: STOP OVERPAYING.",
+      "format": "Reel",
+      "contentPillar": "Educational Tutorials & Guides",
+      "viralPotentialScore": 94,
+      "auditRationale": "Directly tackles the 60-second actionable breakdown gap using verifiable unit economics (cost per edible gram). Opens instantly with a high-contrast numerical hook without pleasantries, driving silent mobile retention.",
+      "status": "pending",
+      "createdAt": "2026-10-12T06:23:24.696Z",
+      "generationId": "gen-1791786180084-o4nc3",
+      "angleOptions": [
+        "Cost-per-gram comparison breakdown (Packaged brand vs Fresh Kadai batch)",
+        "Weighing nitrogen volume on-camera against real potato mass",
+        "Per-gram oil freshness metrics verified under heating thresholds"
+      ]
+    },
+    {
+      "id": "topic-1791786204696-1",
+      "accountId": "ig-snacc.mart-1789832445989",
+      "title": "5-Slide Office Pantry Audit: Slashing Electronic City 4 PM Snack Waste",
+      "hook": "STOP WASTING ₹6,400 MONTHLY ON VENDING MACHINES.",
+      "format": "Carousel",
+      "contentPillar": "Client Proof & Case Studies",
+      "viralPotentialScore": 88,
+      "auditRationale": "Solves the checklist carousel requirement for local corporate hubs in Electronic City. Uses verifiable math, persistent swipe triggers on slides 2-8, and a direct keyword CTA to bridge blog/menu content.",
+      "status": "pending",
+      "createdAt": "2026-10-12T06:23:24.696Z",
+      "generationId": "gen-1791786180084-o4nc3",
+      "angleOptions": [
+        "Before-and-after spend audit for a 30-person engineering team",
+        "5-step bulk order procurement checklist for office admins",
+        "Caloric density vs per-rupee value comparison matrix"
+      ]
+    },
+    {
+      "id": "topic-1791786204696-2",
+      "accountId": "ig-snacc.mart-1789832445989",
+      "title": "The Palm Oil Re-Boil Test: What 180°C Does to Street Snacks",
+      "hook": "YOUR TEA-TIME CHIPS WERE RE-HEATED 6 TIMES.",
+      "format": "Reel",
+      "contentPillar": "Viral Market Trends & Reels",
+      "viralPotentialScore": 96,
+      "auditRationale": "Deploys a sub-2.5s pattern interrupt featuring a precision oil testing device, delivering radical transparency on snack oil quality without generic health cliches, closing with a binary diagnostic prompt.",
+      "status": "pending",
+      "createdAt": "2026-10-12T06:23:24.696Z",
+      "generationId": "gen-1791786180084-o4nc3",
+      "angleOptions": [
+        "Total Polar Compounds (TPC) meter reading live inside hot oil",
+        "Fresh daily batch filtration vs multi-day roadside fryers",
+        "Why single-fry banana chips retain zero rancid odor"
+      ]
+    },
+    {
+      "id": "topic-1791786204696-3",
+      "accountId": "ig-snacc.mart-1789832445989",
+      "title": "The Samosa Chaat Dissection: What ₹60 Actually Buys in Bengaluru",
+      "hook": "FLOUR FILLER VS CHANA: THE ₹60 BREAKDOWN.",
+      "format": "Carousel",
+      "contentPillar": "Educational Tutorials & Guides",
+      "viralPotentialScore": 85,
+      "auditRationale": "Fulfills the save-worthy industry comparison demand by dissecting typical ingredient ratios versus high-protein chaat builds, reinforcing transparent customer protection standards.",
+      "status": "pending",
+      "createdAt": "2026-10-12T06:23:24.696Z",
+      "generationId": "gen-1791786180084-o4nc3",
+      "angleOptions": [
+        "Gram-by-gram ingredient breakdown on analytical micro-scales",
+        "Digestibility audit: Store-made tamarind pulp vs synthetic concentrate",
+        "Checklist for identifying fresh vs reheated samosa crusts"
+      ]
+    },
+    {
+      "id": "topic-1791786204696-4",
+      "accountId": "ig-snacc.mart-1789832445989",
+      "title": "Bulk Catering Math: How to Feed 50 People for Under ₹75 Per Head",
+      "hook": "CATERERS CHARGE ₹220/PLATE. HERE IS THE ₹72 RECIPE.",
+      "format": "Reel",
+      "contentPillar": "Educational Tutorials & Guides",
+      "viralPotentialScore": 91,
+      "auditRationale": "Resolves customer friction around event snack budgeting via rigorous mathematical itemization, pairing oversized on-screen text bursts with a low-friction keyword DM trigger.",
+      "status": "pending",
+      "createdAt": "2026-10-12T06:23:24.696Z",
+      "generationId": "gen-1791786180084-o4nc3",
+      "angleOptions": [
+        "Live order-assembly breakdown with unit price tags overlay",
+        "Hot Chips + Chaat pairing formula that guarantees zero wastage",
+        "Corporate sprint celebration vs banquet hall bill comparison"
+      ]
+    }
+  ],
   "instagramPipeline": [
     {
       "id": "pipe-1789833009944",
@@ -9094,10 +9215,10 @@
       "monthlyBudgetUsd": 100,
       "warningThresholdPct": 80,
       "hardStopPct": 100,
-      "currentSpendUsd": 18.501000000000005,
+      "currentSpendUsd": 18.503250000000005,
       "currentMonth": "September 2026",
-      "requestCountThisMonth": 160,
-      "estimatedTokensThisMonth": 196800
+      "requestCountThisMonth": 161,
+      "estimatedTokensThisMonth": 198300
     },
     "learningSettings": {
       "enabled": true,
@@ -9514,6 +9635,96 @@
     }
   ],
   "instagramGenerations": [
+    {
+      "id": "gen-1791786180084-o4nc3",
+      "task": "topic_generation",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "promptVersion": "topic-prompt-v8",
+      "skillVersion": "v4",
+      "inputContextSummary": "@snacc.mart (topic_generation) - Skill v4",
+      "inputContext": {
+        "account": "snacc.mart",
+        "skillVersion": "v4"
+      },
+      "output": [
+        {
+          "title": "The 200g Potato Chip Math: Packaged Air vs. Fresh Hot Kadai",
+          "hook": "73% NITROGEN, 27% POTATO: STOP OVERPAYING.",
+          "format": "Reel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 94,
+          "auditRationale": "Directly tackles the 60-second actionable breakdown gap using verifiable unit economics (cost per edible gram). Opens instantly with a high-contrast numerical hook without pleasantries, driving silent mobile retention.",
+          "angleOptions": [
+            "Cost-per-gram comparison breakdown (Packaged brand vs Fresh Kadai batch)",
+            "Weighing nitrogen volume on-camera against real potato mass",
+            "Per-gram oil freshness metrics verified under heating thresholds"
+          ]
+        },
+        {
+          "title": "5-Slide Office Pantry Audit: Slashing Electronic City 4 PM Snack Waste",
+          "hook": "STOP WASTING ₹6,400 MONTHLY ON VENDING MACHINES.",
+          "format": "Carousel",
+          "contentPillar": "Client Proof & Case Studies",
+          "viralPotentialScore": 88,
+          "auditRationale": "Solves the checklist carousel requirement for local corporate hubs in Electronic City. Uses verifiable math, persistent swipe triggers on slides 2-8, and a direct keyword CTA to bridge blog/menu content.",
+          "angleOptions": [
+            "Before-and-after spend audit for a 30-person engineering team",
+            "5-step bulk order procurement checklist for office admins",
+            "Caloric density vs per-rupee value comparison matrix"
+          ]
+        },
+        {
+          "title": "The Palm Oil Re-Boil Test: What 180°C Does to Street Snacks",
+          "hook": "YOUR TEA-TIME CHIPS WERE RE-HEATED 6 TIMES.",
+          "format": "Reel",
+          "contentPillar": "Viral Market Trends & Reels",
+          "viralPotentialScore": 96,
+          "auditRationale": "Deploys a sub-2.5s pattern interrupt featuring a precision oil testing device, delivering radical transparency on snack oil quality without generic health cliches, closing with a binary diagnostic prompt.",
+          "angleOptions": [
+            "Total Polar Compounds (TPC) meter reading live inside hot oil",
+            "Fresh daily batch filtration vs multi-day roadside fryers",
+            "Why single-fry banana chips retain zero rancid odor"
+          ]
+        },
+        {
+          "title": "The Samosa Chaat Dissection: What ₹60 Actually Buys in Bengaluru",
+          "hook": "FLOUR FILLER VS CHANA: THE ₹60 BREAKDOWN.",
+          "format": "Carousel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 85,
+          "auditRationale": "Fulfills the save-worthy industry comparison demand by dissecting typical ingredient ratios versus high-protein chaat builds, reinforcing transparent customer protection standards.",
+          "angleOptions": [
+            "Gram-by-gram ingredient breakdown on analytical micro-scales",
+            "Digestibility audit: Store-made tamarind pulp vs synthetic concentrate",
+            "Checklist for identifying fresh vs reheated samosa crusts"
+          ]
+        },
+        {
+          "title": "Bulk Catering Math: How to Feed 50 People for Under ₹75 Per Head",
+          "hook": "CATERERS CHARGE ₹220/PLATE. HERE IS THE ₹72 RECIPE.",
+          "format": "Reel",
+          "contentPillar": "Educational Tutorials & Guides",
+          "viralPotentialScore": 91,
+          "auditRationale": "Resolves customer friction around event snack budgeting via rigorous mathematical itemization, pairing oversized on-screen text bursts with a low-friction keyword DM trigger.",
+          "angleOptions": [
+            "Live order-assembly breakdown with unit price tags overlay",
+            "Hot Chips + Chaat pairing formula that guarantees zero wastage",
+            "Corporate sprint celebration vs banquet hall bill comparison"
+          ]
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 850,
+        "completion": 650,
+        "total": 1500
+      },
+      "costEstimateUsd": 0.0022500000000000003,
+      "durationMs": 24612,
+      "status": "success",
+      "userDecision": "pending",
+      "createdAt": "2026-10-12T06:23:24.696Z"
+    },
     {
       "id": "gen-1791473902751-czunh",
       "task": "script_generation",

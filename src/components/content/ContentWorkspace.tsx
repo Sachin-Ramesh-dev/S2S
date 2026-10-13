@@ -116,8 +116,22 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
 }) => {
   const { isDark } = useTheme();
 
-  // Find active script or default to first
-  const selectedScript = scripts.find((s) => s.id === selectedScriptId) || scripts[0] || null;
+  // Defensive account-scoping helper
+  const matchesAccount = (itemAccountId?: string) => {
+    if (!account) return true;
+    if (!itemAccountId) return false;
+    if (itemAccountId === account.id) return true;
+    const clean = account.username.toLowerCase();
+    return itemAccountId.toLowerCase().includes(clean) || itemAccountId.toLowerCase().startsWith(`ig-${clean}`);
+  };
+
+  const scopedScripts = scripts.filter((s) => matchesAccount(s.accountId));
+  const scopedTopics = topics.filter((t) => matchesAccount(t.accountId));
+
+  // Find active script or null if explicitly cleared ('empty') or none found
+  const selectedScript = selectedScriptId === 'empty'
+    ? null
+    : (scopedScripts.find((s) => s.id === selectedScriptId) || scopedScripts[0] || null);
 
   // Normalize format to one of 3 primary branches
   const getNormalizedFormat = (fmt?: TopicFormat): 'Reel' | 'Carousel' | 'Image' => {
@@ -946,9 +960,9 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
     if (!selectedScript) return;
     setIsGeneratingMockImage(true);
     setAiImageError(null);
+    const providerToUse = selectedImageProvider === 'gemini' ? 'gemini' : 'flux';
     try {
       const concept = selectedScript.imageConcept || getDefaultImageConcept(selectedScript);
-      const providerToUse = selectedImageProvider === 'gemini' ? 'gemini' : 'flux';
       const res = await instagramApi.generateAiImage({
         scriptId: selectedScript.id,
         prompt: concept.visualPrompt || selectedScript.title,
@@ -1301,7 +1315,7 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
       <div id="topics-scroll-container" className={`flex-1 min-w-0 h-full overflow-y-auto p-6 md:p-8 ${isDark ? 'bg-[#0F0F12] text-[#F5F3EC]' : 'bg-[#F9FAFB] text-[#111111]'}`}>
         <InstagramTopicsView
           account={account || ({ id: 'default', username: 'account', displayName: 'Account', followersCount: 0 } as any)}
-          topics={topics}
+          topics={scopedTopics}
           activeSkill={activeSkill}
           onApproveTopic={onApproveTopic || (() => {})}
           onApproveTopicWithFormat={onApproveTopicWithFormat}
@@ -1406,16 +1420,19 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
         {/* Right: Draft Selector & Secondary Tools */}
         <div className="flex items-center gap-2 w-full lg:w-auto justify-between lg:justify-end">
           {/* Draft selector dropdown */}
-          {scripts.length > 1 && (
+          {scopedScripts.length > 0 && (
             <select
               id="select-active-script"
-              value={selectedScript?.id}
+              value={selectedScript?.id || ''}
               onChange={(e) => onSelectScript(e.target.value)}
               className={`text-xs rounded-lg px-2.5 py-1.5 border font-semibold cursor-pointer outline-none transition-colors ${
                 isDark ? 'bg-[#1b1b28] border-zinc-700 text-white' : 'bg-white border-slate-300 text-slate-800'
               }`}
             >
-              {scripts.map((s) => (
+              {!selectedScript && (
+                <option value="" disabled>-- Select a Script ({scopedScripts.length} available) --</option>
+              )}
+              {scopedScripts.map((s) => (
                 <option key={s.id} value={s.id}>
                   [{s.format || 'Reel'}] {s.title.slice(0, 30)}...
                 </option>
@@ -1463,6 +1480,46 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
 
       {/* 2. DYNAMIC FORMAT WORKSPACE BODY */}
       <div className="flex-1 overflow-y-auto flex flex-col">
+        {!selectedScript ? (
+          <div id="empty-script-workspace" className="flex-1 flex flex-col items-center justify-center p-8 text-center select-none bg-neutral-50/50 dark:bg-zinc-900/30">
+            <div className="w-16 h-16 rounded-2xl bg-white dark:bg-zinc-800 border border-neutral-200 dark:border-zinc-700 flex items-center justify-center text-3xl mb-4 shadow-sm">
+              🎬
+            </div>
+            <h3 className="text-base font-bold text-neutral-900 dark:text-zinc-100 mb-1">
+              {scopedScripts.length > 0 ? 'No Script Selected' : 'No Scripts Available Yet'}
+            </h3>
+            <p className="text-xs text-neutral-500 dark:text-zinc-400 max-w-sm mb-6">
+              {scopedScripts.length > 0
+                ? `Select a script from the dropdown above to continue production for @${account?.username}.`
+                : `Generate topics and approve a draft to create the first script for @${account?.username}.`}
+            </p>
+            {scopedScripts.length > 0 ? (
+              <div className="flex flex-wrap gap-2 justify-center max-w-md">
+                {scopedScripts.slice(0, 6).map((s) => (
+                  <button
+                    key={s.id}
+                    id={`btn-select-script-${s.id}`}
+                    type="button"
+                    onClick={() => onSelectScript(s.id)}
+                    className="px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-zinc-700 text-xs font-semibold hover:border-orange-500 dark:hover:border-orange-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors bg-white dark:bg-zinc-800 text-neutral-800 dark:text-zinc-200 cursor-pointer shadow-2xs"
+                  >
+                    [{s.format || 'Reel'}] {s.title.slice(0, 24)}...
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <button
+                type="button"
+                id="btn-goto-topics"
+                onClick={() => onSubViewChange?.('topics')}
+                className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs shadow-xs transition-colors cursor-pointer"
+              >
+                Go to Topics Queue
+              </button>
+            )}
+          </div>
+        ) : (
+          <>
         {/* ========================================================================= */}
         {/* BRANCH A: 🎬 REEL / VIDEO WORKSPACE                                      */}
         {/* ========================================================================= */}
@@ -4962,6 +5019,8 @@ export const ContentWorkspace: React.FC<ContentWorkspaceProps> = ({
               </div>
             )}
           </div>
+        )}
+          </>
         )}
       </div>
 

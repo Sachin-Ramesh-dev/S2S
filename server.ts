@@ -2069,6 +2069,144 @@ app.post('/api/instagram/accounts/connect-manus', async (req, res) => {
   }
 });
 
+// Helper to detect linked Instagram Professional accounts from token (handles both Personal & Meta Business Suite / Portfolio pages via granular_scopes)
+async function detectInstagramAccountsFromToken(token: string, appId?: string, appSecret?: string): Promise<any[]> {
+  const detectedAccounts: any[] = [];
+  const seenIds = new Set<string>();
+
+  const effectiveAppId = appId || process.env.META_APP_ID;
+  const effectiveAppSecret = appSecret || process.env.META_APP_SECRET;
+
+  // 1. Inspect granular scopes via debug_token (Crucial for Meta Business Suite / Portfolio pages)
+  if (effectiveAppId && effectiveAppSecret) {
+    try {
+      const dbgUrl = `https://graph.facebook.com/v20.0/debug_token?input_token=${encodeURIComponent(token)}&access_token=${encodeURIComponent(effectiveAppId)}|${encodeURIComponent(effectiveAppSecret)}`;
+      const dbgRes = await fetch(dbgUrl);
+      const dbgData: any = await dbgRes.json();
+
+      if (dbgData?.data?.granular_scopes && Array.isArray(dbgData.data.granular_scopes)) {
+        for (const gs of dbgData.data.granular_scopes) {
+          const targetIds = gs.target_ids || [];
+          for (const targetId of targetIds) {
+            if (seenIds.has(targetId)) continue;
+
+            // If it's an Instagram account scope
+            if (gs.scope?.startsWith('instagram_')) {
+              try {
+                const igUrl = `https://graph.facebook.com/v20.0/${targetId}?fields=id,username,name,biography,followers_count,follows_count,media_count,profile_picture_url&access_token=${encodeURIComponent(token)}`;
+                const igRes = await fetch(igUrl);
+                const ig: any = await igRes.json();
+                if (ig?.id && ig?.username && !seenIds.has(ig.id)) {
+                  seenIds.add(ig.id);
+                  detectedAccounts.push({
+                    id: ig.id,
+                    username: ig.username,
+                    displayName: ig.name || ig.username,
+                    category: 'Brand / Business',
+                    bio: ig.biography || '',
+                    followersCount: ig.followers_count || 0,
+                    mediaCount: ig.media_count || 0,
+                    profilePictureUrl: ig.profile_picture_url || '',
+                    isDemo: false
+                  });
+                }
+              } catch (e) {
+                console.warn(`Error resolving IG targetId ${targetId}:`, e);
+              }
+            }
+
+            // If it's a Page scope
+            if (gs.scope?.startsWith('pages_')) {
+              try {
+                const pageUrl = `https://graph.facebook.com/v20.0/${targetId}?fields=id,name,category,access_token,instagram_business_account{id,username,name,profile_picture_url,followers_count,biography}&access_token=${encodeURIComponent(token)}`;
+                const pageRes = await fetch(pageUrl);
+                const page: any = await pageRes.json();
+                if (page?.instagram_business_account && !seenIds.has(page.instagram_business_account.id)) {
+                  const ig = page.instagram_business_account;
+                  seenIds.add(ig.id);
+                  detectedAccounts.push({
+                    id: ig.id,
+                    pageId: page.id,
+                    pageName: page.name,
+                    username: ig.username,
+                    displayName: ig.name || page.name || ig.username,
+                    category: page.category || 'Brand / Business',
+                    bio: ig.biography || '',
+                    followersCount: ig.followers_count || 0,
+                    profilePictureUrl: ig.profile_picture_url || '',
+                    isDemo: false
+                  });
+                }
+              } catch (e) {
+                console.warn(`Error resolving Page targetId ${targetId}:`, e);
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('debug_token inspection error:', e);
+    }
+  }
+
+  // 2. Direct Page token inspection check (/me returns the Page with instagram_business_account)
+  try {
+    const pageMeUrl = `https://graph.facebook.com/v20.0/me?fields=id,name,instagram_business_account{id,username,name,biography,followers_count,follows_count,media_count,profile_picture_url}&access_token=${encodeURIComponent(token)}`;
+    const pageMeRes = await fetch(pageMeUrl);
+    const pageMeData: any = await pageMeRes.json();
+    if (pageMeData?.instagram_business_account && !seenIds.has(pageMeData.instagram_business_account.id)) {
+      const ig = pageMeData.instagram_business_account;
+      seenIds.add(ig.id);
+      detectedAccounts.push({
+        id: ig.id,
+        pageId: pageMeData.id,
+        pageName: pageMeData.name,
+        username: ig.username,
+        displayName: ig.name || pageMeData.name || ig.username,
+        bio: ig.biography || '',
+        followersCount: ig.followers_count || 0,
+        mediaCount: ig.media_count || 0,
+        profilePictureUrl: ig.profile_picture_url || '',
+        isDemo: false
+      });
+    }
+  } catch (e) {
+    console.warn('Direct Page token inspection check:', e);
+  }
+
+  // 3. User accounts list fallback (/me/accounts)
+  try {
+    const metaAccountsUrl = `https://graph.facebook.com/v20.0/me/accounts?fields=id,name,category,instagram_business_account{id,username,name,biography,followers_count,follows_count,media_count,profile_picture_url}&access_token=${encodeURIComponent(token)}`;
+    const metaRes = await fetch(metaAccountsUrl);
+    const metaData: any = await metaRes.json();
+    if (metaData?.data && Array.isArray(metaData.data)) {
+      for (const page of metaData.data) {
+        if (page.instagram_business_account && !seenIds.has(page.instagram_business_account.id)) {
+          const ig = page.instagram_business_account;
+          seenIds.add(ig.id);
+          detectedAccounts.push({
+            id: ig.id,
+            pageId: page.id,
+            pageName: page.name,
+            username: ig.username,
+            displayName: ig.name || page.name || ig.username,
+            category: page.category || 'Creator',
+            bio: ig.biography || '',
+            followersCount: ig.followers_count || 0,
+            mediaCount: ig.media_count || 0,
+            profilePictureUrl: ig.profile_picture_url || '',
+            isDemo: false
+          });
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('User accounts inspection check:', e);
+  }
+
+  return detectedAccounts;
+}
+
 // 4. Token Auto-Discovery via Meta Graph API v20.0
 app.post('/api/instagram/accounts/inspect-token', async (req, res) => {
   try {
@@ -2104,68 +2242,8 @@ app.post('/api/instagram/accounts/inspect-token', async (req, res) => {
       });
     }
 
-    // Real Meta Graph API v20.0 Inspection
-    const detectedAccounts: any[] = [];
-    const seenIds = new Set<string>();
-
-    // 1. Check if token is directly a Page Access Token (/me returns the Page with instagram_business_account)
-    try {
-      const meUrl = `https://graph.facebook.com/v20.0/me?fields=id,name,instagram_business_account{id,username,name,biography,followers_count,follows_count,media_count,profile_picture_url}`;
-      const meRes = await fetch(meUrl, {
-        headers: { 'Authorization': `Bearer ${trimmedToken}` }
-      });
-      const meData: any = await meRes.json();
-      if (meData && meData.instagram_business_account && !seenIds.has(meData.instagram_business_account.id)) {
-        const ig = meData.instagram_business_account;
-        seenIds.add(ig.id);
-        detectedAccounts.push({
-          id: ig.id,
-          pageId: meData.id,
-          pageName: meData.name,
-          username: ig.username,
-          displayName: ig.name || meData.name || ig.username,
-          bio: ig.biography || '',
-          followersCount: ig.followers_count || 0,
-          mediaCount: ig.media_count || 0,
-          profilePictureUrl: ig.profile_picture_url,
-          isDemo: false
-        });
-      }
-    } catch (e) {
-      console.warn('Direct Page token inspection check:', e);
-    }
-
-    // 2. Also check if token is a User Access Token (/me/accounts returns list of Pages)
-    try {
-      const metaAccountsUrl = `https://graph.facebook.com/v20.0/me/accounts?fields=id,name,instagram_business_account{id,username,name,biography,followers_count,follows_count,media_count,profile_picture_url}`;
-      const metaRes = await fetch(metaAccountsUrl, {
-        headers: { 'Authorization': `Bearer ${trimmedToken}` }
-      });
-      const metaData: any = await metaRes.json();
-
-      if (metaData && Array.isArray(metaData.data)) {
-        for (const page of metaData.data) {
-          if (page.instagram_business_account && !seenIds.has(page.instagram_business_account.id)) {
-            const ig = page.instagram_business_account;
-            seenIds.add(ig.id);
-            detectedAccounts.push({
-              id: ig.id,
-              pageId: page.id,
-              pageName: page.name,
-              username: ig.username,
-              displayName: ig.name || page.name || ig.username,
-              bio: ig.biography || '',
-              followersCount: ig.followers_count || 0,
-              mediaCount: ig.media_count || 0,
-              profilePictureUrl: ig.profile_picture_url,
-              isDemo: false
-            });
-          }
-        }
-      }
-    } catch (e) {
-      console.warn('User accounts inspection check:', e);
-    }
+    // Real Meta Graph API v20.0 Inspection via granular scopes + direct Page/User inspection
+    const detectedAccounts = await detectInstagramAccountsFromToken(trimmedToken);
 
     if (detectedAccounts.length === 0) {
       // Check if token was fundamentally rejected by Meta
@@ -2308,32 +2386,8 @@ app.post('/api/instagram/oauth/exchange', async (req, res) => {
       console.warn('Long-lived token exchange warning, proceeding with primary token:', e);
     }
 
-    // 3. Inspect accounts linked to this token via Authorization header
-    const accountsUrl = `https://graph.facebook.com/v20.0/me/accounts?fields=id,name,category,instagram_business_account{id,username,name,profile_picture_url,followers_count,biography}`;
-    const accResp = await fetch(accountsUrl, {
-      headers: { 'Authorization': `Bearer ${finalToken}` }
-    });
-    const accData = await accResp.json() as any;
-
-    const detectedAccounts: any[] = [];
-    if (accData.data && Array.isArray(accData.data)) {
-      for (const page of accData.data) {
-        if (page.instagram_business_account) {
-          const ig = page.instagram_business_account;
-          detectedAccounts.push({
-            id: ig.id,
-            pageId: page.id,
-            pageName: page.name,
-            username: ig.username,
-            displayName: ig.name || ig.username,
-            category: page.category || 'Creator',
-            bio: ig.biography || '',
-            followersCount: ig.followers_count || 0,
-            profilePictureUrl: ig.profile_picture_url || ''
-          });
-        }
-      }
-    }
+    // 3. Inspect accounts linked to this token via granular scopes + direct Page/User inspection (handles Meta Business Suite / Portfolio pages)
+    const detectedAccounts = await detectInstagramAccountsFromToken(finalToken, appId, appSecret);
 
     // Securely connect detected accounts and encrypt token into vault at rest - NEVER return plaintext token
     const connectedAccounts: any[] = [];

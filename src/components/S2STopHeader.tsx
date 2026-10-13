@@ -113,6 +113,7 @@ export const S2STopHeader: React.FC<S2STopHeaderProps> = ({
                   return (
                     <button
                       key={acc.id}
+                      id={`account-opt-${acc.id}`}
                       type="button"
                       onClick={() => {
                         onSelectAccount(acc);

@@ -58,22 +58,36 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
   const { isDark } = useTheme();
   const { isLiveMode } = useEnvironment();
 
+  // Defensive account-scoping helper
+  const matchesAccount = (itemAccountId?: string) => {
+    if (!account) return true;
+    if (!itemAccountId) return false;
+    if (itemAccountId === account.id) return true;
+    const clean = account.username.toLowerCase();
+    return itemAccountId.toLowerCase().includes(clean) || itemAccountId.toLowerCase().startsWith(`ig-${clean}`);
+  };
+
+  const scopedTopics = topics.filter((t) => matchesAccount(t.accountId));
+  const scopedScripts = scripts.filter((s) => matchesAccount(s.accountId));
+  const scopedCalendar = calendar.filter((c) => matchesAccount(c.accountId));
+  const scopedAudits = audits.filter((a) => matchesAccount(a.accountId));
+
   // 1. Derive actionable queues from live state
-  const pendingTopics = topics.filter(
+  const pendingTopics = scopedTopics.filter(
     (t) => t.status === 'pending' || !t.status || (t.status as string) === 'suggested'
   );
 
-  const inProductionScripts = scripts.filter(
+  const inProductionScripts = scopedScripts.filter(
     (s) => s.status === 'draft' || s.status === 'generating'
   );
 
-  const approvedNotScheduled = scripts.filter(
-    (s) => (s.status === 'approved' || s.status === 'completed') && !calendar.some((c) => c.scriptId === s.id)
+  const approvedNotScheduled = scopedScripts.filter(
+    (s) => (s.status === 'approved' || s.status === 'completed') && !scopedCalendar.some((c) => c.scriptId === s.id)
   );
 
-  const scheduledPosts = calendar.filter((c) => c.status === 'scheduled');
+  const scheduledPosts = scopedCalendar.filter((c) => c.status === 'scheduled');
 
-  const latestAudit = audits.length > 0 ? audits[0] : null;
+  const latestAudit = scopedAudits.length > 0 ? scopedAudits[0] : null;
 
   // Formatted followers
   const followersFormatted = account

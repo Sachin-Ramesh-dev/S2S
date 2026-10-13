@@ -1373,6 +1373,16 @@
       "iv": "yrGZZLQZKKPWzo7f",
       "authTag": "QxQuMquIhHT1b/IzbPxXZQ==",
       "createdAt": "2026-10-13T08:41:50.636Z"
+    },
+    {
+      "id": "cred-meta-ig-bajajfinance",
+      "name": "Meta Access Token (@bajajfinance)",
+      "type": "api_key",
+      "maskedPreview": "EAAV...aajb",
+      "cipherText": "9vOzdzy5K9S1gqaKj0qORIsToXTvKK+1QAYJ9T/U5tdl2OBN4ITVi9Cb4a8FbmYACfFZ9+QUjnqiSK4QBqJSnhQHF07B6c/rfURyB13gTXuKg8b1HAl2Us6auCg8a6amCEobLJxKTzP1XPwDzHTBTuGW2vfIWKjsQEoEmaHU8zGDRK7CLH2pD/9OMse2GEE+9LnqkcwuW+rnW2z7/VfoQMLbaMDoiZdZLjx6+gS21K/nme9QmG+nEYyBsh1sot9g2A==",
+      "iv": "mJL3sgHRgb3uq+iA",
+      "authTag": "Ydo+zfW8iNTtPcCv6Z1eUg==",
+      "createdAt": "2026-10-13T09:10:03.035Z"
     }
   ],
   "securitySettings": {
@@ -1385,18 +1395,18 @@
     {
       "id": "ig-bajajfinance",
       "username": "bajajfinance",
-      "displayName": "Bajaj Finance Limited",
-      "bio": "Empowering 80M+ customers with smart loans, EMI solutions & transparent wealth insights. 🇮🇳 #FinSmartEveryday",
-      "followersCount": 428500,
+      "displayName": "Bajaj Finance",
+      "bio": "For all your financial needs",
+      "followersCount": 1764896,
       "followingCount": 142,
       "mediaCount": 1248,
       "engagementRate": 3.84,
       "averageReelViews": 48200,
-      "category": "Finance & NBFC",
+      "category": "Financial service",
       "niche": "Personal Credit, EMI Cards & Wealth Literacy",
-      "connectedAt": "2026-08-10T10:00:00.000Z",
-      "lastSyncAt": "2026-10-08T04:10:36.084Z",
-      "isDemo": true,
+      "connectedAt": "2026-10-13T09:10:03.011Z",
+      "lastSyncAt": "2026-10-13T09:10:03.011Z",
+      "isDemo": false,
       "contentPillars": [
         {
           "name": "Educational Financial Literacy",
@@ -1448,7 +1458,11 @@
         "hdfcbank",
         "zerodhaonline",
         "navi_app"
-      ]
+      ],
+      "connectionMethod": "meta_graph_api",
+      "manusSessionId": "manus-sess-aircs1",
+      "isVerified": true,
+      "instagramBusinessId": "17841422034612313"
     },
     {
       "id": "ig-snacc.mart-1789832445989",
@@ -2201,7 +2215,7 @@
     },
     {
       "id": "audit-1789821398151",
-      "accountId": "ig-snacc.mart-1789742398762",
+      "accountId": "ig-snacc.mart-1789832445989",
       "timestamp": "2026-09-19T12:36:38.151Z",
       "auditMode": "full",
       "status": "completed",
@@ -3014,7 +3028,7 @@
     },
     {
       "id": "pipe-1789805776825",
-      "accountId": "ig-snacc.mart-1789742398762",
+      "accountId": "ig-snacc.mart-1789832445989",
       "topicId": "topic-1789804679049-0",
       "title": "Stop Overpaying: The Snack Math",
       "format": "Reel",
@@ -3027,7 +3041,7 @@
     },
     {
       "id": "pipe-1789791237943",
-      "accountId": "ig-snacc.mart-1789742398762",
+      "accountId": "ig-snacc.mart-1789832445989",
       "topicId": "topic-1789791237928-0",
       "title": "The 3 Costly Mistakes in Snack Pricing",
       "format": "Reel",
@@ -3040,7 +3054,7 @@
     },
     {
       "id": "pipe-1789791164232",
-      "accountId": "ig-snacc.mart-1789742398762",
+      "accountId": "ig-snacc.mart-1789832445989",
       "topicId": "topic-1789791164210-0",
       "title": "The Hidden 20% Markup Trap",
       "format": "Reel",
@@ -4105,7 +4119,7 @@
     },
     {
       "id": "script-1789805977774",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "topicId": "topic-1789804679049-0",
       "title": "Stop Overpaying: The Snack Math",
       "format": "Reel",
@@ -4152,7 +4166,7 @@
     },
     {
       "id": "script-1789805972889",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "topicId": "topic-1789804679049-0",
       "title": "Stop Overpaying: The Snack Math",
       "format": "Reel",
@@ -4169,7 +4183,7 @@
     },
     {
       "id": "script-1789805923032",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "topicId": "topic-1789804679049-0",
       "title": "Stop Overpaying: The Snack Math",
       "format": "Reel",
@@ -4229,7 +4243,7 @@
     },
     {
       "id": "script-1789791250194",
-      "accountId": "ig-snacc.mart-1789742398762",
+      "accountId": "ig-snacc.mart-1789832445989",
       "topicId": "topic-1789791237928-0",
       "title": "The 3 Costly Mistakes in Snack Pricing",
       "format": "Reel",
@@ -4299,7 +4313,7 @@
     },
     {
       "id": "script-1789791175365",
-      "accountId": "ig-snacc.mart-1789742398762",
+      "accountId": "ig-snacc.mart-1789832445989",
       "topicId": "topic-1789791164210-0",
       "title": "The Hidden 20% Markup Trap",
       "format": "Reel",
@@ -4719,7 +4733,7 @@
   "instagramCalendar": [
     {
       "id": "cal-1789926087515",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-09-21",
@@ -4817,7 +4831,7 @@
     },
     {
       "id": "cal-1789926069331",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-09-21",
@@ -4930,7 +4944,7 @@
     },
     {
       "id": "cal-1789926061431",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-09-21",
@@ -5040,7 +5054,7 @@
     },
     {
       "id": "cal-1789926043873",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-12-05",
@@ -5163,7 +5177,7 @@
     },
     {
       "id": "cal-1789926040438",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-11-20",
@@ -5257,7 +5271,7 @@
     },
     {
       "id": "cal-1789926036993",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-11-15",
@@ -5351,7 +5365,7 @@
     },
     {
       "id": "cal-1789901445389",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-11-28",
@@ -5477,7 +5491,7 @@
     },
     {
       "id": "cal-1789901441957",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-11-20",
@@ -5571,7 +5585,7 @@
     },
     {
       "id": "cal-1789901438540",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-11-15",
@@ -5668,7 +5682,7 @@
     },
     {
       "id": "cal-1789901426122",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-09-21",
@@ -5781,7 +5795,7 @@
     },
     {
       "id": "cal-1789901418407",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-09-21",
@@ -5891,7 +5905,7 @@
     },
     {
       "id": "cal-1789901393882",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-09-21",
@@ -5989,7 +6003,7 @@
     },
     {
       "id": "cal-1789897714778",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-11-28",
@@ -6115,7 +6129,7 @@
     },
     {
       "id": "cal-1789897711366",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-11-20",
@@ -6209,7 +6223,7 @@
     },
     {
       "id": "cal-1789897707984",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-11-15",
@@ -6306,7 +6320,7 @@
     },
     {
       "id": "cal-1789897692383",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-09-21",
@@ -6422,7 +6436,7 @@
     },
     {
       "id": "cal-1789897684669",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-09-21",
@@ -6532,7 +6546,7 @@
     },
     {
       "id": "cal-1789897658622",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-09-21",
@@ -6633,7 +6647,7 @@
     },
     {
       "id": "cal-1789896778926",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-11-28",
@@ -6759,7 +6773,7 @@
     },
     {
       "id": "cal-1789896775527",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-11-20",
@@ -6853,7 +6867,7 @@
     },
     {
       "id": "cal-1789896772129",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-11-15",
@@ -6947,7 +6961,7 @@
     },
     {
       "id": "cal-1789896757155",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-09-21",
@@ -7060,7 +7074,7 @@
     },
     {
       "id": "cal-1789896749475",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-09-21",
@@ -7170,7 +7184,7 @@
     },
     {
       "id": "cal-1789896725260",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-09-21",
@@ -7268,7 +7282,7 @@
     },
     {
       "id": "cal-1789895365628",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-11-28",
@@ -7391,7 +7405,7 @@
     },
     {
       "id": "cal-1789895362238",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-11-20",
@@ -7485,7 +7499,7 @@
     },
     {
       "id": "cal-1789895358880",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-11-15",
@@ -7579,7 +7593,7 @@
     },
     {
       "id": "cal-1789895345301",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-09-21",
@@ -7692,7 +7706,7 @@
     },
     {
       "id": "cal-1789895337539",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-09-21",
@@ -7802,7 +7816,7 @@
     },
     {
       "id": "cal-1789895313722",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-09-21",
@@ -7900,7 +7914,7 @@
     },
     {
       "id": "cal-1789895260687",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-12-05",
@@ -8026,7 +8040,7 @@
     },
     {
       "id": "cal-1789895257199",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-11-20",
@@ -8120,7 +8134,7 @@
     },
     {
       "id": "cal-1789895253828",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-11-15",
@@ -8214,7 +8228,7 @@
     },
     {
       "id": "cal-1789895221322",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-11-20",
@@ -8308,7 +8322,7 @@
     },
     {
       "id": "cal-1789895217930",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-11-15",
@@ -8402,7 +8416,7 @@
     },
     {
       "id": "cal-1789895178739",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-11-20",
@@ -8496,7 +8510,7 @@
     },
     {
       "id": "cal-1789895175344",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-11-15",
@@ -8590,7 +8604,7 @@
     },
     {
       "id": "cal-1789895128946",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-11-20",
@@ -8684,7 +8698,7 @@
     },
     {
       "id": "cal-1789895125548",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-11-15",
@@ -8780,7 +8794,7 @@
     },
     {
       "id": "cal-1789893759015",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-09-21",
@@ -8791,7 +8805,7 @@
     },
     {
       "id": "cal-1789893733299",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-09-21",
@@ -8802,7 +8816,7 @@
     },
     {
       "id": "cal-1789893725683",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-09-21",
@@ -8813,7 +8827,7 @@
     },
     {
       "id": "cal-1789892665064",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-09-21",
@@ -8824,7 +8838,7 @@
     },
     {
       "id": "cal-1789892657364",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-09-21",
@@ -8835,7 +8849,7 @@
     },
     {
       "id": "cal-1789892168323",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-09-21",
@@ -8846,7 +8860,7 @@
     },
     {
       "id": "cal-1789892160611",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-09-21",
@@ -8857,7 +8871,7 @@
     },
     {
       "id": "cal-1789892139494",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-09-21",
@@ -8868,7 +8882,7 @@
     },
     {
       "id": "cal-1789889796325",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-09-21",
@@ -8879,7 +8893,7 @@
     },
     {
       "id": "cal-1789889751476",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Cost, Calorie & Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-09-21",
@@ -8890,7 +8904,7 @@
     },
     {
       "id": "cal-1789889743779",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Cost, Calorie & Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-09-21",
@@ -8901,7 +8915,7 @@
     },
     {
       "id": "cal-1789889677970",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Cost, Calorie & Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-09-21",
@@ -8912,7 +8926,7 @@
     },
     {
       "id": "cal-1789889670307",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Cost, Calorie & Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-09-21",
@@ -8923,7 +8937,7 @@
     },
     {
       "id": "cal-1789889559734",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Cost, Calorie & Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-09-21",
@@ -8934,7 +8948,7 @@
     },
     {
       "id": "cal-1789889552054",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Cost, Calorie & Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-09-21",
@@ -8945,7 +8959,7 @@
     },
     {
       "id": "cal-1789889394475",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Cost, Calorie & Crunch Audit",
       "format": "Image",
       "scheduledDate": "2026-09-21",
@@ -8956,7 +8970,7 @@
     },
     {
       "id": "cal-1789889386777",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Cost, Calorie & Crunch Audit",
       "format": "Carousel",
       "scheduledDate": "2026-09-21",
@@ -8967,7 +8981,7 @@
     },
     {
       "id": "cal-1789889362994",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Cost, Calorie & Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-09-21",
@@ -8978,7 +8992,7 @@
     },
     {
       "id": "cal-1789888694165",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Cost, Calorie & Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-09-21",
@@ -8989,7 +9003,7 @@
     },
     {
       "id": "cal-1789888649420",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Cost, Calorie & Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-09-21",
@@ -9000,7 +9014,7 @@
     },
     {
       "id": "cal-1789888611670",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Cost, Calorie & Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-09-21",
@@ -9011,7 +9025,7 @@
     },
     {
       "id": "cal-1789888542472",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Cost, Calorie & Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-09-21",
@@ -9022,7 +9036,7 @@
     },
     {
       "id": "cal-1789888497470",
-      "accountId": "ig-bajajfinance",
+      "accountId": "ig-snacc.mart-1789832445989",
       "title": "Murukku vs Chakli: The Cost, Calorie & Crunch Audit",
       "format": "Reel",
       "scheduledDate": "2026-09-21",

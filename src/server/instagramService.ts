@@ -1447,7 +1447,7 @@ export class InstagramService {
 
   public getAccounts(environment?: string): InstagramAccount[] {
     if (environment === 'live') {
-      return this.accounts.filter(a => !a.isDemo && a.id !== 'ig-bajajfinance');
+      return this.accounts.filter(a => !a.isDemo);
     }
     return this.accounts;
   }
@@ -1485,9 +1485,23 @@ export class InstagramService {
     return this.accounts.length < initialLen;
   }
 
+  public matchesAccount(itemAccountId?: string, targetId?: string): boolean {
+    if (!targetId) return true;
+    if (!itemAccountId) return false;
+    if (itemAccountId === targetId) return true;
+    const targetAccount = this.accounts.find(a => a.id === targetId || a.username.toLowerCase() === targetId.toLowerCase());
+    if (targetAccount) {
+      const clean = targetAccount.username.toLowerCase();
+      if (itemAccountId.toLowerCase().includes(clean) || itemAccountId.toLowerCase().startsWith(`ig-${clean}`)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public getAudits(accountId?: string): InstagramAuditRecord[] {
     if (!accountId) return this.audits;
-    return this.audits.filter(a => a.accountId === accountId);
+    return this.audits.filter(a => this.matchesAccount(a.accountId, accountId));
   }
 
   public getLatestAudit(accountId?: string): InstagramAuditRecord | undefined {
@@ -1497,22 +1511,22 @@ export class InstagramService {
 
   public getTopics(accountId?: string): TopicIdea[] {
     if (!accountId) return this.topics;
-    return this.topics.filter(t => t.accountId === accountId);
+    return this.topics.filter(t => this.matchesAccount(t.accountId, accountId));
   }
 
   public getPipeline(accountId?: string): ContentPipelineItem[] {
     if (!accountId) return this.pipeline;
-    return this.pipeline.filter(p => p.accountId === accountId);
+    return this.pipeline.filter(p => this.matchesAccount(p.accountId, accountId));
   }
 
   public getScripts(accountId?: string): ScriptItem[] {
     if (!accountId) return this.scripts;
-    return this.scripts.filter(s => s.accountId === accountId);
+    return this.scripts.filter(s => this.matchesAccount(s.accountId, accountId));
   }
 
   public getCalendar(accountId?: string): CalendarPost[] {
     if (!accountId) return this.calendar;
-    return this.calendar.filter(c => c.accountId === accountId);
+    return this.calendar.filter(c => this.matchesAccount(c.accountId, accountId));
   }
 
   public schedulePost(data: Partial<CalendarPost>): CalendarPost {
@@ -2346,7 +2360,8 @@ export class InstagramService {
         headline: script.hook || script.title,
         visualPrompt: script.title,
         aspectRatio: '1:1',
-        stylePreset: 'Editorial Swiss Graphic'
+        stylePreset: 'Editorial Swiss Graphic',
+        textOverlay: ''
       };
     }
 

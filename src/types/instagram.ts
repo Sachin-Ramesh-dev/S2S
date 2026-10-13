@@ -375,6 +375,7 @@ export interface ImageConceptData {
   stylePreset?: string;
   lighting?: string;
   colorPalette?: string;
+  provider?: 'flux' | 'manus' | 'canvas';
 }
 
 export interface ArchivedFormatData {

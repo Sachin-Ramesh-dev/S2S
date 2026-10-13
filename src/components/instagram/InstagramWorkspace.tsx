@@ -217,11 +217,12 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
   const handlePageConnected = async (newAccount: InstagramAccount) => {
     setShowAddPageModal(false);
     try {
-      const updatedAccounts = await instagramApi.getAccounts();
+      const updatedAccounts = await instagramApi.getAccounts(environment);
       setAccounts(updatedAccounts);
-      setSelectedAccount(newAccount);
-      await handleSwitchAccount(newAccount.id);
-      showToast(`Connected @${newAccount.username} via Manus Instagram Gateway!`, 'success');
+      const matched = updatedAccounts.find(a => a.id === newAccount.id || a.username.toLowerCase() === newAccount.username.toLowerCase()) || newAccount;
+      setSelectedAccount(matched);
+      await handleSwitchAccount(matched.id);
+      showToast(`Connected @${matched.username} via Meta Instagram Gateway!`, 'success');
     } catch (err: any) {
       showToast(`Connected @${newAccount.username}`, 'success');
     }
@@ -515,9 +516,10 @@ export const InstagramWorkspace: React.FC<InstagramWorkspaceProps> = ({
             isOpen={showAddPageModal}
             onClose={() => setShowAddPageModal(false)}
             onConnected={(newAcc) => {
-              setAccounts([newAcc, ...accounts]);
+              setAccounts((prev) => [newAcc, ...prev.filter((a) => a.id !== newAcc.id && a.username.toLowerCase() !== newAcc.username.toLowerCase())]);
               setSelectedAccount(newAcc);
               setShowAddPageModal(false);
+              loadAllData();
               showToast(`Connected @${newAcc.username} to Live Workspace!`, 'success');
             }}
             existingAccounts={accounts}

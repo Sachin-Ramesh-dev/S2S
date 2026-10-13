@@ -409,6 +409,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {!isCollapsed ? (
               <button
                 type="button"
+                id="btn-sidebar-supporting-tools"
                 onClick={() => setIsSupportingOpen(!isSupportingOpen)}
                 className="w-full px-2.5 pb-1 flex items-center justify-between text-[10px] font-semibold uppercase tracking-wider font-heading text-neutral-400 dark:text-zinc-500 hover:text-neutral-700 dark:hover:text-zinc-300 transition-colors cursor-pointer"
               >

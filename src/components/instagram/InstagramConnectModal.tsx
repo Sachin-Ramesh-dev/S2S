@@ -83,15 +83,55 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
         } else if (code) {
           setIsConnecting(true);
           try {
-            if (isDemoMode) {
+            // Exchange code for live Meta access token & discover Instagram accounts
+            const exchangeRes = await instagramApi.exchangeOAuthCode(code);
+            if (exchangeRes.requiresConfig) {
+              if (isDemoMode) {
+                // Sandbox demo fallback when credentials are not configured in .env
+                const newAcc = await instagramApi.connectManusAccount({
+                  method: 'meta_graph_api',
+                  username: 'fintech_insider',
+                  displayName: 'FinTech Insider Daily',
+                  category: 'Fintech & Technology',
+                  bio: 'Connected via Meta OAuth 2.0 Authorization.',
+                  metaAccessToken: `EAA_OAUTH_${code.slice(0, 20)}`,
+                  isDemo: true
+                });
+                setOauthSuccess(true);
+                setTimeout(() => {
+                  onConnected(newAcc);
+                  onClose();
+                }, 1200);
+                return;
+              }
+              setOauthError(exchangeRes.error || 'META_APP_ID and META_APP_SECRET must be set in .env.');
+              setIsConnecting(false);
+              return;
+            }
+            if (!exchangeRes.success) {
+              setOauthError(exchangeRes.error || 'Failed to exchange authorization code with Meta.');
+              setIsConnecting(false);
+              return;
+            }
+
+            const connectedAccount = exchangeRes.account || (exchangeRes.connectedAccounts && exchangeRes.connectedAccounts[0]);
+            if (connectedAccount) {
+              setOauthSuccess(true);
+              setTimeout(() => {
+                onConnected(connectedAccount);
+                onClose();
+              }, 1200);
+            } else if (exchangeRes.detectedAccounts && exchangeRes.detectedAccounts.length > 0) {
+              const detected = exchangeRes.detectedAccounts[0];
               const newAcc = await instagramApi.connectManusAccount({
                 method: 'meta_graph_api',
-                username: 'fintech_insider',
-                displayName: 'FinTech Insider Daily',
-                category: 'Fintech & Technology',
-                bio: 'Connected via Meta OAuth 2.0 Authorization.',
-                metaAccessToken: `EAA_OAUTH_${code.slice(0, 20)}`,
-                isDemo: true
+                username: detected.username,
+                displayName: detected.displayName,
+                category: detected.category,
+                bio: detected.bio || `Connected via Meta OAuth 2.0 (ID: ${detected.id})`,
+                followersCount: detected.followersCount,
+                metaPageId: detected.id,
+                isDemo: false
               });
               setOauthSuccess(true);
               setTimeout(() => {
@@ -99,47 +139,8 @@ export const InstagramConnectModal: React.FC<InstagramConnectModalProps> = ({
                 onClose();
               }, 1200);
             } else {
-              // Production: Exchange code for live Meta access token & discover accounts
-              const exchangeRes = await instagramApi.exchangeOAuthCode(code);
-              if (exchangeRes.requiresConfig) {
-                setOauthError(exchangeRes.error || 'META_APP_ID and META_APP_SECRET must be set in .env.');
-                setIsConnecting(false);
-                return;
-              }
-              if (!exchangeRes.success) {
-                setOauthError(exchangeRes.error || 'Failed to exchange authorization code with Meta.');
-                setIsConnecting(false);
-                return;
-              }
-
-              const connectedAccount = exchangeRes.account || (exchangeRes.connectedAccounts && exchangeRes.connectedAccounts[0]);
-              if (connectedAccount) {
-                setOauthSuccess(true);
-                setTimeout(() => {
-                  onConnected(connectedAccount);
-                  onClose();
-                }, 1200);
-              } else if (exchangeRes.detectedAccounts && exchangeRes.detectedAccounts.length > 0) {
-                const detected = exchangeRes.detectedAccounts[0];
-                const newAcc = await instagramApi.connectManusAccount({
-                  method: 'meta_graph_api',
-                  username: detected.username,
-                  displayName: detected.displayName,
-                  category: detected.category,
-                  bio: detected.bio || `Connected via Meta OAuth 2.0 (ID: ${detected.id})`,
-                  followersCount: detected.followersCount,
-                  metaPageId: detected.id,
-                  isDemo: false
-                });
-                setOauthSuccess(true);
-                setTimeout(() => {
-                  onConnected(newAcc);
-                  onClose();
-                }, 1200);
-              } else {
-                setOauthError('Meta authorized successfully, but no Instagram Professional account is linked to your Facebook Page. Please link your Instagram account in Meta Business Suite.');
-                setIsConnecting(false);
-              }
+              setOauthError('Meta authorized successfully, but no Instagram Professional account is linked to your Facebook Page. Please link your Instagram account in Meta Business Suite.');
+              setIsConnecting(false);
             }
           } catch (err: any) {
             setOauthError(err.message || 'Failed to exchange authorization code with Meta.');

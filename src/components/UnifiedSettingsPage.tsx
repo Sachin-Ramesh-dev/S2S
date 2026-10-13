@@ -417,11 +417,12 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
       const accList = await instagramApi.getAccounts(environment);
       setAccounts(accList);
       if (accList.length > 0) {
-        setSelectedAccount(accList[0]);
+        const matched = (selectedAccount && accList.find(a => a.id === selectedAccount.id || a.username.toLowerCase() === selectedAccount.username.toLowerCase())) || accList[0];
+        setSelectedAccount(matched);
         setInstagramConfig(prev => ({
           ...prev,
-          username: accList[0].username,
-          displayName: accList[0].displayName || accList[0].username,
+          username: matched.username,
+          displayName: matched.displayName || matched.username,
           isConnected: true
         }));
       } else {
@@ -2724,7 +2725,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
         isOpen={showAddInstagramModal}
         onClose={() => setShowAddInstagramModal(false)}
         onConnected={(newAcc) => {
-          setAccounts(prev => [...prev.filter(a => a.id !== newAcc.id), newAcc]);
+          setAccounts(prev => [newAcc, ...prev.filter(a => a.id !== newAcc.id && a.username.toLowerCase() !== newAcc.username.toLowerCase())]);
           setSelectedAccount(newAcc);
           setInstagramConfig({
             metaAccessToken: 'EAAGNO4m...system_token',
@@ -2735,6 +2736,7 @@ export const UnifiedSettingsPage: React.FC<UnifiedSettingsPageProps> = ({
           });
           setInstagramSuccess(true);
           setShowAddInstagramModal(false);
+          loadAccounts();
           setTimeout(() => setInstagramSuccess(false), 3000);
         }}
         existingAccounts={accounts}

@@ -142,31 +142,44 @@ export default function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const selectedAccountRef = useRef(selectedAccount);
+  useEffect(() => {
+    selectedAccountRef.current = selectedAccount;
+  }, [selectedAccount]);
+
   // Load Instagram engine data across domains
-  const loadInstagramData = useCallback(async () => {
+  const loadInstagramData = useCallback(async (targetAccountId?: string) => {
     try {
-      const [accs, auds, tops, pipe, scrs, cal, sks] = await Promise.all([
-        instagramApi.getAccounts(environment),
-        instagramApi.getAudits(),
-        instagramApi.getTopics(),
-        instagramApi.getPipeline(),
-        instagramApi.getScripts(),
-        instagramApi.getCalendar(),
+      const accs = await instagramApi.getAccounts(environment);
+      setAccounts(accs);
+      
+      const currentSelected = selectedAccountRef.current;
+      const storedActiveId = localStorage.getItem('s2s_active_account_id');
+      const activeAcc = (targetAccountId ? accs.find(a => a.id === targetAccountId || a.username.toLowerCase() === targetAccountId.toLowerCase()) : null)
+        || (currentSelected ? accs.find(a => a.id === currentSelected.id || a.username.toLowerCase() === currentSelected.username.toLowerCase()) : null)
+        || (storedActiveId ? accs.find(a => a.id === storedActiveId || a.username.toLowerCase() === storedActiveId.toLowerCase()) : null)
+        || accs[0]
+        || null;
+
+      setSelectedAccount(activeAcc);
+      if (activeAcc) {
+        localStorage.setItem('s2s_active_account_id', activeAcc.id);
+      }
+
+      const effectiveId = activeAcc?.id;
+      const [auds, tops, pipe, scrs, cal, sks] = await Promise.all([
+        instagramApi.getAudits(effectiveId),
+        instagramApi.getTopics(effectiveId),
+        instagramApi.getPipeline(effectiveId),
+        instagramApi.getScripts(effectiveId),
+        instagramApi.getCalendar(effectiveId),
         instagramApi.getSkills()
       ]);
-      setAccounts(accs);
-      if (accs.length > 0) {
-        setSelectedAccount(prev => (prev && accs.find(a => a.id === prev.id)) || accs[0]);
-      } else {
-        setSelectedAccount(null);
-      }
+
       setAudits(auds);
       setTopics(tops);
       setPipeline(pipe);
       setScripts(scrs);
-      if (scrs.length > 0 && !selectedScriptId) {
-        setSelectedScriptId(scrs[0].id);
-      }
       setCalendar(cal);
       const skillList = Array.isArray(sks) ? sks : (sks && (sks as any).skills ? (sks as any).skills : []);
       setSkills(skillList);
@@ -178,6 +191,21 @@ export default function App() {
   useEffect(() => {
     loadInstagramData();
   }, [loadInstagramData]);
+
+  // Defensive account-scoping helper
+  const matchesSelected = useCallback((itemAccountId?: string) => {
+    if (!selectedAccount) return true;
+    if (!itemAccountId) return false;
+    if (itemAccountId === selectedAccount.id) return true;
+    const clean = selectedAccount.username.toLowerCase();
+    return itemAccountId.toLowerCase().includes(clean) || itemAccountId.toLowerCase().startsWith(`ig-${clean}`);
+  }, [selectedAccount]);
+
+  const filteredTopics = useMemo(() => topics.filter(t => matchesSelected(t.accountId)), [topics, matchesSelected]);
+  const filteredScripts = useMemo(() => scripts.filter(s => matchesSelected(s.accountId)), [scripts, matchesSelected]);
+  const filteredAudits = useMemo(() => audits.filter(a => matchesSelected(a.accountId)), [audits, matchesSelected]);
+  const filteredCalendar = useMemo(() => calendar.filter(c => matchesSelected(c.accountId)), [calendar, matchesSelected]);
+  const filteredPipeline = useMemo(() => pipeline.filter(p => matchesSelected(p.accountId)), [pipeline, matchesSelected]);
 
   const handleDomainNavigate = (domain: DomainId, subView?: SubViewId) => {
     setActiveDomain(domain);
@@ -1236,7 +1264,12 @@ export default function App() {
             activeSubView={activeSubView}
             accounts={accounts}
             selectedAccount={selectedAccount}
-            onSelectAccount={(acc) => setSelectedAccount(acc)}
+            onSelectAccount={(acc) => {
+              setSelectedAccount(acc);
+              setSelectedScriptId('empty');
+              localStorage.setItem('s2s_active_account_id', acc.id);
+              loadInstagramData(acc.id);
+            }}
             onOpenConnectModal={() => setIsConnectModalOpen(true)}
           />
 
@@ -1245,11 +1278,11 @@ export default function App() {
             {activeDomain === 'home' ? (
               <S2SHomeHub
                 account={selectedAccount}
-                topics={topics}
-                scripts={scripts}
-                pipeline={pipeline}
-                calendar={calendar}
-                audits={audits}
+                topics={filteredTopics}
+                scripts={filteredScripts}
+                pipeline={filteredPipeline}
+                calendar={filteredCalendar}
+                audits={filteredAudits}
                 onNavigate={handleDomainNavigate}
                 onOpenConnectModal={() => setIsConnectModalOpen(true)}
                 onQuickRunAudit={handleRunAudit}
@@ -1259,7 +1292,7 @@ export default function App() {
                 activeSubView={(activeDomain === 'strategy' ? activeSubView : 'audit') as any}
                 onSubViewChange={(sub) => setActiveSubView(sub)}
                 account={selectedAccount}
-                audits={audits}
+                audits={filteredAudits}
                 activeSkill={skills[0]}
                 onRunAudit={handleRunAudit}
                 isRunningAudit={isRunningAudit}
@@ -1275,8 +1308,8 @@ export default function App() {
                 activeSubView="topics"
                 onSubViewChange={(sub) => setActiveSubView(sub)}
                 account={selectedAccount}
-                topics={topics}
-                scripts={scripts}
+                topics={filteredTopics}
+                scripts={filteredScripts}
                 selectedScriptId={selectedScriptId}
                 onSelectScript={(id) => setSelectedScriptId(id)}
                 onGenerateTopics={(prompt, count) => handleGenerateTopics(prompt, count)}
@@ -1298,8 +1331,8 @@ export default function App() {
                 activeSubView={(activeDomain === 'production' ? (activeSubView === 'creative' ? 'creative' : 'scripts') : activeSubView) as any}
                 onSubViewChange={(sub) => setActiveSubView(sub)}
                 account={selectedAccount}
-                topics={topics}
-                scripts={scripts}
+                topics={filteredTopics}
+                scripts={filteredScripts}
                 selectedScriptId={selectedScriptId}
                 onSelectScript={(id) => setSelectedScriptId(id)}
                 onGenerateTopics={(prompt, count) => handleGenerateTopics(prompt, count)}
@@ -1321,9 +1354,9 @@ export default function App() {
                 activeSubView={activeSubView as any}
                 onSubViewChange={(sub) => setActiveSubView(sub)}
                 account={selectedAccount}
-                calendar={calendar}
-                scripts={scripts}
-                pipeline={pipeline}
+                calendar={filteredCalendar}
+                scripts={filteredScripts}
+                pipeline={filteredPipeline}
                 onOpenScript={(scriptId) => {
                   setSelectedScriptId(scriptId);
                   handleDomainNavigate('production', 'scripts');
@@ -1337,8 +1370,8 @@ export default function App() {
                 activeSubView={(activeDomain === 'performance' ? (activeSubView === 'analytics' ? 'analytics' : 'performance') : activeSubView) as any}
                 onSubViewChange={(sub) => setActiveSubView(sub)}
                 account={selectedAccount}
-                scripts={scripts}
-                audits={audits}
+                scripts={filteredScripts}
+                audits={filteredAudits}
               />
             ) : activeDomain === 'competitors' ? (
               <StrategyWorkspace
@@ -1933,8 +1966,9 @@ export default function App() {
         isOpen={isConnectModalOpen}
         onClose={() => setIsConnectModalOpen(false)}
         onConnected={(newAcc) => {
-          setAccounts((prev) => [newAcc, ...prev.filter((a) => a.id !== newAcc.id)]);
+          setAccounts((prev) => [newAcc, ...prev.filter((a) => a.id !== newAcc.id && a.username.toLowerCase() !== newAcc.username.toLowerCase())]);
           setSelectedAccount(newAcc);
+          setSelectedScriptId('empty');
           setIsConnectModalOpen(false);
           loadInstagramData();
           showToast('success', `Connected @${newAcc.username} via Meta Graph API!`);

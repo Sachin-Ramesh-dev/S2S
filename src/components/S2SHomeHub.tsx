@@ -30,7 +30,6 @@ import {
   InstagramAuditRecord
 } from '../types/instagram';
 import { useTheme } from '../context/ThemeContext';
-import { useEnvironment } from '../context/EnvironmentContext';
 
 interface S2SHomeHubProps {
   account: InstagramAccount | null;
@@ -56,7 +55,6 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
   onQuickRunAudit
 }) => {
   const { isDark } = useTheme();
-  const { isLiveMode } = useEnvironment();
 
   // Defensive account-scoping helper
   const matchesAccount = (itemAccountId?: string) => {
@@ -119,16 +117,6 @@ export const S2SHomeHub: React.FC<S2SHomeHubProps> = ({
       >
         <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
           <div className="space-y-3 max-w-2xl">
-            <div className="flex items-center gap-2">
-              <span
-                id="home-env-badge"
-                className={`neo-badge ${isLiveMode ? 'neo-badge-mint' : 'neo-badge-yellow'}`}
-              >
-                <span className={`w-1.5 h-1.5 rounded-full ${isLiveMode ? 'bg-emerald-600' : 'bg-amber-600'}`} />
-                <span>{isLiveMode ? 'LIVE PRODUCTION' : 'DEMO SANDBOX'}</span>
-              </span>
-            </div>
-
             {/* Editorial Hero Title */}
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight font-heading leading-tight text-neutral-900 dark:text-white">
               {greeting}. Your content engine <span className="text-[#F43F5E]">is ready.</span>

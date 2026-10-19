@@ -3010,6 +3010,114 @@
         "Hot Chips + Chaat pairing formula that guarantees zero wastage",
         "Corporate sprint celebration vs banquet hall bill comparison"
       ]
+    },
+    {
+      "id": "topic-bajaj-001",
+      "accountId": "ig-bajajfinance",
+      "title": "The 3 Hidden Costs of No-Cost EMI Schemes",
+      "hook": "NO-COST EMI IS NEVER ZERO COST: HERE IS THE SPREADSHEET.",
+      "format": "Carousel",
+      "contentPillar": "Educational Financial Literacy",
+      "viralPotentialScore": 94,
+      "auditRationale": "Exposes processing fees, GST on interest component, and merchant discount subvention in visual breakdowns.",
+      "status": "suggested",
+      "createdAt": "2026-10-18T08:41:40.742Z",
+      "generationId": "gen-bajaj-001",
+      "angleOptions": [
+        "GST on waived interest calculation breakdown",
+        "Processing fee impact on sub-₹15,000 purchases",
+        "Spreadsheet comparison of upfront cash vs 6-month EMI"
+      ]
+    },
+    {
+      "id": "topic-bajaj-002",
+      "accountId": "ig-bajajfinance",
+      "title": "How a 780+ CIBIL Score Saves ₹4.2 Lakh on a Home Loan",
+      "hook": "THIS 3-DIGIT NUMBER COSTS YOU ₹4,20,000 OR SAVES IT.",
+      "format": "Reel",
+      "contentPillar": "Educational Financial Literacy",
+      "viralPotentialScore": 92,
+      "auditRationale": "High-contrast numerical hook showing interest rate variance between 720 and 780 score brackets over a 20-year tenure.",
+      "status": "suggested",
+      "createdAt": "2026-10-18T08:41:40.751Z",
+      "generationId": "gen-bajaj-002",
+      "angleOptions": [
+        "Side-by-side EMI payment schedules for ₹50L loan",
+        "3 quickest ways to boost credit score within 90 days",
+        "Common CIBIL reporting errors and how to dispute them"
+      ]
+    },
+    {
+      "id": "topic-bajaj-003",
+      "accountId": "ig-bajajfinance",
+      "title": "The APK Loan App Trap: 4 Warning Signs to Never Ignore",
+      "hook": "IF AN APP ASKS FOR CONTACTS FOR A LOAN, DELETE IT NOW.",
+      "format": "Carousel",
+      "contentPillar": "Fraud Awareness & Consumer Safety",
+      "viralPotentialScore": 97,
+      "auditRationale": "Critical consumer defense topic addressing blacklisted lending apps and predatory collection threats.",
+      "status": "suggested",
+      "createdAt": "2026-10-18T08:41:40.751Z",
+      "generationId": "gen-bajaj-003",
+      "angleOptions": [
+        "RBI registered NBFC verification steps",
+        "Permissions breakdown: camera/contacts vs KYC requirements",
+        "What to do immediately if you downloaded an unverified APK"
+      ]
+    },
+    {
+      "id": "topic-bajaj-004",
+      "accountId": "ig-bajajfinance",
+      "title": "Fixed Deposits vs. Debt Funds in 2026: The Post-Tax Reality",
+      "hook": "TAX SLABS CHANGED EVERYTHING FOR FIXED DEPOSITS.",
+      "format": "Carousel",
+      "contentPillar": "Product Transparency & How-Tos",
+      "viralPotentialScore": 89,
+      "auditRationale": "Clear visual matrix showing post-tax returns across 20% and 30% brackets for corporate FDs versus index funds.",
+      "status": "suggested",
+      "createdAt": "2026-10-18T08:41:40.751Z",
+      "generationId": "gen-bajaj-004",
+      "angleOptions": [
+        "Effective return comparison table after TDS",
+        "Senior citizen tax benefit breakdown",
+        "Liquidity rules and premature withdrawal penalties"
+      ]
+    },
+    {
+      "id": "topic-bajaj-005",
+      "accountId": "ig-bajajfinance",
+      "title": "The Emergency Fund Ladder: 3 Months vs 6 Months vs 12 Months",
+      "hook": "MOST PEOPLE KEEP EMERGENCY FUNDS IN THE WRONG ACCOUNT.",
+      "format": "Reel",
+      "contentPillar": "Lifestyle & Real Customer Wins",
+      "viralPotentialScore": 87,
+      "auditRationale": "Step-by-step liquidity structure using sweep-in FDs and liquid funds to beat inflation without locking capital.",
+      "status": "suggested",
+      "createdAt": "2026-10-18T08:41:40.751Z",
+      "generationId": "gen-bajaj-005",
+      "angleOptions": [
+        "Split strategy: 1 month savings account, 5 months sweep-in FD",
+        "Job loss runway math for single-income households",
+        "Inflation drag on idle bank balances"
+      ]
+    },
+    {
+      "id": "topic-bajaj-006",
+      "accountId": "ig-bajajfinance",
+      "title": "Debit Card EMI vs Credit Card EMI: What Shows on Your Bureau Report",
+      "hook": "ONE AFFECTS YOUR CIBIL UTILIZATION, ONE DOES NOT.",
+      "format": "Image",
+      "contentPillar": "Product Transparency & How-Tos",
+      "viralPotentialScore": 90,
+      "auditRationale": "Clear single-graphic explainer untangling bank pre-approved debit overdraft lines versus credit card limits.",
+      "status": "suggested",
+      "createdAt": "2026-10-18T08:41:40.751Z",
+      "generationId": "gen-bajaj-006",
+      "angleOptions": [
+        "Impact on credit utilization ratio",
+        "Eligibility checklist for debit card EMIs",
+        "Foreclosure charges comparison"
+      ]
     }
   ],
   "instagramPipeline": [

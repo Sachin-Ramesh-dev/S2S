@@ -650,7 +650,7 @@ Return a STRICT JSON object with these EXACT keys:
 
   // 2. DYNAMIC TOPIC GENERATION PROMPT BUILDER
   private buildTopicPrompt(ctx: ExecutionContext): string {
-    const { account, activeSkill, previousAudit, approvedTopics = [], rejectedTopics = [], count = 5, format = 'all' } = ctx as any;
+    const { account, activeSkill, previousAudit, approvedTopics = [], rejectedTopics = [], count = 5, format = 'all', learnedPreferences } = ctx as any;
 
     const formatConstraint =
       format === 'Reel'
@@ -659,11 +659,19 @@ Return a STRICT JSON object with these EXACT keys:
         ? 'ALL generated topics MUST be of format "Carousel" (multi-slide educational swipe decks 7-10 slides).'
         : 'Generate a strategic mix of "Reel" and "Carousel" formats.';
 
+    const learnedPrefsSection = learnedPreferences ? `
+### LEARNED USER PREFERENCES & ACCOUNT-SPECIFIC MANDATES
+- Preferred Tone: ${learnedPreferences.preferredTone || 'Authoritative & Engaging'}
+- Priority Focus Pillars: ${(learnedPreferences.preferredPillars || []).join(', ') || 'All pillars'}
+- STRICT AVOID TOPICS: ${(learnedPreferences.avoidTopics || []).join(', ') || 'None'}
+- Custom Directives: ${(learnedPreferences.customInstructions || []).join('; ') || 'Follow brand guidelines'}
+` : '';
+
     return `### BASE TOPIC GENERATION INSTRUCTIONS (GOOGLE GEMINI CONTENT STRATEGY)
 Generate exactly ${count} viral, high-converting Instagram topic ideas for the account @${account.username} (${account.displayName}).
 Each topic must be strategically targeted to fix gaps discovered in the latest audit while strictly abiding by the active learning skill.
 Format directive: ${formatConstraint}
-
+${learnedPrefsSection}
 ### BRAND & AUDIENCE CONTEXT
 - Instagram Page: @${account.username} (${account.displayName})
 - Category: ${account.category} | ${account.niche}

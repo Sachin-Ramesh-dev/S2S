@@ -24,7 +24,11 @@ import {
   TopicMoveBackRecord,
   TeamMember,
   SmtpConfig,
-  TeamsIntegrationConfig
+  TeamsIntegrationConfig,
+  AccountFeedbackItem,
+  AccountLearnedPreferences,
+  TopicTraceability,
+  ScriptTraceability
 } from '../types/instagram';
 import { InstagramAiOrchestrator } from './instagramAiOrchestrator';
 import { InstagramPublishingEngine } from './instagramPublishingEngine';
@@ -1314,6 +1318,8 @@ export class InstagramService {
   private smtpConfig: SmtpConfig = { ...DEFAULT_SMTP_CONFIG };
   private teamsConfig: TeamsIntegrationConfig = { ...DEFAULT_TEAMS_CONFIG };
   private generations: GenerationRecord[] = [];
+  private accountFeedback: AccountFeedbackItem[] = [];
+  private accountPreferences: Record<string, AccountLearnedPreferences> = {};
   private orchestrator: InstagramAiOrchestrator;
   private publishingEngine: InstagramPublishingEngine;
   private vaultSecretResolver: (provider: string) => string | undefined;
@@ -1379,6 +1385,12 @@ export class InstagramService {
     if (db.instagramPublishJobs && Array.isArray(db.instagramPublishJobs)) {
       this.publishingEngine.setJobs(db.instagramPublishJobs);
     }
+    if (db.accountFeedback && Array.isArray(db.accountFeedback)) {
+      this.accountFeedback = db.accountFeedback;
+    }
+    if (db.accountPreferences && typeof db.accountPreferences === 'object') {
+      this.accountPreferences = db.accountPreferences;
+    }
 
     // Auto-create PublishJobRecord for any scheduled posts that have snapshots but no job
     for (const post of this.calendar) {
@@ -1443,6 +1455,8 @@ export class InstagramService {
     db.teamMembers = this.teamMembers;
     db.smtpConfig = this.smtpConfig;
     db.teamsConfig = this.teamsConfig;
+    db.accountFeedback = this.accountFeedback;
+    db.accountPreferences = this.accountPreferences;
   }
 
   public getAccounts(environment?: string): InstagramAccount[] {
@@ -1497,6 +1511,76 @@ export class InstagramService {
       }
     }
     return false;
+  }
+
+  public getAccountFeedback(accountId: string): AccountFeedbackItem[] {
+    return this.accountFeedback.filter(f => this.matchesAccount(f.accountId, accountId));
+  }
+
+  public getAccountPreferences(accountId: string): AccountLearnedPreferences {
+    const acc = this.accounts.find(a => a.id === accountId || a.username.toLowerCase() === accountId.toLowerCase());
+    const canonicalId = acc ? acc.id : accountId;
+
+    if (!this.accountPreferences[canonicalId]) {
+      this.accountPreferences[canonicalId] = {
+        accountId: canonicalId,
+        preferredPillars: acc ? acc.contentPillars.map(p => p.name) : [],
+        dislikedTopics: [],
+        toneAdjustments: [],
+        avoidWords: [],
+        customInstructions: '',
+        lastUpdated: new Date().toISOString()
+      };
+    }
+    return this.accountPreferences[canonicalId];
+  }
+
+  public saveAccountFeedback(feedback: Omit<AccountFeedbackItem, 'id' | 'createdAt'>): AccountFeedbackItem {
+    const acc = this.accounts.find(a => a.id === feedback.accountId || a.username.toLowerCase() === feedback.accountId.toLowerCase());
+    const canonicalId = acc ? acc.id : feedback.accountId;
+
+    const item: AccountFeedbackItem = {
+      ...feedback,
+      accountId: canonicalId,
+      id: `fb-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+      createdAt: new Date().toISOString()
+    };
+    this.accountFeedback.unshift(item);
+    if (this.accountFeedback.length > 250) {
+      this.accountFeedback = this.accountFeedback.slice(0, 250);
+    }
+    this.updatePreferencesFromFeedback(canonicalId, item);
+    return item;
+  }
+
+  private updatePreferencesFromFeedback(accountId: string, fb: AccountFeedbackItem) {
+    const prefs = this.getAccountPreferences(accountId);
+    if (fb.type === 'topic_disliked' && fb.topicTitle) {
+      if (!prefs.dislikedTopics.includes(fb.topicTitle)) {
+        prefs.dislikedTopics.push(fb.topicTitle);
+      }
+    } else if (fb.type === 'topic_approved' && fb.topicTitle) {
+      prefs.dislikedTopics = prefs.dislikedTopics.filter(t => t !== fb.topicTitle);
+    } else if (fb.type === 'tone_critique' && fb.toneCritique) {
+      if (!prefs.toneAdjustments.includes(fb.toneCritique)) {
+        prefs.toneAdjustments.push(fb.toneCritique);
+      }
+    }
+    prefs.lastUpdated = new Date().toISOString();
+  }
+
+  public updateAccountPreferences(accountId: string, updates: Partial<AccountLearnedPreferences>): AccountLearnedPreferences {
+    const current = this.getAccountPreferences(accountId);
+    const acc = this.accounts.find(a => a.id === accountId || a.username.toLowerCase() === accountId.toLowerCase());
+    const canonicalId = acc ? acc.id : accountId;
+
+    this.accountPreferences[canonicalId] = {
+      ...current,
+      ...updates,
+      accountId: canonicalId,
+      lastUpdated: new Date().toISOString()
+    };
+    return this.accountPreferences[canonicalId];
   }
 
   public getAudits(accountId?: string): InstagramAuditRecord[] {
@@ -1873,6 +1957,8 @@ export class InstagramService {
     const count = options?.count || 5;
     const format = options?.format || 'all';
 
+    const learnedPreferences = this.getAccountPreferences(accountId);
+
     const { result, generationRecord } = await this.orchestrator.executeTask('topic_generation', {
       task: 'topic_generation',
       account,
@@ -1880,6 +1966,7 @@ export class InstagramService {
       previousAudit: latestAudit,
       approvedTopics,
       rejectedTopics,
+      learnedPreferences,
       count,
       format,
       customAngle: options?.customAngle
@@ -1931,6 +2018,12 @@ export class InstagramService {
         topic.approvalNote = note.trim();
         this.checkApprovalNoteLearning(topic.title, note.trim());
       }
+      this.saveAccountFeedback({
+        accountId: topic.accountId,
+        type: 'topic_approved',
+        topicTitle: topic.title,
+        feedbackText: note?.trim() || 'Approved by user'
+      });
 
       // Automatically add to pipeline if not present
       let pipelineItem = this.pipeline.find(p => p.topicId === topic.id);
@@ -1959,6 +2052,13 @@ export class InstagramService {
         feedback,
         date: new Date().toISOString()
       };
+
+      this.saveAccountFeedback({
+        accountId: topic.accountId,
+        type: 'topic_disliked',
+        topicTitle: topic.title,
+        feedbackText: `Category: ${category}. Mandate: ${feedback}`
+      });
 
       // Direct Self-Learning: Store rejection reason as a new rule in active skill immediately
       const activeSkill = this.getActiveSkill();

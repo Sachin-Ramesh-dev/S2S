@@ -286,6 +286,9 @@ export interface TopicIdea {
   contentGoal?: string;
   targetAudienceAngle?: string;
   source?: 'AI' | 'Manual' | 'AI + Manual';
+  auditId?: string;
+  auditFinding?: string;
+  traceability?: TopicTraceability;
 }
 
 export type PipelineStage =
@@ -445,6 +448,7 @@ export interface ScriptItem {
   skillVersion: string;
   createdAt: string;
   updatedAt: string;
+  traceability?: ScriptTraceability;
 }
 
 export interface PublicationSnapshot {
@@ -827,6 +831,61 @@ export interface TeamsIntegrationConfig {
   lastTestStatus?: 'success' | 'failed';
   lastTestMessage?: string;
   lastDispatchedAt?: string;
+}
+
+export interface TopicTraceability {
+  sourceAuditId?: string;
+  sourceAuditFinding?: string;
+  targetedPillar: string;
+  groundedAudienceNeed?: string;
+  relevantFeedbackIds?: string[];
+  appliedLearnedRules?: string[];
+}
+
+export interface ScriptTraceability {
+  sourceTopicId?: string;
+  sourceAuditId?: string;
+  auditRationale?: string;
+  targetedPillar?: string;
+  appliedGuardrails?: string[];
+  feedbackIncorporated?: string[];
+}
+
+export interface AccountFeedbackItem {
+  id: string;
+  accountId: string;
+  targetType: 'topic' | 'script' | 'audit';
+  targetId: string;
+  feedbackType: 'approval' | 'rejection' | 'rating' | 'correction';
+  rating?: number; // 1 to 5
+  category?: string;
+  feedbackText: string;
+  corrections?: Array<{ field: string; original: string; corrected: string }>;
+  createdAt: string;
+  appliedToLearnedModel?: boolean;
+}
+
+export interface AccountLearnedPreferences {
+  accountId: string;
+  updatedAt: string;
+  preferredHooks: Array<{ pattern: string; weight: number; sampleCount: number }>;
+  discouragedHooks: Array<{ pattern: string; reason: string; rejectionCount: number }>;
+  preferredCtas: Array<{ text: string; weight: number }>;
+  discouragedPhrases: string[];
+  preferredPillars: Record<string, number>;
+  tonePreferences: {
+    primaryTone: string;
+    readingLevel: string;
+    customRules: string[];
+  };
+  metrics: {
+    totalFeedbackCount: number;
+    approvalsCount: number;
+    rejectionsCount: number;
+    averageRating: number;
+    appliedRulesCount: number;
+    approvalRateTrend: number[];
+  };
 }
 
 

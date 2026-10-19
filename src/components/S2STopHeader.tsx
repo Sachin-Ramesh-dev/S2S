@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Instagram, ChevronDown, Check, Plus } from 'lucide-react';
 import { InstagramAccount } from '../types/instagram';
 import { DomainId, SubViewId, S2S_DOMAINS } from '../types/navigation';
-import { EnvironmentToggle } from './EnvironmentToggle';
 import { ThemeToggle } from './ThemeToggle';
 import { useTheme } from '../context/ThemeContext';
 
@@ -66,9 +65,8 @@ export const S2STopHeader: React.FC<S2STopHeaderProps> = ({
       {/* Center: Clean negative space */}
       <div className="flex-1" />
 
-      {/* Right: Environment, Theme & Account Switcher */}
+      {/* Right: Theme & Account Switcher */}
       <div className="flex items-center gap-2 shrink-0">
-        <EnvironmentToggle variant="pill" />
         <ThemeToggle variant="pill" />
 
         {/* Account Switcher Dropdown */}

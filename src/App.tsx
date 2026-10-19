@@ -51,6 +51,7 @@ import { DomainId, SubViewId, S2S_DOMAINS } from './types/navigation';
 import { S2SHomeHub } from './components/S2SHomeHub';
 import { S2STopHeader } from './components/S2STopHeader';
 import { StrategyWorkspace } from './components/strategy/StrategyWorkspace';
+import { InstagramAuditView } from './components/instagram/InstagramAuditView';
 import { ContentWorkspace } from './components/content/ContentWorkspace';
 import { WorkflowsWorkspace } from './components/workflows/WorkflowsWorkspace';
 import { PublishingWorkspace } from './components/publishing/PublishingWorkspace';
@@ -1287,9 +1288,25 @@ export default function App() {
                 onOpenConnectModal={() => setIsConnectModalOpen(true)}
                 onQuickRunAudit={handleRunAudit}
               />
-            ) : activeDomain === 'audit' || activeDomain === 'strategy' ? (
+            ) : activeDomain === 'audit' || (activeDomain === 'strategy' && activeSubView === 'audit') ? (
+              <div className="flex-1 overflow-y-auto">
+                <InstagramAuditView
+                  account={selectedAccount}
+                  audits={filteredAudits}
+                  activeSkill={skills[0]}
+                  onRunAudit={handleRunAudit}
+                  isRunningAudit={isRunningAudit}
+                  onGenerateTopicsFromAudit={({ deficitNotes }) => {
+                    handleGenerateTopics(deficitNotes, 5);
+                    handleDomainNavigate('topics');
+                  }}
+                  onNavigateToTopics={() => handleDomainNavigate('topics')}
+                  onAuditsUpdated={loadInstagramData}
+                />
+              </div>
+            ) : activeDomain === 'strategy' ? (
               <StrategyWorkspace
-                activeSubView={(activeDomain === 'strategy' ? activeSubView : 'audit') as any}
+                activeSubView={activeSubView as any}
                 onSubViewChange={(sub) => setActiveSubView(sub)}
                 account={selectedAccount}
                 audits={filteredAudits}
@@ -1416,21 +1433,22 @@ export default function App() {
                 onApproveScript={(scriptId) => handleSaveScript(scriptId, { status: 'approved' })}
               />
             ) : activeDomain === 'audit_history' ? (
-              <StrategyWorkspace
-                activeSubView="audit"
-                onSubViewChange={(sub) => setActiveSubView(sub)}
-                account={selectedAccount}
-                audits={audits}
-                activeSkill={skills[0]}
-                onRunAudit={handleRunAudit}
-                isRunningAudit={isRunningAudit}
-                onGenerateTopicsFromAudit={({ deficitNotes }) => {
-                  handleGenerateTopics(deficitNotes, 5);
-                  handleDomainNavigate('topics');
-                }}
-                onNavigateToContentTopics={() => handleDomainNavigate('topics')}
-                onAuditsUpdated={loadInstagramData}
-              />
+              <div className="flex-1 overflow-y-auto">
+                <InstagramAuditView
+                  initialTab="history"
+                  account={selectedAccount}
+                  audits={filteredAudits}
+                  activeSkill={skills[0]}
+                  onRunAudit={handleRunAudit}
+                  isRunningAudit={isRunningAudit}
+                  onGenerateTopicsFromAudit={({ deficitNotes }) => {
+                    handleGenerateTopics(deficitNotes, 5);
+                    handleDomainNavigate('topics');
+                  }}
+                  onNavigateToTopics={() => handleDomainNavigate('topics')}
+                  onAuditsUpdated={loadInstagramData}
+                />
+              </div>
             ) : activeDomain === 'settings' ? (
               <UnifiedSettingsPage
                 onBack={() => handleDomainNavigate('home')}
@@ -1969,8 +1987,9 @@ export default function App() {
           setAccounts((prev) => [newAcc, ...prev.filter((a) => a.id !== newAcc.id && a.username.toLowerCase() !== newAcc.username.toLowerCase())]);
           setSelectedAccount(newAcc);
           setSelectedScriptId('empty');
+          localStorage.setItem('s2s_active_account_id', newAcc.id);
           setIsConnectModalOpen(false);
-          loadInstagramData();
+          loadInstagramData(newAcc.id);
           showToast('success', `Connected @${newAcc.username} via Meta Graph API!`);
         }}
         existingAccounts={accounts}

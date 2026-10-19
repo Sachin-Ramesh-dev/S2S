@@ -62,6 +62,7 @@ interface InstagramAuditViewProps {
   isRunningAudit: boolean;
   isGeneratingTopics?: boolean;
   onAuditsUpdated?: () => void;
+  initialTab?: 'overview' | 'content' | 'gaps' | 'compare' | 'guardrails' | 'history';
 }
 
 export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
@@ -74,7 +75,8 @@ export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
   onNavigateToTopics,
   isRunningAudit,
   isGeneratingTopics = false,
-  onAuditsUpdated
+  onAuditsUpdated,
+  initialTab
 }) => {
   const { isDark } = useTheme();
   const [selectedMode, setSelectedMode] = useState<InstagramAuditMode>('full');
@@ -83,7 +85,7 @@ export const InstagramAuditView: React.FC<InstagramAuditViewProps> = ({
   const [syncedRules, setSyncedRules] = useState<Record<string, boolean>>({});
   const [syncToast, setSyncToast] = useState<string | null>(null);
   const [auditError, setAuditError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'gaps' | 'compare' | 'guardrails' | 'history'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'gaps' | 'compare' | 'guardrails' | 'history'>(initialTab || 'overview');
   const [topicProgressPct, setTopicProgressPct] = useState(65);
 
   useEffect(() => {
@@ -535,7 +537,7 @@ ${(audit.structuredAudit?.recommendations || audit.recommendations || []).map((r
                   className="w-full px-3.5 py-2.5 text-left text-xs font-bold hover:bg-[#B9A7FF] hover:text-[#111111] flex items-center gap-2 rounded transition-colors"
                 >
                   <Shield className="w-4 h-4" />
-                  <span>Audit Settings &amp; Data Source</span>
+                  <span>Account Connection Diagnostics</span>
                 </button>
               </div>
             )}
